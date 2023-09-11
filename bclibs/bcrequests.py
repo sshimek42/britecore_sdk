@@ -194,7 +194,7 @@ def do_request(
     :rtype: HTTPResponse
     """
     if request_headers is None:
-        request_headers = dict({})
+        request_headers = {}
     if not request_headers:
         request_headers = token_class.get_token()
     request_timer = ""
