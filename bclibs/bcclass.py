@@ -9,7 +9,8 @@ class Bccontact(dict):
 
     def __new__(cls, policy, name, contact_id, address, phone, email):
         return dict(
-            cls.fixed_contact(policy, name, contact_id, address, phone, email))
+            cls.fixed_contact(policy, name, contact_id, address, phone, email)
+            )
 
     def __init__(self, policy, name, contact_id, address, phone, email):
         super().__init__()

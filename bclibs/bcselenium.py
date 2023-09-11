@@ -1,6 +1,7 @@
 """Selenium BriteCore Module"""
 import sys
 
+import sclogging.sclogging_main as scl
 import selenium
 from selenium import common, webdriver
 from selenium.webdriver.common.by import By
@@ -8,9 +9,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from bclibs import bclogging, settings
+from bclibs import settings
 
-logger = bclogging.get_logger(__file__)
+logger = scl.get_logger(__file__)
 
 retry = settings.web.retry
 if not retry:
@@ -52,7 +53,7 @@ def get_driver(browser: str = web_browser) -> selenium.webdriver.Edge | \
     selenium.webdriver.firefox.webdriver.WebDriver]
     """
     global logger  # skipcq: PYL-W0603
-    plogger = bclogging.get_parent_logger()
+    plogger = scl.get_parent_logger()
     if plogger:
         logger = plogger
     logger.info(f"Launching {browser}")

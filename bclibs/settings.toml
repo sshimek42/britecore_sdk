@@ -1,4 +1,4 @@
-base_url = 'britecore.com'
+base_url = 'homesteadmutual.britecore.com'
 
 web_retry = 10
 web_timeout = 30
