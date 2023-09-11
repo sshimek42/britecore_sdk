@@ -13,7 +13,7 @@ for each_file in setting_files:
 settings = Dynaconf(
     envvar_prefix="DYNACONF",
     settings_files=setting_files_full,
-    )
+)
 
 settings.validators.register(
     Validator(
@@ -23,13 +23,13 @@ settings.validators.register(
         "db_conn_string",
         must_exist=True,
         is_type_of=str,
-        ),
+    ),
     Validator(
         "logging_auto_create_dir",
         "logging_log_to_file",
         "color",
         is_type_of=bool,
-        ),
+    ),
     Validator(
         "logging_path",
         "logging_ext",
@@ -41,8 +41,8 @@ settings.validators.register(
         "agent_pass",
         "web_browser",
         is_type_of=str,
-        ),
+    ),
     Validator("web_retry", "web_timeout", "web_timeout_long", is_type_of=int),
     Validator("db_conn_options", is_type_of=dict),
-    )
+)
 settings.validators.validate()
