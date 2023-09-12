@@ -9,8 +9,7 @@ class Bccontact(dict):
 
     def __new__(cls, policy, name, contact_id, address, phone, email):
         return dict(
-            cls.fixed_contact(policy, name, contact_id, address, phone, email)
-            )
+            cls.fixed_contact(policy, name, contact_id, address, phone, email))
 
     def __init__(self, policy, name, contact_id, address, phone, email):
         super().__init__()
@@ -64,7 +63,7 @@ class Bccontact(dict):
             "address": address,
             "phone": phone,
             "email": email,
-            }
+        }
         return final_contact
 
 
@@ -93,7 +92,7 @@ class Bcaddress:
         address_type,
         fix=False,
         address_id="",
-        ):
+    ):
         """
         Adds address to list
         :param address1: Contact address
@@ -141,7 +140,7 @@ class Bcaddress:
             "zip": zipcode,
             "type": address_type,
             "id": address_id,
-            }
+        }
 
         self.address_list.append(address)
 
@@ -183,7 +182,7 @@ class Bcaddress:
             address,
             0,
             re.IGNORECASE,
-            )
+        )
         if address[-3:-2].lower() == " ":
             address = address[:-1] + address[-1:].upper()
         return address
@@ -418,31 +417,29 @@ class Policy:
         """
         policy_dict = {
             "policy_number":
-                self.policy_num,
+            self.policy_num,
             "inception_date":
-                self.policy_opt.get(
-                    "inception_date",
-                    datetime.datetime.now().strftime(
-                        "%m"
-                        "/%d/%Y"
-                        ),
-                    ),
+            self.policy_opt.get(
+                "inception_date",
+                datetime.datetime.now().strftime("%m"
+                                                 "/%d/%Y"),
+            ),
             "term_type":
-                self.policy_opt.get("term", "1 year"),
+            self.policy_opt.get("term", "1 year"),
             "renewal_term_type":
-                self.policy_opt.get("renewal_term", "1 year"),
+            self.policy_opt.get("renewal_term", "1 year"),
             "as_agent":
-                False,
+            False,
             "manual_policy_number":
-                True,
+            True,
             "policy_type_id":
-                self.policy_opt.get("policy_type_id"),
+            self.policy_opt.get("policy_type_id"),
             "underwriting_questions":
-                self.policy_opt.get("underwriting_questions"),
+            self.policy_opt.get("underwriting_questions"),
             "underwriting_options":
-                self.policy_opt.get("underwriting_options"),
+            self.policy_opt.get("underwriting_options"),
             "policy_contacts":
-                self.contacts,
-            }
+            self.contacts,
+        }
 
         return policy_dict
