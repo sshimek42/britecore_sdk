@@ -25,14 +25,6 @@ settings.validators.register(
         is_type_of=str,
         ),
     Validator(
-        "logging_auto_create_dir",
-        "logging_log_to_file",
-        "color",
-        is_type_of=bool,
-        ),
-    Validator(
-        "logging_path",
-        "logging_ext",
         "web_user",
         "web_pass",
         "web_admin_user",

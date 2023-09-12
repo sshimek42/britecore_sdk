@@ -60,5 +60,7 @@ def close_cursor(cursor: pyodbc.Cursor):
         return None
     else:
         cursor.close()
+        logger.debug("Cursor closed")
         conn1.close()
+        logger.debug("Connection closed")
         return None

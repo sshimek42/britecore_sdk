@@ -2,11 +2,4 @@ web_retry = 10
 web_timeout = 30
 web_timeout_long = 60
 
-logging_path = 'C:\Logs'
-logging_level = 'WARNING'
-logging_file_level = 10
-logging_ext = 'log'
-logging_auto_create_dir = false
-logging_log_to_file = false
-color = true
 web_browser = 'Edge'
