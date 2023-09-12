@@ -7,10 +7,8 @@ from types import MappingProxyType
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
-from urllib3.exceptions import (
-    ProtocolError, RequestError,
-    ResponseError, TimeoutError as urlTimeoutError,
-    )
+from urllib3.exceptions import ProtocolError, RequestError, ResponseError
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from bclibs import settings
@@ -56,7 +54,7 @@ class OAuthToken:
         client_id: str = settings.client_id,
         client_secret: str = settings.client_secret,
         url: str = base_url,
-        ) -> None:
+    ) -> None:
         self.client_id = client_id
         self.client_secret = client_secret
         self.url = url
@@ -75,10 +73,9 @@ class OAuthToken:
             http_request = {
                 "grant_type": "client_credentials",
                 "scope": self.scope
-                }
+            }
             http_header = urllib3.make_headers(
-                basic_auth=f"{self.client_id}:{self.client_secret}"
-                )
+                basic_auth=f"{self.client_id}:{self.client_secret}")
             logger.debug("Requesting token")
             http_result = http.request(
                 "POST",
@@ -86,31 +83,27 @@ class OAuthToken:
                 fields=http_request,
                 headers=http_header,
                 encode_multipart=False,
-                )
+            )
 
             if http_result.status != 200 and self.token == "":
-                logger.critical(
-                    f"Error getting token - "
-                    f"{http_result.reason}"
-                    )
+                logger.critical(f"Error getting token - "
+                                f"{http_result.reason}")
                 sys.exit(f"Error getting token - {http_result.reason}")
             else:
                 logger.info("Received token")
                 http_result_dict = loads(http_result.data)
                 self.token = http_result_dict.get("access_token")
-                self.token_time = datetime.now() + timedelta(
-                    seconds=float(http_result_dict.get("expires_in"))
-                    ) - timedelta(seconds=60)
+                self.token_time = (datetime.now() + timedelta(
+                    seconds=float(http_result_dict.get("expires_in"))) -
+                    timedelta(seconds=60))
 
-        request_head = MappingProxyType(
-            {
-                "Authorization": f"Bearer {self.token}",
-                "Content-Type": "application/json",
-                "Accept-Encoding": "gzip, deflate, br",
-                "Accept": "*/*",
-                "Connection": "keep-alive"
-                }
-            )
+        request_head = MappingProxyType({
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+        })
 
         return request_head
 
@@ -170,7 +163,7 @@ def do_request(
     timer_start_note: str = "",
     timer_end_note: str = "",
     method: str = "POST",
-    ) -> urllib3.response:
+) -> urllib3.response:
     """Do web request
     :param path: URL to request
     :type path: str
@@ -221,7 +214,7 @@ def do_request(
                 body=dumps(json).encode("utf-8"),
                 timeout=request_timeout,
                 retries=request_retries,
-                )
+            )
         else:
             request_result = http.request(
                 method=method,
@@ -231,7 +224,9 @@ def do_request(
                 retries=request_retries,
             )
     except (
-            ProtocolError, ResponseError, urlTimeoutError,
+            ProtocolError,
+            ResponseError,
+            urlTimeoutError,
             RequestError,
     ) as request_error:
         logger.error(request_error)
@@ -295,7 +290,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         print_menu_title: str,
         print_menu_options: dict,
         print_menu_default: str,
-        ) -> [tuple[list[any], list[any]], tuple[list[any], str]]:
+    ) -> [tuple[list[any], list[any]], tuple[list[any], str]]:
         """Creates menus for each different line option
         :param print_menu_title: Title
         :type print_menu_title: str
@@ -306,10 +301,8 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         :return:
         :rtype: tuple[list[any], list[any]] or tuple[list[any], str]
         """
-        print(
-            f"\nChoose {print_menu_title.lower()}\n"
-            f"{'=' * (len(print_menu_title) + 7)}"
-            )
+        print(f"\nChoose {print_menu_title.lower()}\n"
+              f"{'=' * (len(print_menu_title) + 7)}")
         if len(print_menu_options) > 1:
             menu_options_list = list(print_menu_options.keys())
             if print_menu_title != "Date":
@@ -321,7 +314,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
                 prompt="",
                 default=len(print_menu_options) + 1,
                 blank=True,
-                )
+            )
             if tmp_line in ("All", ""):
                 bc_id = list(print_menu_options.values())
                 bc_name = list(print_menu_options.keys())
@@ -337,9 +330,8 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         return bc_id, bc_name
 
     logger.debug("Getting dates")
-    request_results = do_request(
-        path="/api/v2/lines/get_all_effective_dates", timer=False
-        )
+    request_results = do_request(path="/api/v2/lines/get_all_effective_dates",
+                                 timer=False)
     get_dates = process_result(request_results)
 
     logger.debug("Getting states")
@@ -350,9 +342,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
             {make_menu.get("description"): make_menu.get("id")})
         menu_default = make_menu.get("description")
     eff_date = print_menu("Date", menu_options, menu_default)
-    eff_date_json = {
-        "effective_date_id": eff_date[0]
-        }
+    eff_date_json = {"effective_date_id": eff_date[0]}
 
     request_results = do_request(
         path="/api/v2/lines/get_all_states",
@@ -363,11 +353,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
 
     menu_options = {}
     for make_menu in get_states:
-        menu_options.update(
-            {
-                make_menu.get("name"): make_menu.get("id")
-                }
-            )
+        menu_options.update({make_menu.get("name"): make_menu.get("id")})
         menu_default = make_menu.get("name")
     eff_state = print_menu("State", menu_options, menu_default)
     eff_state_json = {
@@ -430,12 +416,12 @@ def add_bc_line(bc_revision: str, bc_line: str, **kwargs) -> bool:
     line_add_json = {
         "item_id": str(bc_line),
         "revision_id": str(bc_revision),
-        }
+    }
     request_result = do_request(
         path="/api/v2/policies/add_line_item",
         json=line_add_json,
         **kwargs,
-        )
+    )
     line_json = process_result(request_result)
 
     if line_json is not None:
@@ -472,17 +458,15 @@ def get_bc_property_information(property_id: str, **kwargs) -> dict:
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},
         **kwargs,
-        )
+    )
     property_json = process_result(property_json)
 
     return property_json
 
 
-def get_bc_contacts(
-    search_str: str,
-    search_filter: str = "Named Insured",
-    **kwargs
-    ) -> dict:
+def get_bc_contacts(search_str: str,
+                    search_filter: str = "Named Insured",
+                    **kwargs) -> dict:
     """Retrieve named insured contacts
     :param search_str: Name to search for
     :type search_str: str
@@ -497,22 +481,21 @@ def get_bc_contacts(
         "filter": search_filter,
         "currentPage": 1,
         "pageSize": 10000,
-        }
+    }
     request_result = do_request(
         path="/api/v1/contacts/retrieveContactList",
         json=contact_request_json,
         **kwargs,
-        )
+    )
 
     contact_json = loads(request_result.data.decode("utf-8"))
 
     return contact_json.get("records")
 
 
-def retrieve_policy_list_user(
-    contact_name: str, check_name: bool = True,
-    **kwargs
-    ) -> list:
+def retrieve_policy_list_user(contact_name: str,
+                              check_name: bool = True,
+                              **kwargs) -> list:
     """Search for user
     :param contact_name: Contact to search for
     :type contact_name: str
@@ -526,16 +509,16 @@ def retrieve_policy_list_user(
         "sort_obj": {
             "field": "policy_number",
             "order": "asc"
-            },
+        },
         "current_page": 1,
         "page_size": 10000,
         "search_string": contact_name,
-        }
+    }
     request_result = do_request(
         path="/api/v2/policies/search",
         json=user_request_json,
         **kwargs,
-        )
+    )
     user_json = process_result(request_result).get("records")
 
     policy_list = []
@@ -569,10 +552,8 @@ def retrieve_bc_policy_contact_info(policy: str, **kwargs) -> list:
     return contact_json.get("active_revision").get("named_insureds")
 
 
-def add_bc_contact(
-    name: str, address: list, phone: list, email: list,
-    **kwargs
-    ) -> tuple:
+def add_bc_contact(name: str, address: list, phone: list, email: list,
+                   **kwargs) -> tuple:
     """Add contact
     :param name: Contact name
     :type name: str
@@ -590,7 +571,7 @@ def add_bc_contact(
         "name": name,
         "addresses": address,
         "roles": '["Named Insured"]',
-        }
+    }
     if email[0] != {}:
         contact_request_json.update({"emails": email})
     if phone[0] != {}:
@@ -600,7 +581,7 @@ def add_bc_contact(
         path="/api/v2/contacts/new_contact",
         json=contact_request_json,
         **kwargs,
-        )
+    )
 
     contact_json = process_result(request_result)
 
@@ -628,7 +609,7 @@ def add_bc_contact_role(contact_id, role="Named Insured", **kwargs) -> dict:
         path="/api/v2/contacts/add_contact_to_role",
         json=role_request_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -646,7 +627,7 @@ def update_bc_contact(contact: dict, **kwargs) -> dict:
         path="/api/v2/contacts/update_contact",
         json=update_request_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -664,14 +645,13 @@ def new_bc_policy(policy: dict, **kwargs) -> bool:
         path="/api/v2/policies/create_policy",
         json=policy_request_json,
         **kwargs,
-        )
+    )
 
     policy_json = process_result(request_result)
     policy_create = True
     try:
         policy_exists = (loads(
-            request_result.data.decode("utf-8")
-            ).get("data").get("exists"))
+            request_result.data.decode("utf-8")).get("data").get("exists"))
     except AttributeError:
         policy_exists = False
     if policy_json is None and not policy_exists:
@@ -694,7 +674,7 @@ def get_bc_policy(policy_number: str, **kwargs) -> dict:
         json=policy_request_json,
         request_timeout=Timeout(web_timeout_long),
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -715,7 +695,7 @@ def get_bc_contact(contact_id: str, **kwargs) -> dict:
         path="/api/v2/contacts/get_contact",
         json=contact_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -732,15 +712,13 @@ def get_bc_functions(**kwargs) -> dict:
     request_result = do_request(
         path="/api/v2/utils/get_available_function_names",
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
 
-def get_bc_policy_terms(
-    policy_id: str,
-    **kwargs
-    ) -> list[dict[str, list[dict]]]:
+def get_bc_policy_terms(policy_id: str,
+                        **kwargs) -> list[dict[str, list[dict]]]:
     """
     Gets term information from policy
     :param policy_id: Policy ID to retrieve
@@ -756,7 +734,7 @@ def get_bc_policy_terms(
         path="/api/v2/policies/retrieve_policy_terms",
         json=policy_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -777,7 +755,7 @@ def bc_rate_revision(revision: str, **kwargs) -> dict:
         path="/api/v2/policies/rate_revision",
         json=policy_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -799,7 +777,7 @@ def retrieve_bc_revision(revision: str, **kwargs) -> dict:
         json=revision_retrieve_json,
         request_timeout=Timeout(web_timeout_long),
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -820,7 +798,7 @@ def retrieve_bc_risks(revision: str, **kwargs) -> dict:
         path="/api/v2/policies/retrieve_risks",
         json=revision_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -841,15 +819,13 @@ def retrieve_bc_risk_details(risk: str, **kwargs) -> dict:
         path="/api/v2/policies/retrieve_risk_details",
         json=revision_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
 
-def update_bc_rating_information(
-    property_id: str, line: str, limit: int,
-    **kwargs
-    ) -> list:
+def update_bc_rating_information(property_id: str, line: str, limit: int,
+                                 **kwargs) -> list:
     """
     Add/updates line item limit
     :param property_id Property ID
@@ -869,13 +845,13 @@ def update_bc_rating_information(
         "items": [{
             "id": line,
             "limit": limit
-            }],
-        }
+        }],
+    }
     request_result = do_request(
         path="/api/v2/policies/update_rating_information",
         json=revision_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -896,7 +872,7 @@ def rate_bc_risk(risk_id: str, **kwargs) -> dict[str, float]:
         path="/api/v2/policies/rate_risk",
         json=revision_retrieve_json,
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
@@ -917,7 +893,7 @@ def rebuild_bc_search_index(index_to_rebuild: list, **kwargs) -> bool:
         path="/api/v2/utils/rebuild_search_index",
         json=rebuild_index,
         **kwargs,
-        )
+    )
     return process_result(request_result)
 
 
@@ -936,8 +912,8 @@ def retrieve_bc_policy_billing_schedule(policy: str, **kwargs) -> dict:
     request_result = do_request(
         path="/api/v2/policies/retrieve_billing_schedule_options",
         json=billing_search,
-        **kwargs
-        )
+        **kwargs,
+    )
     return process_result(request_result)
 
 
@@ -952,9 +928,7 @@ def get_bc_claim(claim_id: str, **kwargs) -> dict:
     :rtype: bool
     """
     logger.debug("Getting claim information")
-    claim_search = {
-        "claim_id": claim_id
-        }
+    claim_search = {"claim_id": claim_id}
     request_result = do_request(path="/api/v2/claims/get_claim",
                                 json=claim_search,
                                 **kwargs)
@@ -1019,9 +993,7 @@ def get_bc_attachment(file_id: str, **kwargs) -> dict:
     :rtype: dict
     """
     logger.debug("Getting attachment")
-    file_search = {
-        "file_id": file_id
-        }
+    file_search = {"file_id": file_id}
     request_result = do_request(path="/api/v2/deliverables/get_attachment",
                                 json=file_search,
                                 **kwargs)
