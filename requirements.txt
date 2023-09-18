@@ -1,4 +1,4 @@
-sclogging~=1.0.1
+sclogging~=1.0.2
 dynaconf==3.2.2
 PyInputPlus~=0.2.12
 urllib3~=2.0.4
