@@ -3,4 +3,4 @@ dynaconf==3.2.3
 PyInputPlus~=0.2.12
 urllib3~=2.0.6
 selenium==4.14.0
-pyodbc~=4.0.39
+pyodbc~=5.0.1
