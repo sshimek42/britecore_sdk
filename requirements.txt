@@ -2,5 +2,5 @@ sclogging~=1.0.2
 dynaconf==3.2.4
 PyInputPlus~=0.2.12
 urllib3~=2.1.0
-selenium==4.15.2
+selenium==4.16.0
 pyodbc~=5.0.1
