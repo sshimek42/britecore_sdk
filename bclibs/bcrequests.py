@@ -50,7 +50,7 @@ http = urllib3.PoolManager(
 
 token_class = OAuthToken(
     settings.client_id, settings.client_secret,
-    settings.base_url
+    base_url
     )
 
 

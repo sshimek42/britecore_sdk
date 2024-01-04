@@ -30,9 +30,8 @@ class OAuthToken:
         ) -> None:
         self.client_id = client_id
         self.client_secret = client_secret
-        self.url = f"https://{url}"
-        self.scope = Url(host=self.url, path="/api").url
-        self.url = Url(host=self.url, path="/api/auth/oauth2/token").url
+        self.scope = Url(host=url, path="/api").url
+        self.url = Url(host=url, path="/api/auth/oauth2/token").url
         self.token = ""
         self.token_time = datetime(1970, 1, 1)
 
