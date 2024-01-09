@@ -5,12 +5,14 @@ from json import dumps, loads
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
-from bcoauth import OAuthToken
-from urllib3.exceptions import ProtocolError, RequestError, ResponseError
-from urllib3.exceptions import TimeoutError as urlTimeoutError
+from urllib3.exceptions import (
+    ProtocolError, RequestError, ResponseError,
+    TimeoutError as urlTimeoutError,
+    )
 from urllib3.util import Retry, Timeout, Url
 
 from bclibs import settings
+from bcoauth import OAuthToken
 
 logger = scl.get_logger(__file__)
 updated_logger = False
@@ -575,6 +577,7 @@ def new_bc_policy(policy: dict, **kwargs) -> tuple[bool, any]:
     policy_id = None
     x_id = None
     a_id = None
+    prop_id = None
     logger.debug("Creating policy")
     policy_request_json = policy
     request_result = do_request(
@@ -589,6 +592,7 @@ def new_bc_policy(policy: dict, **kwargs) -> tuple[bool, any]:
         policy_id = policy_json["policy_id"]
         x_id = policy_json["revision_data"]["named_insureds"][0]
         a_id = policy_json["revision_data"]["agents"][0]
+        prop_id = policy_json["revision_data"]["primary_property_id"]
     policy_create = True
     try:
         policy_exists = (
@@ -599,7 +603,7 @@ def new_bc_policy(policy: dict, **kwargs) -> tuple[bool, any]:
     if policy_json is None and not policy_exists:
         policy_create = False
 
-    return policy_create, revision_id, policy_id, x_id, a_id
+    return policy_create, revision_id, policy_id, x_id, a_id, prop_id
 
 
 def get_bc_policy(policy_number: str, **kwargs) -> dict:
@@ -958,6 +962,7 @@ def add_bc_revision_contact(
     update_revision = None
     request_result = None
     logger.debug("Adding contact")
+
     contact_add = {
         "revision_id": revision_id,
         "role": contact_role,
@@ -994,5 +999,33 @@ def create_risk(rev_id: str, **kwargs):
     request_result = do_request(
         path="/api/v2/policies/create_risk", json=risk_json, **kwargs
     )
+
+    return process_result(request_result)
+
+
+def update_property_location(prop_dict, **kwargs):
+    prop_json = {
+        "location": prop_dict
+        }
+
+    request_result = do_request(
+        path="/api/v2/policies/update_property_location", json=prop_json,
+        **kwargs
+        )
+
+    return process_result(request_result)
+
+
+def update_inspection_dates(policy_num, insp_dict, **kwargs):
+    insp_json = {
+        "policy_number": policy_num,
+        "payload"      : insp_dict
+        }
+    insp_json.update(insp_dict)
+
+    request_result = do_request(
+        path="/api/v2/inspections/update_inspection_dates", json=insp_json,
+        **kwargs
+        )
 
     return process_result(request_result)
