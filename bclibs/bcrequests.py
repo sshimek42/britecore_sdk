@@ -5,14 +5,12 @@ from json import dumps, loads
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
-from urllib3.exceptions import (
-    ProtocolError, RequestError, ResponseError,
-    TimeoutError as urlTimeoutError,
-    )
+from bcoauth import OAuthToken
+from urllib3.exceptions import ProtocolError, RequestError, ResponseError
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from bclibs import settings
-from bcoauth import OAuthToken
 
 logger = scl.get_logger(__file__)
 updated_logger = False
@@ -1004,28 +1002,21 @@ def create_risk(rev_id: str, **kwargs):
 
 
 def update_property_location(prop_dict, **kwargs):
-    prop_json = {
-        "location": prop_dict
-        }
+    prop_json = {"location": prop_dict}
 
     request_result = do_request(
-        path="/api/v2/policies/update_property_location", json=prop_json,
-        **kwargs
-        )
+        path="/api/v2/policies/update_property_location", json=prop_json, **kwargs
+    )
 
     return process_result(request_result)
 
 
 def update_inspection_dates(policy_num, insp_dict, **kwargs):
-    insp_json = {
-        "policy_number": policy_num,
-        "payload"      : insp_dict
-        }
+    insp_json = {"policy_number": policy_num, "payload": insp_dict}
     insp_json.update(insp_dict)
 
     request_result = do_request(
-        path="/api/v2/inspections/update_inspection_dates", json=insp_json,
-        **kwargs
-        )
+        path="/api/v2/inspections/update_inspection_dates", json=insp_json, **kwargs
+    )
 
     return process_result(request_result)
