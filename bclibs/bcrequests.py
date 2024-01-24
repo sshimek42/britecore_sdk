@@ -1034,20 +1034,22 @@ def update_inspection_dates(policy_num, insp_dict, **kwargs):
 
 
 def new_mortgagee(property_id: str, **kwargs):
-
     new_mort_json = {"property_id": property_id}
     result_request = do_request("/api/v2/policies/new_mortgagee",
-                                json=new_mort_json, **kwargs)
+                                json=new_mort_json,
+                                **kwargs)
 
     return process_result(result_request)
 
 
 def store_mortgagee(property_contact_id: str, mortgagee_contact_id: str,
-                                                                    **kwargs):
-
-    store_mort_json = {"x_properties_contact_id": property_contact_id,
-                       "mortgagee_contact_id": mortgagee_contact_id}
+                    **kwargs):
+    store_mort_json = {
+        "x_properties_contact_id": property_contact_id,
+        "mortgagee_contact_id": mortgagee_contact_id,
+    }
     result_request = do_request("/api/v2/policies/store_mortgagee",
-                                json=store_mort_json, **kwargs)
+                                json=store_mort_json,
+                                **kwargs)
 
     return process_result(result_request)
