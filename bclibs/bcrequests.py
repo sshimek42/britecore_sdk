@@ -502,8 +502,8 @@ def add_bc_contact(
     contact_request_json = {
         "name": name,
         "addresses": address,
-        "roles": '["Named Insured"]',
     }
+    contact_request_json.update(**kwargs)
     if email[0] != {}:
         contact_request_json.update({"emails": email})
     if phone[0] != {}:
@@ -512,7 +512,6 @@ def add_bc_contact(
     request_result = do_request(
         path="/api/v2/contacts/new_contact",
         json=contact_request_json,
-        **kwargs,
     )
 
     contact_json = process_result(request_result)
@@ -1020,3 +1019,23 @@ def update_inspection_dates(policy_num, insp_dict, **kwargs):
     )
 
     return process_result(request_result)
+
+
+def new_mortgagee(property_id: str, **kwargs):
+
+    new_mort_json = {"property_id": property_id}
+    result_request = do_request("/api/v2/policies/new_mortgagee",
+                                json=new_mort_json, **kwargs)
+
+    return process_result(result_request)
+
+
+def store_mortgagee(property_contact_id: str, mortgagee_contact_id: str,
+                                                                    **kwargs):
+
+    store_mort_json = {"x_properties_contact_id": property_contact_id,
+                       "mortgagee_contact_id": mortgagee_contact_id}
+    result_request = do_request("/api/v2/policies/store_mortgagee",
+                                json=store_mort_json, **kwargs)
+
+    return process_result(result_request)
