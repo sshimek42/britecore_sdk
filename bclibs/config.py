@@ -1,4 +1,5 @@
 """Settings config"""
+
 import os
 
 from dynaconf import Dynaconf, Validator
@@ -10,9 +11,7 @@ setting_files_full = []
 for each_file in setting_files:
     setting_files_full.append(os.path.join(curr_dir, each_file))
 
-settings = Dynaconf(
-    settings_files=setting_files_full,
-    enviroments=True)
+settings = Dynaconf(settings_files=setting_files_full, enviroments=True)
 
 settings.validators.register(
     Validator(
