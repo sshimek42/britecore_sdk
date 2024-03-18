@@ -1,5 +1,5 @@
+[default]
 web_retry = 10
 web_timeout = 30
 web_timeout_long = 60
-
 web_browser = 'Edge'
