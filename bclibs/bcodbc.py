@@ -11,8 +11,12 @@ def __getattr__(name: str):
     return getattr(pyodbc, name)
 
 
-db_conn_string = settings.db_conn_string
-db_conn_options = settings.db_conn_options
+run_on = "homestead"
+site_settings = settings.__getattr__("default")
+site_settings += settings.__getattr__(run_on)
+
+db_conn_string = site_settings.db_conn_string
+db_conn_options = site_settings.db_conn_options
 
 logger = scl.get_logger(__file__)
 
