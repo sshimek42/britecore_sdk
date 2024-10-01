@@ -6,12 +6,12 @@ from json import dumps, loads
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
+from bcoauth import OAuthToken
 from urllib3.exceptions import ProtocolError, RequestError, ResponseError
 from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from bclibs import settings
-from bcoauth import OAuthToken
 
 run_on = "wausau"
 site_settings = settings.__getattr__("default")
@@ -92,15 +92,15 @@ def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> any:
 
 
 def do_request(
-        path: str,
-        json: dict = None,
-        request_timeout: urllib3.util.Timeout = timeout,
-        request_retries: urllib3.util.Retry = retries,
-        request_headers=None,
-        timer: bool = timers,
-        timer_start_note: str = "",
-        timer_end_note: str = "",
-        method: str = "POST",
+    path: str,
+    json: dict = None,
+    request_timeout: urllib3.util.Timeout = timeout,
+    request_retries: urllib3.util.Retry = retries,
+    request_headers=None,
+    timer: bool = timers,
+    timer_start_note: str = "",
+    timer_end_note: str = "",
+    method: str = "POST",
 ) -> urllib3.response:
     """Do web request
     :param path: URL to request
@@ -162,10 +162,10 @@ def do_request(
                 retries=request_retries,
             )
     except (
-            ProtocolError,
-            ResponseError,
-            urlTimeoutError,
-            RequestError,
+        ProtocolError,
+        ResponseError,
+        urlTimeoutError,
+        RequestError,
     ) as request_error:
         logger.error(request_error)
 
@@ -179,7 +179,7 @@ def do_request(
 
 
 def get_bc_lines(
-        bc_line: tuple, bc_type: str, line_name: str, **kwargs
+    bc_line: tuple, bc_type: str, line_name: str, **kwargs
 ) -> [dict[any, any], str]:
     """Gets line export
     :param bc_line: Line ID
@@ -226,9 +226,9 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
     """
 
     def print_menu(
-            print_menu_title: str,
-            print_menu_options: dict,
-            print_menu_default: str,
+        print_menu_title: str,
+        print_menu_options: dict,
+        print_menu_default: str,
     ) -> [tuple[list[any], list[any]], tuple[list[any], str]]:
         """Creates menus for each different line option
         :param print_menu_title: Title
@@ -404,7 +404,7 @@ def get_bc_property_information(property_id: str, **kwargs) -> dict:
 
 
 def get_bc_contacts(
-        search_str: str, search_filter: str = "Named Insured", **kwargs
+    search_str: str, search_filter: str = "Named Insured", **kwargs
 ) -> dict:
     """Retrieve named insured contacts
     :param search_str: Name to search for
@@ -433,7 +433,7 @@ def get_bc_contacts(
 
 
 def retrieve_policy_list_user(
-        contact_name: str, check_name: bool = True, **kwargs
+    contact_name: str, check_name: bool = True, **kwargs
 ) -> list:
     """Search for user
     :param contact_name: Contact to search for
@@ -489,7 +489,7 @@ def retrieve_bc_policy_contact_info(policy: str, **kwargs) -> list:
 
 
 def add_bc_contact(
-        name: str, address: list, phone: list, email: list, **kwargs
+    name: str, address: list, phone: list, email: list, **kwargs
 ) -> tuple:
     """Add contact
     :param name: Contact name
@@ -772,7 +772,7 @@ def retrieve_bc_risk_details(risk: str, **kwargs) -> dict:
 
 
 def update_bc_rating_information(
-        property_id: str, line: str, limit: int, **kwargs
+    property_id: str, line: str, limit: int, **kwargs
 ) -> list:
     """
     Add/updates line item limit
@@ -942,11 +942,11 @@ def get_bc_attachment(file_id: str, **kwargs) -> dict:
 
 
 def add_bc_revision_contact(
-        revision_id: str,
-        contact_id: str,
-        x_id,
-        contact_role: str = "namedInsured",
-        **kwargs,
+    revision_id: str,
+    contact_id: str,
+    x_id,
+    contact_role: str = "namedInsured",
+    **kwargs,
 ) -> dict:
     """
     Add contact to revision
@@ -1048,7 +1048,9 @@ def store_mortgagee(property_contact_id: str, mortgagee_contact_id: str, **kwarg
 
 
 def get_tb_list(from_date, to_date, **kwargs):
-    required_json = {"json_dict": {"from_date": from_date, "to_date": to_date, "ignore_state": True}}
+    required_json = {
+        "json_dict": {"from_date": from_date, "to_date": to_date, "ignore_state": True}
+    }
     request_timeout = Timeout(120)
     request_retries = Retry(total=3, status_forcelist=frozenset({502, 503, 504}))
 
@@ -1068,7 +1070,11 @@ def get_tb_list(from_date, to_date, **kwargs):
 
 
 def get_edeliverables(date_from, date_to, **kwargs):
-    required_json = {"date_from": date_from, "date_to": date_to, "unprocessed_only": False}
+    required_json = {
+        "date_from": date_from,
+        "date_to": date_to,
+        "unprocessed_only": False,
+    }
 
     result_request = do_request(
         "/api/v2/deliverables/get_edeliverables",
