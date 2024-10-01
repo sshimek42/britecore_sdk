@@ -3,6 +3,8 @@
 import datetime
 import re
 
+import replacementdict as rd
+
 
 class Bccontact(dict):
     """Class with all attributes for BriteCore contact"""
@@ -121,12 +123,16 @@ class Bcaddress:
             address2 = self.fix_address(address2)
             city = city.strip().title()
             city = re.sub(reg_city_state, "", city)
-            city = city.replace(" Du ", " du ")
-            city = city.replace(" Des ", " des ")
+            # city = city.replace(" Du ", " du ")
+            # city = city.replace(" Des ", " des ")
+            for key in rd.replacementcity.keys():
+                city = city.replace(key, rd.replacementcity[key])
             state = state.strip().upper()
             state = re.sub(reg_city_state, "", state)
             county = county.strip().title()
-            county = county.replace(" Du ", " du ")
+            for key in rd.replacementcounty.keys():
+                county = county.replace(key, rd.replacementcounty[key])
+            # county = county.replace(" Du ", " du ")
             zipcode = re.sub(reg_zip_phone, "", zipcode)
             if len(zipcode) > 5:
                 zipcode = zipcode[:5] + "-" + zipcode[5:]
