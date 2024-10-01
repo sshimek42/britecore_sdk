@@ -10,8 +10,7 @@ class Bccontact(dict):
     """Class with all attributes for BriteCore contact"""
 
     def __new__(cls, policy, name, contact_id, address, phone, email):
-        return dict(
-            cls.fixed_contact(policy, name, contact_id, address, phone, email))
+        return dict(cls.fixed_contact(policy, name, contact_id, address, phone, email))
 
     def __init__(self, policy, name, contact_id, address, phone, email):
         super().__init__()
@@ -422,30 +421,19 @@ class Policy:
         :rtype: dict
         """
         policy_dict = {
-            "policy_number":
-            self.policy_num,
-            "inception_date":
-            self.policy_opt.get(
+            "policy_number": self.policy_num,
+            "inception_date": self.policy_opt.get(
                 "inception_date",
-                datetime.datetime.now().strftime("%m"
-                                                 "/%d/%Y"),
+                datetime.datetime.now().strftime("%m" "/%d/%Y"),
             ),
-            "term_type":
-            self.policy_opt.get("term", "1 year"),
-            "renewal_term_type":
-            self.policy_opt.get("renewal_term", "1 year"),
-            "as_agent":
-            False,
-            "manual_policy_number":
-            True,
-            "policy_type_id":
-            self.policy_opt.get("policy_type_id"),
-            "underwriting_questions":
-            self.policy_opt.get("underwriting_questions"),
-            "underwriting_options":
-            self.policy_opt.get("underwriting_options"),
-            "policy_contacts":
-            self.contacts,
+            "term_type": self.policy_opt.get("term", "1 year"),
+            "renewal_term_type": self.policy_opt.get("renewal_term", "1 year"),
+            "as_agent": False,
+            "manual_policy_number": True,
+            "policy_type_id": self.policy_opt.get("policy_type_id"),
+            "underwriting_questions": self.policy_opt.get("underwriting_questions"),
+            "underwriting_options": self.policy_opt.get("underwriting_options"),
+            "policy_contacts": self.contacts,
         }
 
         return policy_dict

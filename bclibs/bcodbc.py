@@ -1,4 +1,5 @@
 """Wrapper for pyodbc"""
+
 import sys
 
 import pyodbc
@@ -21,8 +22,9 @@ db_conn_options = site_settings.db_conn_options
 logger = scl.get_logger(__file__)
 
 
-def get_cursor(conn_string: str = db_conn_string,
-               conn_options: dict = db_conn_options) -> pyodbc.Cursor:
+def get_cursor(
+    conn_string: str = db_conn_string, conn_options: dict = db_conn_options
+) -> pyodbc.Cursor:
     """Gets a cursor using default setting in config
     Can be overridden with parameters
     :param conn_string: Connection string
