@@ -1089,3 +1089,25 @@ def mark_as_printed(file_ids, **kwargs):
     )
 
     return process_result(result_request)
+
+
+def list_files(report_id, **kwargs):
+    required_json = {"report_id": report_id}
+
+    result_request = do_request(
+        "/api/v2/reports/list_files",
+        json=required_json,
+        **kwargs,
+    )
+
+    return process_result(result_request)
+
+
+def retrieve_reports(**kwargs):
+    required_json = None
+
+    result_request = do_request(
+        "/api/v2/reports/retrieve_reports"
+    )
+
+    return process_result(result_request)
