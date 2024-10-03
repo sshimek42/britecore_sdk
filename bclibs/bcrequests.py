@@ -1112,8 +1112,6 @@ def list_files(report_id, **kwargs):
 def retrieve_reports(**kwargs):
     required_json = None
 
-    result_request = do_request(
-        "/api/v2/reports/retrieve_reports"
-    )
+    result_request = do_request("/api/v2/reports/retrieve_reports")
 
     return process_result(result_request)
