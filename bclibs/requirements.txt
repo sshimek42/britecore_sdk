@@ -4,4 +4,4 @@ PyInputPlus~=0.2.12
 urllib3~=2.2.3
 selenium==4.25.0
 pyodbc~=5.1.0
-setuptools~=75.1.0
+setuptools~=75.3.0
