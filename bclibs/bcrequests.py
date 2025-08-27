@@ -44,9 +44,13 @@ if not web_retry:
 
 timeout = Timeout(web_timeout)
 retries = Retry(total=web_retry, status_forcelist=frozenset({502, 503, 504}))
-http = urllib3.PoolManager(retries=retries, timeout=timeout, maxsize=5, num_pools=5)
+http = urllib3.PoolManager(retries=retries,
+                           timeout=timeout,
+                           maxsize=5,
+                           num_pools=5)
 
-token_class = OAuthToken(site_settings.client_id, site_settings.client_secret, base_url)
+token_class = OAuthToken(site_settings.client_id, site_settings.client_secret,
+                         base_url)
 
 
 def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> any:
@@ -162,10 +166,10 @@ def do_request(
                 retries=request_retries,
             )
     except (
-        ProtocolError,
-        ResponseError,
-        urlTimeoutError,
-        RequestError,
+            ProtocolError,
+            ResponseError,
+            urlTimeoutError,
+            RequestError,
     ) as request_error:
         logger.error(request_error)
 
@@ -178,9 +182,8 @@ def do_request(
     return request_result
 
 
-def get_bc_lines(
-    bc_line: tuple, bc_type: str, line_name: str, **kwargs
-) -> [dict[any, any], str]:
+def get_bc_lines(bc_line: tuple, bc_type: str, line_name: str,
+                 **kwargs) -> [dict[any, any], str]:
     """Gets line export
     :param bc_line: Line ID
     :type bc_line: str
@@ -240,10 +243,8 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         :return:
         :rtype: tuple[list[any], list[any]] or tuple[list[any], str]
         """
-        print(
-            f"\nChoose {print_menu_title.lower()}\n"
-            f"{'=' * (len(print_menu_title) + 7)}"
-        )
+        print(f"\nChoose {print_menu_title.lower()}\n"
+              f"{'=' * (len(print_menu_title) + 7)}")
         if len(print_menu_options) > 1:
             menu_options_list = list(print_menu_options.keys())
             tmp_line = py_menu.inputMenu(
@@ -269,16 +270,16 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         return bc_id, bc_name
 
     logger.debug("Getting dates")
-    request_results = do_request(
-        path="/api/v2/lines/get_all_effective_dates", timer=False
-    )
+    request_results = do_request(path="/api/v2/lines/get_all_effective_dates",
+                                 timer=False)
     get_dates = process_result(request_results)
 
     logger.debug("Getting states")
     menu_options = {}
     menu_default = ""
     for make_menu in get_dates:
-        menu_options.update({make_menu.get("description"): make_menu.get("id")})
+        menu_options.update(
+            {make_menu.get("description"): make_menu.get("id")})
         menu_default = make_menu.get("description")
     eff_date = print_menu("Date", menu_options, menu_default)
     eff_date_json = {"effective_date_id": eff_date[0]}
@@ -403,9 +404,9 @@ def get_bc_property_information(property_id: str, **kwargs) -> dict:
     return property_json
 
 
-def get_bc_contacts(
-    search_str: str, search_filter: str = "Named Insured", **kwargs
-) -> dict:
+def get_bc_contacts(search_str: str,
+                    search_filter: str = "Named Insured",
+                    **kwargs) -> dict:
     """Retrieve named insured contacts
     :param search_str: Name to search for
     :type search_str: str
@@ -432,9 +433,9 @@ def get_bc_contacts(
     return contact_json.get("records")
 
 
-def retrieve_policy_list_user(
-    contact_name: str, check_name: bool = True, **kwargs
-) -> list:
+def retrieve_policy_list_user(contact_name: str,
+                              check_name: bool = True,
+                              **kwargs) -> list:
     """Search for user
     :param contact_name: Contact to search for
     :type contact_name: str
@@ -445,7 +446,10 @@ def retrieve_policy_list_user(
     """
     logger.debug(f"Searching for {contact_name}")
     user_request_json = {
-        "sort_obj": {"field": "policy_number", "order": "asc"},
+        "sort_obj": {
+            "field": "policy_number",
+            "order": "asc"
+        },
         "current_page": 1,
         "page_size": 10000,
         "search_string": contact_name,
@@ -488,9 +492,8 @@ def retrieve_bc_policy_contact_info(policy: str, **kwargs) -> list:
     return contact_json.get("active_revision").get("named_insureds")
 
 
-def add_bc_contact(
-    name: str, address: list, phone: list, email: list, **kwargs
-) -> tuple:
+def add_bc_contact(name: str, address: list, phone: list, email: list,
+                   **kwargs) -> tuple:
     """Add contact
     :param name: Contact name
     :type name: str
@@ -597,9 +600,8 @@ def new_bc_policy(policy: dict, **kwargs) -> tuple[bool, any]:
         prop_id = policy_json["revision_data"]["primary_property_id"]
     policy_create = True
     try:
-        policy_exists = (
-            loads(request_result.data.decode("utf-8")).get("data").get("exists")
-        )
+        policy_exists = (loads(
+            request_result.data.decode("utf-8")).get("data").get("exists"))
     except AttributeError:
         policy_exists = False
     if policy_json is None and not policy_exists:
@@ -665,7 +667,8 @@ def get_bc_functions(**kwargs) -> dict:
     return process_result(request_result)
 
 
-def get_bc_policy_terms(policy_id: str, **kwargs) -> list[dict[str, list[dict]]]:
+def get_bc_policy_terms(policy_id: str,
+                        **kwargs) -> list[dict[str, list[dict]]]:
     """
     Gets term information from policy
     :param policy_id: Policy ID to retrieve
@@ -771,9 +774,8 @@ def retrieve_bc_risk_details(risk: str, **kwargs) -> dict:
     return process_result(request_result)
 
 
-def update_bc_rating_information(
-    property_id: str, line: str, limit: int, **kwargs
-) -> list:
+def update_bc_rating_information(property_id: str, line: str, limit: int,
+                                 **kwargs) -> list:
     """
     Add/updates line item limit
     :param property_id Property ID
@@ -790,7 +792,10 @@ def update_bc_rating_information(
     logger.debug("Updating line item")
     revision_retrieve_json = {
         "property_id": property_id,
-        "items": [{"id": line, "limit": limit}],
+        "items": [{
+            "id": line,
+            "limit": limit
+        }],
     }
     request_result = do_request(
         path="/api/v2/policies/update_rating_information",
@@ -874,9 +879,9 @@ def get_bc_claim(claim_id: str, **kwargs) -> dict:
     """
     logger.debug("Getting claim information")
     claim_search = {"claim_id": claim_id}
-    request_result = do_request(
-        path="/api/v2/claims/get_claim", json=claim_search, **kwargs
-    )
+    request_result = do_request(path="/api/v2/claims/get_claim",
+                                json=claim_search,
+                                **kwargs)
     return process_result(request_result)
 
 
@@ -889,7 +894,12 @@ def retrieve_bc_notes(policy_id: str) -> list:
     :rtype: list
     """
     logger.debug("Getting notes")
-    notes_search = {"id": policy_id, "pageSize": 1000, "page": 0, "ascending": False}
+    notes_search = {
+        "id": policy_id,
+        "pageSize": 1000,
+        "page": 0,
+        "ascending": False
+    }
     request_result = do_request(
         path="/api/v2/notes/retrieveNotes",
         json=notes_search,
@@ -915,9 +925,9 @@ def list_bc_attachments(policy_id: str, **kwargs) -> list:
     """
     logger.debug("Getting attachments")
     attachments_search = {"policy_id": policy_id}
-    request_result = do_request(
-        path="/api/v2/deliverables/list_attachments", json=attachments_search, **kwargs
-    )
+    request_result = do_request(path="/api/v2/deliverables/list_attachments",
+                                json=attachments_search,
+                                **kwargs)
 
     return process_result(request_result)
 
@@ -934,9 +944,9 @@ def get_bc_attachment(file_id: str, **kwargs) -> dict:
     """
     logger.debug("Getting attachment")
     file_search = {"file_id": file_id}
-    request_result = do_request(
-        path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
-    )
+    request_result = do_request(path="/api/v2/deliverables/get_attachment",
+                                json=file_search,
+                                **kwargs)
 
     return process_result(request_result)
 
@@ -972,8 +982,9 @@ def add_bc_revision_contact(
 
     if not x_id:
         request_result = do_request(
-            path="/api/v2/policies/new_revision_contact", json=contact_add, **kwargs
-        )
+            path="/api/v2/policies/new_revision_contact",
+            json=contact_add,
+            **kwargs)
 
         contact_add_result = process_result(request_result)
     else:
@@ -998,9 +1009,9 @@ def add_bc_revision_contact(
 def create_risk(rev_id: str, **kwargs):
     risk_json = {"revision_id": rev_id}
 
-    request_result = do_request(
-        path="/api/v2/policies/create_risk", json=risk_json, **kwargs
-    )
+    request_result = do_request(path="/api/v2/policies/create_risk",
+                                json=risk_json,
+                                **kwargs)
 
     return process_result(request_result)
 
@@ -1009,8 +1020,9 @@ def update_property_location(prop_dict, **kwargs):
     prop_json = {"location": prop_dict}
 
     request_result = do_request(
-        path="/api/v2/policies/update_property_location", json=prop_json, **kwargs
-    )
+        path="/api/v2/policies/update_property_location",
+        json=prop_json,
+        **kwargs)
 
     return process_result(request_result)
 
@@ -1020,39 +1032,46 @@ def update_inspection_dates(policy_num, insp_dict, **kwargs):
     insp_json.update(insp_dict)
 
     request_result = do_request(
-        path="/api/v2/inspections/update_inspection_dates", json=insp_json, **kwargs
-    )
+        path="/api/v2/inspections/update_inspection_dates",
+        json=insp_json,
+        **kwargs)
 
     return process_result(request_result)
 
 
 def new_mortgagee(property_id: str, **kwargs):
     new_mort_json = {"property_id": property_id}
-    result_request = do_request(
-        "/api/v2/policies/new_mortgagee", json=new_mort_json, **kwargs
-    )
+    result_request = do_request("/api/v2/policies/new_mortgagee",
+                                json=new_mort_json,
+                                **kwargs)
 
     return process_result(result_request)
 
 
-def store_mortgagee(property_contact_id: str, mortgagee_contact_id: str, **kwargs):
+def store_mortgagee(property_contact_id: str, mortgagee_contact_id: str,
+                    **kwargs):
     store_mort_json = {
         "x_properties_contact_id": property_contact_id,
         "mortgagee_contact_id": mortgagee_contact_id,
     }
-    result_request = do_request(
-        "/api/v2/policies/store_mortgagee", json=store_mort_json, **kwargs
-    )
+    result_request = do_request("/api/v2/policies/store_mortgagee",
+                                json=store_mort_json,
+                                **kwargs)
 
     return process_result(result_request)
 
 
 def get_tb_list(from_date, to_date, **kwargs):
     required_json = {
-        "json_dict": {"from_date": from_date, "to_date": to_date, "ignore_state": True}
+        "json_dict": {
+            "from_date": from_date,
+            "to_date": to_date,
+            "ignore_state": True
+        }
     }
     request_timeout = Timeout(120)
-    request_retries = Retry(total=3, status_forcelist=frozenset({502, 503, 504}))
+    request_retries = Retry(total=3,
+                            status_forcelist=frozenset({502, 503, 504}))
 
     result_request = do_request(
         "/api/v1/printing/getToBePrinted",
@@ -1112,20 +1131,31 @@ def list_files(report_id, **kwargs):
 def retrieve_reports(**kwargs):
     required_json = {"payload": ""}
 
-    result_request = do_request("/api/v2/reports/retrieve_reports", json="", **kwargs)
+    result_request = do_request("/api/v2/reports/retrieve_reports",
+                                json="",
+                                **kwargs)
 
     return process_result(result_request)
+
 
 def retrieve_report(report_id, **kwargs):
     required_json = {"report_id": report_id}
 
-    result_request = do_request("/api/v2/reports/retrieve_report",json=required_json, **kwargs)
+    result_request = do_request("/api/v2/reports/retrieve_report",
+                                json=required_json,
+                                **kwargs)
 
     return process_result(result_request)
 
-def get_policy_snapshot(policy_number, snapshot_date, **kwargs):
-    required_json = {"policy_number": policy_number, "snapshot_date": snapshot_date}
 
-    result_request = do_request("/api/v2/policies/retrieve_policy_snapshot",json=required_json, **kwargs)
+def get_policy_snapshot(policy_number, snapshot_date, **kwargs):
+    required_json = {
+        "policy_number": policy_number,
+        "snapshot_date": snapshot_date
+    }
+
+    result_request = do_request("/api/v2/policies/retrieve_policy_snapshot",
+                                json=required_json,
+                                **kwargs)
 
     return process_result(result_request)
