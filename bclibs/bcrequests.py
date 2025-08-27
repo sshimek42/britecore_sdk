@@ -1110,8 +1110,22 @@ def list_files(report_id, **kwargs):
 
 
 def retrieve_reports(**kwargs):
-    required_json = None
+    required_json = {"payload": ""}
 
-    result_request = do_request("/api/v2/reports/retrieve_reports")
+    result_request = do_request("/api/v2/reports/retrieve_reports", json="", **kwargs)
+
+    return process_result(result_request)
+
+def retrieve_report(report_id, **kwargs):
+    required_json = {"report_id": report_id}
+
+    result_request = do_request("/api/v2/reports/retrieve_report",json=required_json, **kwargs)
+
+    return process_result(result_request)
+
+def get_policy_snapshot(policy_number, snapshot_date, **kwargs):
+    required_json = {"policy_number": policy_number, "snapshot_date": snapshot_date}
+
+    result_request = do_request("/api/v2/policies/retrieve_policy_snapshot",json=required_json, **kwargs)
 
     return process_result(result_request)
