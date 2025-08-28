@@ -424,7 +424,7 @@ class Policy:
             "policy_number": self.policy_num,
             "inception_date": self.policy_opt.get(
                 "inception_date",
-                datetime.datetime.now().strftime("%m" "/%d/%Y"),
+                datetime.datetime.now().strftime("%m/%d/%Y"),
             ),
             "term_type": self.policy_opt.get("term", "1 year"),
             "renewal_term_type": self.policy_opt.get("renewal_term", "1 year"),

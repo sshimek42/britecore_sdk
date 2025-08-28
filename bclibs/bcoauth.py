@@ -51,7 +51,7 @@ class OAuthToken:
             )
 
             if http_result.status != 200 and self.token == "":
-                logger.critical(f"Error getting token - " f"{http_result.reason}")
+                logger.critical(f"Error getting token - {http_result.reason}")
                 sys.exit(f"Error getting token - {http_result.reason}")
             else:
                 logger.info("Received token")
