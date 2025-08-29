@@ -6,6 +6,7 @@ from json import dumps, loads
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
+import bcexceptions
 from bcoauth import OAuthToken
 from urllib3.exceptions import ProtocolError, RequestError, ResponseError
 from urllib3.exceptions import TimeoutError as urlTimeoutError
@@ -84,6 +85,8 @@ def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> any:
 
     if not bc_result:
         logger.error(f"Error - {bc_message}")
+        raise bcexceptions.NoDataReturned(f"Error - {bc_message}",
+                                          response.status, )
     else:
         bc_data = json_result.get("data")
         if logs:
