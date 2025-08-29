@@ -6,6 +6,8 @@ class NoDataReturned(Exception):
         super().__init__(self.message)
 
     def __str__(self):
-        return (f"BriteCore was unable to return any data - {self.message}\n"
-                f"Request: {self.request}\n"
-                f"HTTP Error: {self.http_error}")
+        return (
+            f"BriteCore was unable to return any data - {self.message}\n"
+            f"Request: {self.request}\n"
+            f"HTTP Error: {self.http_error}"
+        )
