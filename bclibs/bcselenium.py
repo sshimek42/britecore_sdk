@@ -1,4 +1,5 @@
 """Selenium BriteCore Module"""
+
 import sys
 
 import sclogging.sclogging_main as scl
@@ -42,10 +43,12 @@ ignored_exceptions = (
 
 def get_driver(
     browser: str = web_browser,
-) -> (selenium.webdriver.Edge
-      | selenium.webdriver.Firefox
-      | selenium.webdriver.Chrome
-      | selenium.webdriver.Safari):
+) -> (
+    selenium.webdriver.Edge
+    | selenium.webdriver.Firefox
+    | selenium.webdriver.Chrome
+    | selenium.webdriver.Safari
+):
     """
     Gets Selenium driver
     :param browser: Type of browser to load
@@ -72,10 +75,12 @@ def get_driver(
 
 
 def bc_login(
-    driver: (selenium.webdriver.Edge
-             | selenium.webdriver.Firefox
-             | selenium.webdriver.Chrome
-             | selenium.webdriver.Safari),
+    driver: (
+        selenium.webdriver.Edge
+        | selenium.webdriver.Firefox
+        | selenium.webdriver.Chrome
+        | selenium.webdriver.Safari
+    ),
     url: str = settings.base_url,
     user: str = settings.web_user,
     password: str = settings.web_pass,
@@ -108,7 +113,8 @@ def bc_login(
 
     if role_select:
         user_role = WebDriverWait(driver, wait_long).until(
-            ec.element_to_be_clickable((By.CLASS_NAME, "form-control")))
+            ec.element_to_be_clickable((By.CLASS_NAME, "form-control"))
+        )
         user_role.send_keys("a")
 
         role_ok = driver.find_element(By.CLASS_NAME, "btn-primary")
