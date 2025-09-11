@@ -1,17 +1,15 @@
 """Class definition and methods for BriteCore contacts"""
 
-import bcexceptions
 import re
 
-from sclogging import sclogging_main as scl
-
-from wisconsin_zip_lookup import counties, cities
-
+import bcexceptions
 import replacementdict as rd
+from sclogging import sclogging_main as scl
+from wisconsin_zip_lookup import cities, counties
 
 SEARCH_NAME_MULT = re.compile(
     r"^((\w*)\W*(\w*))\s(&)\s(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)(\W\w.*|\b)"
-    )
+)
 SEARCH_NAME_SINGLE = re.compile(r"^(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)(\W\w.*|\b)")
 SEARCH_EMAIL = re.compile(r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}")
 
@@ -23,13 +21,12 @@ REG_ADDRESS2 = re.compile(r"c/o|dba|inc|att|co\W|trust", re.IGNORECASE)
 REG_CITY_STATE = re.compile(r"[^0-9a-zA-Z\s]+")
 REG_ZIP = re.compile(r"[^0-9a-zA-Z]+")
 REG_PHONE = re.compile(r"-|\(|\)|\s")
-REG_EMAIL = re.compile(
-    r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"
-    )
+REG_EMAIL = re.compile(r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b")
 
 DEFAULT_ADDRESS_TYPE = "Home"
 
 _LOGGER = scl.get_parent_logger()
+
 
 class BCAddress:
     """Class for contact address"""
@@ -49,19 +46,17 @@ class BCAddress:
         if _address == "":
             raise bcexceptions.InvalidAddress("Missing Address")
         self.fixed_address = {
-            "address_1"   : self.fix_address(full_address.get("address1", "")),
-            "address_2"   : self.fix_address(full_address.get("address2", "")),
-            "state"       : self.fix_state(full_address.get("state", "")),
-            "country"     : "USA",
-            "zip_code"    : self.zip_code,
-            "address_type": full_address.get(
-                "address_type", DEFAULT_ADDRESS_TYPE
-                ),
-            "county"      : self.fix_county(
-                full_address.get("county", ""), self.zip_code[:5]),
-            "city"        : self.fix_city(
-                full_address.get("city", ""), self.zip_code[:5])
-            }
+            "address_1": self.fix_address(full_address.get("address1", "")),
+            "address_2": self.fix_address(full_address.get("address2", "")),
+            "state": self.fix_state(full_address.get("state", "")),
+            "country": "USA",
+            "zip_code": self.zip_code,
+            "address_type": full_address.get("address_type", DEFAULT_ADDRESS_TYPE),
+            "county": self.fix_county(
+                full_address.get("county", ""), self.zip_code[:5]
+            ),
+            "city": self.fix_city(full_address.get("city", ""), self.zip_code[:5]),
+        }
 
     @classmethod
     def fix_county(cls, county, zipcode):
@@ -82,7 +77,7 @@ class BCAddress:
             _LOGGER.warning(
                 f"County '{county}' not found in zip code '{zipcode}' - "
                 f"zip code matches '{county_lookup}'"
-                )
+            )
 
         return county
 
@@ -105,16 +100,19 @@ class BCAddress:
             _LOGGER.warning(
                 f"City '{city}' not found in zip code '{zipcode}' - zip code "
                 f"matches '{city_lookup}'"
-                )
+            )
 
         return city
 
     @staticmethod
     def fix_zipcode(zipcode):
         zipcode = zipcode.strip().replace("-", "")
-        if zipcode == "" or len(zipcode) < 5 or len(
-                zipcode
-                ) > 10 or not zipcode.isnumeric():
+        if (
+            zipcode == ""
+            or len(zipcode) < 5
+            or len(zipcode) > 10
+            or not zipcode.isnumeric()
+        ):
             raise bcexceptions.InvalidAddress(f"Invalid Zip Code - {zipcode}")
         zipcode = re.sub(REG_ZIP, "", zipcode)
         if len(zipcode) > 5:
@@ -147,7 +145,7 @@ class BCAddress:
             address,
             0,
             re.IGNORECASE,
-            )
+        )
         if address[-3:-2].lower() == " ":
             address = address[:-1] + address[-1:].upper()
         return address
@@ -231,19 +229,14 @@ class BCAddress:
         return address
 
 
-
 class BCPhone:
     """Class for contact phone number"""
 
     def __init__(self, phone_number):
         self.fixed_phone_number = {
-            "phone_number": self.fix_phone(
-                phone_number.get("phone_number", "")
-                ),
-            "phone_type"  : phone_number.get(
-                "phone_type", DEFAULT_ADDRESS_TYPE
-                )
-            }
+            "phone_number": self.fix_phone(phone_number.get("phone_number", "")),
+            "phone_type": phone_number.get("phone_type", DEFAULT_ADDRESS_TYPE),
+        }
 
     @staticmethod
     def fix_phone(phone):
@@ -269,8 +262,8 @@ class BCEmail:
     def __init__(self, email):
         self.fixed_email = {
             "e_mail_address": self.fix_email(email.get("email_address", "")),
-            "e_mail_type"   : email.get("email_type", DEFAULT_ADDRESS_TYPE)
-            }
+            "e_mail_type": email.get("email_type", DEFAULT_ADDRESS_TYPE),
+        }
 
     @staticmethod
     def fix_email(email: str) -> str:
@@ -301,18 +294,15 @@ class BCContact:
     # return dict(fixed_contact(policy, name, contact_id, address,
     # phone, email))
 
-    def __init__(
-        self, name, address, phone_number, email=None, contact_id=None
-        ):
+    def __init__(self, name, address, phone_number, email=None, contact_id=None):
         # super().__init__()
         self.final_contact = {
-            "name"      : self.fix_business(name),
+            "name": self.fix_business(name),
             "contact_id": contact_id,
-            "address"   : BCAddress(address).fixed_address,
-            "phone"     : BCPhone(phone_number).fixed_phone_number,
-            "email"     : BCEmail(email).fixed_email,
-            }
-
+            "address": BCAddress(address).fixed_address,
+            "phone": BCPhone(phone_number).fixed_phone_number,
+            "email": BCEmail(email).fixed_email,
+        }
 
         _LOGGER.debug(f"Created contact {self.final_contact}")
 
@@ -339,9 +329,7 @@ class BCPolicy:
 
     def __init__(self, policy_num: str, contacts: BCContact, policy_opt=None):
         self.fixed_policy = {
-            "Policy Number" : policy_num,
-            "Policy Options":
-                policy_opt,
-            "Contacts"      : contacts.final_contact
-            }
-
+            "Policy Number": policy_num,
+            "Policy Options": policy_opt,
+            "Contacts": contacts.final_contact,
+        }

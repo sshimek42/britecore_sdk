@@ -28,15 +28,15 @@ class NoTokenReturned(Exception):
             f"HTTP Error: {self.http_error}"
         )
 
+
 class InvalidPhoneNumber(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
 
     def __str__(self):
-        return (
-            f"Invalid Phone Number - {self.message}"
-        )
+        return f"Invalid Phone Number - {self.message}"
+
 
 class InvalidEmailAddress(Exception):
     def __init__(self, message):
@@ -44,9 +44,8 @@ class InvalidEmailAddress(Exception):
         super().__init__(self.message)
 
     def __str__(self):
-        return (
-            f"Invalid E-Mail Address - {self.message}"
-        )
+        return f"Invalid E-Mail Address - {self.message}"
+
 
 class InvalidAddress(Exception):
     def __init__(self, message):
