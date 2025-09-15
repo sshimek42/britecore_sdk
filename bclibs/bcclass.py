@@ -9,27 +9,86 @@ from wisconsin_zip_lookup import counties, cities
 
 import replacementdict as rd
 
-SEARCH_NAME_MULT = re.compile(
-    r"^((\w*)\W*(\w*))\s(&)\s(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)(\W\w.*|\b)"
-    )
-SEARCH_NAME_SINGLE = re.compile(r"^(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)(\W\w.*|\b)")
-SEARCH_EMAIL = re.compile(r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,64}")
-
-# RegEx expressions to help remove punctuation from strings
-REG_NAME_C = re.compile(r"[^0-9a-zA-Z\s#+&',/-]+")
-# REG_AND_OR = re.compile(r"And\b|/Or|Or\b")
-REG_ADDRESS = re.compile(r"[^0-9a-zA-Z\s#,/-]+")
-REG_ADDRESS2 = re.compile(r"c/o|dba|inc|att|co\W|trust", re.IGNORECASE)
-REG_CITY_STATE = re.compile(r"[^0-9a-zA-Z\s]+")
-REG_ZIP = re.compile(r"[^0-9a-zA-Z]+")
-REG_PHONE = re.compile(r"-|\(|\)|\s")
-REG_EMAIL = re.compile(
-    r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"
-    )
-
 DEFAULT_ADDRESS_TYPE = "Home"
 
 _LOGGER = scl.get_parent_logger()
+
+COMPILED_REGEXES = {
+
+    "search_name_mult"  : re.compile(
+        r"^((\w*)\W*(\w*))\s(&)\s(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)(\W\w.*|\b)"
+        ),
+    "search_name_single": re.compile(
+        r"^(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)("
+        r"\W\w.*|\b)"
+        ),
+    "search_email"      : re.compile(
+        r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
+        r"2,64}"
+        ),
+    "reg_name_c"        : re.compile(r"[^0-9a-zA-Z\s#+&',/-]+"),
+    "reg_and_or"        : re.compile(r"And\b|/Or|Or|or\b"),
+    "reg_address"       : re.compile(r"[^0-9a-zA-Z\s#,/-]+"),
+    "reg_address2"      : re.compile(
+        r"c/o|dba|inc|att|co\W|trust", re.IGNORECASE
+        ),
+    "reg_city_state"    : re.compile(r"[^0-9a-zA-Z\s]+"),
+    "reg_zip"           : re.compile(r"[^0-9a-zA-Z]+"),
+    "reg_phone"         : re.compile(r"-|\(|\)|\s"),
+    "reg_email"         : re.compile(
+        r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"
+        ),
+    "reg_name"          : re.compile(r"[^0-9a-zA-Z\s#+&'/-]+")
+    }
+
+def fix_business(name):
+    """
+    Fixes capitalization for LLC, LLP, and DBA
+    :param name: Contact name to fix
+    :type name: str
+    :return: Fixed name
+    :rtype: str
+    """
+    name = name.replace(" LLc", ", LLC")
+    name = name.replace(" LLp", ", LLP")
+    name = name.replace("Dba", "DBA")
+    name = name.replace(" Inc", " Inc.")
+    name = name.replace(" Llc", ", LLC")
+    name = name.replace(" Llp", ", LLP")
+    return name
+
+
+def fix_apos(name: str) -> str:
+    """Fixes capitalization on names with apostrophe (Karen'S to Karen's)
+    Also adds escape character for SQL insert
+    :param name: Name to fix
+    :return: Fixed name
+    """
+    name = re.sub(r"'\w", lambda mo: mo.group(0).lower(), name)
+    # name = name.replace("'", "''")
+    return name
+
+
+def fix_suffix(suffix: str) -> str:
+    """Check for repeated letters in suffix and capitalize if necessary
+    :param suffix: Suffix
+    :return: suffix
+    """
+    count = {}
+    suffix_lower = suffix.lower()
+    if suffix_lower == "iv":
+        suffix = suffix.upper()
+    else:
+        for s in suffix_lower:
+            if s in count:
+                count[s] += 1
+            else:
+                count[s] = 1
+        for key in count:
+            if count[key] > 2:
+                suffix = suffix.upper()
+    return suffix
+
 
 class BCAddress:
     """Class for contact address"""
@@ -58,9 +117,11 @@ class BCAddress:
                 "address_type", DEFAULT_ADDRESS_TYPE
                 ),
             "county"      : self.fix_county(
-                full_address.get("county", ""), self.zip_code[:5]),
+                full_address.get("county", ""), self.zip_code[:5]
+                ),
             "city"        : self.fix_city(
-                full_address.get("city", ""), self.zip_code[:5])
+                full_address.get("city", ""), self.zip_code[:5]
+                )
             }
 
     @classmethod
@@ -90,7 +151,7 @@ class BCAddress:
     def fix_city(cls, city, zipcode):
         city = city.strip().title()
 
-        city = re.sub(REG_CITY_STATE, "", city)
+        city = re.sub(COMPILED_REGEXES.get("reg_city_state"), "", city)
         for key in rd.replacementcity.keys():
             city = city.replace(key, rd.replacementcity[key])
 
@@ -116,7 +177,7 @@ class BCAddress:
                 zipcode
                 ) > 10 or not zipcode.isnumeric():
             raise bcexceptions.InvalidAddress(f"Invalid Zip Code - {zipcode}")
-        zipcode = re.sub(REG_ZIP, "", zipcode)
+        zipcode = re.sub(COMPILED_REGEXES.get("reg_zip"), "", zipcode)
         if len(zipcode) > 5:
             zipcode = zipcode[:5] + "-" + zipcode[5:]
 
@@ -125,7 +186,7 @@ class BCAddress:
     @staticmethod
     def fix_state(state):
         state = state.strip().upper()
-        state = re.sub(REG_CITY_STATE, "", state)
+        state = re.sub(COMPILED_REGEXES.get("reg_city_state"), "", state)
 
         return state
 
@@ -219,17 +280,16 @@ class BCAddress:
             return ""
         # Remove repeated punctuation and illegal address chars
         address = cls.remove_double_non_letter(address)
-        address = re.sub(REG_ADDRESS, "", address)
+        address = re.sub(COMPILED_REGEXES.get("reg_address"), "", address)
         # Normalize street names and directions, then street casing quirks
         address = cls.fix_street_name(address)
         address = cls.fix_street(address)
         # Remove business-related tokens that don't belong in address lines
-        address = re.sub(REG_ADDRESS2, "", address)
+        address = re.sub(COMPILED_REGEXES.get("reg_address2"), "", address)
         # Collapse multiple spaces and trim
         address = re.sub(r"\s{2,}", " ", address).strip()
 
         return address
-
 
 
 class BCPhone:
@@ -256,7 +316,7 @@ class BCPhone:
         """
         # reg_zip_phone = r"[^0-9a-zA-Z]+"
 
-        phone = re.sub(REG_PHONE, "", phone)
+        phone = re.sub(COMPILED_REGEXES.get("reg_phone"), "", phone)
         if len(phone) != 10 or not phone.isnumeric():
             raise bcexceptions.InvalidPhoneNumber(phone)
         phone = phone[:3] + "-" + phone[3:6] + "-" + phone[6:]
@@ -285,7 +345,10 @@ class BCEmail:
         if not email:
             return ""
 
-        email_verify = re.match(REG_EMAIL, email.strip().lower())
+        email_verify = re.match(
+            COMPILED_REGEXES.get("reg_email"),
+            email.strip().lower()
+            )
         if not email_verify:
             raise bcexceptions.InvalidEmailAddress(email)
 
@@ -306,32 +369,14 @@ class BCContact:
         ):
         # super().__init__()
         self.final_contact = {
-            "name"      : self.fix_business(name),
+            "name"      : fix_business(name),
             "contact_id": contact_id,
             "address"   : BCAddress(address).fixed_address,
             "phone"     : BCPhone(phone_number).fixed_phone_number,
             "email"     : BCEmail(email).fixed_email,
             }
 
-
         _LOGGER.debug(f"Created contact {self.final_contact}")
-
-    @staticmethod
-    def fix_business(name):
-        """
-        Fixes capitalization for LLC, LLP, and DBA
-        :param name: Contact name to fix
-        :type name: str
-        :return: Fixed name
-        :rtype: str
-        """
-        name = name.replace(" LLc", ", LLC")
-        name = name.replace(" LLp", ", LLP")
-        name = name.replace("Dba", "DBA")
-        name = name.replace(" Inc", " Inc.")
-        name = name.replace(" Llc", ", LLC")
-        name = name.replace(" Llp", ", LLP")
-        return name
 
 
 class BCPolicy:
@@ -344,4 +389,3 @@ class BCPolicy:
                 policy_opt,
             "Contacts"      : contacts.final_contact
             }
-
