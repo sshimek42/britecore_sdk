@@ -46,13 +46,9 @@ if not web_retry:
 
 timeout = Timeout(web_timeout)
 retries = Retry(total=web_retry, status_forcelist=frozenset({502, 503, 504}))
-http = urllib3.PoolManager(
-    retries=retries, timeout=timeout, maxsize=5, num_pools=5
-    )
+http = urllib3.PoolManager(retries=retries, timeout=timeout, maxsize=5, num_pools=5)
 
-token_class = OAuthToken(
-    site_settings.client_id, site_settings.client_secret, base_url
-    )
+token_class = OAuthToken(site_settings.client_id, site_settings.client_secret, base_url)
 
 
 # helper utilities
@@ -74,6 +70,7 @@ def _ensure_logger() -> None:
 
 
 # ... existing code ...
+
 
 def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> Any:
     """Processes BriteCore response
@@ -99,14 +96,14 @@ def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> Any:
     bc_result = json_result.get("success", False)
     bc_message = json_result.get(
         "message", json_result.get("messages", "Unknown error")
-        )
+    )
 
     if not bc_result:
         logger.error(f"Error - {bc_message}")
         raise bcexceptions.NoDataReturned(
             f"Error - {bc_message}",
             response.status,
-            )
+        )
 
     bc_data = json_result.get("data")
     if logs:
@@ -120,6 +117,7 @@ def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> Any:
 
 # ... existing code ...
 
+
 def do_request(
     path: str,
     json: dict = None,
@@ -130,7 +128,7 @@ def do_request(
     timer_start_note: str = "",
     timer_end_note: str = "",
     method: str = "POST",
-    ) -> Optional[urllib3.HTTPResponse | None]:
+) -> Optional[urllib3.HTTPResponse | None]:
     """Do web request
     :param path: URL to request
     :type path: str
@@ -174,7 +172,7 @@ def do_request(
                 body=dumps(json).encode("utf-8"),
                 timeout=request_timeout,
                 retries=request_retries,
-                )
+            )
         else:
             request_result = http.request(
                 method=method,
@@ -182,13 +180,13 @@ def do_request(
                 headers=request_headers,
                 timeout=request_timeout,
                 retries=request_retries,
-                )
+            )
     except (
-            ProtocolError,
-            ResponseError,
-            urlTimeoutError,
-            RequestError,
-            ) as request_error:
+        ProtocolError,
+        ResponseError,
+        urlTimeoutError,
+        RequestError,
+    ) as request_error:
         logger.error(request_error)
 
     if timer and request_timer is not None:
@@ -202,9 +200,10 @@ def do_request(
 
 # ... existing code ...
 
+
 def get_bc_lines(
     bc_line: tuple, bc_type: str, line_name: str, **kwargs
-    ) -> [dict[Any, Any], str]:
+) -> [dict[Any, Any], str]:
     """Gets line export
     :param bc_line: Line ID
     :type bc_line: str
@@ -221,15 +220,15 @@ def get_bc_lines(
     if bc_type == "Line":
         web_request_json = {
             "curr_eff_date_id": bc_line[0],
-            "curr_line_id"    : bc_line[2],
-            "curr_state_id"   : bc_line[1],
-            }
+            "curr_line_id": bc_line[2],
+            "curr_state_id": bc_line[1],
+        }
 
         request_result = do_request(
             path="/api/v2/lines/get_export_line_file",
             json=web_request_json,
             **kwargs,
-            )
+        )
     elif bc_type == "Policy":
         request_result = do_request(path="/api/v2/policies/get_policies")
 
@@ -238,14 +237,17 @@ def get_bc_lines(
     process_results = process_result(request_result)
     if process_results is not None:
         # Some endpoints may return JSON as a string; parse only when needed.
-        return loads(process_results) if isinstance(
-            process_results, str
-            ) else process_results
+        return (
+            loads(process_results)
+            if isinstance(process_results, str)
+            else process_results
+        )
 
     return request_result
 
 
 # ... existing code ...
+
 
 def bc_line_menu() -> tuple[list, list, list, list, list, list]:
     """Generates ids needed for get_bc_lines.
@@ -258,7 +260,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         print_menu_title: str,
         print_menu_options: dict,
         print_menu_default: str,
-        ) -> [tuple[list[Any], list[Any]], tuple[list[Any], str]]:
+    ) -> [tuple[list[Any], list[Any]], tuple[list[Any], str]]:
         """Creates menus for each different line option
         :param print_menu_title: Title
         :type print_menu_title: str
@@ -270,9 +272,8 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         :rtype: tuple[list[any], list[any]] or tuple[list[any], str]
         """
         print(
-            f"\nChoose {print_menu_title.lower()}\n"
-            f"{'=' * (len(print_menu_title) + 7)}"
-            )
+            f"\nChoose {print_menu_title.lower()}\n{'=' * (len(print_menu_title) + 7)}"
+        )
         if len(print_menu_options) > 1:
             menu_options_list = list(print_menu_options.keys())
             tmp_line = py_menu.inputMenu(
@@ -282,7 +283,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
                 prompt="",
                 default=len(print_menu_options) + 1,
                 blank=True,
-                )
+            )
             if tmp_line in ("All", ""):
                 bc_id = list(print_menu_options.values())
                 bc_name = list(print_menu_options.keys())
@@ -292,9 +293,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
         else:
             print("1. " + print_menu_default)
             tmp_line = print_menu_default
-            bc_id = print_menu_options.get(
-                print_menu_default
-                )  # fixed variable name
+            bc_id = print_menu_options.get(print_menu_default)  # fixed variable name
             bc_name = print_menu_default  # fixed variable name
         print(f"{tmp_line} selected")
         return bc_id, bc_name
@@ -302,7 +301,7 @@ def bc_line_menu() -> tuple[list, list, list, list, list, list]:
     logger.debug("Getting dates")
     request_results = do_request(
         path="/api/v2/lines/get_all_effective_dates", timer=False
-        )
+    )
     get_dates = process_result(request_results)
 
     # ... existing code ...
@@ -320,12 +319,13 @@ def get_bc_functions(**kwargs) -> dict:
     request_result = do_request(
         path="/api/v2/utils/get_available_function_names",
         **kwargs,
-        )
+    )
 
     return process_result(request_result)
 
 
 # ... existing code ...
+
 
 def retrieve_bc_notes(policy_id: str) -> list:
     """
@@ -336,17 +336,12 @@ def retrieve_bc_notes(policy_id: str) -> list:
     :rtype: list
     """
     logger.debug("Getting notes")
-    notes_search = {
-        "id"       : policy_id,
-        "pageSize" : 1000,
-        "page"     : 0,
-        "ascending": False
-        }
+    notes_search = {"id": policy_id, "pageSize": 1000, "page": 0, "ascending": False}
     request_result = do_request(
         path="/api/v2/notes/retrieveNotes",
         json=notes_search,
         request_timeout=Timeout(web_timeout_long),
-        )
+    )
     if not request_result:
         return []
     try:
@@ -356,6 +351,7 @@ def retrieve_bc_notes(policy_id: str) -> list:
 
 
 # ... existing code ...
+
 
 def list_bc_attachments(policy_id: str, **kwargs) -> list:
     """
@@ -368,30 +364,27 @@ def list_bc_attachments(policy_id: str, **kwargs) -> list:
     :rtype: list
     """
     logger.debug("Getting attachments")
-    attachments_search = {
-        "policy_id": policy_id
-        }
+    attachments_search = {"policy_id": policy_id}
     request_result = do_request(
-        path="/api/v2/deliverables/list_attachments", json=attachments_search,
-        **kwargs
-        )
+        path="/api/v2/deliverables/list_attachments", json=attachments_search, **kwargs
+    )
 
     return process_result(request_result)
 
 
 # ... existing code ...
 
+
 def retrieve_reports(**kwargs):
-    required_json = {
-        "payload": ""
-        }
+    required_json = {"payload": ""}
 
     result_request = do_request(
         "/api/v2/reports/retrieve_reports",
         json=required_json,  # send structured payload
         **kwargs,
-        )
+    )
 
     return process_result(result_request)
+
 
 # ... existing code ...
