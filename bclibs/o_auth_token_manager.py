@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 from json import loads
 from types import MappingProxyType
 from typing import Mapping  # typing added
+
 import sclogging.sclogging_main as scl
 import urllib3
+from bcexceptions import NoTokenReturned
 from urllib3 import Retry, Timeout
 from urllib3.util import Url
-from bcexceptions import NoTokenReturned
 
 logger = scl.get_logger(__file__)
 timeout = Timeout(10)
@@ -23,8 +24,10 @@ DEFAULT_HEADERS = {
     "Connection": "keep-alive",
 }
 
+
 class OAuthToken:
     """Class for retrieving OAuth2 token"""
+
     def __init__(
         self,
         client_id: str,
@@ -68,8 +71,10 @@ class OAuthToken:
         http_result_dict = loads(http_result.data)
         self.token = http_result_dict.get("access_token", "")
         expires_in = float(http_result_dict.get("expires_in", 0))
-        self.token_time = datetime.now() + timedelta(seconds=expires_in) - timedelta(
-            seconds=TOKEN_SKEW_SECONDS
+        self.token_time = (
+            datetime.now()
+            + timedelta(seconds=expires_in)
+            - timedelta(seconds=TOKEN_SKEW_SECONDS)
         )
 
     def _build_auth_headers(self) -> Mapping[str, str]:
@@ -95,4 +100,5 @@ class OAuthToken:
         Returns bearer authorization headers.
         """
         return self.get_authorization_headers()
+
     # ... existing code ...
