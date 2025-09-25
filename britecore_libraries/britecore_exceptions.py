@@ -27,9 +27,11 @@ class BritecoreError:
 
     class NoTokenReturned(Exception):
         def __init__(
-            self, message: str, request: str | None = None,
-            http_error: str | None = None
-            ) -> None:
+            self,
+            message: str,
+            request: str | None = None,
+            http_error: str | None = None,
+        ) -> None:
             self.message = message
             self.request = request
             self.http_error = http_error
@@ -49,9 +51,7 @@ class BritecoreError:
             super().__init__(self.message)
 
         def __str__(self):
-            return (
-                f"Invalid Phone Number - {self.message}"
-            )
+            return f"Invalid Phone Number - {self.message}"
 
     class InvalidEmailAddress(Exception):
         def __init__(self, message: str) -> None:
@@ -59,9 +59,7 @@ class BritecoreError:
             super().__init__(self.message)
 
         def __str__(self) -> str:
-            return (
-                f"Invalid E-Mail Address - {self.message}"
-            )
+            return f"Invalid E-Mail Address - {self.message}"
 
     class InvalidAddress(Exception):
         def __init__(self, message):
