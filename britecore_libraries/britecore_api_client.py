@@ -193,7 +193,6 @@ def do_request(
     ) as request_error:
         _LOGGER.error(request_error)
 
-
     if not request_result:
         _LOGGER.error("Error getting request")
 
