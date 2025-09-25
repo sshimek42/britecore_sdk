@@ -1,20 +1,19 @@
-"""Class definition and methods for BriteCore contacts"""
+"""Class definition and methods for Britecore contacts"""
 import datetime
-from pathlib import Path
-
-from bcexceptions import BritecoreError
-import re
 import logging
-from typing import Dict, Pattern
+import re
+from pathlib import Path
+from typing import Dict, Optional, Pattern
 
+import pandas as pd
 from sclogging import sclogging_main as scl
 
-from bcfieldmap import (
+from britecore_exceptions import BritecoreError
+from britecore_field_map import (
     field_map_to_britecore, field_map_to_named_insured,
     field_map_to_risk_location,
     )
-
-import pandas as pd
+from britecore_policy_map import britcore_policy_type_map, policy_map
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
 
@@ -30,45 +29,81 @@ COMMON_CITY_REPLACEMENT: Dict[str, str] = {
     "Depere": "De Pere"
     }
 
-COMPILED_REGEXES: Dict[str, Pattern[str]] = {
+# Allow heterogeneous values: regex Patterns and a mapping for street name
+# replacements.
+COMPILED_REGEXES: dict[str, Pattern[str] | dict[Pattern[str], str]] = {
 
-    "search_name_mult"     : re.compile(
+    "search_name_mult"       : re.compile(
         r"^(\w*\W\w?\W|\w*\W)(\w*)\s?(\w*)?\s(&)\s(\w*\W\w?\W|\w*)\W?(\w*)?("
         r"\W\w*)?"
         ),
-    "search_name_single"   : re.compile(
+    "search_name_single"     : re.compile(
         r"^(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)("
         r"\W\w.*|\b)"
         ),
-    "search_email"         : re.compile(
+    "search_email"           : re.compile(
         r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
         r"2,64}"
         ),
-    "reg_name_c"           : re.compile(r"[^0-9a-zA-Z\s#+&',/-]+"),
-    "reg_and_or"           : re.compile(
+    "reg_name_c"             : re.compile(r"[^0-9a-zA-Z\s#+&',/-]+"),
+    "reg_and_or"             : re.compile(
         r"\W(&/or|and/or|and|or)\W", re.IGNORECASE
         ),
-    "reg_address"          : re.compile(r"[^0-9a-zA-Z\s#,/-]+"),
-    "reg_address2"         : re.compile(
+    "reg_address"            : re.compile(r"[^0-9a-zA-Z\s#,/-]+"),
+    "reg_address2"           : re.compile(
         r"c/o|dba|inc|att|co\W|trust", re.IGNORECASE
         ),
-    "reg_city_state"       : re.compile(r"[^0-9a-zA-Z\s]+"),
-    "reg_zip"              : re.compile(r"[^0-9a-zA-Z]+"),
-    "reg_phone"            : re.compile(r"-|\(|\)|\s"),
-    "reg_email"            : re.compile(
+    "reg_city_state"         : re.compile(r"[^0-9a-zA-Z\s]+"),
+    "reg_zip"                : re.compile(r"[^0-9a-zA-Z]+"),
+    "reg_phone"              : re.compile(r"-|\(|\)|\s"),
+    "reg_email"              : re.compile(
         r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"
         ),
-    "reg_name"             : re.compile(r"[^0-9a-zA-Z\s#+&'/-]+"),
-    "reg_small_name"       : re.compile(r"\s(Du|Des)\s"),
-    "reg_business_name"    : re.compile(
+    "reg_name"               : re.compile(r"[^0-9a-zA-Z\s#+&'/-]+"),
+    "reg_small_name"         : re.compile(r"\s(Du|Des)\s"),
+    "reg_business_name"      : re.compile(
         r"\s(llc|llp|dba|inc)(?:\s|$)", re.IGNORECASE
         ),
-    "reg_double_apostrophe": re.compile(r"'\w"),
+    "reg_double_apostrophe"  : re.compile(r"'\w"),
+    "street_name_replacement": {
+        re.compile(r"Hwy\b") : "Highway",
+        re.compile(r"Cty\b") : "County",
+        re.compile(r"Rd\b")  : " Road",
+        re.compile(r"Ave\b") : "Avenue",
+        re.compile(r"St\b")  : "Street",
+        re.compile(r"Ln\b")  : "Lane",
+        re.compile(r"Ct\b")  : "Court",
+        re.compile(r"Dr\b")  : "Drive",
+        re.compile(r"Po\b")  : "PO",
+        re.compile(r"P\sO\b"): "PO",
+        re.compile(r"Cir\b") : "Circle",
+        re.compile(r"Pt\b")  : "Point",
+        re.compile(r"Tk\b")  : "Trunk",
+        re.compile(r"Tr\b")  : "Trail",
+        re.compile(r"Trl\b") : "Trail",
+        re.compile(r"Ter\b") : "Terrace",
+        re.compile(r"\sN\s") : " North ",
+        re.compile(r"\sS\s") : " South ",
+        re.compile(r"\sE\s") : " East ",
+        re.compile(r"\sW\s") : " West ",
+        re.compile(r"Us\b")  : "US"
+        }
     }
 
 ZIP_CODE_DF: pd.DataFrame = pd.read_csv(
     f"{Path(__file__).absolute().parent}/zip_codes.csv", dtype=str
     )
+
+SITE_TARGET = "production"
+
+
+def map_policy_type(policy_code):
+    normalize_map = policy_map.get(policy_code, "Unknown")
+    britecore_map = britcore_policy_type_map.get(SITE_TARGET).get(
+        normalize_map, "Unknown"
+        )
+
+    return britecore_map
 
 
 def fix_business(name: str) -> str:
@@ -128,10 +163,10 @@ def fix_suffix(suffix: str) -> str:
     return suffix
 
 
-class BCAddress:
+class BritecoreAddress:
     """Class for contact address"""
 
-    def __init__(self, full_address: Dict) -> None:
+    def __init__(self, full_address: Dict[str, str]) -> None:
         global _LOGGER
         _LOGGER = scl.get_parent_logger()
         if not full_address:
@@ -331,27 +366,9 @@ class BCAddress:
         :return: Fixed address
         :rtype: str
         """
-        address = re.sub(r"Hwy\b", "Highway", address)
-        address = re.sub(r"Cty\b", "County", address)
-        address = re.sub(r"Rd\b", " Road", address)
-        address = re.sub(r"Ave\b", "Avenue", address)
-        address = re.sub(r"St\b", "Street", address)
-        address = re.sub(r"Ln\b", "Lane", address)
-        address = re.sub(r"Ct\b", "Court", address)
-        address = re.sub(r"Dr\b", "Drive", address)
-        address = re.sub(r"Po\b", "PO", address)
-        address = re.sub(r"P\sO\b", "PO", address)
-        address = re.sub(r"Cir\b", "Circle", address)
-        address = re.sub(r"Pt\b", "Point", address)
-        address = re.sub(r"Tk\b", "Trunk", address)
-        address = re.sub(r"Tr\b", "Trail", address)
-        address = re.sub(r"Trl\b", "Trail", address)
-        address = re.sub(r"Ter\b", "Terrace", address)
-        address = re.sub(r"\sN\s", " North ", address)
-        address = re.sub(r"\sS\s", " South ", address)
-        address = re.sub(r"\sE\s", " East ", address)
-        address = re.sub(r"\sW\s", " West ", address)
-        address = re.sub(r"Us\b", "US", address)
+
+        for k, v in COMPILED_REGEXES.get("street_name_replacement").items():
+            address = re.sub(k, v, address)
 
         if address != "":
             if not address[-1].isalnum():
@@ -403,7 +420,7 @@ class BCAddress:
         return address
 
 
-class BCPhone:
+class BritecorePhone:
     """Class for contact phone number"""
 
     def __init__(self, phone_number: list[Dict[str, str]]) -> None:
@@ -443,7 +460,7 @@ class BCPhone:
         return phone
 
 
-class BCEmail:
+class BritecoreEmail:
     """Class for email addresses"""
 
     def __init__(self, email: list[Dict[str, str]]) -> None:
@@ -484,14 +501,17 @@ class BCEmail:
         return email
 
 
-class BCContact:
-    """Class with all attributes for BriteCore contact"""
+class BritecoreContact:
+    """Class with all attributes for Britecore contact"""
 
     def __init__(
-        self, name: str, address: Dict,
-        policy_number: str = None,
-        phone_number: Dict = None, email: Dict = None,
-        contact_id: str = None,
+        self,
+        name: str,
+        address: Dict[str, str],
+        policy_number: Optional[str] = None,
+        phone_number: Optional[list[Dict[str, str]]] = None,
+        email: Optional[list[Dict[str, str]]] = None,
+        contact_id: Optional[str] = None,
         ):
         if not phone_number:
             phone_number = [{}]
@@ -502,36 +522,41 @@ class BCContact:
         self.final_contact = {
             "name"      : fix_business(name),
             "contact_id": contact_id,
-            "addresses" : BCAddress(address).fixed_address,
-            "phones"    : BCPhone(phone_number).fixed_phone_number,
-            "emails"    : BCEmail(email).fixed_email,
+            "addresses" : BritecoreAddress(address).fixed_address,
+            "phones"    : BritecorePhone(phone_number).fixed_phone_number,
+            "emails"    : BritecoreEmail(email).fixed_email,
             "type"      : "individual"
             }
 
         _LOGGER.debug(f"Created contact {self.final_contact}")
 
 
-class BCPolicy:
+class BritecorePolicy:
     """Policy class"""
 
     def __init__(
-        self, policy_number: str, contacts: BCContact,
+        self, policy_number: str, contacts: list[BritecoreContact],
         effective_date: datetime.datetime,
-        policy_type_id: str, inception_date: datetime.datetime = None,
+        policy_type_id: str,
+        inception_date: Optional[datetime.datetime] = None,
         term_type: str = "1 Year",
         renewal_term_type: str = "1 Year", is_renewal: bool = True,
         as_agent: bool = False,
-        manual_policy_number: bool = True
+        manual_policy_number: bool = True,
+        previous_inspection_date: Optional[datetime.datetime] = None,
+        next_inspection_date: Optional[datetime.datetime] = None
         ):
         self.fixed_policy = {
-            "contacts"            : contacts.final_contact,
-            "policy_number"       : policy_number,
-            "inception_date"      : inception_date,
-            "effective_date"      : effective_date,
-            "term_type"           : term_type,
-            "renewal_term_type"   : renewal_term_type,
-            "is_renewal"          : is_renewal,
-            "as_agent"            : as_agent,
-            "manual_policy_number": manual_policy_number,
-            "policy_type_id"      : policy_type_id
+            "contacts"                : contacts,
+            "policy_number"           : policy_number,
+            "inception_date"          : inception_date,
+            "effective_date"          : effective_date,
+            "term_type"               : term_type,
+            "renewal_term_type"       : renewal_term_type,
+            "is_renewal"              : is_renewal,
+            "as_agent"                : as_agent,
+            "manual_policy_number"    : manual_policy_number,
+            "policy_type_id"          : policy_type_id,
+            "previous_inspection_date": previous_inspection_date,
+            "next_inspection_date"    : next_inspection_date
             }

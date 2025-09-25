@@ -6,7 +6,7 @@ from typing import Mapping  # typing added
 
 import sclogging.sclogging_main as scl
 import urllib3
-from bcexceptions import NoTokenReturned
+from britecore_exceptions import BritecoreError
 from urllib3 import Retry, Timeout
 from urllib3.util import Url
 
@@ -64,7 +64,7 @@ class OAuthToken:
             encode_multipart=False,
         )
         if http_result.status != 200 and not self.token:
-            raise NoTokenReturned
+            raise BritecoreError.NoTokenReturned
             # logger.critical(f"Error getting token - {http_result.reason}")
             # sys.exit(f"Error getting token - {http_result.reason}")
         logger.info("Received token")

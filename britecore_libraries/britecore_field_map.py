@@ -32,6 +32,10 @@ field_map_to_britecore: CarrierFieldMap = {
             "PHONE 2"       : "phone_number_m",
             "E-MAIL ADDR"   : "email",
             "POLICY #"      : "policy_number",
+            "NEW POL DATE":"inception_date",
+            "FROM DATE"     : "effective_date",
+            "INSPECTION DATE LAST": "previous_inspection_date",
+            "INSPECTION DATE NEXT": "next_inspection_date",
             "address_fields": ["ADDR 1", "ADDR 2", "CITY", "ST", "ZIP",
                                "PHONE 1", "PHONE 2", "E-MAIL ADDR", "POLICY #"]
             },
@@ -60,6 +64,7 @@ field_map_to_britecore: CarrierFieldMap = {
             "Mobile Phone"  : "phone_number_m",
             "Email Address" : "email",
             "Policy #"      : "policy_number",
+            "Policy Eff Date": "effective_date",
             "address_fields": ["Address Line 1", "Address Line 2", "City",
                                "State",
                                "Postal Code", "Home Phone", "Mobile Phone",

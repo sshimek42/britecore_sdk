@@ -1,8 +1,8 @@
-pandas
-sclogging==1.0.6
-dynaconf==3.2.11
+pandas~=2.3.2
+sclogging~=1.0.6
+dynaconf~=3.2.11
 PyInputPlus~=0.2.12
 urllib3~=2.5.0
-selenium==4.35.0
+selenium~=4.35.0
 pyodbc~=5.2.0
 setuptools~=80.9.0

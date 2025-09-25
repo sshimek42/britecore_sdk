@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="bclibs",
+    name="britecore_libraries",
     version="0.01",
     packages=[""],
     package_dir={"": "."},

@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name="bclibs",
+    name="britecore_libraries",
     version="0.01",
     packages=[""],
-    package_dir={"": "bclibs"},
+    package_dir={"": "britecore_libraries"},
     url="",
     license="",
     author="sshimek",
