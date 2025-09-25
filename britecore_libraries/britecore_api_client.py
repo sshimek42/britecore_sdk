@@ -161,16 +161,11 @@ def do_request(
 
     _ensure_logger()
 
-    # request_timer: Optional[scl.Timer] = None
-    # if timer:
-    #     request_timer = scl.Timer()
-    #     request_timer.start_timer(timer_start_note)
     request_result: Optional[urllib3.HTTPResponse] = None
     try:
         if json:
             if token_class == "":
                 json.update({"api_key": SITE_SETTINGS.api_key})
-                # print(dumps(json).encode("utf-8"))
             request_result = http.request(
                 method=method,
                 url=_full_url(path),
@@ -197,9 +192,6 @@ def do_request(
         RequestError,
     ) as request_error:
         _LOGGER.error(request_error)
-
-    # if timer and request_timer is not None:
-    #     request_timer.stop_timer(timer_end_note)
 
     if not request_result:
         _LOGGER.error("Error getting request")

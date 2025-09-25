@@ -65,8 +65,6 @@ class OAuthToken:
         )
         if http_result.status != 200 and not self.token:
             raise BritecoreError.NoTokenReturned
-            # logger.critical(f"Error getting token - {http_result.reason}")
-            # sys.exit(f"Error getting token - {http_result.reason}")
         logger.info("Received token")
         http_result_dict = loads(http_result.data)
         self.token = http_result_dict.get("access_token", "")
