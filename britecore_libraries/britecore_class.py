@@ -125,7 +125,6 @@ def fix_apostrophe(name: str) -> str:
     name = re.sub(
         COMPILED_REGEXES["reg_double_apostrophe"], lambda mo: mo.group(0).lower(), name
     )
-    # name = name.replace("'", "''")
     return name
 
 
