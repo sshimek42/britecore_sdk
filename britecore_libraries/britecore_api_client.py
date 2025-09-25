@@ -4,10 +4,10 @@ import sys
 from json import dumps, loads
 from typing import Any, Dict, Optional  # added typing
 
-from britecore_exceptions import BritecoreError
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
+from britecore_exceptions import BritecoreError
 from britecore_oauth_token_manager import OAuthToken
 from urllib3.exceptions import ProtocolError, RequestError, ResponseError
 from urllib3.exceptions import TimeoutError as urlTimeoutError
@@ -48,10 +48,12 @@ timeout = Timeout(web_timeout)
 retries = Retry(total=web_retry, status_forcelist=frozenset({502, 503, 504}))
 http = urllib3.PoolManager(retries=retries, timeout=timeout, maxsize=5, num_pools=5)
 
-if SITE_SETTINGS.client_id=="" and SITE_SETTINGS.client_secret=="":
+if SITE_SETTINGS.client_id == "" and SITE_SETTINGS.client_secret == "":
     token_class = ""
 else:
-    token_class = OAuthToken(SITE_SETTINGS.client_id, SITE_SETTINGS.client_secret, base_url)
+    token_class = OAuthToken(
+        SITE_SETTINGS.client_id, SITE_SETTINGS.client_secret, base_url
+    )
 
 
 # helper utilities
@@ -97,9 +99,7 @@ def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> Any:
     json_result = loads(response.data.decode("utf-8"))
 
     result = json_result.get("success", False)
-    message = json_result.get(
-        "message", json_result.get("messages", "Unknown error")
-    )
+    message = json_result.get("message", json_result.get("messages", "Unknown error"))
 
     if not result:
         _LOGGER.error(f"Error - {message}")
@@ -516,9 +516,7 @@ def retrieve_policy_contact_info(policy: str, **kwargs) -> list:
     return contact_json.get("active_revision").get("named_insureds")
 
 
-def add_contact(
-    name: str, address: list, phone: list, email: list, **kwargs
-) -> tuple:
+def add_contact(name: str, address: list, phone: list, email: list, **kwargs) -> tuple:
     """Add contact
     :param name: Contact name
     :type name: str
@@ -1163,6 +1161,3 @@ def get_policy_snapshot(policy_number, snapshot_date, **kwargs):
     )
 
     return process_result(result_request)
-
-
-
