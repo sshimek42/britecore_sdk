@@ -3,12 +3,14 @@ from pathlib import Path
 
 import bcexceptions
 import re
+import logging
+from typing import Dict,Pattern
 
 from sclogging import sclogging_main as scl
 
 import pandas as pd
 
-_LOGGER = scl.get_parent_logger()
+_LOGGER: logging.Logger = scl.get_parent_logger()
 
 FIELD_MAP_TO_BRITECORE = {
     "MIPS"    : {
@@ -90,11 +92,11 @@ DEFAULT_ADDRESS_TYPE = "Mailing/Billing"
 DEFAULT_PHONE_TYPE = "Home"
 DEFAULT_EMAIL_TYPE = "Home"
 
-COMMON_CITY_REPLACEMENT = {
+COMMON_CITY_REPLACEMENT: Dict[str, str] = {
     "Depere": "De Pere"
     }
 
-COMPILED_REGEXES = {
+COMPILED_REGEXES: Dict[str, Pattern[str]] = {
 
     "search_name_mult"     : re.compile(
         r"^(\w*\W\w?\W|\w*\W)(\w*)\s?(\w*)?\s(&)\s(\w*\W\w?\W|\w*)\W?(\w*)?("
@@ -135,13 +137,15 @@ ZIP_CODE_DF =  pd.read_csv(
     )
 
 
-def fix_business(name):
+def fix_business(name: str) -> str:
     """
-    Fixes capitalization for LLC, LLP, and DBA
-    :param name: Contact name to fix
-    :type name: str
-    :return: Fixed name
-    :rtype: str
+    Fix capitalization for business suffix tokens (LLC, LLP, DBA).
+
+    Args:
+        name: Contact name to fix.
+
+    Returns:
+        Name with standardized capitalization for business suffixes.
     """
     check_business = re.findall(
         COMPILED_REGEXES.get("reg_business_name"), name
@@ -573,6 +577,7 @@ class BCContact:
             "is_renewal": is_renewal,
             "as_agent": as_agent,
             "manual_policy_number": manual_policy_number,
+            "policy_type_id": policy_type_id
             }
 
         _LOGGER.debug(f"Created contact {self.final_contact}")
