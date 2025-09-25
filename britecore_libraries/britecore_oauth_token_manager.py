@@ -1,4 +1,3 @@
-import sys
 from datetime import datetime, timedelta
 from json import loads
 from types import MappingProxyType
