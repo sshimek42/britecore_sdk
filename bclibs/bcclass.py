@@ -1,96 +1,30 @@
 """Class definition and methods for BriteCore contacts"""
+import datetime
 from pathlib import Path
 
-import bcexceptions
+from bcexceptions import BritecoreError
 import re
 import logging
-from typing import Dict,Pattern
+from typing import Dict, Pattern
 
 from sclogging import sclogging_main as scl
+
+from bcfieldmap import (
+    field_map_to_britecore, field_map_to_named_insured,
+    field_map_to_risk_location,
+    )
 
 import pandas as pd
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
 
-FIELD_MAP_TO_BRITECORE = {
-    "MIPS"    : {
-        "policy_list"  : {
-            "NAME"          : "name",
-            "ADDR 1"        : "address_line1",
-            "ADDR 2"        : "address_line2",
-            "CITY"          : "address_city",
-            "ST"            : "address_state",
-            "ZIP"           : "address_zip",
-            "PHONE 1"       : "phone_number_h",
-            "PHONE 2"       : "phone_number_m",
-            "E-MAIL ADDR"   : "email",
-            "POLICY #"      : "policy_number",
-            "address_fields": ["ADDR 1", "ADDR 2", "CITY", "ST", "ZIP",
-                               "PHONE 1", "PHONE 2", "E-MAIL ADDR", "POLICY #"]
-            },
-        "location_list": {
-            "Policy Number" : "policy_number",
-            "Legal Address" :
-                "address_line1",
-            "Legal City"    : "address_city",
-            "Legal State"   : "address_state",
-            "Legal Zip"     : "address_zip",
-            "County"        : "address_county",
-            "address_fields": ["Legal Address", "Legal City", "Legal State",
-                               "Legal Zip",
-                               "Policy Number", "County"]
-            }
-        },
-    "Spectrum": {
-        "policy_list"  : {
-            "Named Insured" : "name",
-            "Address Line 1": "address_line1",
-            "Address Line 2": "address_line2",
-            "City"          : "address_city",
-            "State"         : "address_state",
-            "Postal Code"   : "address_zip",
-            "Home Phone"    : "phone_number_h",
-            "Mobile Phone"  : "phone_number_m",
-            "Email Address" : "email",
-            "Policy #"      : "policy_number",
-            "address_fields": ["Address Line 1", "Address Line 2", "City",
-                               "State",
-                               "Postal Code", "Home Phone", "Mobile Phone",
-                               "Email "
-                               "Address", "Policy #"]
-            },
-        "location_list": {
-            "Policy #"        : "policy_number",
-            "Physical Address": "address_line1",
-            "City"            : "address_city",
-            "State"           : "address_state",
-            "Zip"             : "address_zip",
-            "address_fields"  : ["Physical Address", "City", "State",
-                                 "Zip", "Policy #"]
-            }
-        }
-    }
+FIELD_MAP_TO_BRITECORE = field_map_to_britecore
+FIELD_MAP_TO_NAMED_INSURED = field_map_to_named_insured
+FIELD_MAP_TO_RISK_LOCATION = field_map_to_risk_location
 
-FIELD_MAP_TO_NAMED_INSURED = {
-    "MIPS"    : {v: k for k,
-    v in FIELD_MAP_TO_BRITECORE[
-                     "MIPS"]["policy_list"].items() if k != "address_fields"},
-    "Spectrum": {v: k for k, v in FIELD_MAP_TO_BRITECORE[
-        "Spectrum"]["policy_list"].items() if k != "address_fields"}
-    }
-
-FIELD_MAP_TO_RISK_LOCATION = {
-    "MIPS"    : {v: k for k,
-    v in FIELD_MAP_TO_BRITECORE[
-                     "MIPS"]["location_list"].items() if
-                 k != "address_fields"},
-    "Spectrum": {v: k for k, v in FIELD_MAP_TO_BRITECORE[
-        "Spectrum"]["location_list"].items() if k != "address_fields"}
-    }
-
-DEFAULT_ADDRESS_TYPE = "Mailing/Billing"
-DEFAULT_PHONE_TYPE = "Home"
-DEFAULT_EMAIL_TYPE = "Home"
+DEFAULT_ADDRESS_TYPE: str = "Mailing/Billing"
+DEFAULT_PHONE_TYPE: str = "Home"
+DEFAULT_EMAIL_TYPE: str = "Home"
 
 COMMON_CITY_REPLACEMENT: Dict[str, str] = {
     "Depere": "De Pere"
@@ -132,7 +66,7 @@ COMPILED_REGEXES: Dict[str, Pattern[str]] = {
     "reg_double_apostrophe": re.compile(r"'\w"),
     }
 
-ZIP_CODE_DF =  pd.read_csv(
+ZIP_CODE_DF: pd.DataFrame = pd.read_csv(
     f"{Path(__file__).absolute().parent}/zip_codes.csv", dtype=str
     )
 
@@ -197,11 +131,11 @@ def fix_suffix(suffix: str) -> str:
 class BCAddress:
     """Class for contact address"""
 
-    def __init__(self, full_address: dict):
+    def __init__(self, full_address: Dict) -> None:
         global _LOGGER
         _LOGGER = scl.get_parent_logger()
         if not full_address:
-            raise bcexceptions.InvalidAddress("Missing Address")
+            raise BritecoreError.InvalidAddress("Missing Address")
 
         self.full_address = full_address
         zip_code = full_address.get("address_zip", "").strip()
@@ -218,23 +152,26 @@ class BCAddress:
             address1 = address2
             address2 = ""
         elif address1 == "":
-            raise bcexceptions.InvalidAddress("Missing Address")
+            raise BritecoreError.InvalidAddress("Missing Address")
 
         if zip_code == "":
             try:
-                zip_code = ZIP_CODE_DF.loc[((state == ZIP_CODE_DF["admin code1"]) & (
-                                                        city ==
-                                                        ZIP_CODE_DF[
-                                                            "place name"]))][
-                    "postal code"].values[0]
-                _LOGGER.warning(f"Zip code missing - using {zip_code} for city of {city} and state of {state}")
+                zip_code = \
+                    ZIP_CODE_DF.loc[((state == ZIP_CODE_DF["admin code1"]) & (
+                            city ==
+                            ZIP_CODE_DF[
+                                "place name"]))][
+                        "postal code"].values[0]
+                _LOGGER.warning(
+                    f"Zip code missing - using {zip_code} for city of {city} "
+                    f"and state of {state}"
+                    )
             except IndexError:
-                raise bcexceptions.InvalidAddress(
+                raise BritecoreError.InvalidAddress(
                     "Missing Zip Code"
                     )
 
         self.zip_code = self.fix_zipcode(zip_code)
-
 
         self.fixed_address = [{
             "address_line1"  : self.fix_address(address1),
@@ -259,7 +196,7 @@ class BCAddress:
         _LOGGER.debug(f"Created address {self.fixed_address}")
 
     @classmethod
-    def fix_county(cls, county, zipcode):
+    def fix_county(cls, county: str, zipcode: str) -> str:
 
         tmp_zipcode = zipcode[:5]
         county_lookup = ZIP_CODE_DF
@@ -285,7 +222,7 @@ class BCAddress:
         return county
 
     @classmethod
-    def fix_city(cls, city, zipcode):
+    def fix_city(cls, city: str, zipcode: str) -> str:
 
         city = re.sub(COMPILED_REGEXES.get("reg_city_state"), "", city)
 
@@ -319,13 +256,15 @@ class BCAddress:
         return city
 
     @staticmethod
-    def fix_zipcode(zipcode):
+    def fix_zipcode(zipcode: str) -> str:
 
         zipcode = zipcode.strip().replace("-", "").zfill(5)
         if zipcode == "00000" or len(
                 zipcode
                 ) > 10 or not zipcode.isnumeric():
-            raise bcexceptions.InvalidAddress(f"Invalid Zip Code - {zipcode}")
+            raise BritecoreError.InvalidAddress(
+                f"Invalid Zip Code - {zipcode}"
+                )
         zipcode = re.sub(COMPILED_REGEXES.get("reg_zip"), "", zipcode)
         if len(zipcode) > 5:
             zipcode = zipcode[:5] + "-" + zipcode[5:]
@@ -333,7 +272,7 @@ class BCAddress:
         return zipcode
 
     @classmethod
-    def fix_state(cls, state, zipcode):
+    def fix_state(cls, state: str, zipcode: str) -> str:
         state = state.strip().upper()
         state = re.sub(COMPILED_REGEXES.get("reg_city_state"), "", state)
 
@@ -361,7 +300,7 @@ class BCAddress:
         return state
 
     @staticmethod
-    def fix_street(address):
+    def fix_street(address: str) -> str:
         """
         Fixes number street capitalization (11Th to 11th)
         Also fixes capitalization on roads ending with 2 letters
@@ -384,7 +323,7 @@ class BCAddress:
         return address
 
     @staticmethod
-    def fix_street_name(address):
+    def fix_street_name(address: str) -> str:
         """
         Normalizes address different abbreviations
         :param address: Address to normalize
@@ -420,7 +359,7 @@ class BCAddress:
         return address
 
     @staticmethod
-    def remove_double_non_letter(address):
+    def remove_double_non_letter(address: str) -> str:
         """
         Remove repeated non-alphanumeric characters
         (Name11  Name22, Name11 Name22)
@@ -436,7 +375,7 @@ class BCAddress:
         return address
 
     @classmethod
-    def fix_address(cls, address):
+    def fix_address(cls, address: str) -> str:
         """
         Runs all functions to normalize address
         :param address: Address to normalize
@@ -467,7 +406,7 @@ class BCAddress:
 class BCPhone:
     """Class for contact phone number"""
 
-    def __init__(self, phone_number):
+    def __init__(self, phone_number: list[Dict[str, str]]) -> None:
         phone_number_list = []
         for each_phone_number in phone_number:
             phone_number = each_phone_number.get("phone", "")
@@ -488,7 +427,7 @@ class BCPhone:
         self.fixed_phone_number = phone_number_list
 
     @staticmethod
-    def fix_phone(phone):
+    def fix_phone(phone: str) -> str | None:
         """
         Normalize phone number
         :param phone: Phone number
@@ -507,7 +446,7 @@ class BCPhone:
 class BCEmail:
     """Class for email addresses"""
 
-    def __init__(self, email):
+    def __init__(self, email: list[Dict[str, str]]) -> None:
         email_address_list = []
         for each_email in email:
             email_address = each_email.get("email", "").lower()
@@ -524,7 +463,7 @@ class BCEmail:
         self.fixed_email = email_address_list
 
     @staticmethod
-    def fix_email(email: str):
+    def fix_email(email: str) -> str:
         """
         Strips and lowercases email address
         :param email: Email address
@@ -549,12 +488,10 @@ class BCContact:
     """Class with all attributes for BriteCore contact"""
 
     def __init__(
-        self, name, address, effective_date, policy_type_id,
-        policy_number=None,
-        phone_number=None, email=None,
-        contact_id=None, inception_date=None,term_type="1 Year",
-        renewal_term_type="1 Year",is_renewal=True,as_agent=False,
-        manual_policy_number=True
+        self, name: str, address: Dict,
+        policy_number: str = None,
+        phone_number: Dict = None, email: Dict = None,
+        contact_id: str = None,
         ):
         if not phone_number:
             phone_number = [{}]
@@ -568,16 +505,7 @@ class BCContact:
             "addresses" : BCAddress(address).fixed_address,
             "phones"    : BCPhone(phone_number).fixed_phone_number,
             "emails"    : BCEmail(email).fixed_email,
-            "policy_number": policy_number,
-            "type"      : "individual",
-            "inception_date": inception_date,
-            "effective_date": effective_date,
-            "term_type" : term_type,
-            "renewal_term_type": renewal_term_type,
-            "is_renewal": is_renewal,
-            "as_agent": as_agent,
-            "manual_policy_number": manual_policy_number,
-            "policy_type_id": policy_type_id
+            "type"      : "individual"
             }
 
         _LOGGER.debug(f"Created contact {self.final_contact}")
@@ -586,10 +514,24 @@ class BCContact:
 class BCPolicy:
     """Policy class"""
 
-    def __init__(self, policy_num: str, contacts: BCContact, policy_opt=None):
+    def __init__(
+        self, policy_number: str, contacts: BCContact,
+        effective_date: datetime.datetime,
+        policy_type_id: str, inception_date: datetime.datetime = None,
+        term_type: str = "1 Year",
+        renewal_term_type: str = "1 Year", is_renewal: bool = True,
+        as_agent: bool = False,
+        manual_policy_number: bool = True
+        ):
         self.fixed_policy = {
-            "Policy Number" : policy_num,
-            "Policy Options":
-                policy_opt,
-            "Contacts"      : contacts.final_contact
+            "contacts"            : contacts.final_contact,
+            "policy_number"       : policy_number,
+            "inception_date"      : inception_date,
+            "effective_date"      : effective_date,
+            "term_type"           : term_type,
+            "renewal_term_type"   : renewal_term_type,
+            "is_renewal"          : is_renewal,
+            "as_agent"            : as_agent,
+            "manual_policy_number": manual_policy_number,
+            "policy_type_id"      : policy_type_id
             }
