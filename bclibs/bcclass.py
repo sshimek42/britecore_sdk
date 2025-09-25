@@ -33,27 +33,39 @@ FIELD_MAP_TO_BRITECORE = {
             "Legal City"    : "address_city",
             "Legal State"   : "address_state",
             "Legal Zip"     : "address_zip",
-            "County": "address_county",
+            "County"        : "address_county",
             "address_fields": ["Legal Address", "Legal City", "Legal State",
                                "Legal Zip",
                                "Policy Number", "County"]
             }
         },
     "Spectrum": {
-        "Named Insured" : "name",
-        "Address Line 1": "address_line1",
-        "Address Line 2": "address_line2",
-        "City"          : "address_city",
-        "State"         : "address_state",
-        "Postal Code"   : "address_zip",
-        "Home Phone"    : "phone_number_h",
-        "Mobile Phone"  : "phone_number_m",
-        "Email Address" : "email",
-        "Policy #"      : "policy_number",
-        "address_fields": ["Address Line 1", "Address Line 2", "City", "State",
-                           "Postal Code", "Home Phone", "Mobile Phone",
-                           "Email "
-                           "Address", "Policy #"]
+        "policy_list"  : {
+            "Named Insured" : "name",
+            "Address Line 1": "address_line1",
+            "Address Line 2": "address_line2",
+            "City"          : "address_city",
+            "State"         : "address_state",
+            "Postal Code"   : "address_zip",
+            "Home Phone"    : "phone_number_h",
+            "Mobile Phone"  : "phone_number_m",
+            "Email Address" : "email",
+            "Policy #"      : "policy_number",
+            "address_fields": ["Address Line 1", "Address Line 2", "City",
+                               "State",
+                               "Postal Code", "Home Phone", "Mobile Phone",
+                               "Email "
+                               "Address", "Policy #"]
+            },
+        "location_list": {
+            "Policy #"        : "policy_number",
+            "Physical Address": "address_line1",
+            "City"            : "address_city",
+            "State"           : "address_state",
+            "Zip"             : "address_zip",
+            "address_fields"  : ["Physical Address", "City", "State",
+                                 "Zip", "Policy #"]
+            }
         }
     }
 
@@ -62,7 +74,7 @@ FIELD_MAP_TO_NAMED_INSURED = {
     v in FIELD_MAP_TO_BRITECORE[
                      "MIPS"]["policy_list"].items() if k != "address_fields"},
     "Spectrum": {v: k for k, v in FIELD_MAP_TO_BRITECORE[
-        "Spectrum"].items() if k != "address_fields"}
+        "Spectrum"]["policy_list"].items() if k != "address_fields"}
     }
 
 FIELD_MAP_TO_RISK_LOCATION = {
@@ -71,7 +83,7 @@ FIELD_MAP_TO_RISK_LOCATION = {
                      "MIPS"]["location_list"].items() if
                  k != "address_fields"},
     "Spectrum": {v: k for k, v in FIELD_MAP_TO_BRITECORE[
-        "Spectrum"].items() if k != "address_fields"}
+        "Spectrum"]["location_list"].items() if k != "address_fields"}
     }
 
 DEFAULT_ADDRESS_TYPE = "Mailing/Billing"
@@ -118,9 +130,9 @@ COMPILED_REGEXES = {
     "reg_double_apostrophe": re.compile(r"'\w"),
     }
 
-ZIP_CODE_DF = zip_code_df = pd.read_csv(
-        f"{Path(__file__).absolute().parent}/zip_codes.csv"
-        )
+ZIP_CODE_DF =  pd.read_csv(
+    f"{Path(__file__).absolute().parent}/zip_codes.csv", dtype=str
+    )
 
 
 def fix_business(name):
@@ -188,22 +200,44 @@ class BCAddress:
             raise bcexceptions.InvalidAddress("Missing Address")
 
         self.full_address = full_address
-        self.zip_code = self.fix_zipcode(full_address.get("address_zip", ""))
-        address1 = full_address.get("address_line1", "")
-        address2 = full_address.get("address_line2", "")
+        zip_code = full_address.get("address_zip", "").strip()
+        address1 = full_address.get("address_line1", "").strip()
+        address2 = full_address.get("address_line2", "").strip()
+        state = full_address.get(
+            "address_state",
+            ""
+            ).upper()
+        county = full_address.get("address_county", "").strip().title()
+        city = full_address.get("address_city", "").title().strip()
+
         if address1 == "" and address2 != "":
             address1 = address2
             address2 = ""
         elif address1 == "":
             raise bcexceptions.InvalidAddress("Missing Address")
+
+        if zip_code == "":
+            try:
+                zip_code = ZIP_CODE_DF.loc[((state == ZIP_CODE_DF["admin code1"]) & (
+                                                        city ==
+                                                        ZIP_CODE_DF[
+                                                            "place name"]))][
+                    "postal code"].values[0]
+                _LOGGER.warning(f"Zip code missing - using {zip_code} for city of {city} and state of {state}")
+            except IndexError:
+                raise bcexceptions.InvalidAddress(
+                    "Missing Zip Code"
+                    )
+
+        self.zip_code = self.fix_zipcode(zip_code)
+
+
         self.fixed_address = [{
             "address_line1"  : self.fix_address(address1),
             "address_line2"  : self.fix_address(address2),
             "address_state"  : self.fix_state(
-                full_address.get(
-                    "address_state",
-                    ""
-                    ), self.zip_code
+                state
+                , self.zip_code
                 ),
             "address_country": "USA",
             "address_zip"    : self.zip_code,
@@ -211,23 +245,22 @@ class BCAddress:
                 "type", DEFAULT_ADDRESS_TYPE
                 ),
             "address_county" : self.fix_county(
-                full_address.get("address_county", ""), self.zip_code[:5]
+                county
+                , self.zip_code[:5]
                 ),
             "address_city"   : self.fix_city(
-                full_address.get("address_city", ""), self.zip_code[:5]
+                city, self.zip_code
                 )
             }]
         _LOGGER.debug(f"Created address {self.fixed_address}")
 
     @classmethod
     def fix_county(cls, county, zipcode):
-        county = county.strip().title()
 
         tmp_zipcode = zipcode[:5]
-
         county_lookup = ZIP_CODE_DF
         county_lookup = county_lookup.loc[
-            county_lookup["postal code"] == int(tmp_zipcode)]
+            county_lookup["postal code"] == tmp_zipcode]
 
         try:
             county_lookup = county_lookup["admin name2"].values[0]
@@ -249,7 +282,6 @@ class BCAddress:
 
     @classmethod
     def fix_city(cls, city, zipcode):
-        city = city.strip().title()
 
         city = re.sub(COMPILED_REGEXES.get("reg_city_state"), "", city)
 
@@ -257,7 +289,7 @@ class BCAddress:
 
         city_lookup = ZIP_CODE_DF
         city_lookup = city_lookup.loc[
-            city_lookup["postal code"] == int(tmp_zipcode)]
+            city_lookup["postal code"] == tmp_zipcode]
         try:
             city_lookup = city_lookup["place name"].values[0]
         except IndexError:
@@ -284,6 +316,7 @@ class BCAddress:
 
     @staticmethod
     def fix_zipcode(zipcode):
+
         zipcode = zipcode.strip().replace("-", "").zfill(5)
         if zipcode == "00000" or len(
                 zipcode
@@ -304,7 +337,7 @@ class BCAddress:
 
         state_lookup = ZIP_CODE_DF
         state_lookup = state_lookup.loc[
-            state_lookup["postal code"] == int(tmp_zipcode)]
+            state_lookup["postal code"] == tmp_zipcode]
         try:
             state_lookup = state_lookup["admin code1"].values[0]
         except IndexError:
@@ -512,8 +545,12 @@ class BCContact:
     """Class with all attributes for BriteCore contact"""
 
     def __init__(
-        self, name, address, policy_number=None, phone_number=None, email=None,
-        contact_id=None,
+        self, name, address, effective_date, policy_type_id,
+        policy_number=None,
+        phone_number=None, email=None,
+        contact_id=None, inception_date=None,term_type="1 Year",
+        renewal_term_type="1 Year",is_renewal=True,as_agent=False,
+        manual_policy_number=True
         ):
         if not phone_number:
             phone_number = [{}]
@@ -527,8 +564,15 @@ class BCContact:
             "addresses" : BCAddress(address).fixed_address,
             "phones"    : BCPhone(phone_number).fixed_phone_number,
             "emails"    : BCEmail(email).fixed_email,
-            "policy_num": policy_number,
-            "type"      : "individual"
+            "policy_number": policy_number,
+            "type"      : "individual",
+            "inception_date": inception_date,
+            "effective_date": effective_date,
+            "term_type" : term_type,
+            "renewal_term_type": renewal_term_type,
+            "is_renewal": is_renewal,
+            "as_agent": as_agent,
+            "manual_policy_number": manual_policy_number,
             }
 
         _LOGGER.debug(f"Created contact {self.final_contact}")
