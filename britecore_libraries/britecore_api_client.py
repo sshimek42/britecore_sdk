@@ -8,7 +8,6 @@ import sclogging.sclogging_main as scl
 import urllib3
 from britecore_exceptions import BritecoreError
 from britecore_oauth_token_manager import OAuthToken
-from urllib3 import HTTPResponse
 from urllib3.exceptions import (
     ProtocolError,
     RequestError,
