@@ -73,7 +73,6 @@ class BritecoreAPIClient:
         self.site_settings = LoadClientSettings(target_site).load_config()
         BritecoreAPIClient.site_settings = self.site_settings
 
-
         self.enable_timers = True  # renamed from timers
         self.bad_url_error = "Invalid URL"  # renamed from bad_url_error
 
@@ -244,7 +243,6 @@ class BritecoreAPIClient:
             request_headers = {}
         if not request_headers and not BritecoreAPIClient.use_api_key:
             request_headers = BritecoreAPIClient.token_class.get_authorization_headers()
-
 
         request_url = _full_url(BritecoreAPIClient.base_url, path)
 
