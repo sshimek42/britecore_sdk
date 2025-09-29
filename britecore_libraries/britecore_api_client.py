@@ -2,9 +2,9 @@
 
 import sys
 from json import dumps, loads
-from typing import Any, Callable, Dict, Optional  # added typing
+from typing import Any, Dict, Optional  # added typing
 
-import pyinputplus as py_menu
+
 import sclogging.sclogging_main as scl
 import urllib3
 from britecore_exceptions import BritecoreError
@@ -37,64 +37,104 @@ class LoadClientSettings:
         return site_settings
 
 
+def _full_url(host:str, path: str) -> str:
+    """Build a full URL using the configured base_url."""
+    return Url(host=host, path=path).url
+
+
 class BritecoreAPIClient:
-    def __init__(self):
+    site_settings = None
+    http = None
+    token_class = None
+    use_api_key = None
+    web_retry = None
+    web_timeout = None
+    web_timeout_long = None
+    base_url = None
+
+    def __init__(self, target_site: str):
         # self.target_site = target_site
         # self.site_settings = site_settings = LoadClientSettings(
         # ).load_config(target_site)
-        pass
+        self.api_key = None
+        self.token_class = None
+        self.use_api_key = None
+        self.http = None
+        self.web_retry = None
+        self.web_timeout_long = None
+        self.web_timeout = None
+        self.base_url = None
+        self.bad_url_error = None
+        self.enable_timers = None
+        self.site_settings = None
+        self.target_site = target_site
 
-    @classmethod
-    def init_client(cls, target_site):
-        cls._ensure_logger()
+    def init_client(self):
 
-        cls.site_settings = LoadClientSettings(target_site).load_config()
+        target_site = self.target_site
 
-        # cls.site_settings = settings.__getattr__("default")
-        # cls.site_settings += settings.__getattr__(cls.run_on)
+        self._ensure_logger()
 
-        cls.enable_timers = True  # renamed from timers
-        cls.bad_url_error = "Invalid URL"  # renamed from bad_url_error
+        self.site_settings = LoadClientSettings(target_site).load_config()
+        BritecoreAPIClient.site_settings = self.site_settings
 
-        if cls.site_settings.base_url:
-            cls.base_url = cls.site_settings.base_url
-            cls.base_url = Url(
-                scheme="https", host=cls.base_url, path=None).url
-            if cls.base_url.endswith("/"):
-                cls.base_url = cls.base_url[:-1]
+        # self.site_settings = settings.__getattr__("default")
+        # self.site_settings += settings.__getattr__(self.run_on)
+
+        self.enable_timers = True  # renamed from timers
+        self.bad_url_error = "Invalid URL"  # renamed from bad_url_error
+
+        if self.site_settings.base_url:
+            self.base_url = self.site_settings.base_url
+            self.base_url = Url(
+                scheme="https", host=self.base_url, path=None).url
+            if self.base_url.endswith("/"):
+                self.base_url = self.base_url[:-1]
         else:
-            _LOGGER.critical(cls.bad_url_error)
-            sys.exit(cls.bad_url_error)
+            _LOGGER.critical(self.bad_url_error)
+            sys.exit(self.bad_url_error)
 
-        cls.web_timeout = cls.site_settings.web_timeout
-        if not cls.web_timeout:
-            cls.web_timeout = cls.site_settings.web_timeout = 5
+        BritecoreAPIClient.base_url = self.base_url
 
-        cls.web_timeout_long = cls.site_settings.web_timeout_long
-        if not cls.web_timeout_long:
-            cls.web_timeout_long = cls.site_settings.web_timeout * 10
+        self.web_timeout = self.site_settings.web_timeout
+        if not self.web_timeout:
+            self.web_timeout = self.site_settings.web_timeout = 5
 
-        cls.web_retry = cls.site_settings.web_retry
-        if not cls.web_retry:
-            cls.web_retry = 5
+        BritecoreAPIClient.web_timeout = self.web_timeout
 
-        timeout = Timeout(cls.web_timeout)
+        self.web_timeout_long = self.site_settings.web_timeout_long
+        if not self.web_timeout_long:
+            self.web_timeout_long = self.site_settings.web_timeout * 10
+
+        BritecoreAPIClient.web_timeout_long = self.web_timeout_long
+
+        self.web_retry = self.site_settings.web_retry
+        if not self.web_retry:
+            self.web_retry = 5
+
+        BritecoreAPIClient.web_retry = self.web_retry
+
+        timeout = Timeout(self.web_timeout)
         retries = Retry(
-            total=cls.web_retry, status_forcelist=frozenset({502, 503, 504})
+            total=self.web_retry, status_forcelist=frozenset({502, 503, 504})
         )
-        cls.http = urllib3.PoolManager(
+        self.http = urllib3.PoolManager(
             retries=retries, timeout=timeout, maxsize=5, num_pools=5
         )
 
-        cls.use_api_key = (
-            cls.site_settings.client_id == "" or cls.site_settings.client_secret == ""
+        BritecoreAPIClient.http = self.http
+
+        self.use_api_key = (
+            self.site_settings.client_id == "" or self.site_settings.client_secret == ""
         )
 
-        if cls.use_api_key:
+        BritecoreAPIClient.use_api_key = self.use_api_key
+
+        if self.use_api_key:
             _LOGGER.info(
                 "client_id or client_secret not found. using api key.")
             try:
-                cls.api_key = cls.site_settings.api_key
+                self.api_key = self.site_settings.api_key
             except AttributeError:
                 raise BritecoreError.BritecoreKeyError(
                     "api key not found. please set the api key in your "
@@ -102,20 +142,20 @@ class BritecoreAPIClient:
                     "file."
                 )
 
-        if cls.use_api_key:
-            cls.token_class = None
+        if self.use_api_key:
+            self.token_class = None
         else:
-            cls.token_class = OAuthToken(
-                cls.site_settings.client_id,
-                cls.site_settings.client_secret,
-                cls.site_settings.base_url,
+            self.token_class = OAuthToken(
+                self.site_settings.client_id,
+                self.site_settings.client_secret,
+                self.site_settings.base_url,
             )
 
-    @classmethod
+        BritecoreAPIClient.token_class = self.token_class
+
+
+
     # helper utilities
-    def _full_url(cls, path: str) -> str:
-        """Build a full URL using the configured base_url."""
-        return Url(host=cls.base_url, path=path).url
 
     @classmethod
     def _ensure_logger(cls) -> None:
@@ -139,7 +179,7 @@ class BritecoreAPIClient:
         :return: Parsed data
         :rtype: Any
         """
-        _LOGGER.debug("Processing result")
+        # _LOGGER.debug("Processing result")
 
         if response is None:
             _LOGGER.error("Error - No response")
@@ -210,25 +250,25 @@ class BritecoreAPIClient:
         """
 
         if not request_timeout:
-            request_timeout = cls.web_timeout
+            request_timeout = BritecoreAPIClient.web_timeout
         if not request_retries:
-            request_retries = cls.web_retry
+            request_retries = BritecoreAPIClient.web_retry
         # if not timer:
         #     timer = cls.enable_timers
 
-        if request_headers is None or cls.use_api_key:
+        if request_headers is None or BritecoreAPIClient.use_api_key:
             request_headers = {}
-        if not request_headers and not cls.use_api_key:
-            request_headers = cls.token_class.get_authorization_headers()
+        if not request_headers and not BritecoreAPIClient.use_api_key:
+            request_headers = BritecoreAPIClient.token_class.get_authorization_headers()
 
         # cls._ensure_logger()
 
-        request_url = cls._full_url(path)
+        request_url = _full_url(BritecoreAPIClient.base_url,path)
 
         request_result: Optional[urllib3.BaseHTTPResponse] = None
         try:
             if json:
-                if cls.use_api_key:
+                if BritecoreAPIClient.use_api_key:
                     json.update({"api_key": cls.site_settings.api_key})
                 request_result = cls.http.request(
                     method=method,
@@ -239,7 +279,7 @@ class BritecoreAPIClient:
                     retries=request_retries,
                 )
             else:
-                if cls.use_api_key:
+                if BritecoreAPIClient.use_api_key:
                     json = dumps(
                         {"api_key": cls.site_settings.api_key}).encode("utf-8")
                 request_result = cls.http.request(
@@ -263,1021 +303,3 @@ class BritecoreAPIClient:
 
         return request_result
 
-    @classmethod
-    def get_export_line_file(
-        cls, line: tuple, line_type: str, line_name: str, **kwargs
-    ) -> str | HTTPResponse | None | Any:
-        """Gets line export
-        :param line: Line ID
-        :type line: str
-        :param line_type: Export type (Line or Policy)
-        :type line_type: str
-        :param line_name: Name of line
-        :type line_name: str
-        :return: Export of selected line
-        :rtype: dict[Any, Any] or str
-        """
-        request_result = ""
-        _LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
-
-        if line_type == "Line":
-            web_request_json = {
-                "curr_eff_date_id": line[0],
-                "curr_line_id": line[2],
-                "curr_state_id": line[1],
-            }
-
-            request_result = cls.do_request(
-                path="/api/v2/lines/get_export_line_file",
-                json=web_request_json,
-                **kwargs,
-            )
-        elif line_type == "Policy":
-            request_result = cls.do_request(
-                path="/api/v2/policies/get_policies")
-
-        _LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
-
-        process_results = cls.process_result(request_result)
-        if process_results is not None:
-            return loads(process_results)
-
-        return request_result
-
-    @classmethod
-    def line_menu(
-        cls,
-    ) -> tuple[
-        Callable[[object], int],
-        Callable[[object], int],
-        Callable[[object], int],
-        list[Any] | str | Any,
-        list[Any] | str | Any,
-        list[Any] | str | Any,
-    ]:
-        """Generates ids needed for get_lines.
-        :return:effective date id, state id, line id(s),
-        date name, state name, line name
-        :rtype: tuple[list, list, list, list, list, list]
-        """
-
-        def print_menu(
-            print_menu_title: str,
-            print_menu_options: dict,
-            print_menu_default: str,
-        ) -> tuple[Callable[[object], int], list[Any] | str | Any]:
-            """Creates menus for each different line option
-            :param print_menu_title: Title
-            :type print_menu_title: str
-            :param print_menu_options: Dictionary of options
-            :type print_menu_options: dict
-            :param print_menu_default: Default selection
-            :type print_menu_default: str
-            :return:
-            :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
-            """
-            print(
-                f"\nChoose {print_menu_title.lower()}\n"
-                f"{'=' * (len(print_menu_title) + 7)}"
-            )
-            if len(print_menu_options) > 1:
-                menu_options_list = list(print_menu_options.keys())
-                tmp_line = py_menu.inputMenu(
-                    menu_options_list,
-                    lettered=False,
-                    numbered=True,
-                    prompt="",
-                    default=len(print_menu_options) + 1,
-                    blank=True,
-                )
-                if tmp_line in ("All", ""):
-                    line_id = list(print_menu_options.values())
-                    name = list(print_menu_options.keys())
-                else:
-                    line_id = print_menu_options.get(tmp_line)
-                    name = tmp_line
-            else:
-                print("1. " + print_menu_default)
-                tmp_line = print_menu_default
-                line_id = print_menu_options.get(menu_default)
-                name = menu_default
-            print(f"{tmp_line} selected")
-            return line_id, name
-
-        _LOGGER.debug("Getting dates")
-        request_results = cls.do_request(
-            path="/api/v2/lines/get_all_effective_dates",
-        )
-        get_dates = cls.process_result(request_results)
-
-        _LOGGER.debug("Getting states")
-        menu_options = {}
-        menu_default = ""
-        for make_menu in get_dates:
-            menu_options.update(
-                {make_menu.get("description"): make_menu.get("id")})
-            menu_default = make_menu.get("description")
-        eff_date = print_menu("Date", menu_options, menu_default)
-        eff_date_json = {"effective_date_id": eff_date[0]}
-
-        request_results = cls.do_request(
-            path="/api/v2/lines/get_all_states",
-            json=eff_date_json,
-        )
-        get_states = cls.process_result(request_results)
-
-        menu_options = {}
-        for make_menu in get_states:
-            menu_options.update({make_menu.get("name"): make_menu.get("id")})
-            menu_default = make_menu.get("name")
-        eff_state = print_menu("State", menu_options, menu_default)
-        eff_state_json = {
-            "effective_date_id": eff_date[0],
-            "location_id": eff_state[0],
-        }
-
-        request_results = cls.do_request(
-            path="/api/v2/lines/get_all_lines",
-            json=eff_state_json,
-        )
-        all_lines = cls.process_result(request_results)
-        menu_options = {}
-        menu_name = []
-        for make_menu in all_lines:
-            menu_options.update({make_menu.get("name"): make_menu.get("id")})
-            menu_name.append(make_menu.get("name"))
-        eff_line = print_menu("Line", menu_options, menu_name[0])
-
-        return (
-            eff_date[0],
-            eff_state[0],
-            eff_line[0],
-            eff_date[1],
-            eff_state[1],
-            eff_line[1],
-        )
-
-    @classmethod
-    def get_policies_with_line_item(cls, line: str, **kwargs) -> dict:
-        """Gets polices containing a single line item
-        :param line: Line ID to search for
-        :type line: str
-        :return: Dictionary of policy numbers
-        :rtype: dict
-        """
-        _LOGGER.debug("Searching for ID")
-        policy_request_json = {"item_id": str(line)}
-        request_result = cls.do_request(
-            path="/api/v2/lines/get_policies_with_line_item",
-            json=policy_request_json,
-            **kwargs,
-        )
-        policy_json = cls.process_result(request_result)
-
-        return policy_json.get("policies")
-
-    @classmethod
-    def add_line_item(cls, revision: str, line: str, **kwargs) -> bool:
-        """Attempts to add specified line to a policy
-        :param revision: Policy revision ID
-        :type revision: str
-        :param line: Line ID to add
-        :type line: str
-        :return: Result
-        :rtype: bool
-        """
-        _LOGGER.debug("Adding line")
-        line_add_json = {
-            "item_id": str(line),
-            "revision_id": str(revision),
-        }
-        request_result = cls.do_request(
-            path="/api/v2/policies/add_line_item",
-            json=line_add_json,
-            **kwargs,
-        )
-        line_json = cls.process_result(request_result)
-
-        if line_json is not None:
-            _LOGGER.debug(line_json.get("added_items"))
-            return bool(line_json.get("added_items"))
-
-        return False
-
-    @classmethod
-    def retrieve_policy_ids(cls, policy: str, **kwargs) -> tuple[str, str]:
-        """Retrieve a single policy and return data needed to add item to
-        policy
-        :param policy:Policy Number
-        :type policy: str
-        :return: Revision ID, Property ID
-        :rtype: tuple[str, str]
-        """
-        _LOGGER.debug("Getting policy info")
-        policy_json = cls.retrieve_policy(policy, **kwargs)
-        revision_id = policy_json["active_revision"]["id"]
-        property_id = policy_json["active_revision"]["primary_property_id"]
-
-        return revision_id, property_id
-
-    @classmethod
-    def get_property_information_and_photos(cls, property_id: str, **kwargs) -> dict:
-        """Retrieve a single property and return data needed to add item to
-        policy
-        :param property_id:Property ID
-        :type property_id: str
-        :return: Property data
-        :rtype: dict
-        """
-        _LOGGER.debug("Getting property info")
-        property_json = cls.do_request(
-            path="/api/v2/insured/get_property_information_and_photos",
-            json={"property_id": property_id},
-            **kwargs,
-        )
-        property_json = cls.process_result(property_json)
-
-        return property_json
-
-    @classmethod
-    def retrieve_contact_list(
-        cls, search_str: str, search_filter: str = "Named Insured", **kwargs
-    ) -> dict:
-        """Retrieve named insured contacts
-        :param search_str: Name to search for
-        :type search_str: str
-        :param search_filter: Name to search for
-        :type search_filter: str
-        :return: Contacts
-        :rtype: dict
-        """
-        # _LOGGER.debug(f"Searching for {search_str}")
-        contact_request_json = {
-            "searchString": search_str,
-            "filter": search_filter,
-            "currentPage": 1,
-            "pageSize": 10000,
-        }
-        request_result = cls.do_request(
-            path="/api/v1/contacts/retrieveContactList",
-            json=contact_request_json,
-            **kwargs,
-        )
-
-        contact_json = loads(request_result.data.decode("utf-8"))
-
-        return contact_json.get("records")
-
-    @classmethod
-    def retrieve_policy_list_from_user(
-        cls, contact_name: str, check_name: bool = True, **kwargs
-    ) -> list:
-        """Search for user
-        :param contact_name: Contact to search for
-        :type contact_name: str
-        :param check_name: Match results to contact name
-        :type contact_name: bool
-        :return: List of polices
-        :rtype: list
-        """
-        _LOGGER.debug(f"Searching for {contact_name}")
-        user_request_json = {
-            "sort_obj": {"field": "policy_number", "order": "asc"},
-            "current_page": 1,
-            "page_size": 10000,
-            "search_string": contact_name,
-        }
-        request_result = cls.do_request(
-            path="/api/v2/policies/search",
-            json=user_request_json,
-            **kwargs,
-        )
-        user_json = cls.process_result(request_result).get("records")
-
-        policy_list = []
-
-        contact_name = contact_name.strip().lower()
-
-        if check_name:
-            for each_policy in user_json:
-                named_split = each_policy.get("namedInsured").split(", ")
-                for each_contact in named_split:
-                    match_contact = each_contact.strip().lower()
-                    if contact_name in (match_contact, "*"):
-                        policy_list.append(each_policy.get("policyNumber"))
-        else:
-            for each_policy in user_json:
-                policy_list.append(each_policy.get("policyNumber"))
-
-        return list(dict.fromkeys(policy_list))
-
-    @classmethod
-    def retrieve_policy_contact_info(cls, policy: str, **kwargs) -> list:
-        """Get contact information from policy
-        :param policy: Policy number
-        :type policy: str
-        :return: List of insured attached to the policy
-        :rtype: list
-        """
-        _LOGGER.debug("Getting contact info")
-        contact_json = cls.retrieve_policy(policy, **kwargs)
-
-        return contact_json.get("active_revision").get("named_insureds")
-
-    @classmethod
-    def new_contact(
-        cls,
-        name: str,
-        address: list,
-        phone: list,
-        email: list,
-        contact_type: str = "individual",
-        **kwargs,
-    ) -> tuple:
-        """Add contact
-        :param name: Contact name
-        :type name: str
-        :param address: List of contact's address dictionary
-        :type address: list
-        :param phone: List of contact's phone dictionary
-        :type phone: list
-        :param email: List of contact's email dictionary
-        :type email: list
-        :return: Full request result, new contact id
-        :rtype: tuple
-        :param contact_type: Contact type (Defaults to "individual")
-        :type contact_type: str
-        """
-        _LOGGER.debug("Creating contact")
-        contact_request_json = {
-            "name": name,
-            "addresses": address,
-        }
-        contact_request_json.update(**kwargs)
-        if email[0] != {}:
-            contact_request_json.update({"emails": email})
-        if phone[0] != {}:
-            contact_request_json.update({"phones": phone})
-
-        contact_request_json.update({"type": contact_type})
-
-        request_result = cls.do_request(
-            path="/api/v2/contacts/new_contact",
-            json=contact_request_json,
-        )
-
-        contact_json = cls.process_result(request_result)
-
-        new_id = contact_json.get("contact_id", "Fail")
-        if new_id == "Fail":
-            _LOGGER.error(f"Failed to add contact - {name}")
-            return None, None
-
-        _LOGGER.debug(f"Added {name}")
-        return contact_json, new_id
-
-    @classmethod
-    def add_contact_to_role(cls, contact_id, role="Named Insured", **kwargs) -> dict:
-        """Adds role to existing contact
-        :param contact_id: Contact ID
-        :type contact_id: str
-        :param role: Requested role (Defaults to "Named Insured")
-        :type role: str
-        :return: Results of request
-        :rtype: dict
-        """
-        _LOGGER.debug("Adding role")
-        role_request_json = {"contact_id": contact_id, "role_name": role}
-        request_result = cls.do_request(
-            path="/api/v2/contacts/add_contact_to_role",
-            json=role_request_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def update_contact(cls, contact: dict, **kwargs) -> dict:
-        """Updates contact
-        :param contact: Dictionary with changes
-        :type contact: dict
-        :return: Request result
-        :rtype: dict
-        """
-        _LOGGER.debug("Updating contact")
-        update_request_json = {"contact": contact}
-        request_result = cls.do_request(
-            path="/api/v2/contacts/update_contact",
-            json=update_request_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def create_policy(
-        cls, policy: dict, **kwargs
-    ) -> tuple[bool, Any | None, Any | None, Any | None, Any | None, Any | None]:
-        """Creates new policy
-        :param policy: Policy number
-        :type policy: dict
-        :return: Request result
-        :rtype: bool
-        """
-        revision_id = None
-        policy_id = None
-        x_id = None
-        a_id = None
-        prop_id = None
-        _LOGGER.debug("Creating policy")
-        policy_request_json = policy
-        request_result = cls.do_request(
-            path="/api/v2/policies/create_policy",
-            json=policy_request_json,
-            **kwargs,
-        )
-
-        policy_json = cls.process_result(request_result)
-        if policy_json:
-            revision_id = policy_json["revision_id"]
-            policy_id = policy_json["policy_id"]
-            x_id = policy_json["revision_data"]["named_insureds"][0]
-            a_id = policy_json["revision_data"]["agents"][0]
-            prop_id = policy_json["revision_data"]["primary_property_id"]
-        policy_create = True
-        try:
-            policy_exists = (
-                loads(request_result.data.decode(
-                    "utf-8")).get("data").get("exists")
-            )
-        except AttributeError:
-            policy_exists = False
-        if policy_json is None and not policy_exists:
-            policy_create = False
-
-        return policy_create, revision_id, policy_id, x_id, a_id, prop_id
-
-    @classmethod
-    def retrieve_policy(cls, policy_number: str, **kwargs) -> dict:
-        """Get policy information
-        :param policy_number: Policy number
-        :type policy_number: str
-        :return: Request result
-        :rtype: dict
-        """
-        _LOGGER.debug("Retrieving policy")
-        policy_request_json = {"policy_number": policy_number}
-        request_result = cls.do_request(
-            path="/api/v2/policies/retrieve_policy",
-            json=policy_request_json,
-            request_timeout=Timeout(cls.web_timeout_long),
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def get_contact(cls, contact_id: str, **kwargs) -> dict:
-        """
-        Gets contact info
-        :param contact_id: Contact ID to lookup
-        :type contact_id: str
-        :param kwargs:
-        :type kwargs:
-        :return: Contact info
-        :rtype: dict
-        """
-        _LOGGER.debug("Retrieving contact")
-        contact_retrieve_json = {"contact_id": contact_id}
-        request_result = cls.do_request(
-            path="/api/v2/contacts/get_contact",
-            json=contact_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def get_available_function_names(cls, **kwargs) -> dict:
-        """
-        Get available functions
-        :param kwargs:
-        :type kwargs:
-        :return: Functions
-        :rtype: dict
-        """
-        _LOGGER.debug("Retrieving functions")
-        request_result = cls.do_request(
-            path="/api/v2/utils/get_available_function_names",
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def retrieve_policy_terms(
-        cls, policy_id: str, **kwargs
-    ) -> list[dict[str, list[dict]]]:
-        """
-        Gets term information from policy
-        :param policy_id: Policy ID to retrieve
-        :type policy_id: str
-        :param kwargs:
-        :type kwargs:
-        :return: Policy info
-        :rtype: list[dict[str, list[dict]]]
-        """
-        _LOGGER.debug("Retrieving terms")
-        policy_retrieve_json = {"policy_id": policy_id}
-        request_result = cls.do_request(
-            path="/api/v2/policies/retrieve_policy_terms",
-            json=policy_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def rate_revision(cls, revision: str, **kwargs) -> dict:
-        """
-        Re-rates policy revision
-        :param revision: Revision ID
-        :type revision: str
-        :param kwargs:
-        :type kwargs:
-        :return:
-        :rtype: dict
-        """
-        _LOGGER.debug("Re-rating policy")
-        policy_retrieve_json = {"revision_id": revision}
-        request_result = cls.do_request(
-            path="/api/v2/policies/rate_revision",
-            json=policy_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def retrieve_revision_details(cls, revision: str, **kwargs) -> dict:
-        """
-        Get revision details from revision
-        :param revision: Revision ID
-        :type revision: str
-        :param kwargs:
-        :type kwargs:
-        :return: Revision details
-        :rtype: dict
-        """
-        _LOGGER.debug("Getting revision")
-        revision_retrieve_json = {"revision_id": revision}
-        request_result = cls.do_request(
-            path="/api/v2/policies/retrieve_revision_details",
-            json=revision_retrieve_json,
-            request_timeout=Timeout(cls.web_timeout_long),
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def retrieve_risks(cls, revision: str, **kwargs) -> dict:
-        """
-        Get risk IDs from revision
-        :param revision: Revision ID
-        :type revision: str
-        :param kwargs:
-        :type kwargs:
-        :return: Risk ID
-        :rtype: dict
-        """
-        _LOGGER.debug("Getting risks")
-        revision_retrieve_json = {"revision_id": revision}
-        request_result = cls.do_request(
-            path="/api/v2/policies/retrieve_risks",
-            json=revision_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def retrieve_risk_details(cls, risk: str, **kwargs) -> dict:
-        """
-        Retrieves rick details
-        :param risk: Risk ID
-        :type risk: str
-        :param kwargs:
-        :type kwargs:
-        :return: Risk details
-        :rtype: dict
-        """
-        _LOGGER.debug("Getting risk details")
-        revision_retrieve_json = {"risk_id": risk}
-        request_result = cls.do_request(
-            path="/api/v2/policies/retrieve_risk_details",
-            json=revision_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def update_rating_information(
-        cls, property_id: str, line: str, limit: int, **kwargs
-    ) -> list:
-        """
-        Add/updates line item limit
-        :param property_id Property ID
-        :type property_id: str
-        :param line: Line ID
-        :type line: str
-        :param limit: Line limit
-        :type limit: int
-        :param kwargs:
-        :type kwargs:
-        :return: Success/fail
-        :rtype: list
-        """
-        _LOGGER.debug("Updating line item")
-        revision_retrieve_json = {
-            "property_id": property_id,
-            "items": [{"id": line, "limit": limit}],
-        }
-        request_result = cls.do_request(
-            path="/api/v2/policies/update_rating_information",
-            json=revision_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def rate_risk(cls, risk_id: str, **kwargs) -> dict[str, float]:
-        """
-        Re-rates risk
-        :param risk_id: Risk ID
-        :type risk_id: str
-        :param kwargs:
-        :type kwargs:
-        :return: Re-rated premium
-        :rtype: Dict[str, float]
-        """
-        _LOGGER.debug("Re-rating policy")
-        revision_retrieve_json = {"risk_id": risk_id}
-        request_result = cls.do_request(
-            path="/api/v2/policies/rate_risk",
-            json=revision_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def rebuild_search_index(cls, index_to_rebuild: list, **kwargs) -> bool:
-        """
-        Rebuild BriteCore search indexes
-        :param index_to_rebuild:
-        :type index_to_rebuild: list
-        :param kwargs:
-        :type kwargs:
-        :return: Result
-        :rtype: bool
-        """
-        _LOGGER.debug("Rebuilding index")
-        rebuild_index = {"only_build": index_to_rebuild}
-        request_result = cls.do_request(
-            path="/api/v2/utils/rebuild_search_index",
-            json=rebuild_index,
-            **kwargs,
-        )
-        return cls.process_result(request_result)
-
-    @classmethod
-    def retrieve_policy_billing_schedule(cls, policy: str, **kwargs) -> dict:
-        """
-        Retrieve policy billing information
-        :param policy: Policy Number
-        :type policy: str
-        :param kwargs:
-        :type kwargs:
-        :return: Result
-        :rtype: bool
-        """
-        _LOGGER.debug("Getting billing schedule")
-        billing_search = {"policy_number": policy}
-        request_result = cls.do_request(
-            path="/api/v2/policies/retrieve_billing_schedule_options",
-            json=billing_search,
-            **kwargs,
-        )
-        return cls.process_result(request_result)
-
-    @classmethod
-    def get_claim(cls, claim_id: str, **kwargs) -> dict:
-        """
-        Retrieve policy claim information
-        :param claim_id: Claim Number
-        :type claim_id: str
-        :param kwargs:
-        :type kwargs:
-        :return: Result
-        :rtype: bool
-        """
-        _LOGGER.debug("Getting claim information")
-        claim_search = {"claim_id": claim_id}
-        request_result = cls.do_request(
-            path="/api/v2/claims/get_claim", json=claim_search, **kwargs
-        )
-        return cls.process_result(request_result)
-
-    @classmethod
-    def retrieve_notes(cls, policy_id: str) -> list:
-        """
-        Retrieve policy notes
-        :param policy_id: Policy ID
-        :type policy_id: str
-        :return: Notes
-        :rtype: list
-        """
-        _LOGGER.debug("Getting notes")
-        notes_search = {
-            "id": policy_id,
-            "pageSize": 1000,
-            "page": 0,
-            "ascending": False,
-        }
-        request_result = cls.do_request(
-            path="/api/v2/notes/retrieveNotes",
-            json=notes_search,
-            request_timeout=Timeout(cls.web_timeout_long),
-        )
-        if not request_result:
-            return []
-        try:
-            return loads(request_result.data.decode("utf-8"))["records"]
-        except KeyError:
-            return []
-
-    @classmethod
-    def list_attachments(cls, policy_id: str, **kwargs) -> list:
-        """
-        Retrieve policy attachments
-        :param policy_id: Policy Id
-        :type policy_id: str
-        :param kwargs:
-        :type kwargs:
-        :return: Attachments
-        :rtype: list
-        """
-        _LOGGER.debug("Getting attachments")
-        attachments_search = {"policy_id": policy_id}
-        request_result = cls.do_request(
-            path="/api/v2/deliverables/list_attachments",
-            json=attachments_search,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def get_attachment(cls, file_id: str, **kwargs) -> dict:
-        """
-        Retrieve policy attachment
-        :param file_id: Attachment ID
-        :type file_id: str
-        :param kwargs:
-        :type kwargs:
-        :return: Attachment
-        :rtype: dict
-        """
-        _LOGGER.debug("Getting attachment")
-        file_search = {"file_id": file_id}
-        request_result = cls.do_request(
-            path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def new_revision_contact(
-        cls,
-        revision_id: str,
-        contact_id: str,
-        x_id,
-        contact_role: str = "namedInsured",
-        **kwargs,
-    ) -> dict:
-        """
-        Add contact to revision
-        :param revision_id: Revision ID
-        :type revision_id: std
-        :param contact_id: Contact ID
-        :type contact_id: std
-        :param contact_role: Contact Role - Defaults to 'namedInsured'
-        :type contact_role: std
-        :param x_id: x_id
-        :param kwargs:
-        :type kwargs:
-        :return: Attachment
-        :rtype: dict
-        """
-        # update_revision = None
-        request_result = None
-        _LOGGER.debug("Adding contact")
-
-        contact_add = {
-            "revision_id": revision_id,
-            "role": contact_role,
-        }
-
-        if not x_id:
-            request_result = cls.do_request(
-                path="/api/v2/policies/new_revision_contact", json=contact_add, **kwargs
-            )
-
-            contact_add_result = cls.process_result(request_result)
-        else:
-            contact_add_result = {"x_revisions_contact_id": x_id}
-
-        if contact_add_result:
-            x_contact = contact_add_result.get("x_revisions_contact_id")
-            update_revision_json = {
-                "x_revisions_contact_id": x_contact,
-                "contact_id": contact_id,
-            }
-
-            request_result = cls.do_request(
-                path="/api/v2/policies/update_revision_contact",
-                json=update_revision_json,
-                **kwargs,
-            )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def create_risk(cls, rev_id: str, **kwargs):
-        risk_json = {"revision_id": rev_id}
-
-        request_result = cls.do_request(
-            path="/api/v2/policies/create_risk", json=risk_json, **kwargs
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def update_property_location(cls, prop_dict, **kwargs):
-        prop_json = {"location": prop_dict}
-
-        request_result = cls.do_request(
-            path="/api/v2/policies/update_property_location", json=prop_json, **kwargs
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def update_inspection_dates(cls, policy_number, inspection_dict, **kwargs):
-        inspection_json = {"policy_number": policy_number,
-                           "payload": inspection_dict}
-        # inspection_json.update(inspection_json)
-
-        request_result = cls.do_request(
-            path="/api/v2/inspections/update_inspection_dates",
-            json=inspection_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
-
-    @classmethod
-    def new_mortgagee(cls, property_id: str, **kwargs):
-        new_mort_json = {"property_id": property_id}
-        result_request = cls.do_request(
-            "/api/v2/policies/new_mortgagee", json=new_mort_json, **kwargs
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def store_mortgagee(
-        cls, property_contact_id: str, mortgagee_contact_id: str, **kwargs
-    ):
-        store_mort_json = {
-            "x_properties_contact_id": property_contact_id,
-            "mortgagee_contact_id": mortgagee_contact_id,
-        }
-        result_request = cls.do_request(
-            "/api/v2/policies/store_mortgagee", json=store_mort_json, **kwargs
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def get_to_be_printed(cls, from_date, to_date, **kwargs):
-        required_json = {
-            "json_dict": {
-                "from_date": from_date,
-                "to_date": to_date,
-                "ignore_state": True,
-            }
-        }
-        request_timeout = Timeout(120)
-        request_retries = Retry(
-            total=3, status_forcelist=frozenset({502, 503, 504}))
-
-        result_request = cls.do_request(
-            "/api/v1/printing/getToBePrinted",
-            json=required_json,
-            request_timeout=request_timeout,
-            request_retries=request_retries,
-            **kwargs,
-        )
-
-        return_data = None
-        if result_request:
-            return_data = loads(result_request.data.decode("utf-8"))
-
-        return return_data
-
-    @classmethod
-    def get_edeliverables(cls, date_from, date_to, **kwargs):
-        required_json = {
-            "date_from": date_from,
-            "date_to": date_to,
-            "unprocessed_only": False,
-        }
-
-        result_request = cls.do_request(
-            "/api/v2/deliverables/get_edeliverables",
-            json=required_json,
-            **kwargs,
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def mark_as_printed(cls, file_ids, **kwargs):
-        required_json = {"file_ids": file_ids}
-
-        result_request = cls.do_request(
-            "/api/v1/printing/markAsPrinted",
-            json=required_json,
-            **kwargs,
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def list_files(cls, report_id, **kwargs):
-        required_json = {"report_id": report_id}
-
-        result_request = cls.do_request(
-            "/api/v2/reports/list_files",
-            json=required_json,
-            **kwargs,
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def retrieve_reports(cls, **kwargs):
-        required_json = None
-
-        result_request = cls.do_request(
-            "/api/v2/reports/retrieve_reports", json=required_json, **kwargs
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def retrieve_report(cls, report_id, **kwargs):
-        required_json = {"report_id": report_id}
-
-        result_request = cls.do_request(
-            "/api/v2/reports/retrieve_report", json=required_json, **kwargs
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def retrieve_policy_snapshot(cls, policy_number, snapshot_date, **kwargs):
-        required_json = {"policy_number": policy_number,
-                         "snapshot_date": snapshot_date}
-
-        result_request = cls.do_request(
-            "/api/v2/policies/retrieve_policy_snapshot", json=required_json, **kwargs
-        )
-
-        return cls.process_result(result_request)
-
-    @classmethod
-    def find_contact_by_params(cls, name, **kwargs):
-        _LOGGER.debug("Retrieving contact")
-        contact_retrieve_json = {"name": name}
-        request_result = cls.do_request(
-            path="/api/v2/contacts/find_contact_by_params",
-            json=contact_retrieve_json,
-            **kwargs,
-        )
-
-        return cls.process_result(request_result)
