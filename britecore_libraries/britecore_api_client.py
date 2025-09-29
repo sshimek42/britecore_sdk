@@ -4,7 +4,6 @@ import sys
 from json import dumps, loads
 from typing import Any, Dict, Optional  # added typing
 
-
 import sclogging.sclogging_main as scl
 import urllib3
 from britecore_exceptions import BritecoreError
@@ -37,7 +36,7 @@ class LoadClientSettings:
         return site_settings
 
 
-def _full_url(host:str, path: str) -> str:
+def _full_url(host: str, path: str) -> str:
     """Build a full URL using the configured base_url."""
     return Url(host=host, path=path).url
 
@@ -70,7 +69,6 @@ class BritecoreAPIClient:
         self.target_site = target_site
 
     def init_client(self):
-
         target_site = self.target_site
 
         self._ensure_logger()
@@ -152,8 +150,6 @@ class BritecoreAPIClient:
             )
 
         BritecoreAPIClient.token_class = self.token_class
-
-
 
     # helper utilities
 
@@ -263,7 +259,7 @@ class BritecoreAPIClient:
 
         # cls._ensure_logger()
 
-        request_url = _full_url(BritecoreAPIClient.base_url,path)
+        request_url = _full_url(BritecoreAPIClient.base_url, path)
 
         request_result: Optional[urllib3.BaseHTTPResponse] = None
         try:
@@ -302,4 +298,3 @@ class BritecoreAPIClient:
             _LOGGER.error("Error getting request")
 
         return request_result
-
