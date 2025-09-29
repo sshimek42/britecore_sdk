@@ -7,28 +7,28 @@ from typing import Any, Callable, Dict, Optional  # added typing
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
+from britecore_exceptions import BritecoreError
+from britecore_oauth_token_manager import OAuthToken
 from urllib3 import HTTPResponse
 from urllib3.exceptions import (
-    ProtocolError, RequestError, ResponseError,
-    TimeoutError as urlTimeoutError,
-    )
+    ProtocolError,
+    RequestError,
+    ResponseError,
+)
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
-from britecore_exceptions import BritecoreError
 from britecore_libraries import settings
-from britecore_oauth_token_manager import OAuthToken
 
 _LOGGER = scl.get_logger()
 LOGGER_UPDATED = False
 
 
 class LoadClientSettings:
-
     def __init__(self, target_site):
         self.target_site = target_site
 
     def load_config(self):
-
         target_site = self.target_site
 
         site_settings = settings.__getattr__("default")
@@ -38,7 +38,6 @@ class LoadClientSettings:
 
 
 class BritecoreAPIClient:
-
     def __init__(self):
         # self.target_site = target_site
         # self.site_settings = site_settings = LoadClientSettings(
@@ -47,7 +46,6 @@ class BritecoreAPIClient:
 
     @classmethod
     def init_client(cls, target_site):
-
         cls._ensure_logger()
 
         cls.site_settings = LoadClientSettings(target_site).load_config()
@@ -61,8 +59,7 @@ class BritecoreAPIClient:
         if cls.site_settings.base_url:
             cls.base_url = cls.site_settings.base_url
             cls.base_url = Url(
-                scheme="https", host=cls.base_url, path=None
-                ).url
+                scheme="https", host=cls.base_url, path=None).url
             if cls.base_url.endswith("/"):
                 cls.base_url = cls.base_url[:-1]
         else:
@@ -84,21 +81,18 @@ class BritecoreAPIClient:
         timeout = Timeout(cls.web_timeout)
         retries = Retry(
             total=cls.web_retry, status_forcelist=frozenset({502, 503, 504})
-            )
+        )
         cls.http = urllib3.PoolManager(
             retries=retries, timeout=timeout, maxsize=5, num_pools=5
-            )
+        )
 
         cls.use_api_key = (
-                cls.site_settings.client_id == "" or
-                cls.site_settings.client_secret ==
-                "")
+            cls.site_settings.client_id == "" or cls.site_settings.client_secret == ""
+        )
 
         if cls.use_api_key:
             _LOGGER.info(
-                "client_id or client_secret not found. using api "
-                "key."
-                )
+                "client_id or client_secret not found. using api key.")
             try:
                 cls.api_key = cls.site_settings.api_key
             except AttributeError:
@@ -106,15 +100,16 @@ class BritecoreAPIClient:
                     "api key not found. please set the api key in your "
                     "settings.py "
                     "file."
-                    )
+                )
 
         if cls.use_api_key:
             cls.token_class = None
         else:
             cls.token_class = OAuthToken(
-                cls.site_settings.client_id, cls.site_settings.client_secret,
-                cls.site_settings.base_url
-                )
+                cls.site_settings.client_id,
+                cls.site_settings.client_secret,
+                cls.site_settings.base_url,
+            )
 
     @classmethod
     # helper utilities
@@ -135,10 +130,7 @@ class BritecoreAPIClient:
                 LOGGER_UPDATED = True
 
     @classmethod
-    def process_result(
-        cls,
-        response: urllib3.HTTPResponse, logs: bool = False
-        ) -> Any:
+    def process_result(cls, response: urllib3.HTTPResponse, logs: bool = False) -> Any:
         """Processes BriteCore response
         :param response: Request to parse
         :type response: HTTPResponse
@@ -162,7 +154,7 @@ class BritecoreAPIClient:
         result = json_result.get("success", None)
         message = json_result.get(
             "message", json_result.get("messages", "Unknown error")
-            )
+        )
 
         if not result:
             _LOGGER.error(f"Error - {message}")
@@ -193,7 +185,7 @@ class BritecoreAPIClient:
         # timer_start_note: str = "",
         # timer_end_note: str = "",
         method: str = "POST",
-        ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]:
+    ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]:
         """Do web request
         :param path: URL to request
         :type path: str
@@ -237,11 +229,7 @@ class BritecoreAPIClient:
         try:
             if json:
                 if cls.use_api_key:
-                    json.update(
-                        {
-                            "api_key": cls.site_settings.api_key
-                            }
-                        )
+                    json.update({"api_key": cls.site_settings.api_key})
                 request_result = cls.http.request(
                     method=method,
                     url=request_url,
@@ -249,14 +237,11 @@ class BritecoreAPIClient:
                     body=dumps(json).encode("utf-8"),
                     timeout=request_timeout,
                     retries=request_retries,
-                    )
+                )
             else:
                 if cls.use_api_key:
                     json = dumps(
-                        {
-                            "api_key": cls.site_settings.api_key
-                            }
-                        ).encode("utf-8")
+                        {"api_key": cls.site_settings.api_key}).encode("utf-8")
                 request_result = cls.http.request(
                     method=method,
                     url=request_url,
@@ -264,13 +249,13 @@ class BritecoreAPIClient:
                     timeout=request_timeout,
                     retries=request_retries,
                     body=json,
-                    )
+                )
         except (
-                ProtocolError,
-                ResponseError,
-                urlTimeoutError,
-                RequestError,
-                ) as request_error:
+            ProtocolError,
+            ResponseError,
+            urlTimeoutError,
+            RequestError,
+        ) as request_error:
             _LOGGER.error(request_error)
 
         if not request_result:
@@ -280,9 +265,8 @@ class BritecoreAPIClient:
 
     @classmethod
     def get_export_line_file(
-        cls,
-        line: tuple, line_type: str, line_name: str, **kwargs
-        ) -> str | HTTPResponse | None | Any:
+        cls, line: tuple, line_type: str, line_name: str, **kwargs
+    ) -> str | HTTPResponse | None | Any:
         """Gets line export
         :param line: Line ID
         :type line: str
@@ -299,19 +283,18 @@ class BritecoreAPIClient:
         if line_type == "Line":
             web_request_json = {
                 "curr_eff_date_id": line[0],
-                "curr_line_id"    : line[2],
-                "curr_state_id"   : line[1],
-                }
+                "curr_line_id": line[2],
+                "curr_state_id": line[1],
+            }
 
             request_result = cls.do_request(
                 path="/api/v2/lines/get_export_line_file",
                 json=web_request_json,
                 **kwargs,
-                )
+            )
         elif line_type == "Policy":
             request_result = cls.do_request(
-                path="/api/v2/policies/get_policies"
-                )
+                path="/api/v2/policies/get_policies")
 
         _LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
 
@@ -322,10 +305,16 @@ class BritecoreAPIClient:
         return request_result
 
     @classmethod
-    def line_menu(cls) -> tuple[
-        Callable[[object], int], Callable[[object], int], Callable[
-            [object], int], list[Any] | str | Any, list[Any] | str | Any, list[
-            Any] | str | Any]:
+    def line_menu(
+        cls,
+    ) -> tuple[
+        Callable[[object], int],
+        Callable[[object], int],
+        Callable[[object], int],
+        list[Any] | str | Any,
+        list[Any] | str | Any,
+        list[Any] | str | Any,
+    ]:
         """Generates ids needed for get_lines.
         :return:effective date id, state id, line id(s),
         date name, state name, line name
@@ -336,7 +325,7 @@ class BritecoreAPIClient:
             print_menu_title: str,
             print_menu_options: dict,
             print_menu_default: str,
-            ) -> tuple[Callable[[object], int], list[Any] | str | Any]:
+        ) -> tuple[Callable[[object], int], list[Any] | str | Any]:
             """Creates menus for each different line option
             :param print_menu_title: Title
             :type print_menu_title: str
@@ -350,7 +339,7 @@ class BritecoreAPIClient:
             print(
                 f"\nChoose {print_menu_title.lower()}\n"
                 f"{'=' * (len(print_menu_title) + 7)}"
-                )
+            )
             if len(print_menu_options) > 1:
                 menu_options_list = list(print_menu_options.keys())
                 tmp_line = py_menu.inputMenu(
@@ -360,7 +349,7 @@ class BritecoreAPIClient:
                     prompt="",
                     default=len(print_menu_options) + 1,
                     blank=True,
-                    )
+                )
                 if tmp_line in ("All", ""):
                     line_id = list(print_menu_options.values())
                     name = list(print_menu_options.keys())
@@ -378,7 +367,7 @@ class BritecoreAPIClient:
         _LOGGER.debug("Getting dates")
         request_results = cls.do_request(
             path="/api/v2/lines/get_all_effective_dates",
-            )
+        )
         get_dates = cls.process_result(request_results)
 
         _LOGGER.debug("Getting states")
@@ -386,51 +375,36 @@ class BritecoreAPIClient:
         menu_default = ""
         for make_menu in get_dates:
             menu_options.update(
-                {
-                    make_menu.get("description"): make_menu.get("id")
-                    }
-                )
+                {make_menu.get("description"): make_menu.get("id")})
             menu_default = make_menu.get("description")
         eff_date = print_menu("Date", menu_options, menu_default)
-        eff_date_json = {
-            "effective_date_id": eff_date[0]
-            }
+        eff_date_json = {"effective_date_id": eff_date[0]}
 
         request_results = cls.do_request(
             path="/api/v2/lines/get_all_states",
             json=eff_date_json,
-
-            )
+        )
         get_states = cls.process_result(request_results)
 
         menu_options = {}
         for make_menu in get_states:
-            menu_options.update(
-                {
-                    make_menu.get("name"): make_menu.get("id")
-                    }
-                )
+            menu_options.update({make_menu.get("name"): make_menu.get("id")})
             menu_default = make_menu.get("name")
         eff_state = print_menu("State", menu_options, menu_default)
         eff_state_json = {
             "effective_date_id": eff_date[0],
-            "location_id"      : eff_state[0],
-            }
+            "location_id": eff_state[0],
+        }
 
         request_results = cls.do_request(
             path="/api/v2/lines/get_all_lines",
             json=eff_state_json,
-
-            )
+        )
         all_lines = cls.process_result(request_results)
         menu_options = {}
         menu_name = []
         for make_menu in all_lines:
-            menu_options.update(
-                {
-                    make_menu.get("name"): make_menu.get("id")
-                    }
-                )
+            menu_options.update({make_menu.get("name"): make_menu.get("id")})
             menu_name.append(make_menu.get("name"))
         eff_line = print_menu("Line", menu_options, menu_name[0])
 
@@ -441,7 +415,7 @@ class BritecoreAPIClient:
             eff_date[1],
             eff_state[1],
             eff_line[1],
-            )
+        )
 
     @classmethod
     def get_policies_with_line_item(cls, line: str, **kwargs) -> dict:
@@ -452,14 +426,12 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Searching for ID")
-        policy_request_json = {
-            "item_id": str(line)
-            }
+        policy_request_json = {"item_id": str(line)}
         request_result = cls.do_request(
             path="/api/v2/lines/get_policies_with_line_item",
             json=policy_request_json,
             **kwargs,
-            )
+        )
         policy_json = cls.process_result(request_result)
 
         return policy_json.get("policies")
@@ -476,14 +448,14 @@ class BritecoreAPIClient:
         """
         _LOGGER.debug("Adding line")
         line_add_json = {
-            "item_id"    : str(line),
+            "item_id": str(line),
             "revision_id": str(revision),
-            }
+        }
         request_result = cls.do_request(
             path="/api/v2/policies/add_line_item",
             json=line_add_json,
             **kwargs,
-            )
+        )
         line_json = cls.process_result(request_result)
 
         if line_json is not None:
@@ -509,10 +481,7 @@ class BritecoreAPIClient:
         return revision_id, property_id
 
     @classmethod
-    def get_property_information_and_photos(
-        cls,
-        property_id: str, **kwargs
-        ) -> dict:
+    def get_property_information_and_photos(cls, property_id: str, **kwargs) -> dict:
         """Retrieve a single property and return data needed to add item to
         policy
         :param property_id:Property ID
@@ -523,20 +492,17 @@ class BritecoreAPIClient:
         _LOGGER.debug("Getting property info")
         property_json = cls.do_request(
             path="/api/v2/insured/get_property_information_and_photos",
-            json={
-                "property_id": property_id
-                },
+            json={"property_id": property_id},
             **kwargs,
-            )
+        )
         property_json = cls.process_result(property_json)
 
         return property_json
 
     @classmethod
     def retrieve_contact_list(
-        cls,
-        search_str: str, search_filter: str = "Named Insured", **kwargs
-        ) -> dict:
+        cls, search_str: str, search_filter: str = "Named Insured", **kwargs
+    ) -> dict:
         """Retrieve named insured contacts
         :param search_str: Name to search for
         :type search_str: str
@@ -548,15 +514,15 @@ class BritecoreAPIClient:
         # _LOGGER.debug(f"Searching for {search_str}")
         contact_request_json = {
             "searchString": search_str,
-            "filter"      : search_filter,
-            "currentPage" : 1,
-            "pageSize"    : 10000,
-            }
+            "filter": search_filter,
+            "currentPage": 1,
+            "pageSize": 10000,
+        }
         request_result = cls.do_request(
             path="/api/v1/contacts/retrieveContactList",
             json=contact_request_json,
             **kwargs,
-            )
+        )
 
         contact_json = loads(request_result.data.decode("utf-8"))
 
@@ -564,9 +530,8 @@ class BritecoreAPIClient:
 
     @classmethod
     def retrieve_policy_list_from_user(
-        cls,
-        contact_name: str, check_name: bool = True, **kwargs
-        ) -> list:
+        cls, contact_name: str, check_name: bool = True, **kwargs
+    ) -> list:
         """Search for user
         :param contact_name: Contact to search for
         :type contact_name: str
@@ -577,19 +542,16 @@ class BritecoreAPIClient:
         """
         _LOGGER.debug(f"Searching for {contact_name}")
         user_request_json = {
-            "sort_obj"     : {
-                "field": "policy_number",
-                "order": "asc"
-                },
-            "current_page" : 1,
-            "page_size"    : 10000,
+            "sort_obj": {"field": "policy_number", "order": "asc"},
+            "current_page": 1,
+            "page_size": 10000,
             "search_string": contact_name,
-            }
+        }
         request_result = cls.do_request(
             path="/api/v2/policies/search",
             json=user_request_json,
             **kwargs,
-            )
+        )
         user_json = cls.process_result(request_result).get("records")
 
         policy_list = []
@@ -625,9 +587,13 @@ class BritecoreAPIClient:
     @classmethod
     def new_contact(
         cls,
-        name: str, address: list, phone: list, email: list,
-        contact_type: str = "individual", **kwargs
-        ) -> tuple:
+        name: str,
+        address: list,
+        phone: list,
+        email: list,
+        contact_type: str = "individual",
+        **kwargs,
+    ) -> tuple:
         """Add contact
         :param name: Contact name
         :type name: str
@@ -644,33 +610,21 @@ class BritecoreAPIClient:
         """
         _LOGGER.debug("Creating contact")
         contact_request_json = {
-            "name"     : name,
+            "name": name,
             "addresses": address,
-            }
+        }
         contact_request_json.update(**kwargs)
         if email[0] != {}:
-            contact_request_json.update(
-                {
-                    "emails": email
-                    }
-                )
+            contact_request_json.update({"emails": email})
         if phone[0] != {}:
-            contact_request_json.update(
-                {
-                    "phones": phone
-                    }
-                )
+            contact_request_json.update({"phones": phone})
 
-        contact_request_json.update(
-            {
-                "type": contact_type
-                }
-            )
+        contact_request_json.update({"type": contact_type})
 
         request_result = cls.do_request(
             path="/api/v2/contacts/new_contact",
             json=contact_request_json,
-            )
+        )
 
         contact_json = cls.process_result(request_result)
 
@@ -683,10 +637,7 @@ class BritecoreAPIClient:
         return contact_json, new_id
 
     @classmethod
-    def add_contact_to_role(
-        cls,
-        contact_id, role="Named Insured", **kwargs
-        ) -> dict:
+    def add_contact_to_role(cls, contact_id, role="Named Insured", **kwargs) -> dict:
         """Adds role to existing contact
         :param contact_id: Contact ID
         :type contact_id: str
@@ -696,15 +647,12 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Adding role")
-        role_request_json = {
-            "contact_id": contact_id,
-            "role_name" : role
-            }
+        role_request_json = {"contact_id": contact_id, "role_name": role}
         request_result = cls.do_request(
             path="/api/v2/contacts/add_contact_to_role",
             json=role_request_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -717,20 +665,19 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Updating contact")
-        update_request_json = {
-            "contact": contact
-            }
+        update_request_json = {"contact": contact}
         request_result = cls.do_request(
             path="/api/v2/contacts/update_contact",
             json=update_request_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
     @classmethod
-    def create_policy(cls, policy: dict, **kwargs) -> tuple[
-        bool, Any | None, Any | None, Any | None, Any | None, Any | None]:
+    def create_policy(
+        cls, policy: dict, **kwargs
+    ) -> tuple[bool, Any | None, Any | None, Any | None, Any | None, Any | None]:
         """Creates new policy
         :param policy: Policy number
         :type policy: dict
@@ -748,7 +695,7 @@ class BritecoreAPIClient:
             path="/api/v2/policies/create_policy",
             json=policy_request_json,
             **kwargs,
-            )
+        )
 
         policy_json = cls.process_result(request_result)
         if policy_json:
@@ -760,9 +707,8 @@ class BritecoreAPIClient:
         policy_create = True
         try:
             policy_exists = (
-                loads(request_result.data.decode("utf-8")).get("data").get(
-                    "exists"
-                    )
+                loads(request_result.data.decode(
+                    "utf-8")).get("data").get("exists")
             )
         except AttributeError:
             policy_exists = False
@@ -780,15 +726,13 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Retrieving policy")
-        policy_request_json = {
-            "policy_number": policy_number
-            }
+        policy_request_json = {"policy_number": policy_number}
         request_result = cls.do_request(
             path="/api/v2/policies/retrieve_policy",
             json=policy_request_json,
             request_timeout=Timeout(cls.web_timeout_long),
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -804,14 +748,12 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Retrieving contact")
-        contact_retrieve_json = {
-            "contact_id": contact_id
-            }
+        contact_retrieve_json = {"contact_id": contact_id}
         request_result = cls.do_request(
             path="/api/v2/contacts/get_contact",
             json=contact_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -828,13 +770,14 @@ class BritecoreAPIClient:
         request_result = cls.do_request(
             path="/api/v2/utils/get_available_function_names",
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
     @classmethod
-    def retrieve_policy_terms(cls, policy_id: str, **kwargs) -> list[
-        dict[str, list[dict]]]:
+    def retrieve_policy_terms(
+        cls, policy_id: str, **kwargs
+    ) -> list[dict[str, list[dict]]]:
         """
         Gets term information from policy
         :param policy_id: Policy ID to retrieve
@@ -845,14 +788,12 @@ class BritecoreAPIClient:
         :rtype: list[dict[str, list[dict]]]
         """
         _LOGGER.debug("Retrieving terms")
-        policy_retrieve_json = {
-            "policy_id": policy_id
-            }
+        policy_retrieve_json = {"policy_id": policy_id}
         request_result = cls.do_request(
             path="/api/v2/policies/retrieve_policy_terms",
             json=policy_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -868,14 +809,12 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Re-rating policy")
-        policy_retrieve_json = {
-            "revision_id": revision
-            }
+        policy_retrieve_json = {"revision_id": revision}
         request_result = cls.do_request(
             path="/api/v2/policies/rate_revision",
             json=policy_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -891,15 +830,13 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Getting revision")
-        revision_retrieve_json = {
-            "revision_id": revision
-            }
+        revision_retrieve_json = {"revision_id": revision}
         request_result = cls.do_request(
             path="/api/v2/policies/retrieve_revision_details",
             json=revision_retrieve_json,
             request_timeout=Timeout(cls.web_timeout_long),
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -915,14 +852,12 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Getting risks")
-        revision_retrieve_json = {
-            "revision_id": revision
-            }
+        revision_retrieve_json = {"revision_id": revision}
         request_result = cls.do_request(
             path="/api/v2/policies/retrieve_risks",
             json=revision_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -938,22 +873,19 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Getting risk details")
-        revision_retrieve_json = {
-            "risk_id": risk
-            }
+        revision_retrieve_json = {"risk_id": risk}
         request_result = cls.do_request(
             path="/api/v2/policies/retrieve_risk_details",
             json=revision_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
     @classmethod
     def update_rating_information(
-        cls,
-        property_id: str, line: str, limit: int, **kwargs
-        ) -> list:
+        cls, property_id: str, line: str, limit: int, **kwargs
+    ) -> list:
         """
         Add/updates line item limit
         :param property_id Property ID
@@ -970,16 +902,13 @@ class BritecoreAPIClient:
         _LOGGER.debug("Updating line item")
         revision_retrieve_json = {
             "property_id": property_id,
-            "items"      : [{
-                "id"   : line,
-                "limit": limit
-                }],
-            }
+            "items": [{"id": line, "limit": limit}],
+        }
         request_result = cls.do_request(
             path="/api/v2/policies/update_rating_information",
             json=revision_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -995,14 +924,12 @@ class BritecoreAPIClient:
         :rtype: Dict[str, float]
         """
         _LOGGER.debug("Re-rating policy")
-        revision_retrieve_json = {
-            "risk_id": risk_id
-            }
+        revision_retrieve_json = {"risk_id": risk_id}
         request_result = cls.do_request(
             path="/api/v2/policies/rate_risk",
             json=revision_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
 
@@ -1018,14 +945,12 @@ class BritecoreAPIClient:
         :rtype: bool
         """
         _LOGGER.debug("Rebuilding index")
-        rebuild_index = {
-            "only_build": index_to_rebuild
-            }
+        rebuild_index = {"only_build": index_to_rebuild}
         request_result = cls.do_request(
             path="/api/v2/utils/rebuild_search_index",
             json=rebuild_index,
             **kwargs,
-            )
+        )
         return cls.process_result(request_result)
 
     @classmethod
@@ -1040,14 +965,12 @@ class BritecoreAPIClient:
         :rtype: bool
         """
         _LOGGER.debug("Getting billing schedule")
-        billing_search = {
-            "policy_number": policy
-            }
+        billing_search = {"policy_number": policy}
         request_result = cls.do_request(
             path="/api/v2/policies/retrieve_billing_schedule_options",
             json=billing_search,
             **kwargs,
-            )
+        )
         return cls.process_result(request_result)
 
     @classmethod
@@ -1062,12 +985,10 @@ class BritecoreAPIClient:
         :rtype: bool
         """
         _LOGGER.debug("Getting claim information")
-        claim_search = {
-            "claim_id": claim_id
-            }
+        claim_search = {"claim_id": claim_id}
         request_result = cls.do_request(
             path="/api/v2/claims/get_claim", json=claim_search, **kwargs
-            )
+        )
         return cls.process_result(request_result)
 
     @classmethod
@@ -1081,16 +1002,16 @@ class BritecoreAPIClient:
         """
         _LOGGER.debug("Getting notes")
         notes_search = {
-            "id"       : policy_id,
-            "pageSize" : 1000,
-            "page"     : 0,
-            "ascending": False
-            }
+            "id": policy_id,
+            "pageSize": 1000,
+            "page": 0,
+            "ascending": False,
+        }
         request_result = cls.do_request(
             path="/api/v2/notes/retrieveNotes",
             json=notes_search,
             request_timeout=Timeout(cls.web_timeout_long),
-            )
+        )
         if not request_result:
             return []
         try:
@@ -1110,14 +1031,12 @@ class BritecoreAPIClient:
         :rtype: list
         """
         _LOGGER.debug("Getting attachments")
-        attachments_search = {
-            "policy_id": policy_id
-            }
+        attachments_search = {"policy_id": policy_id}
         request_result = cls.do_request(
             path="/api/v2/deliverables/list_attachments",
             json=attachments_search,
-            **kwargs
-            )
+            **kwargs,
+        )
 
         return cls.process_result(request_result)
 
@@ -1133,13 +1052,10 @@ class BritecoreAPIClient:
         :rtype: dict
         """
         _LOGGER.debug("Getting attachment")
-        file_search = {
-            "file_id": file_id
-            }
+        file_search = {"file_id": file_id}
         request_result = cls.do_request(
-            path="/api/v2/deliverables/get_attachment", json=file_search,
-            **kwargs
-            )
+            path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
+        )
 
         return cls.process_result(request_result)
 
@@ -1151,7 +1067,7 @@ class BritecoreAPIClient:
         x_id,
         contact_role: str = "namedInsured",
         **kwargs,
-        ) -> dict:
+    ) -> dict:
         """
         Add contact to revision
         :param revision_id: Revision ID
@@ -1172,99 +1088,87 @@ class BritecoreAPIClient:
 
         contact_add = {
             "revision_id": revision_id,
-            "role"       : contact_role,
-            }
+            "role": contact_role,
+        }
 
         if not x_id:
             request_result = cls.do_request(
-                path="/api/v2/policies/new_revision_contact", json=contact_add,
-                **kwargs
-                )
+                path="/api/v2/policies/new_revision_contact", json=contact_add, **kwargs
+            )
 
             contact_add_result = cls.process_result(request_result)
         else:
-            contact_add_result = {
-                "x_revisions_contact_id": x_id
-                }
+            contact_add_result = {"x_revisions_contact_id": x_id}
 
         if contact_add_result:
             x_contact = contact_add_result.get("x_revisions_contact_id")
             update_revision_json = {
                 "x_revisions_contact_id": x_contact,
-                "contact_id"            : contact_id,
-                }
+                "contact_id": contact_id,
+            }
 
             request_result = cls.do_request(
                 path="/api/v2/policies/update_revision_contact",
                 json=update_revision_json,
                 **kwargs,
-                )
+            )
 
         return cls.process_result(request_result)
 
     @classmethod
     def create_risk(cls, rev_id: str, **kwargs):
-        risk_json = {
-            "revision_id": rev_id
-            }
+        risk_json = {"revision_id": rev_id}
 
         request_result = cls.do_request(
             path="/api/v2/policies/create_risk", json=risk_json, **kwargs
-            )
+        )
 
         return cls.process_result(request_result)
 
     @classmethod
     def update_property_location(cls, prop_dict, **kwargs):
-        prop_json = {
-            "location": prop_dict
-            }
+        prop_json = {"location": prop_dict}
 
         request_result = cls.do_request(
-            path="/api/v2/policies/update_property_location", json=prop_json,
-            **kwargs
-            )
+            path="/api/v2/policies/update_property_location", json=prop_json, **kwargs
+        )
 
         return cls.process_result(request_result)
 
     @classmethod
     def update_inspection_dates(cls, policy_number, inspection_dict, **kwargs):
-        inspection_json = {
-            "policy_number": policy_number,
-            "payload"      : inspection_dict
-            }
+        inspection_json = {"policy_number": policy_number,
+                           "payload": inspection_dict}
         # inspection_json.update(inspection_json)
 
         request_result = cls.do_request(
-            path="/api/v2/inspections/update_inspection_dates", json=inspection_json,
-            **kwargs
-            )
+            path="/api/v2/inspections/update_inspection_dates",
+            json=inspection_json,
+            **kwargs,
+        )
 
         return cls.process_result(request_result)
 
     @classmethod
     def new_mortgagee(cls, property_id: str, **kwargs):
-        new_mort_json = {
-            "property_id": property_id
-            }
+        new_mort_json = {"property_id": property_id}
         result_request = cls.do_request(
             "/api/v2/policies/new_mortgagee", json=new_mort_json, **kwargs
-            )
+        )
 
         return cls.process_result(result_request)
 
     @classmethod
     def store_mortgagee(
-        cls,
-        property_contact_id: str, mortgagee_contact_id: str, **kwargs
-        ):
+        cls, property_contact_id: str, mortgagee_contact_id: str, **kwargs
+    ):
         store_mort_json = {
             "x_properties_contact_id": property_contact_id,
-            "mortgagee_contact_id"   : mortgagee_contact_id,
-            }
+            "mortgagee_contact_id": mortgagee_contact_id,
+        }
         result_request = cls.do_request(
             "/api/v2/policies/store_mortgagee", json=store_mort_json, **kwargs
-            )
+        )
 
         return cls.process_result(result_request)
 
@@ -1272,15 +1176,14 @@ class BritecoreAPIClient:
     def get_to_be_printed(cls, from_date, to_date, **kwargs):
         required_json = {
             "json_dict": {
-                "from_date"   : from_date,
-                "to_date"     : to_date,
-                "ignore_state": True
-                }
+                "from_date": from_date,
+                "to_date": to_date,
+                "ignore_state": True,
             }
+        }
         request_timeout = Timeout(120)
         request_retries = Retry(
-            total=3, status_forcelist=frozenset({502, 503, 504})
-            )
+            total=3, status_forcelist=frozenset({502, 503, 504}))
 
         result_request = cls.do_request(
             "/api/v1/printing/getToBePrinted",
@@ -1288,7 +1191,7 @@ class BritecoreAPIClient:
             request_timeout=request_timeout,
             request_retries=request_retries,
             **kwargs,
-            )
+        )
 
         return_data = None
         if result_request:
@@ -1299,44 +1202,40 @@ class BritecoreAPIClient:
     @classmethod
     def get_edeliverables(cls, date_from, date_to, **kwargs):
         required_json = {
-            "date_from"       : date_from,
-            "date_to"         : date_to,
+            "date_from": date_from,
+            "date_to": date_to,
             "unprocessed_only": False,
-            }
+        }
 
         result_request = cls.do_request(
             "/api/v2/deliverables/get_edeliverables",
             json=required_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(result_request)
 
     @classmethod
     def mark_as_printed(cls, file_ids, **kwargs):
-        required_json = {
-            "file_ids": file_ids
-            }
+        required_json = {"file_ids": file_ids}
 
         result_request = cls.do_request(
             "/api/v1/printing/markAsPrinted",
             json=required_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(result_request)
 
     @classmethod
     def list_files(cls, report_id, **kwargs):
-        required_json = {
-            "report_id": report_id
-            }
+        required_json = {"report_id": report_id}
 
         result_request = cls.do_request(
             "/api/v2/reports/list_files",
             json=required_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(result_request)
 
@@ -1346,47 +1245,39 @@ class BritecoreAPIClient:
 
         result_request = cls.do_request(
             "/api/v2/reports/retrieve_reports", json=required_json, **kwargs
-            )
+        )
 
         return cls.process_result(result_request)
 
     @classmethod
     def retrieve_report(cls, report_id, **kwargs):
-        required_json = {
-            "report_id": report_id
-            }
+        required_json = {"report_id": report_id}
 
         result_request = cls.do_request(
             "/api/v2/reports/retrieve_report", json=required_json, **kwargs
-            )
+        )
 
         return cls.process_result(result_request)
 
     @classmethod
     def retrieve_policy_snapshot(cls, policy_number, snapshot_date, **kwargs):
-        required_json = {
-            "policy_number": policy_number,
-            "snapshot_date": snapshot_date
-            }
+        required_json = {"policy_number": policy_number,
+                         "snapshot_date": snapshot_date}
 
         result_request = cls.do_request(
-            "/api/v2/policies/retrieve_policy_snapshot", json=required_json,
-            **kwargs
-            )
+            "/api/v2/policies/retrieve_policy_snapshot", json=required_json, **kwargs
+        )
 
         return cls.process_result(result_request)
 
     @classmethod
     def find_contact_by_params(cls, name, **kwargs):
-
         _LOGGER.debug("Retrieving contact")
-        contact_retrieve_json = {
-            "name": name
-            }
+        contact_retrieve_json = {"name": name}
         request_result = cls.do_request(
             path="/api/v2/contacts/find_contact_by_params",
             json=contact_retrieve_json,
             **kwargs,
-            )
+        )
 
         return cls.process_result(request_result)
