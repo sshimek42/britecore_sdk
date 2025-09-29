@@ -21,8 +21,8 @@ settings.validators.register(
         env=["homestead", "wausau", "wausau_test"],
         must_exist=True,
         is_type_of=str,
-        ),
-Validator("api_key", is_type_of=str),
-    Validator("web_retry", "web_timeout", "web_timeout_long", is_type_of=int)
-    )
+    ),
+    Validator("api_key", is_type_of=str),
+    Validator("web_retry", "web_timeout", "web_timeout_long", is_type_of=int),
+)
 settings.validators.validate()
