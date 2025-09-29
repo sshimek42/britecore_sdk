@@ -260,7 +260,6 @@ def retrieve_contact_list(
     :return: Contacts
     :rtype: dict
     """
-    # _LOGGER.debug(f"Searching for {search_str}")
     contact_request_json = {
         "searchString": search_str,
         "filter": search_filter,
@@ -832,7 +831,6 @@ def new_revision_contact(
     :return: Attachment
     :rtype: dict
     """
-    # update_revision = None
     request_result = None
     _LOGGER.debug("Adding contact")
 
