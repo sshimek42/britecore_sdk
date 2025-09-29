@@ -422,7 +422,6 @@ class BritecorePhone:
             if phone_type == "":
                 phone_type = DEFAULT_PHONE_TYPE
             if phone_number == "" or phone_number == "0" or phone_number.strip() == "-":
-                # fixed_phone_number = []
                 break
             fixed_phone_number = {
                 "phone": self.fix_phone(phone_number),
@@ -531,8 +530,6 @@ class BritecoreContact:
             phone_number = [{}]
         if not email:
             email = [{}]
-        # if not contact_id and policy_number:
-        #     contact_id = policy_number
         final_contact = {
             "name": fix_business(name),
             "contact_id": contact_id,

@@ -52,9 +52,6 @@ class BritecoreAPIClient:
     base_url = None
 
     def __init__(self, target_site: str):
-        # self.target_site = target_site
-        # self.site_settings = site_settings = LoadClientSettings(
-        # ).load_config(target_site)
         self.api_key = None
         self.token_class = None
         self.use_api_key = None
@@ -76,8 +73,6 @@ class BritecoreAPIClient:
         self.site_settings = LoadClientSettings(target_site).load_config()
         BritecoreAPIClient.site_settings = self.site_settings
 
-        # self.site_settings = settings.__getattr__("default")
-        # self.site_settings += settings.__getattr__(self.run_on)
 
         self.enable_timers = True  # renamed from timers
         self.bad_url_error = "Invalid URL"  # renamed from bad_url_error
@@ -175,7 +170,6 @@ class BritecoreAPIClient:
         :return: Parsed data
         :rtype: Any
         """
-        # _LOGGER.debug("Processing result")
 
         if response is None:
             _LOGGER.error("Error - No response")
@@ -194,10 +188,6 @@ class BritecoreAPIClient:
 
         if not result:
             _LOGGER.error(f"Error - {message}")
-            # raise BritecoreError.NoDataReturned(
-            #     f"Error - {message}",
-            #     response.status,
-            # )
             return None
 
         data = json_result.get("data")
@@ -249,15 +239,12 @@ class BritecoreAPIClient:
             request_timeout = BritecoreAPIClient.web_timeout
         if not request_retries:
             request_retries = BritecoreAPIClient.web_retry
-        # if not timer:
-        #     timer = cls.enable_timers
 
         if request_headers is None or BritecoreAPIClient.use_api_key:
             request_headers = {}
         if not request_headers and not BritecoreAPIClient.use_api_key:
             request_headers = BritecoreAPIClient.token_class.get_authorization_headers()
 
-        # cls._ensure_logger()
 
         request_url = _full_url(BritecoreAPIClient.base_url, path)
 
