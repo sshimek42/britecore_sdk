@@ -3,9 +3,9 @@
 import datetime
 import logging
 import re
+from ast import literal_eval
 from pathlib import Path
 from typing import Dict, Optional, Pattern
-from ast import literal_eval
 
 import pandas as pd
 from britecore_exceptions import BritecoreError
@@ -114,8 +114,7 @@ def fix_business(name: str) -> str:
     Returns:
         Name with standardized capitalization for business suffixes.
     """
-    check_business = re.findall(
-        COMPILED_REGEXES.get("reg_business_name"), name)
+    check_business = re.findall(COMPILED_REGEXES.get("reg_business_name"), name)
     if check_business:
         for each_business in check_business:
             name = name.replace(
@@ -132,8 +131,7 @@ def fix_apostrophe(name: str) -> str:
     :return: Fixed name
     """
     name = re.sub(
-        COMPILED_REGEXES["reg_double_apostrophe"], lambda mo: mo.group(
-            0).lower(), name
+        COMPILED_REGEXES["reg_double_apostrophe"], lambda mo: mo.group(0).lower(), name
     )
     return name
 
@@ -222,8 +220,7 @@ class BritecoreAddress:
     def fix_county(cls, county: str, zipcode: str) -> str:
         tmp_zipcode = zipcode[:5]
         county_lookup = ZIP_CODE_DF
-        county_lookup = county_lookup.loc[county_lookup["postal code"]
-                                          == tmp_zipcode]
+        county_lookup = county_lookup.loc[county_lookup["postal code"] == tmp_zipcode]
 
         try:
             county_lookup = county_lookup["admin name2"].values[0]
@@ -250,8 +247,7 @@ class BritecoreAddress:
         tmp_zipcode = zipcode[:5]
 
         city_lookup = ZIP_CODE_DF
-        city_lookup = city_lookup.loc[city_lookup["postal code"]
-                                      == tmp_zipcode]
+        city_lookup = city_lookup.loc[city_lookup["postal code"] == tmp_zipcode]
         try:
             city_lookup = city_lookup["place name"].values[0]
         except IndexError:
@@ -280,8 +276,7 @@ class BritecoreAddress:
     def fix_zipcode(zipcode: str) -> str:
         zipcode = zipcode.strip().replace("-", "").zfill(5)
         if zipcode == "00000" or len(zipcode) > 10 or not zipcode.isnumeric():
-            raise BritecoreError.InvalidAddress(
-                f"Invalid Zip Code - {zipcode}")
+            raise BritecoreError.InvalidAddress(f"Invalid Zip Code - {zipcode}")
         zipcode = re.sub(COMPILED_REGEXES.get("reg_zip"), "", zipcode)
         if len(zipcode) > 5:
             zipcode = zipcode[:5] + "-" + zipcode[5:]
@@ -296,8 +291,7 @@ class BritecoreAddress:
         tmp_zipcode = zipcode[:5]
 
         state_lookup = ZIP_CODE_DF
-        state_lookup = state_lookup.loc[state_lookup["postal code"]
-                                        == tmp_zipcode]
+        state_lookup = state_lookup.loc[state_lookup["postal code"] == tmp_zipcode]
         try:
             state_lookup = state_lookup["admin code1"].values[0]
         except IndexError:
@@ -465,8 +459,7 @@ class BritecoreEmail:
             if email_type == "":
                 email_type = DEFAULT_EMAIL_TYPE
 
-            fixed_email = {"email": self.fix_email(
-                email_address), "type": email_type}
+            fixed_email = {"email": self.fix_email(email_address), "type": email_type}
 
             email_address_list.append(fixed_email)
         fixed_email = email_address_list
@@ -509,7 +502,7 @@ class BritecoreContact:
         _LOGGER = scl.get_parent_logger()
 
         self.name = name
-        self.address = (address)
+        self.address = address
         self.policy_number = policy_number
         self.phone_number = phone_number
         self.email = email
