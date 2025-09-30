@@ -5,6 +5,7 @@ import logging
 import re
 from pathlib import Path
 from typing import Dict, Optional, Pattern
+from ast import literal_eval
 
 import pandas as pd
 from britecore_exceptions import BritecoreError
@@ -32,8 +33,7 @@ COMMON_CITY_REPLACEMENT: Dict[str, str] = {"Depere": "De Pere"}
 # replacements.
 COMPILED_REGEXES: dict[str, Pattern[str] | dict[Pattern[str], str]] = {
     "search_name_mult": re.compile(
-        r"^(\w*\W\w?\W|\w*\W)(\w*)\s?(\w*)?\s(&)\s(\w*\W\w?\W|\w*)\W?(\w*)?("
-        r"\W\w*)?"
+        r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?(\W*\w*)?"
     ),
     "search_name_single": re.compile(
         r"^(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)("
@@ -168,8 +168,7 @@ class BritecoreAddress:
         self.full_address = full_address
 
     def process_address(self) -> list:
-        full_address = self.full_address
-
+        full_address = literal_eval(str(self.full_address)[1:-2])
         if not full_address:
             raise BritecoreError.InvalidAddress("Missing Address")
 
@@ -211,7 +210,7 @@ class BritecoreAddress:
                 "address_country": "USA",
                 "address_zip": zip_code,
                 "type": full_address.get("type", DEFAULT_ADDRESS_TYPE),
-                # "address_county": self.fix_county(county, self.zip_code[:5]),
+                "address_county": self.fix_county(county, zip_code[:5]),
                 "address_city": self.fix_city(city, zip_code),
             }
         ]
@@ -511,7 +510,7 @@ class BritecoreContact:
         _LOGGER = scl.get_parent_logger()
 
         self.name = name
-        self.address = (address,)
+        self.address = (address)
         self.policy_number = policy_number
         self.phone_number = phone_number
         self.email = email
