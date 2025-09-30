@@ -1,5 +1,6 @@
 """Wrapper for BriteCore API calls"""
 
+import os
 import sys
 from json import dumps, loads
 from typing import Any, Dict, Optional  # added typing
@@ -26,6 +27,8 @@ LOGGER_UPDATED = False
 
 class LoadClientSettings:
     def __init__(self, target_site):
+        if not target_site:
+            target_site = os.environ.get("target_site")
         self.target_site = target_site
 
     def load_config(self):
@@ -116,7 +119,9 @@ class BritecoreAPIClient:
 
         timeout = Timeout(self.web_timeout)
         retries = Retry(
-            total=self.web_retry, status_forcelist=frozenset({502, 503, 504})
+            total=self.web_retry, status_forcelist=frozenset({502, 503,
+                                                              504, 500}),
+            backoff_factor=0.5,
         )
         self.http = urllib3.PoolManager(
             retries=retries, timeout=timeout, maxsize=5, num_pools=5

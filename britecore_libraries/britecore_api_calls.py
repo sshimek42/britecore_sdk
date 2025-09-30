@@ -1,3 +1,4 @@
+import os
 from json import loads
 from typing import Any, Callable, Dict
 import pyinputplus as py_menu
@@ -8,8 +9,11 @@ from urllib3.util import Retry, Timeout
 from britecore_api_client import BritecoreAPIClient, _LOGGER
 
 web_timeout_long = BritecoreAPIClient.web_timeout_long
+# target_site = os.environ.get("target_site")
 
-def load_import(target_site):
+def load_import(target_site=None):
+    if not target_site:
+        target_site = os.environ.get("target_site")
     _api_client = BritecoreAPIClient(target_site).init_client()
 
 def get_export_line_file(
@@ -290,7 +294,7 @@ def retrieve_contact_list(
         "searchString": search_str,
         "filter"      : search_filter,
         "currentPage" : 1,
-        "pageSize"    : 10000,
+        "pageSize"    : 10
         }
     request_result = BritecoreAPIClient.do_request(
         path="/api/v1/contacts/retrieveContactList",
@@ -322,7 +326,7 @@ def retrieve_policy_list_from_user(
             "order": "asc"
             },
         "current_page" : 1,
-        "page_size"    : 10000,
+        "page_size"    : 100,
         "search_string": contact_name,
         }
     request_result = BritecoreAPIClient.do_request(
