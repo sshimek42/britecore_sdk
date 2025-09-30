@@ -5,12 +5,10 @@ import sys
 from json import dumps, loads
 from typing import Any, Dict, Optional  # added typing
 
-
 import sclogging.sclogging_main as scl
 import urllib3
 from britecore_exceptions import BritecoreError
 from britecore_oauth_token_manager import OAuthToken
-from urllib3 import HTTPResponse
 from urllib3.exceptions import (
     ProtocolError,
     RequestError,
@@ -40,7 +38,7 @@ class LoadClientSettings:
         return site_settings
 
 
-def _full_url(host:str, path: str) -> str:
+def _full_url(host: str, path: str) -> str:
     """Build a full URL using the configured base_url."""
     return Url(host=host, path=path).url
 
@@ -56,9 +54,6 @@ class BritecoreAPIClient:
     base_url = None
 
     def __init__(self, target_site: str):
-        # self.target_site = target_site
-        # self.site_settings = site_settings = LoadClientSettings(
-        # ).load_config(target_site)
         self.api_key = None
         self.token_class = None
         self.use_api_key = None
@@ -73,16 +68,12 @@ class BritecoreAPIClient:
         self.target_site = target_site
 
     def init_client(self):
-
         target_site = self.target_site
 
         self._ensure_logger()
 
         self.site_settings = LoadClientSettings(target_site).load_config()
         BritecoreAPIClient.site_settings = self.site_settings
-
-        # self.site_settings = settings.__getattr__("default")
-        # self.site_settings += settings.__getattr__(self.run_on)
 
         self.enable_timers = True  # renamed from timers
         self.bad_url_error = "Invalid URL"  # renamed from bad_url_error
@@ -158,8 +149,6 @@ class BritecoreAPIClient:
 
         BritecoreAPIClient.token_class = self.token_class
 
-
-
     # helper utilities
 
     @classmethod
@@ -184,7 +173,6 @@ class BritecoreAPIClient:
         :return: Parsed data
         :rtype: Any
         """
-        # _LOGGER.debug("Processing result")
 
         if response is None:
             _LOGGER.error("Error - No response")
@@ -203,10 +191,6 @@ class BritecoreAPIClient:
 
         if not result:
             _LOGGER.error(f"Error - {message}")
-            # raise BritecoreError.NoDataReturned(
-            #     f"Error - {message}",
-            #     response.status,
-            # )
             return None
 
         data = json_result.get("data")
@@ -258,17 +242,13 @@ class BritecoreAPIClient:
             request_timeout = BritecoreAPIClient.web_timeout
         if not request_retries:
             request_retries = BritecoreAPIClient.web_retry
-        # if not timer:
-        #     timer = cls.enable_timers
 
         if request_headers is None or BritecoreAPIClient.use_api_key:
             request_headers = {}
         if not request_headers and not BritecoreAPIClient.use_api_key:
             request_headers = BritecoreAPIClient.token_class.get_authorization_headers()
 
-        # cls._ensure_logger()
-
-        request_url = _full_url(BritecoreAPIClient.base_url,path)
+        request_url = _full_url(BritecoreAPIClient.base_url, path)
 
         request_result: Optional[urllib3.BaseHTTPResponse] = None
         try:
@@ -307,4 +287,3 @@ class BritecoreAPIClient:
             _LOGGER.error("Error getting request")
 
         return request_result
-
