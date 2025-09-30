@@ -120,10 +120,6 @@ def process_result(response: urllib3.HTTPResponse, logs: bool = False) -> Any:
 
     if not result:
         _LOGGER.error(f"Error - {message}")
-        # raise BritecoreError.NoDataReturned(
-        #     f"Error - {message}",
-        #     response.status,
-        # )
         return None
 
     data = json_result.get("data")
