@@ -35,9 +35,7 @@ COMPILED_REGEXES: dict[str, Pattern[str] | dict[Pattern[str], str]] = {
     "search_name_mult": re.compile(
         r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?(\W*\w*)?"
     ),
-    "search_name_single": re.compile(
-        r"^(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)(\W\w*)?"
-    ),
+    "search_name_single": re.compile(r"^(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)(\W\w*)?"),
     "search_email": re.compile(
         r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
         r"2,64}"
