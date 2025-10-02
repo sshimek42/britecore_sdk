@@ -56,24 +56,31 @@ cd britecore_libraries
 ```
 
 ### 2. Create Virtual Environment
+```bash
 python -m virtualenv .venv
-
-# Windows
+```
+#### Windows
+```bash
 .\.venv\Scripts\activate
-
-# macOS/Linux
+```
+#### macOS/Linux
+```bash```
 source .venv/bin/activate
-
+```
 ### 3. Install Dependencies
+```bash
 pip install -r requirements.txt
+```
 
 ### 4. Install Package (Development Mode)
+```bash
 pip install -e .
-
+```
 ## Configuration
 ### Settings File
 Create or edit : `britecore_libraries/settings.toml`
 
+```toml
 [default]
 base_url = "your-britecore-instance.britecorepro.com"
 web_timeout = 30
@@ -105,24 +112,31 @@ api_key = "your_api_key"
 autocommit = true
 
 db_conn_string = "DRIVER={SQL Server};SERVER=server;DATABASE=db;UID=user;PWD=pass"
+```
 
-### Environment Variables
+# Environment Variables
 Alternatively, set the target site via environment variable:
-
-# Windows
+## Windows
+```bash
 set target_site=your-site-name
+```
 
-# macOS/Linux
+## macOS/Linux
+```bash
 export target_site=your-site-name
+```
 
 ## Usage
-### API Client Initialization
 
-from britecore_libraries.britecore_api_calls import BritecoreAPIService
+```python
+### API Client Initialization
+from britecore_libraries.britecore_api_client import BritecoreAPIClient
 
 # Initialize API service
-api_service = BritecoreAPIService(target_site="your-site")
-
+api_service = BritecoreAPIClient(target_site="your-site").init_client()
+```
+### Extract line configuration
+```python
 # Get all effective dates
 dates = api_service.get_all_effective_dates()
 
@@ -132,69 +146,46 @@ states = api_service.get_all_states(effective_date_id=123)
 # Get lines for a date and state
 lines = api_service.get_all_lines(
     effective_date_id=123,
-    location_id=456
-    )
-
-### Interactive Line Selection
-from britecore_libraries.britecore_api_calls import (
-    InteractiveLineSelector,
-    BritecoreAPIService,
-    )
-
-# Create service and selector
-api_service = BritecoreAPIService()
-selector = InteractiveLineSelector(api_service)
-
-# Interactive menu-driven selection
-selection = selector.select_line_interactively()
-
-print(f"Selected: {selection.line_name}")
-print(f"Line ID: {selection.line_id}")
-
-### Export Line Data
-from britecore_libraries.britecore_api_calls import (
-    BritecoreAPIService,
-    LineSelectionResult,
-    )
-
-api_service = BritecoreAPIService()
-
-selection = LineSelectionResult(
-    effective_date_id=123,
-    state_id=456,
-    line_id=789,
-    date_name="2024-01",
-    state_name="California",
-    line_name="Homeowners"
+    state_id=456
     )
 
 # Export line file
+"""Date ID, State ID, Line ID"""
 export_data = api_service.get_export_line_file(
-    selection=selection,
+    line=(
+    123,
+    456,
+    789),
+    line_name="Line Name",
     line_type="Line"
     )
-
+```
 ### Data Validation
+```python
 from britecore_libraries.britecore_class import (
     BritecoreAddress,
     BritecorePhone,
     BritecoreEmail,
     BritecoreContact,
     )
-
-# Address validation
+```
+### Address validation
+```python
 address = BritecoreAddress("123 Main St, Springfield, IL 62701")
 cleaned_address = address.process_address()
-
-# Phone validation
+```
+### Phone validation
+```python
 phone = BritecorePhone("555-123-4567")
 cleaned_phone = phone.process_phone()
-
-# Email validation
+```
+### Email validation
+```python
 email = BritecoreEmail("user@example.com")
 cleaned_email = email.process_email()
-
-# Contact processing
+```
+### Contact processing
+```python
 contact = BritecoreContact(
     name="John Doe",
     address="123 Main St",
@@ -203,24 +194,27 @@ contact = BritecoreContact(
     contact_type="Named Insured"
     )
 contact.process_contact()
-
-### Policy Management
-# Add line item to policy
+```
+## Policy Management
+### Add line item to policy
+```python
 success = api_service.add_line_item(
     revision_id="policy-revision-uuid",
     line_id="line-item-uuid"
     )
-
-# Get policies with specific line item
+```
+### Get policies with specific line item
+```python
 policies = api_service.get_policies_with_line_item(line_id="line-uuid")
 
 # Retrieve policy IDs
 revision_id, property_id = api_service.retrieve_policy_ids(
     policy_number="POL-12345"
     )
-
+```
 ## Advanced Features
 ### Custom Timeout Configuration
+```python
 from urllib3.util import Timeout, Retry
 
 # Custom timeout
@@ -239,8 +233,9 @@ response = api_service.api_client.do_request(
     request_timeout=custom_timeout,
     request_retries=custom_retry
 )
-
+```
 ### Direct API Client Usage
+```python
 from britecore_libraries.britecore_api_client import BritecoreAPIClient
 
 client = BritecoreAPIClient("your-site").init_client()
@@ -256,10 +251,10 @@ response = client.do_request(
 
 # Process response
 data = client.process_result(response, logs=True)
-
+```
 ## Logging
 The library uses structured logging via `sclogging`. Configure logging level: 
-
+```python
 import logging
 import sclogging.sclogging_main as scl
 
@@ -269,25 +264,29 @@ scl.set_log_level(logging.DEBUG)
 # Get logger
 logger = scl.get_logger(__name__)
 logger.info("Custom log message")
+```
 
 ## Testing
-# Run tests (if available)
+### Run tests (if available)
+```bash
 python -m pytest tests/ -v
-
-# Run specific test file
+````
+### Run specific test file
+```bash
 python -m pytest tests/test_api_client.py -v
-
+````
 ## Error Handling
 The library provides custom exception types:
-from britecore_libraries.britecore_api_client import BritecoreError
+```python
+from britecore_libraries.britecore_exceptions import BritecoreError
 
 try:
-    api_service = BritecoreAPIService()
+    api_service = BritecoreAPIClient()
 except BritecoreError.BritecoreKeyError as e:
     print(f"Authentication error: {e}")
 except Exception as e:
     print(f"Unexpected error: {e}")
-
+```
 ## Development
 ### Code Quality
 The project uses DeepSource for static analysis. Configuration is in . `.deepsource.toml`
@@ -305,7 +304,7 @@ The project uses DeepSource for static analysis. Configuration is in . `.deepsou
 - **Invalid URL**: Check format (no trailing slash, no protocol) `base_url`
 
 ### Connection Issues
--  **Timeout**: Increase or values`web_timeout` or `web_timeout_long`
+- **Timeout**: Increase or values`web_timeout` or `web_timeout_long`
 - **Retry Exhausted**: Check network connectivity and API availability
 - **SSL Errors**: Verify SSL certificates are valid
 
@@ -323,13 +322,3 @@ The project uses DeepSource for static analysis. Configuration is in . `.deepsou
 - ODBC database wrapper
 
 **Note**: This library is designed for use with BriteCore insurance management systems. Ensure you have proper API credentials and permissions before use.
-
-
-This comprehensive README provides:
-- Clear project overview and feature list
-- Detailed installation instructions
-- Configuration examples
-- Multiple usage examples for different features
-- Advanced configuration options
-- Troubleshooting guide
-- Development guidelines
