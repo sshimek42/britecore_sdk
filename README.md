@@ -64,7 +64,7 @@ python -m virtualenv .venv
 .\.venv\Scripts\activate
 ```
 #### macOS/Linux
-```bash```
+```bash
 source .venv/bin/activate
 ```
 ### 3. Install Dependencies
@@ -82,23 +82,10 @@ Create or edit : `britecore_libraries/settings.toml`
 
 ```toml
 [default]
-base_url = "your-britecore-instance.britecorepro.com"
+base_url = "your-britecore-instance.britecore.com"
 web_timeout = 30
 web_timeout_long = 120
 web_retry = 3
-
-# OAuth Configuration
-client_id = "your_client_id"
-client_secret = "your_client_secret"
-
-# OR API Key Configuration (if OAuth not available)
-api_key = "your_api_key"
-
-# Database Configuration (optional)
-[default.db_conn_options]
-autocommit = true
-
-db_conn_string = "DRIVER={SQL Server};SERVER=server;DATABASE=db;UID=user;PWD=pass"
 
 # OAuth Configuration
 client_id = "your_client_id"
