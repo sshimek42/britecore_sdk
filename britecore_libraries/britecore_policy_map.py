@@ -41,7 +41,7 @@ policy_map = {
     "Condo - HO6": "Farmowner",
 }
 
-britcore_policy_type_map = {
+britecore_policy_type_map = {
     "production": {
         "effective_date_id": "f8349db6-9192-491d-ac4f-644a2babb56e",
         "Farmowner": "efd4d0d7-2700-4621-acf4-5eb3574d7d4c",
