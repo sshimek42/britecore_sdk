@@ -36,8 +36,7 @@ COMPILED_REGEXES: dict[str, Pattern[str] | dict[Pattern[str], str]] = {
         r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?(\W*\w*)?"
     ),
     "search_name_single": re.compile(
-        r"^(\w*\W\w|\w*\W*)(\W\w*|\W\w*\W)("
-        r"\W\w.*|\b)"
+        r"^(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)(\W\w*)?"
     ),
     "search_email": re.compile(
         r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
@@ -166,9 +165,12 @@ class BritecoreAddress:
         self.full_address = full_address
 
     def process_address(self) -> list:
-        full_address = literal_eval(str(self.full_address)[1:-2])
+        full_address = self.full_address
         if not full_address:
             raise BritecoreError.InvalidAddress("Missing Address")
+
+        if isinstance(self.full_address, str):
+            full_address = literal_eval(str(self.full_address)[1:-2])
 
         zip_code = full_address.get("address_zip", "").strip()
         address1 = full_address.get("address_line1", "").strip()
@@ -511,7 +513,7 @@ class BritecoreContact:
 
     def process_contact(self):
         name = self.name
-        address = (self.address,)
+        address = self.address
         policy_number = self.policy_number
         phone_number = self.phone_number
         email = self.email
