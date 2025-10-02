@@ -126,8 +126,7 @@ def line_menu() -> tuple[
     menu_options = {}
     menu_default = ""
     for make_menu in get_dates:
-        menu_options.update(
-            {make_menu.get("description"): make_menu.get("id")})
+        menu_options.update({make_menu.get("description"): make_menu.get("id")})
         menu_default = make_menu.get("description")
     eff_date = print_menu("Date", menu_options, menu_default)
     eff_date_json = {"effective_date_id": eff_date[0]}
@@ -267,7 +266,7 @@ def retrieve_contact_list(
         "searchString": search_str,
         "filter": search_filter,
         "currentPage": 1,
-        "pageSize": 10
+        "pageSize": 10,
     }
     request_result = BritecoreAPIClient.do_request(
         path="/api/v1/contacts/retrieveContactList",
@@ -303,8 +302,7 @@ def retrieve_policy_list_from_user(
         json=user_request_json,
         **kwargs,
     )
-    user_json = BritecoreAPIClient.process_result(
-        request_result).get("records")
+    user_json = BritecoreAPIClient.process_result(request_result).get("records")
 
     policy_list = []
 
@@ -462,8 +460,7 @@ def create_policy(
     policy_create = True
     try:
         policy_exists = (
-            loads(request_result.data.decode(
-                "utf-8")).get("data").get("exists")
+            loads(request_result.data.decode("utf-8")).get("data").get("exists")
         )
     except AttributeError:
         policy_exists = False
@@ -888,8 +885,7 @@ def update_property_location(prop_dict, **kwargs):
 
 
 def update_inspection_dates(policy_number, inspection_dict, **kwargs):
-    inspection_json = {"policy_number": policy_number,
-                       "payload": inspection_dict}
+    inspection_json = {"policy_number": policy_number, "payload": inspection_dict}
     # inspection_json.update(inspection_json)
 
     request_result = BritecoreAPIClient.do_request(
@@ -931,8 +927,7 @@ def get_to_be_printed(from_date, to_date, **kwargs):
         }
     }
     request_timeout = Timeout(120)
-    request_retries = Retry(
-        total=3, status_forcelist=frozenset({502, 503, 504}))
+    request_retries = Retry(total=3, status_forcelist=frozenset({502, 503, 504}))
 
     result_request = BritecoreAPIClient.do_request(
         "/api/v1/printing/getToBePrinted",
@@ -1010,8 +1005,7 @@ def retrieve_report(report_id, **kwargs):
 
 
 def retrieve_policy_snapshot(policy_number, snapshot_date, **kwargs):
-    required_json = {"policy_number": policy_number,
-                     "snapshot_date": snapshot_date}
+    required_json = {"policy_number": policy_number, "snapshot_date": snapshot_date}
 
     result_request = BritecoreAPIClient.do_request(
         "/api/v2/policies/retrieve_policy_snapshot", json=required_json, **kwargs
