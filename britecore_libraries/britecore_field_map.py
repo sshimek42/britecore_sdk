@@ -36,6 +36,7 @@ field_map_to_britecore: CarrierFieldMap = {
             "FROM DATE": "effective_date",
             "INSPECTION DATE LAST": "previous_inspection_date",
             "INSPECTION DATE NEXT": "next_inspection_date",
+            "POLICY TYPE": "policy_type",
             "address_fields": [
                 "ADDR 1",
                 "ADDR 2",
