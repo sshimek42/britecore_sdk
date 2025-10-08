@@ -43,19 +43,6 @@ policy_map = {
 
 britecore_policy_type_map = {
     "production": {
-        "effective_date_id": "f8349db6-9192-491d-ac4f-644a2babb56e",
-        "Farmowner": "efd4d0d7-2700-4621-acf4-5eb3574d7d4c",
-        "Homeowner": "fc4971b1-f8c2-4223-bf22-a5c106bc48cf",
-        "Mobilehome Owner": "e5504513-d76b-430c-905a-6a921d981e11",
-        "Dwelling": "d5b0fb29-6a54-4782-870c-3787b8e04617",
-        "Commercial": "864acb4d-6639-4d60-8276-babeea5d9de9",
-        "Mobilehome": "ed950b33-96c3-4dda-8d44-884c1bd3804b",
-        "BOP": "daf52d71-2ada-4afd-a36b-2d18b48d8a10",
-        "Artisan": "3e0b7f15-64be-41a6-aed7-d68092f24ce8",
-        "Personal Umbrella": "f316c1c7-f8e5-458c-aa1a-0fe24c918ace",
-        "Farm Umbrella": "076c0831-2c0e-4b90-854a-5b86fb7b22bf",
-    },
-    "test": {
         "effective_date_id": "",
         "Farmowner": "",
         "Homeowner": "",
@@ -67,5 +54,18 @@ britecore_policy_type_map = {
         "Artisan": "",
         "Personal Umbrella": "",
         "Farm Umbrella": "",
+    },
+    "test": {
+        "effective_date_id": "f8349db6-9192-491d-ac4f-644a2babb56e",
+        "Farmowner": "efd4d0d7-2700-4621-acf4-5eb3574d7d4c",
+        "Homeowner": "fc4971b1-f8c2-4223-bf22-a5c106bc48cf",
+        "Mobilehome Owner": "e5504513-d76b-430c-905a-6a921d981e11",
+        "Dwelling": "d5b0fb29-6a54-4782-870c-3787b8e04617",
+        "Commercial": "864acb4d-6639-4d60-8276-babeea5d9de9",
+        "Mobilehome": "ed950b33-96c3-4dda-8d44-884c1bd3804b",
+        "BOP": "95f3007d-b474-4378-ad3e-189b3da55d72",
+        "Artisan": "3e0b7f15-64be-41a6-aed7-d68092f24ce8",
+        "Personal Umbrella": "f316c1c7-f8e5-458c-aa1a-0fe24c918ace",
+        "Farm Umbrella": "076c0831-2c0e-4b90-854a-5b86fb7b22bf",
     },
 }
