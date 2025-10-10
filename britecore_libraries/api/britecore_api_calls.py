@@ -8,12 +8,12 @@ import pyinputplus as py_menu
 from urllib3 import HTTPResponse
 from urllib3.util import Retry, Timeout
 
-from britecore_api_client import BritecoreAPIClient, _LOGGER
+from api.britecore_api_client import BritecoreAPIClient, _LOGGER
 
 web_timeout_long = BritecoreAPIClient.web_timeout_long
 
 
-def load_import(target_site=None):
+def init_api_client(target_site=None):
     if not target_site:
         target_site = os.environ.get("target_site")
     _api_client = BritecoreAPIClient(target_site).init_client()
@@ -1144,7 +1144,7 @@ def find_contact_by_params(name, **kwargs):
 
 
 def create_full_quote(
-    policy_number,
+    number,
     policy_type_id,
     agency_id,
     named_insureds,
@@ -1160,7 +1160,7 @@ def create_full_quote(
         underwriting_questions = []
 
     quote_json = {
-        "number"                : policy_number,
+        "number"                : number,
         "number_origin"         : policy_number_origin,
         "underwriting_questions": underwriting_questions,
         "effective_date"        : datetime.today().strftime('%Y-%m-%d'),

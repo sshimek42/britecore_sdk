@@ -239,5 +239,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-britecore_libraries/.secrets.toml
-britecore_libraries/settings.toml
+britecore_libraries/config/.secrets.toml
+britecore_libraries/config/settings.toml

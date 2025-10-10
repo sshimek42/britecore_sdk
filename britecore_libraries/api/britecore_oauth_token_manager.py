@@ -5,7 +5,7 @@ from typing import Mapping  # typing added
 
 import sclogging.sclogging_main as scl
 import urllib3
-from britecore_exceptions import BritecoreError
+from classes.britecore_exceptions import BritecoreError
 from urllib3 import Retry, Timeout
 from urllib3.util import Url
 
@@ -39,7 +39,7 @@ class OAuthToken:
         parsed = Url.from_url(url)
         scheme = parsed.scheme or "https"
         host = parsed.host or url  # fallback if a bare host was passed
-        self.scope = Url(scheme=scheme, host=host, path="/api").url
+        self.scope = Url(scheme=scheme, host=host, path="").url
         self.url = Url(scheme=scheme, host=host, path="/api/auth/oauth2/token").url
         self.token: str = ""
         self.token_time: datetime = datetime(1970, 1, 1)

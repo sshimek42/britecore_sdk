@@ -7,8 +7,8 @@ from typing import Any, Callable, Dict, Optional  # added typing
 import pyinputplus as py_menu
 import sclogging.sclogging_main as scl
 import urllib3
-from britecore_exceptions import BritecoreError
-from britecore_oauth_token_manager import OAuthToken
+from utils.britecore_exceptions import BritecoreError
+from api.britecore_oauth_token_manager import OAuthToken
 from urllib3.exceptions import (
     ProtocolError,
     RequestError,

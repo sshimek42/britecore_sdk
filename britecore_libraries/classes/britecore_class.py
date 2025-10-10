@@ -8,13 +8,13 @@ from pathlib import Path
 from typing import Dict, Optional, Pattern
 
 import pandas as pd
-from britecore_exceptions import BritecoreError
-from britecore_field_map import (
+from utils.britecore_exceptions import BritecoreError
+from maps.britecore_field_map import (
     field_map_to_britecore,
     field_map_to_named_insured,
     field_map_to_risk_location,
 )
-from britecore_policy_map import britcore_policy_type_map, policy_map
+from maps.britecore_policy_map import britcore_policy_type_map, policy_map
 from sclogging import sclogging_main as scl
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
@@ -538,7 +538,7 @@ class BritecoreContact:
 
 
 class BritecorePolicy:
-    """Policy class"""
+    """Policy classes"""
 
     def __init__(
         self,
