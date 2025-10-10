@@ -19,7 +19,6 @@ policy_map = {
     "NM": "Mobilehome",
     "UMP": "Personal Umbrella",
     "UMF": "Farm Umbrella",
-    "Farmowner - FO2": "Farmowner",
     "Homeowner - HO3": "Homeowner",
     "Dwelling Fire and EC - Form 2": "Dwelling",
     "Mobilehome - Form 2": "Mobilehome",
