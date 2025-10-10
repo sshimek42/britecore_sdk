@@ -117,7 +117,7 @@ export target_site=your-site-name
 
 ```python
 ### API Client Initialization
-from britecore_libraries.britecore_api_client import BritecoreAPIClient
+from api.britecore_api_client import BritecoreAPIClient
 
 # Initialize API service
 api_service = BritecoreAPIClient(target_site="your-site").init_client()
@@ -148,8 +148,9 @@ export_data = api_service.get_export_line_file(
     )
 ```
 ### Data Validation
+
 ```python
-from britecore_libraries.britecore_class import (
+from britecore_libraries import (
     BritecoreAddress,
     BritecorePhone,
     BritecoreEmail,
@@ -222,8 +223,9 @@ response = api_service.api_client.do_request(
 )
 ```
 ### Direct API Client Usage
+
 ```python
-from britecore_libraries.britecore_api_client import BritecoreAPIClient
+from api.britecore_api_client import BritecoreAPIClient
 
 client = BritecoreAPIClient("your-site").init_client()
 
@@ -264,8 +266,9 @@ python -m pytest tests/test_api_client.py -v
 ````
 ## Error Handling
 The library provides custom exception types:
+
 ```python
-from britecore_libraries.britecore_exceptions import BritecoreError
+from utils import BritecoreError
 
 try:
     api_service = BritecoreAPIClient()

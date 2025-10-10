@@ -3,7 +3,7 @@ class BritecoreError:
     Defines a collection of custom exceptions related to Britecore
     applications.
 
-    This class provides specific error types for handling various situations
+    This classes provides specific error types for handling various situations
     such as
     invalid data, missing tokens, or invalid input formats. It is designed
     to be used
