@@ -79,6 +79,7 @@ field_map_to_britecore: CarrierFieldMap = {
             "Email Address": "email",
             "Policy #": "policy_number",
             "Policy Eff Date": "effective_date",
+            "Policy Type": "policy_type",
             "address_fields": [
                 "Address Line 1",
                 "Address Line 2",
