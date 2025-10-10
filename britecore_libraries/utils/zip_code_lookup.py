@@ -7,8 +7,8 @@ import_file = os.path.join(os.path.dirname(__file__), "zip_codes.csv")
 
 logger = scl.get_logger()
 
-def load_zip_codes():
 
+def load_zip_codes():
     loaded_zip_codes = None
 
     try:
@@ -18,5 +18,5 @@ def load_zip_codes():
 
     return loaded_zip_codes
 
-zip_codes = load_zip_codes()
 
+zip_codes = load_zip_codes()
