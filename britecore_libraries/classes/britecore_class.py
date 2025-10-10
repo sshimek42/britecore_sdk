@@ -2,22 +2,27 @@
 
 import datetime
 import logging
+import os
 import re
 from ast import literal_eval
-from pathlib import Path
+
 from typing import Dict, Optional, Pattern
 
-import pandas as pd
-from utils.britecore_exceptions import BritecoreError
+
+from  classes.britecore_exceptions import BritecoreError
 from maps.britecore_field_map import (
     field_map_to_britecore,
     field_map_to_named_insured,
-    field_map_to_risk_location,
+    field_map_to_risk_location
 )
-from maps.britecore_policy_map import britcore_policy_type_map, policy_map
+from maps.britecore_policy_map import britecore_policy_type_map, policy_map
+from maps.britecore_policy_name_map import compiled_regexes
+from utils.zip_code_lookup import zip_codes
 from sclogging import sclogging_main as scl
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
+
+MUTUAL_SYSTEM = os.environ.get("system")
 
 FIELD_MAP_TO_BRITECORE = field_map_to_britecore
 FIELD_MAP_TO_NAMED_INSURED = field_map_to_named_insured
@@ -31,55 +36,10 @@ COMMON_CITY_REPLACEMENT: Dict[str, str] = {"Depere": "De Pere"}
 
 # Allow heterogeneous values: regex Patterns and a mapping for street name
 # replacements.
-COMPILED_REGEXES: dict[str, Pattern[str] | dict[Pattern[str], str]] = {
-    "search_name_mult": re.compile(
-        r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?(\W*\w*)?"
-    ),
-    "search_name_single": re.compile(r"^(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)(\W\w*)?"),
-    "search_email": re.compile(
-        r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
-        r"2,64}"
-    ),
-    "reg_name_c": re.compile(r"[^0-9a-zA-Z\s#+&',/-]+"),
-    "reg_and_or": re.compile(r"\W(&/or|and/or|and|or)\W", re.IGNORECASE),
-    "reg_address": re.compile(r"[^0-9a-zA-Z\s#,/-]+"),
-    "reg_address2": re.compile(r"c/o|dba|inc|att|co\W|trust", re.IGNORECASE),
-    "reg_city_state": re.compile(r"[^0-9a-zA-Z\s]+"),
-    "reg_zip": re.compile(r"[^0-9a-zA-Z]+"),
-    "reg_phone": re.compile(r"-|\(|\)|\s"),
-    "reg_email": re.compile(r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"),
-    "reg_name": re.compile(r"[^0-9a-zA-Z\s#+&'/-]+"),
-    "reg_small_name": re.compile(r"\s(Du|Des)\s"),
-    "reg_business_name": re.compile(r"\s(llc|llp|dba|inc)(?:\s|$)", re.IGNORECASE),
-    "reg_double_apostrophe": re.compile(r"'\w"),
-    "street_name_replacement": {
-        re.compile(r"Hwy\b"): "Highway",
-        re.compile(r"Cty\b"): "County",
-        re.compile(r"Rd\b"): " Road",
-        re.compile(r"Ave\b"): "Avenue",
-        re.compile(r"St\b"): "Street",
-        re.compile(r"Ln\b"): "Lane",
-        re.compile(r"Ct\b"): "Court",
-        re.compile(r"Dr\b"): "Drive",
-        re.compile(r"Po\b"): "PO",
-        re.compile(r"P\sO\b"): "PO",
-        re.compile(r"Cir\b"): "Circle",
-        re.compile(r"Pt\b"): "Point",
-        re.compile(r"Tk\b"): "Trunk",
-        re.compile(r"Tr\b"): "Trail",
-        re.compile(r"Trl\b"): "Trail",
-        re.compile(r"Ter\b"): "Terrace",
-        re.compile(r"\sN\s"): " North ",
-        re.compile(r"\sS\s"): " South ",
-        re.compile(r"\sE\s"): " East ",
-        re.compile(r"\sW\s"): " West ",
-        re.compile(r"Us\b"): "US",
-    },
-}
 
-ZIP_CODE_DF: pd.DataFrame = pd.read_csv(
-    f"{Path(__file__).absolute().parent}/zip_codes.csv", dtype=str
-)
+ZIP_CODE_DF = zip_codes
+
+COMPILED_REGEXES = compiled_regexes
 
 SITE_TARGET = "test"
 
@@ -94,7 +54,7 @@ JSON_REQUEST_TYPES = {
 
 def map_policy_type(policy_code):
     normalize_map = policy_map.get(policy_code, "Unknown")
-    britecore_map = britcore_policy_type_map.get(SITE_TARGET).get(
+    britecore_map = britecore_policy_type_map.get(SITE_TARGET).get(
         normalize_map, "Unknown"
     )
 

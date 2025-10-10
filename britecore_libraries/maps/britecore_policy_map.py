@@ -25,6 +25,7 @@ policy_map = {
     "Mobilehome - Form 2": "Mobilehome",
     "Homeowner - HO2": "Homeowner",
     "Farmowner - FO3": "Farmowner",
+    "Farmowner - FO2": "Farmowner",
     "Businessowners - BP200": "BOP",
     "Commercial": "Commercial",
     "Mobilehome - Form 3": "Mobilehome",
