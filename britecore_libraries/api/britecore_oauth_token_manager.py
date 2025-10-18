@@ -7,7 +7,7 @@ import sclogging.sclogging_main as scl
 import urllib3
 from classes.britecore_exceptions import BritecoreError
 from urllib3 import Retry, Timeout
-from urllib3.util import Url
+from urllib3.util import Url, parse_url
 
 logger = scl.get_logger(__file__)
 timeout = Timeout(10)
@@ -36,10 +36,10 @@ class OAuthToken:
         self.client_id = client_id
         self.client_secret = client_secret
         # Robustly parse incoming URL (with or without scheme) and rebuild endpoints
-        parsed = Url.from_url(url)
+        parsed = parse_url(url)
         scheme = parsed.scheme or "https"
         host = parsed.host or url  # fallback if a bare host was passed
-        self.scope = Url(scheme=scheme, host=host, path="").url
+        self.scope = Url(scheme=scheme, host=host, path="/api").url
         self.url = Url(scheme=scheme, host=host, path="/api/auth/oauth2/token").url
         self.token: str = ""
         self.token_time: datetime = datetime(1970, 1, 1)
