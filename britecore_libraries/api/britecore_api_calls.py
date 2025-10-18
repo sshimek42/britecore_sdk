@@ -1153,7 +1153,7 @@ def create_full_quote(
     underwriting_questions=None,
     transaction_type="renewal",
     term_type="1 Year",
-    inception_date="",
+    inception_date=datetime.today().strftime('%Y-%m-%d'),
     **kwargs
     ):
     if not underwriting_questions:
