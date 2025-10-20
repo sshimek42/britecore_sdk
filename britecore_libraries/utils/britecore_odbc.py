@@ -5,7 +5,7 @@ import sys
 import pyodbc
 import sclogging.sclogging_main as scl
 
-from britecore_libraries import settings
+from britecore_libraries.config import settings
 
 
 def __getattr__(name: str):

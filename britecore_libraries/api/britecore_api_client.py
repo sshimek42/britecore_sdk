@@ -191,7 +191,7 @@ class BritecoreAPIClient:
             _LOGGER.error(f"Error - {message}")
             return None
 
-        data = json_result.get("data")
+        data = json_result["data"]
         if logs:
             _LOGGER.debug(data)
 

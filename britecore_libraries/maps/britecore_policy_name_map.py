@@ -61,7 +61,7 @@ system_compiled_regexes = {
     },
 }
 
-common_compiled_regexes.update(system_compiled_regexes.get(mutual_system))
+common_compiled_regexes.update(system_compiled_regexes[mutual_system])
 
 compiled_regexes = common_compiled_regexes
 
@@ -86,4 +86,4 @@ system_naming_groups = {
     },
 }
 
-name_groups = system_naming_groups.get(mutual_system)
+name_groups = system_naming_groups[mutual_system]
