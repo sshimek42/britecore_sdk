@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from ast import literal_eval
-from typing import Dict, Optional, Literal
+from typing import Dict, Literal, Optional
 
 from classes.britecore_exceptions import BritecoreError
 from maps.britecore_field_map import (
@@ -53,8 +53,7 @@ JSON_REQUEST_TYPES = {
 def map_policy_type(policy_code):
     normalize_map = policy_map.get(policy_code, "Unknown")
     britecore_map = britecore_policy_type_map.get(SITE_TARGET).get(
-        normalize_map, "Unknown"
-    )
+        normalize_map, "Unknown")
 
     return britecore_map
 
@@ -69,14 +68,16 @@ def fix_business(name: str) -> str:
     Returns:
         Name with standardized capitalization for business suffixes.
     """
-    check_business = re.findall(
-        COMPILED_REGEXES.get("reg_business_name"), name)
+    check_business = re.findall(COMPILED_REGEXES.get("reg_business_name"),
+                                name)
     if check_business:
         for each_business in check_business:
             name = name.replace(
                 each_business, f""
-                               f""
-                               f"{each_business.upper().strip().replace("  ", " ")}")
+                f""
+                f"{each_business.upper().strip().replace("
+                ", "
+                ")}")
 
     return name
 
@@ -87,10 +88,8 @@ def fix_apostrophe(name: str) -> str:
     :param name: Name to fix
     :return: Fixed name
     """
-    name = re.sub(
-        COMPILED_REGEXES["reg_double_apostrophe"], lambda mo: mo.group(
-            0).lower(), name
-    )
+    name = re.sub(COMPILED_REGEXES["reg_double_apostrophe"],
+                  lambda mo: mo.group(0).lower(), name)
     return name
 
 
@@ -146,33 +145,36 @@ class BritecoreAddress:
 
         if zip_code == "":
             try:
-                zip_code = ZIP_CODE_DF.loc[
-                    (
-                        (state == ZIP_CODE_DF["admin code1"])
-                        & (city == ZIP_CODE_DF["place name"])
-                    )
-                ]["postal code"].values[0]
+                zip_code = ZIP_CODE_DF.loc[(
+                    (state == ZIP_CODE_DF["admin code1"])
+                    & (city
+                       == ZIP_CODE_DF["place name"]))]["postal code"].values[0]
                 _LOGGER.info(
                     f"Zip code missing - using {zip_code} for city of {city} "
-                    f"and state of {state}"
-                )
+                    f"and state of {state}")
             except IndexError:
                 raise BritecoreError.InvalidAddress("Missing Zip Code")
 
         zip_code = self.fix_zipcode(zip_code)
 
-        fixed_address = [
-            {
-                "address_line1": self.fix_address(address1),
-                "address_line2": self.fix_address(address2),
-                "address_state": self.fix_state(state, zip_code),
-                "address_country": "USA",
-                "address_zip": zip_code,
-                "type": full_address.get("type", DEFAULT_ADDRESS_TYPE),
-                "address_county": self.fix_county(county, zip_code[:5]),
-                "address_city": self.fix_city(city, zip_code),
-            }
-        ]
+        fixed_address = [{
+            "address_line1":
+            self.fix_address(address1),
+            "address_line2":
+            self.fix_address(address2),
+            "address_state":
+            self.fix_state(state, zip_code),
+            "address_country":
+            "USA",
+            "address_zip":
+            zip_code,
+            "type":
+            full_address.get("type", DEFAULT_ADDRESS_TYPE),
+            "address_county":
+            self.fix_county(county, zip_code[:5]),
+            "address_city":
+            self.fix_city(city, zip_code),
+        }]
         _LOGGER.debug(f"Created address {fixed_address}")
 
         return fixed_address
@@ -181,8 +183,8 @@ class BritecoreAddress:
     def fix_county(cls, county: str, zipcode: str) -> str:
         tmp_zipcode = zipcode[:5]
         county_lookup = ZIP_CODE_DF
-        county_lookup = county_lookup.loc[county_lookup["postal code"]
-                                          == tmp_zipcode]
+        county_lookup = county_lookup.loc[county_lookup["postal code"] ==
+                                          tmp_zipcode]
 
         try:
             county_lookup = county_lookup["admin name2"].values[0]
@@ -197,8 +199,7 @@ class BritecoreAddress:
         if county_lookup.lower() != county.lower() and county != "":
             _LOGGER.info(
                 f"County '{county}' not found in zip code '{zipcode}' - "
-                f"zip code matches '{county_lookup}'"
-            )
+                f"zip code matches '{county_lookup}'")
 
         return county
 
@@ -209,8 +210,8 @@ class BritecoreAddress:
         tmp_zipcode = zipcode[:5]
 
         city_lookup = ZIP_CODE_DF
-        city_lookup = city_lookup.loc[city_lookup["postal code"]
-                                      == tmp_zipcode]
+        city_lookup = city_lookup.loc[city_lookup["postal code"] ==
+                                      tmp_zipcode]
         try:
             city_lookup = city_lookup["place name"].values[0]
         except IndexError:
@@ -230,8 +231,7 @@ class BritecoreAddress:
         if city_lookup.lower() != city.lower() and city != "":
             _LOGGER.info(
                 f"City '{city}' not found in zip code '{zipcode}' - zip code "
-                f"matches '{city_lookup}'"
-            )
+                f"matches '{city_lookup}'")
 
         return city
 
@@ -255,8 +255,8 @@ class BritecoreAddress:
         tmp_zipcode = zipcode[:5]
 
         state_lookup = ZIP_CODE_DF
-        state_lookup = state_lookup.loc[state_lookup["postal code"]
-                                        == tmp_zipcode]
+        state_lookup = state_lookup.loc[state_lookup["postal code"] ==
+                                        tmp_zipcode]
         try:
             state_lookup = state_lookup["admin code1"].values[0]
         except IndexError:
@@ -269,8 +269,7 @@ class BritecoreAddress:
             _LOGGER.info(
                 f"State '{state}' not found in zip code '{zipcode}' - zip "
                 f"code "
-                f"matches '{state_lookup}'"
-            )
+                f"matches '{state_lookup}'")
             state = "WI"
 
         return state
@@ -369,9 +368,7 @@ class BritecorePhone:
         _LOGGER = scl.get_parent_logger()
         self.phone_number = phone_number
 
-    def process_phone(
-        self,
-    ) -> list:
+    def process_phone(self, ) -> list:
         phone_number = self.phone_number
         phone_number_list = []
         for each_phone_number in phone_number:
@@ -379,7 +376,8 @@ class BritecorePhone:
             phone_type = each_phone_number.get("type", "")
             if phone_type == "":
                 phone_type = DEFAULT_PHONE_TYPE
-            if phone_number == "" or phone_number == "0" or phone_number.strip() == "-":
+            if phone_number == "" or phone_number == "0" or phone_number.strip(
+            ) == "-":
                 break
             fixed_phone_number = {
                 "phone": self.fix_phone(phone_number),
@@ -424,8 +422,10 @@ class BritecoreEmail:
             if email_type == "":
                 email_type = DEFAULT_EMAIL_TYPE
 
-            fixed_email = {"email": self.fix_email(
-                email_address), "type": email_type}
+            fixed_email = {
+                "email": self.fix_email(email_address),
+                "type": email_type
+            }
 
             email_address_list.append(fixed_email)
         fixed_email = email_address_list
