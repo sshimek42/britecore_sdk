@@ -7,8 +7,8 @@ from typing import Any, Dict, Optional  # added typing
 
 import sclogging.sclogging_main as scl
 import urllib3
-from classes.britecore_exceptions import BritecoreError
 from api.britecore_oauth_token_manager import OAuthToken
+from classes.britecore_exceptions import BritecoreError
 from urllib3.exceptions import (
     ProtocolError,
     RequestError,
@@ -80,7 +80,8 @@ class BritecoreAPIClient:
 
         if self.site_settings.base_url:
             self.base_url = self.site_settings.base_url
-            self.base_url = Url(scheme="https", host=self.base_url, path=None).url
+            self.base_url = Url(
+                scheme="https", host=self.base_url, path=None).url
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
         else:
@@ -126,7 +127,8 @@ class BritecoreAPIClient:
         BritecoreAPIClient.use_api_key = self.use_api_key
 
         if self.use_api_key:
-            _LOGGER.info("client_id or client_secret not found. using api key.")
+            _LOGGER.info(
+                "client_id or client_secret not found. using api key.")
             try:
                 self.api_key = self.site_settings.api_key
             except AttributeError:
@@ -263,7 +265,8 @@ class BritecoreAPIClient:
                 )
             else:
                 if BritecoreAPIClient.use_api_key:
-                    json = dumps({"api_key": cls.site_settings.api_key}).encode("utf-8")
+                    json = dumps(
+                        {"api_key": cls.site_settings.api_key}).encode("utf-8")
                 request_result = cls.http.request(
                     method=method,
                     url=request_url,
