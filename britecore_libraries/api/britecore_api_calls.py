@@ -110,12 +110,12 @@ def line_menu() -> tuple[
                 line_id = list(print_menu_options.values())
                 name = list(print_menu_options.keys())
             else:
-                line_id = print_menu_options.get(tmp_line)
+                line_id = print_menu_options[tmp_line]
                 name = tmp_line
         else:
             print("1. " + print_menu_default)
             tmp_line = print_menu_default
-            line_id = print_menu_options.get(menu_default)
+            line_id = print_menu_options[menu_default]
             name = menu_default
         print(f"{tmp_line} selected")
         return line_id, name
@@ -132,10 +132,10 @@ def line_menu() -> tuple[
     for make_menu in get_dates:
         menu_options.update(
             {
-                make_menu.get("description"): make_menu.get("id")
+                make_menu["description"]: make_menu["id"]
                 }
             )
-        menu_default = make_menu.get("description")
+        menu_default = make_menu["description"]
     eff_date = print_menu("Date", menu_options, menu_default)
     eff_date_json = {
         "effective_date_id": eff_date[0]
@@ -151,10 +151,10 @@ def line_menu() -> tuple[
     for make_menu in get_states:
         menu_options.update(
             {
-                make_menu.get("name"): make_menu.get("id")
+                make_menu["name"]: make_menu["id"]
                 }
             )
-        menu_default = make_menu.get("name")
+        menu_default = make_menu["name"]
     eff_state = print_menu("State", menu_options, menu_default)
     eff_state_json = {
         "effective_date_id": eff_date[0],
@@ -171,10 +171,10 @@ def line_menu() -> tuple[
     for make_menu in all_lines:
         menu_options.update(
             {
-                make_menu.get("name"): make_menu.get("id")
+                make_menu["name"]: make_menu["id"]
                 }
             )
-        menu_name.append(make_menu.get("name"))
+        menu_name.append(make_menu["name"])
     eff_line = print_menu("Line", menu_options, menu_name[0])
 
     return (
@@ -205,7 +205,7 @@ def get_policies_with_line_item(line: str, **kwargs) -> dict:
         )
     policy_json = BritecoreAPIClient.process_result(request_result)
 
-    return policy_json.get("policies")
+    return policy_json["policies"]
 
 
 def add_line_item(revision: str, line: str, **kwargs) -> bool:
@@ -230,8 +230,8 @@ def add_line_item(revision: str, line: str, **kwargs) -> bool:
     line_json = BritecoreAPIClient.process_result(request_result)
 
     if line_json is not None:
-        _LOGGER.debug(line_json.get("added_items"))
-        return bool(line_json.get("added_items"))
+        _LOGGER.debug(line_json["added_items"])
+        return bool(line_json["added_items"])
 
     return False
 
@@ -246,8 +246,9 @@ def retrieve_policy_ids(policy: str, **kwargs) -> tuple[str, str]:
     """
     _LOGGER.debug("Getting policy info")
     policy_json = retrieve_policy(policy, **kwargs)
-    revision_id = policy_json["active_revision"]["id"]
-    property_id = policy_json["active_revision"]["primary_property_id"]
+    active_revision = policy_json["active_revision"]
+    revision_id = active_revision["id"]
+    property_id = active_revision["primary_property_id"]
 
     return revision_id, property_id
 
@@ -298,7 +299,7 @@ def retrieve_contact_list(
 
     contact_json = loads(request_result.data.decode("utf-8"))
 
-    return contact_json.get("records")
+    return contact_json["records"]
 
 
 def retrieve_policy_list_from_user(
@@ -327,9 +328,8 @@ def retrieve_policy_list_from_user(
         json=user_request_json,
         **kwargs,
         )
-    user_json = BritecoreAPIClient.process_result(request_result).get(
-        "records"
-        )
+    user_json = BritecoreAPIClient.process_result(request_result)[
+        "records"]
 
     policy_list = []
 
@@ -337,14 +337,14 @@ def retrieve_policy_list_from_user(
 
     if check_name:
         for each_policy in user_json:
-            named_split = each_policy.get("namedInsured").split(", ")
+            named_split = each_policy["namedInsured"].split(", ")
             for each_contact in named_split:
                 match_contact = each_contact.strip().lower()
                 if contact_name in (match_contact, "*"):
-                    policy_list.append(each_policy.get("policyNumber"))
+                    policy_list.append(each_policy["policyNumber"])
     else:
         for each_policy in user_json:
-            policy_list.append(each_policy.get("policyNumber"))
+            policy_list.append(each_policy["policyNumber"])
 
     return list(dict.fromkeys(policy_list))
 
@@ -359,7 +359,7 @@ def retrieve_policy_contact_info(policy: str, **kwargs) -> list:
     _LOGGER.debug("Getting contact info")
     contact_json = retrieve_policy(policy, **kwargs)
 
-    return contact_json.get("active_revision").get("named_insureds")
+    return contact_json["active_revision"]["named_insureds"]
 
 
 def new_contact(
@@ -940,7 +940,7 @@ def new_revision_contact(
             }
 
     if contact_add_result:
-        x_contact = contact_add_result.get("x_revisions_contact_id")
+        x_contact = contact_add_result["x_revisions_contact_id"]
         update_revision_json = {
             "x_revisions_contact_id": x_contact,
             "contact_id"            : contact_id,
@@ -1177,4 +1177,4 @@ def create_full_quote(
 
     json_info = BritecoreAPIClient.process_result(request_result)
 
-    return json_info, json_info.get("id")
+    return json_info, json_info["id"]

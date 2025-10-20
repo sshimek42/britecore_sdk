@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from ast import literal_eval
-from typing import Dict, Optional, Pattern
+from typing import Dict, Optional, Literal
 
 from classes.britecore_exceptions import BritecoreError
 from maps.britecore_field_map import (
@@ -74,8 +74,9 @@ def fix_business(name: str) -> str:
     if check_business:
         for each_business in check_business:
             name = name.replace(
-                each_business, f"{each_business.upper().strip()}"
-            ).replace("  ", " ")
+                each_business, f""
+                               f""
+                               f"{each_business.upper().strip().replace("  ", " ")}")
 
     return name
 
@@ -298,7 +299,7 @@ class BritecoreAddress:
         return address
 
     @staticmethod
-    def fix_street_name(address: str) -> str:
+    def fix_street_name(address: str) -> str | bytes | Literal[""]:
         """
         Normalizes address different abbreviations
         :param address: Address to normalize
@@ -332,7 +333,7 @@ class BritecoreAddress:
         return address
 
     @classmethod
-    def fix_address(cls, address: str) -> str:
+    def fix_address(cls, address: str | bytes | Literal[""]) -> str:
         """
         Runs all functions to normalize address
         :param address: Address to normalize
