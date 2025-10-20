@@ -75,9 +75,7 @@ def fix_business(name: str) -> str:
             name = name.replace(
                 each_business, f""
                 f""
-                f"{each_business.upper().strip().replace("
-                ", "
-                ")}")
+                f"{each_business.upper().strip().replace(' ', '')}")
 
     return name
 
