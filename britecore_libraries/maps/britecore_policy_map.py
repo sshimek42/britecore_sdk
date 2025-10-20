@@ -39,6 +39,14 @@ policy_map = {
     "Mobilehome FEC - Form 3"      : "Mobilehome",
     "Farm Fire and EC - Form 3"    : "Farmowner",
     "Condo - HO6"                  : "Farmowner",
+    "Country Home"                 : "Homeowner",
+    "Dwelling"                     : "Dwelling",
+    "Homeowner"                    : "Homeowner",
+    "Mobile Home"                  : "Mobilehome",
+    "Farm"                         : "Farmowner",
+    "Tenant"                       : "Dwelling",
+    "Farmowner": "Farmowner"
+
     }
 
 britecore_policy_type_map = {

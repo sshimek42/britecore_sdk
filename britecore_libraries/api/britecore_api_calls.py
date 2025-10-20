@@ -383,7 +383,11 @@ def new_contact(
 
     contact_json = BritecoreAPIClient.process_result(request_result)
 
-    new_id = contact_json.get("contact_id", "Fail")
+    try:
+        new_id = contact_json.get("contact_id", "Fail")
+    except AttributeError:
+        new_id = "Fail"
+
     if new_id == "Fail":
         _LOGGER.error(f"Failed to add contact - {name}")
         return None, None

@@ -59,6 +59,14 @@ system_compiled_regexes = {
             r"(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)?\s(&)\s(\w*\W\w?\W|\w*\W?\w{0})?(\W*\w*)?(\W*\w*)?"
         ),
     },
+    "Spectrum2": {
+        "search_name_single": re.compile(
+            r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"
+            ),
+        "search_name_mult"  : re.compile(
+            r"(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)?\s(&)\s(\w*\W\w?\W|\w*\W?\w{0})?(\W*\w*)?(\W*\w*)?"
+            ),
+        },
 }
 
 common_compiled_regexes.update(system_compiled_regexes[mutual_system])
@@ -84,6 +92,15 @@ system_naming_groups = {
             "suffix": 6,
         }
     },
+    "Spectrum2": {
+        "multi": {
+            "last_name_1" : 5,
+            "last_name_2" : 2,
+            "first_name_1": 1,
+            "first_name_2": 4,
+            "suffix"      : 6,
+            }
+        },
 }
 
 name_groups = system_naming_groups[mutual_system]
