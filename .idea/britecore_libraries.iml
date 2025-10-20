@@ -8,6 +8,9 @@
       <excludeFolder url="file://$MODULE_DIR$/venv" />
       <excludeFolder url="file://$MODULE_DIR$/venv1" />
       <excludeFolder url="file://$MODULE_DIR$/.venv2" />
+      <excludeFolder url="file://$MODULE_DIR$/britecore_libraries/bclibs.egg-info" />
+      <excludeFolder url="file://$MODULE_DIR$/britecore_libraries/build" />
+      <excludeFolder url="file://$MODULE_DIR$/britecore_libraries/dist" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.14 (britecore_libraries)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
