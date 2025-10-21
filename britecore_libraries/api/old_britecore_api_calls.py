@@ -1087,4 +1087,7 @@ def create_full_quote(
 
     json_info = BritecoreAPIClient.process_result(request_result)
 
+    if not json_info:
+        return None, None
+
     return json_info, json_info["id"]
