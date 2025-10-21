@@ -21,7 +21,7 @@ CarrierSections = Dict[str, Section]
 CarrierFieldMap = Dict[str, CarrierSections]
 
 field_map_to_britecore: CarrierFieldMap = {
-    "MIPS"     : {
+    "mips"     : {
         "policy_list"  : {
             "NAME"                : "name",
             "ADDR 1"              : "address_line1",
@@ -68,7 +68,7 @@ field_map_to_britecore: CarrierFieldMap = {
                 ],
             },
         },
-    "Spectrum" : {
+    "spectrum_v1" : {
         "policy_list"  : {
             "Named Insured"  : "name",
             "Address Line 1" : "address_line1",
@@ -105,7 +105,7 @@ field_map_to_britecore: CarrierFieldMap = {
                                  "Policy #"],
             },
         },
-    "Spectrum2": {
+    "spectrum_v2": {
         "policy_list"  : {
             "Named Insureds" : "name",
             "Address Line 1" : "address_line1",
@@ -116,8 +116,8 @@ field_map_to_britecore: CarrierFieldMap = {
             "Home Phone"     : "phone_number_h",
             "Mobile Phone"   : "phone_number_m",
             "Email Address"  : "email",
-            "Policy #"  : "policy_number",
-            "Policy Eff Date": "effective_date",
+            "Policy Number"  : "policy_number",
+            "Eff Date": "effective_date",
             "Policy Type"    : "policy_type",
             "Agency Name"    : "agency_id",
             "address_fields" : [
@@ -145,38 +145,38 @@ field_map_to_britecore: CarrierFieldMap = {
 
 # Reverse mapping: BriteCore named insured fields back to carrier headers.
 field_map_to_named_insured: Dict[str, Dict[str, str]] = {
-    "MIPS"    : {
+    "mips"    : {
         v: k
-        for k, v in field_map_to_britecore["MIPS"]["policy_list"].items()
+        for k, v in field_map_to_britecore["mips"]["policy_list"].items()
         if k != "address_fields"
         },
-    "Spectrum": {
+    "spectrum_v1": {
         v: k
-        for k, v in field_map_to_britecore["Spectrum"]["policy_list"].items()
+        for k, v in field_map_to_britecore["spectrum_v1"]["policy_list"].items()
         if k != "address_fields"
         },
-    "Spectrum2": {
+    "spectrum_v2": {
         v: k
-        for k, v in field_map_to_britecore["Spectrum2"]["policy_list"].items()
+        for k, v in field_map_to_britecore["spectrum_v2"]["policy_list"].items()
         if k != "address_fields"
         },
     }
 
 # Reverse mapping: BriteCore risk location fields back to carrier headers.
 field_map_to_risk_location: Dict[str, Dict[str, str]] = {
-    "MIPS"    : {
+    "mips"    : {
         v: k
-        for k, v in field_map_to_britecore["MIPS"]["location_list"].items()
+        for k, v in field_map_to_britecore["mips"]["location_list"].items()
         if k != "address_fields"
         },
-    "Spectrum": {
+    "spectrum_v1": {
         v: k
-        for k, v in field_map_to_britecore["Spectrum"]["location_list"].items()
+        for k, v in field_map_to_britecore["spectrum_v1"]["location_list"].items()
         if k != "address_fields"
         },
-    "Spectrum2": {
+    "spectrum_v2": {
         v: k
-        for k, v in field_map_to_britecore["Spectrum2"]["location_list"].items()
+        for k, v in field_map_to_britecore["spectrum_v2"]["location_list"].items()
         if k != "address_fields"
         },
     }

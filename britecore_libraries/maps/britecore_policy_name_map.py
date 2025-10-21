@@ -52,14 +52,14 @@ common_compiled_regexes = {
 }
 
 system_compiled_regexes = {
-    "MIPS": {},
-    "Spectrum": {
+    "mips": {},
+    "spectrum_v1": {
         "search_name_single": re.compile(r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"),
         "search_name_mult": re.compile(
             r"(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)?\s(&)\s(\w*\W\w?\W|\w*\W?\w{0})?(\W*\w*)?(\W*\w*)?"
         ),
     },
-    "Spectrum2": {
+    "spectrum_v2": {
         "search_name_single": re.compile(
             r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"
             ),
@@ -74,7 +74,7 @@ common_compiled_regexes.update(system_compiled_regexes[mutual_system])
 compiled_regexes = common_compiled_regexes
 
 system_naming_groups = {
-    "MIPS": {
+    "mips": {
         "multi": {
             "last_name_1": 1,
             "last_name_2": 3,
@@ -83,7 +83,7 @@ system_naming_groups = {
             "suffix": 5,
         }
     },
-    "Spectrum": {
+    "spectrum_v1": {
         "multi": {
             "last_name_1": 5,
             "last_name_2": 2,
@@ -92,7 +92,7 @@ system_naming_groups = {
             "suffix": 6,
         }
     },
-    "Spectrum2": {
+    "spectrum_v2": {
         "multi": {
             "last_name_1" : 5,
             "last_name_2" : 2,
