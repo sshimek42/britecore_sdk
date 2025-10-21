@@ -1,7 +1,9 @@
-from britecore_libraries.api.api_calls import api_client
 from datetime import datetime
 
+from britecore_libraries.api.api_calls import api_client
+
 API_CLIENT = api_client
+
 
 def create_full_quote(
     number,

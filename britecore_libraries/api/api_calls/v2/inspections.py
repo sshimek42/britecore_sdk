@@ -2,6 +2,7 @@ from britecore_libraries.api.api_calls import api_client
 
 API_CLIENT = api_client
 
+
 def update_inspection_dates(policy_number, inspection_dict, **kwargs):
     inspection_json = {"policy_number": policy_number,
                        "payload": inspection_dict}

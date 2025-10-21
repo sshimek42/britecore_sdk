@@ -2,9 +2,10 @@ from json import loads
 
 from urllib3 import Timeout
 
-from britecore_libraries.api.api_calls import api_client, _LOGGER, web_timeout_long
+from britecore_libraries.api.api_calls import _LOGGER, api_client, web_timeout_long
 
 API_CLIENT = api_client
+
 
 def retrieve_notes(policy_id: str) -> list:
     """
@@ -32,5 +33,3 @@ def retrieve_notes(policy_id: str) -> list:
         return loads(request_result.data.decode("utf-8"))["records"]
     except KeyError:
         return []
-
-

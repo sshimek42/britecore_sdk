@@ -1,6 +1,7 @@
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import _LOGGER, api_client
 
 API_CLIENT = api_client
+
 
 def list_attachments(policy_id: str, **kwargs) -> list:
     """
@@ -22,6 +23,7 @@ def list_attachments(policy_id: str, **kwargs) -> list:
 
     return API_CLIENT.process_result(request_result)
 
+
 def get_attachment(file_id: str, **kwargs) -> dict:
     """
     Retrieve policy attachment
@@ -39,6 +41,7 @@ def get_attachment(file_id: str, **kwargs) -> dict:
     )
 
     return API_CLIENT.process_result(request_result)
+
 
 def get_edeliverables(date_from, date_to, **kwargs):
     required_json = {

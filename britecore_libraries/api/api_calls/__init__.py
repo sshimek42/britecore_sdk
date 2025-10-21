@@ -1,8 +1,9 @@
 import os
 
-from api.britecore_api_client import BritecoreAPIClient, _LOGGER
+from api.britecore_api_client import _LOGGER, BritecoreAPIClient
 
 _LOGGER = _LOGGER
+
 
 def init_api_client(target_site=None):
     if not target_site:
@@ -10,6 +11,7 @@ def init_api_client(target_site=None):
     _api_client = BritecoreAPIClient(target_site)
     _api_client.init_client()
     return _api_client
+
 
 api_client = init_api_client()
 web_timeout_long = api_client.web_timeout_long
