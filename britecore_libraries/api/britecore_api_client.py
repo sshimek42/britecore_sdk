@@ -72,6 +72,9 @@ class BritecoreAPIClient:
 
         self._ensure_logger()
 
+        if not target_site:
+            raise BritecoreError.BritecoreNoSiteError
+
         self.site_settings = LoadClientSettings(target_site).load_config()
         BritecoreAPIClient.site_settings = self.site_settings
 
