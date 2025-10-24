@@ -1,6 +1,6 @@
 from urllib3 import Timeout
 
-from britecore_libraries.api.api_calls import api_client, _LOGGER, web_timeout_long
+from britecore_libraries.api.api_calls import _LOGGER, api_client, web_timeout_long
 
 API_CLIENT = api_client
 
@@ -22,6 +22,7 @@ def retrieve_policy(policy_number: str, **kwargs) -> dict:
     )
 
     return API_CLIENT.process_result(request_result)
+
 
 def add_line_item(revision: str, line: str, **kwargs) -> bool:
     """Attempts to add specified line to a policy
@@ -50,6 +51,7 @@ def add_line_item(revision: str, line: str, **kwargs) -> bool:
 
     return False
 
+
 def retrieve_policy_ids(policy: str, **kwargs) -> tuple[str, str]:
     """Retrieve a single policy and return data needed to add item to
     policy
@@ -65,6 +67,7 @@ def retrieve_policy_ids(policy: str, **kwargs) -> tuple[str, str]:
     property_id = active_revision["primary_property_id"]
 
     return revision_id, property_id
+
 
 def retrieve_policy_list_from_user(
     contact_name: str, check_name: bool = True, **kwargs
@@ -108,6 +111,7 @@ def retrieve_policy_list_from_user(
 
     return list(dict.fromkeys(policy_list))
 
+
 def retrieve_policy_contact_info(policy: str, **kwargs) -> list:
     """Get contact information from policy
     :param policy: Policy number
@@ -119,6 +123,7 @@ def retrieve_policy_contact_info(policy: str, **kwargs) -> list:
     contact_json = retrieve_policy(policy, **kwargs)
 
     return contact_json["active_revision"]["named_insureds"]
+
 
 def create_policy(
     policy_number: str,
@@ -176,7 +181,6 @@ def create_policy(
     #     policy_create = False
 
     return policy_json, policy_json["revision_id"]
-
 
 
 def retrieve_policy_terms(policy_id: str, **kwargs) -> list[dict[str, list[dict]]]:
@@ -335,6 +339,7 @@ def rate_risk(risk_id: str, **kwargs) -> dict[str, float]:
 
     return API_CLIENT.process_result(request_result)
 
+
 def retrieve_policy_billing_schedule(policy: str, **kwargs) -> dict:
     """
     Retrieve policy billing information
@@ -353,6 +358,7 @@ def retrieve_policy_billing_schedule(policy: str, **kwargs) -> dict:
         **kwargs,
     )
     return API_CLIENT.process_result(request_result)
+
 
 def new_revision_contact(
     revision_id: str,
@@ -427,6 +433,7 @@ def update_property_location(prop_dict, **kwargs):
 
     return API_CLIENT.process_result(request_result)
 
+
 def new_mortgagee(property_id: str, **kwargs):
     new_mort_json = {"property_id": property_id}
     result_request = API_CLIENT.do_request(
@@ -446,6 +453,7 @@ def store_mortgagee(property_contact_id: str, mortgagee_contact_id: str, **kwarg
     )
 
     return API_CLIENT.process_result(result_request)
+
 
 def retrieve_policy_snapshot(policy_number, snapshot_date, **kwargs):
     required_json = {"policy_number": policy_number,

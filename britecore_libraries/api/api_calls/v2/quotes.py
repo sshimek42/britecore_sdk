@@ -1,7 +1,9 @@
-from britecore_libraries.api.api_calls import api_client
 from datetime import datetime
 
+from britecore_libraries.api.api_calls import api_client
+
 API_CLIENT = api_client
+
 
 def create_full_quote(
     number,
@@ -14,7 +16,7 @@ def create_full_quote(
     transaction_type="renewal",
     term_type="1 Year",
     inception_date=datetime.today().strftime("%Y-%m-%d"),
-    next_inspection_date = None,
+    next_inspection_date=None,
     **kwargs,
 ):
     if not underwriting_questions:
@@ -32,7 +34,7 @@ def create_full_quote(
         "named_insureds": named_insureds,
         "risks": risks,
         "inception_date": inception_date,
-        "description": f"From Policy {number[3:]}"
+        "description": f"From Policy {number[3:]}",
     }
 
     if next_inspection_date:
@@ -49,8 +51,8 @@ def create_full_quote(
 
     return json_info, json_info["id"]
 
-def get_quote(id, **kwargs):
 
+def get_quote(id, **kwargs):
     quote_json = {"id": id}
 
     request_result = API_CLIENT.do_request(
