@@ -264,18 +264,18 @@ def retrieve_risks(revision: str, **kwargs) -> dict:
     return API_CLIENT.process_result(request_result)
 
 
-def retrieve_risk_details(risk: str, **kwargs) -> dict:
+def retrieve_risk_details(risk_id: str, **kwargs) -> dict:
     """
     Retrieves rick details
-    :param risk: Risk ID
-    :type risk: str
+    :param risk_id: Risk ID
+    :type risk_id: str
     :param kwargs:
     :type kwargs:
     :return: Risk details
     :rtype: dict
     """
     _LOGGER.debug("Getting risk details")
-    revision_retrieve_json = {"risk_id": risk}
+    revision_retrieve_json = {"risk_id": risk_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_risk_details",
         json=revision_retrieve_json,

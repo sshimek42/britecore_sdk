@@ -14,6 +14,7 @@ def create_full_quote(
     transaction_type="renewal",
     term_type="1 Year",
     inception_date=datetime.today().strftime("%Y-%m-%d"),
+    next_inspection_date = None,
     **kwargs,
 ):
     if not underwriting_questions:
@@ -31,7 +32,11 @@ def create_full_quote(
         "named_insureds": named_insureds,
         "risks": risks,
         "inception_date": inception_date,
+        "description": f"From Policy {number[3:]}"
     }
+
+    if next_inspection_date:
+        quote_json.update({"next_inspection_date": next_inspection_date})
 
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
@@ -43,3 +48,15 @@ def create_full_quote(
         return None, None
 
     return json_info, json_info["id"]
+
+def get_quote(id, **kwargs):
+
+    quote_json = {"id": id}
+
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
+    )
+
+    quote_info = API_CLIENT.process_result(request_result)
+
+    return quote_info
