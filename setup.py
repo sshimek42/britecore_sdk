@@ -1,10 +1,10 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="britecore_libraries",
-    version="0.01",
-    packages=[""],
-    package_dir={"": "britecore_libraries"},
+    version="0.4",
+    packages=find_packages("."),
+    package_dir={"britecore_libraries": "."},
     url="",
     license="",
     author="sshimek",

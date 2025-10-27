@@ -8,6 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Set working directory inside the container
 WORKDIR /app
 
+RUN mkdir /app/britecore_libraries
 # Install system dependencies (optional, adjust as needed)
 #RUN apt-get update && apt-get install -y --no-install-recommends \
 #    build-essential \
@@ -20,4 +21,4 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy the rest of the application code
-#COPY . .
+COPY . /app/britecore_libraries
