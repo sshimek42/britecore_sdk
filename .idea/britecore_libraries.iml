@@ -12,7 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/britecore_libraries/build" />
       <excludeFolder url="file://$MODULE_DIR$/britecore_libraries/dist" />
     </content>
-    <orderEntry type="jdk" jdkName="Remote 3.14 Docker (britecore_import)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.14 (britecore_libraries)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
