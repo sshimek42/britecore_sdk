@@ -18,11 +18,11 @@ settings.validators.register(
         "base_url",
         "client_id",
         "client_secret",
-        env=["homestead", "wausau", "wausau_test"],
+        "api_key",
+        env=["wausau", "wausau_test"],
         must_exist=True,
         is_type_of=str,
     ),
-    Validator("api_key", is_type_of=str),
     Validator("web_retry", "web_timeout", "web_timeout_long", is_type_of=int),
 )
 settings.validators.validate()

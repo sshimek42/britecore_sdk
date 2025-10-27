@@ -32,9 +32,6 @@ DEFAULT_EMAIL_TYPE: str = "Home"
 
 COMMON_CITY_REPLACEMENT: Dict[str, str] = {"Depere": "De Pere"}
 
-# Allow heterogeneous values: regex Patterns and a mapping for street name
-# replacements.
-
 ZIP_CODE_DF = zip_codes
 
 COMPILED_REGEXES = compiled_regexes

@@ -73,7 +73,7 @@ class BritecoreAPIClient:
         self._ensure_logger()
 
         if not target_site:
-            raise BritecoreError.BritecoreNoSiteError
+            raise BritecoreError.NoSiteError
 
         self.site_settings = LoadClientSettings(target_site).load_config()
         BritecoreAPIClient.site_settings = self.site_settings
@@ -131,13 +131,13 @@ class BritecoreAPIClient:
 
         if self.use_api_key:
             _LOGGER.info(
-                "client_id or client_secret not found. using api key.")
+                "client_id and/or client_secret not found. Using api_key.")
             try:
                 self.api_key = self.site_settings.api_key
             except AttributeError:
                 raise BritecoreError.BritecoreKeyError(
-                    "api key not found. please set the api key in your "
-                    "settings.py "
+                    "api_key not found. Please set the api_key in your "
+                    ".secrets.toml "
                     "file."
                 )
 
@@ -200,7 +200,7 @@ class BritecoreAPIClient:
         if logs:
             _LOGGER.debug(data)
 
-        if data is None:
+        if not data:
             _LOGGER.warning("No data returned")
 
         return data

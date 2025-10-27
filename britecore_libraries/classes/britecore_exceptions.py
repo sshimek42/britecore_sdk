@@ -67,7 +67,7 @@ class BritecoreError:
             super().__init__(self.message)
 
         def __str__(self):
-            return self.message
+            return f"Invalid Address - {self.message}"
 
     class BritecoreKeyError(Exception):
         def __init__(self, message):
@@ -77,7 +77,7 @@ class BritecoreError:
         def __str__(self):
             return {self.message}
 
-    class BritecoreNoSiteError(Exception):
+    class NoSiteError(Exception):
         def __init__(self, message):
             self.message = message
             super().__init__(self.message)
