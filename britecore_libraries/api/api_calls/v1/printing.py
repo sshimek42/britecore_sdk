@@ -1,9 +1,11 @@
-from urllib3 import Retry, Timeout
 from json import loads
+
+from urllib3 import Retry, Timeout
 
 from britecore_libraries.api.api_calls import init_api_client
 
 API_CLIENT = init_api_client()
+
 
 def get_to_be_printed(from_date, to_date, **kwargs):
     required_json = {
