@@ -3,8 +3,8 @@ import os
 import pandas as pd
 from sclogging import sclogging_main as scl
 
-import_file = os.path.join(os.path.dirname(__file__), "../resources",
-                           "zip_codes.csv")
+import_file = os.path.join(os.path.dirname(
+    __file__), "../resources", "zip_codes.csv")
 
 logger = scl.get_logger()
 
