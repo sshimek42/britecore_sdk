@@ -132,11 +132,6 @@ def create_policy(
     effective_date: str = "",
     **kwargs,
 ):
-    # revision_id = None
-    # policy_id = None
-    # x_id = None
-    # a_id = None
-    # prop_id = None
     _LOGGER.debug("Creating policy")
     policy_request_json = {
         "policy_number": policy_number,
@@ -155,25 +150,8 @@ def create_policy(
         **kwargs,
     )
 
-    # policy_create = False
 
     policy_json = API_CLIENT.process_result(request_result)
-    # if policy_json:
-    #     # revision_id = policy_json["revision_id"]
-    #     # policy_id = policy_json["policy_id"]
-    #     # x_id = policy_json["revision_data"]["named_insureds"][0]
-    #     # a_id = policy_json["revision_data"]["agents"][0]
-    #     # prop_id = policy_json["revision_data"]["primary_property_id"]
-    #     policy_create = True
-    # try:
-    #     policy_exists = (
-    #         loads(request_result.data.decode("utf-8")).get("data").get(
-    #         "exists")
-    #     )
-    # except AttributeError:
-    #     policy_exists = False
-    # if policy_json is None and not policy_exists:
-    #     policy_create = False
 
     return policy_json, policy_json["revision_id"]
 
