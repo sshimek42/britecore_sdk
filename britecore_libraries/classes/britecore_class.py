@@ -134,6 +134,7 @@ class BritecoreAddress:
         state = full_address.get("address_state", "").upper()
         county = full_address.get("address_county", "").strip().title()
         city = full_address.get("address_city", "").title().strip()
+        property = full_address.get("property", "").title().strip()
 
         if address1 == "" and address2 != "":
             address1 = address2
@@ -172,6 +173,7 @@ class BritecoreAddress:
             self.fix_county(county, zip_code[:5]),
             "address_city":
             self.fix_city(city, zip_code),
+            "property": property
         }]
         _LOGGER.debug(f"Created address {fixed_address}")
 

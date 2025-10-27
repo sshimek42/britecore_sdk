@@ -4,7 +4,7 @@ setup(
     name="britecore_libraries",
     version="0.01",
     packages=[""],
-    package_dir={"": "."},
+    package_dir={"": "britecore_libraries"},
     url="",
     license="",
     author="sshimek",
