@@ -5,10 +5,10 @@ from typing import Dict, Optional
 
 import sclogging.sclogging_main as scl
 
-from britecore_libraries.validators.name_validator import NameValidator
 from britecore_libraries.validators.address_validator import AddressValidator
-from britecore_libraries.validators.phone_validator import PhoneValidator
 from britecore_libraries.validators.email_validator import EmailValidator
+from britecore_libraries.validators.name_validator import NameValidator
+from britecore_libraries.validators.phone_validator import PhoneValidator
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
 
@@ -30,7 +30,7 @@ class BritecoreContact:
         email: Optional[list[Dict[str, str]]] = None,
         contact_id: Optional[str] = None,
         contact_type: str = "individual",
-        ):
+    ):
         """
         Initialize a BriteCore contact.
 
@@ -66,14 +66,14 @@ class BritecoreContact:
         email = self.email if self.email else [{}]
 
         final_contact = {
-            "name"         : NameValidator.normalize_business_name(self.name),
-            "contact_id"   : self.contact_id,
-            "addresses"    : AddressValidator(self.address).process(),
-            "phones"       : PhoneValidator(phone_number).process(),
-            "emails"       : EmailValidator(email).process(),
-            "type"         : self.contact_type,
+            "name": NameValidator.normalize_business_name(self.name),
+            "contact_id": self.contact_id,
+            "addresses": AddressValidator(self.address).process(),
+            "phones": PhoneValidator(phone_number).process(),
+            "emails": EmailValidator(email).process(),
+            "type": self.contact_type,
             "policy_number": self.policy_number,
-            }
+        }
 
         _LOGGER.debug(f"Created contact {final_contact}")
 
