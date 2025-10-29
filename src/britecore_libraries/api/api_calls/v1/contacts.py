@@ -1,7 +1,9 @@
 from json import loads
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+
+from britecore_libraries.api.api_calls import _LOGGER, api_client
 
 API_CLIENT = api_client
+
 
 def retrieve_contact_list(
     search_str: str, search_filter: str = "Named Insured", **kwargs

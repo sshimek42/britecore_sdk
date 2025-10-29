@@ -20,6 +20,7 @@ def _get_regexes() -> Dict:
     if _COMPILED_REGEXES is None:
         try:
             from maps.britecore_policy_name_map import compiled_regexes
+
             _COMPILED_REGEXES = compiled_regexes
         except ImportError:
             _COMPILED_REGEXES = {}
@@ -75,9 +76,9 @@ class PhoneValidator:
                 phone_number_list.append(
                     {
                         "phone": normalized,
-                        "type" : phone_type,
-                        }
-                    )
+                        "type": phone_type,
+                    }
+                )
 
         return phone_number_list
 

@@ -1,6 +1,7 @@
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import _LOGGER, api_client
 
 API_CLIENT = api_client
+
 
 def new_contact(
     name: str,
@@ -60,6 +61,7 @@ def new_contact(
     _LOGGER.debug(f"Added {name}")
     return contact_json, new_id
 
+
 def add_contact_to_role(contact_id, role="Named Insured", **kwargs) -> dict:
     """Adds role to existing contact
     :param contact_id: Contact ID
@@ -79,6 +81,7 @@ def add_contact_to_role(contact_id, role="Named Insured", **kwargs) -> dict:
 
     return API_CLIENT.process_result(request_result)
 
+
 def update_contact(contact: dict, **kwargs) -> dict:
     """Updates contact
     :param contact: Dictionary with changes
@@ -95,6 +98,7 @@ def update_contact(contact: dict, **kwargs) -> dict:
     )
 
     return API_CLIENT.process_result(request_result)
+
 
 def get_contact(contact_id: str, **kwargs) -> dict:
     """
@@ -115,6 +119,7 @@ def get_contact(contact_id: str, **kwargs) -> dict:
     )
 
     return API_CLIENT.process_result(request_result)
+
 
 def find_contact_by_params(name, **kwargs):
     _LOGGER.debug("Retrieving contact")

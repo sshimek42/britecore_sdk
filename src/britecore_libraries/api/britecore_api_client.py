@@ -7,8 +7,6 @@ from typing import Any, Dict, Optional  # added typing
 
 import sclogging.sclogging_main as scl
 import urllib3
-from britecore_libraries import BritecoreError
-from .britecore_oauth_token_manager import OAuthToken
 from urllib3.exceptions import (
     ProtocolError,
     RequestError,
@@ -17,7 +15,10 @@ from urllib3.exceptions import (
 from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
+from britecore_libraries import BritecoreError
 from britecore_libraries.config import settings
+
+from .britecore_oauth_token_manager import OAuthToken
 
 _LOGGER = scl.get_logger()
 LOGGER_UPDATED = False

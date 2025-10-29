@@ -7,9 +7,8 @@ from typing import Dict, List, Literal
 
 import sclogging.sclogging_main as scl
 
+from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.constants import DEFAULT_ADDRESS_TYPE, \
-    COMMON_CITY_REPLACEMENT
 from britecore_libraries.utils.zip_code_lookup import zip_codes
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
@@ -27,7 +26,9 @@ def _get_regexes() -> Dict:
     if _COMPILED_REGEXES is None:
         try:
             from britecore_libraries.maps.britecore_policy_name_map import (
-                compiled_regexes)
+                compiled_regexes,
+            )
+
             _COMPILED_REGEXES = compiled_regexes
         except ImportError:
             _COMPILED_REGEXES = {}
@@ -95,14 +96,14 @@ class AddressValidator:
             try:
                 zip_code = ZIP_CODE_DF.loc[
                     (
-                            (state == ZIP_CODE_DF["admin code1"])
-                            & (city == ZIP_CODE_DF["place name"])
+                        (state == ZIP_CODE_DF["admin code1"])
+                        & (city == ZIP_CODE_DF["place name"])
                     )
                 ]["postal code"].values[0]
                 _LOGGER.info(
                     f"Zip code missing - using {zip_code} for city of {city} "
                     f"and state of {state}"
-                    )
+                )
             except IndexError:
                 raise BritecoreError.InvalidAddress("Missing Zip Code")
 
@@ -116,14 +117,12 @@ class AddressValidator:
                 "address_state": self.validate_state(state, zip_code),
                 "address_country": "USA",
                 "address_zip": zip_code,
-                "type": full_address.get(
-                    "type", DEFAULT_ADDRESS_TYPE
-                    ),
+                "type": full_address.get("type", DEFAULT_ADDRESS_TYPE),
                 "address_county": self.validate_county(county, zip_code[:5]),
                 "address_city": self.validate_city(city, zip_code),
                 "property": property_name,
-                }
-            ]
+            }
+        ]
 
         _LOGGER.debug(f"Created address {fixed_address}")
         return fixed_address
@@ -133,9 +132,8 @@ class AddressValidator:
         """Validate and correct county based on zip code."""
         tmp_zipcode = zipcode[:5]
         county_lookup = ZIP_CODE_DF
-        county_lookup = county_lookup.loc[
-            county_lookup["postal code"] == tmp_zipcode
-            ]
+        county_lookup = county_lookup.loc[county_lookup["postal code"]
+                                          == tmp_zipcode]
 
         try:
             county_lookup_value = county_lookup["admin name2"].values[0]
@@ -151,7 +149,7 @@ class AddressValidator:
             _LOGGER.info(
                 f"County '{county}' not found in zip code '{zipcode}' - "
                 f"zip code matches '{county_lookup_value}'"
-                )
+            )
 
         return county
 
@@ -164,9 +162,8 @@ class AddressValidator:
         tmp_zipcode = zipcode[:5]
 
         city_lookup = ZIP_CODE_DF
-        city_lookup = city_lookup.loc[
-            city_lookup["postal code"] == tmp_zipcode
-            ]
+        city_lookup = city_lookup.loc[city_lookup["postal code"]
+                                      == tmp_zipcode]
 
         try:
             city_lookup_value = city_lookup["place name"].values[0]
@@ -188,7 +185,7 @@ class AddressValidator:
             _LOGGER.info(
                 f"City '{city}' not found in zip code '{zipcode}' - "
                 f"zip code matches '{city_lookup_value}'"
-                )
+            )
 
         return city
 
@@ -200,8 +197,7 @@ class AddressValidator:
 
         if zipcode == "00000" or len(zipcode) > 10 or not zipcode.isnumeric():
             raise BritecoreError.InvalidAddress(
-                f"Invalid Zip Code - {zipcode}"
-                )
+                f"Invalid Zip Code - {zipcode}")
 
         zipcode = re.sub(regexes.get("reg_zip", r""), "", zipcode)
 
@@ -220,9 +216,8 @@ class AddressValidator:
         tmp_zipcode = zipcode[:5]
 
         state_lookup = ZIP_CODE_DF
-        state_lookup = state_lookup.loc[
-            state_lookup["postal code"] == tmp_zipcode
-            ]
+        state_lookup = state_lookup.loc[state_lookup["postal code"]
+                                        == tmp_zipcode]
 
         try:
             state_lookup_value = state_lookup["admin code1"].values[0]
@@ -236,7 +231,7 @@ class AddressValidator:
             _LOGGER.info(
                 f"State '{state}' not found in zip code '{zipcode}' - "
                 f"zip code matches '{state_lookup_value}'"
-                )
+            )
             state = "WI"  # Default fallback
 
         return state
@@ -268,7 +263,7 @@ class AddressValidator:
             address,
             0,
             re.IGNORECASE,
-            )
+        )
 
         # Fix last character if preceded by space
         if len(address) >= 3 and address[-3:-2].lower() == " ":
@@ -338,17 +333,17 @@ def normalize_business_name(business_name: str):
         Name with standardized capitalization for business suffixes.
     """
     regexes = _get_regexes()
-    check_business = re.findall(
-        regexes.get("reg_business_name", ""), business_name
-        )
+    check_business = re.findall(regexes.get(
+        "reg_business_name", ""), business_name)
     if check_business:
         for each_business in check_business:
             business_name = business_name.replace(
                 each_business,
                 f"{each_business.upper().strip().replace(' ', '')}",
-                )
+            )
 
     return business_name
+
 
 def fix_apostrophe_capitalisation(name: str) -> str:
     """Fixes capitalization on names with apostrophe (Karen'S to Karen's)
@@ -358,10 +353,11 @@ def fix_apostrophe_capitalisation(name: str) -> str:
     """
     regexes = _get_regexes()
     name = re.sub(
-        regexes.get("reg_double_apostrophe", ""), lambda mo: mo.group(
-            0).lower(), name
+        regexes.get("reg_double_apostrophe",
+                    ""), lambda mo: mo.group(0).lower(), name
     )
     return name
+
 
 def fix_suffix_capitalisation(suffix: str) -> str:
     """Check for repeated letters in suffix and capitalize if necessary

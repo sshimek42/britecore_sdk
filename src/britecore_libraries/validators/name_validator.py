@@ -13,13 +13,13 @@ def _get_business_name_regex() -> Pattern:
     if _BUSINESS_NAME_REGEX is None:
         try:
             from maps.britecore_policy_name_map import compiled_regexes
+
             _BUSINESS_NAME_REGEX = compiled_regexes.get("reg_business_name")
         except ImportError:
             # Fallback pattern for LLC, LLP, DBA, etc.
             _BUSINESS_NAME_REGEX = re.compile(
-                r'\b(llc|lLP|dba|inc|ltd|corp|corporation)\b',
-                re.IGNORECASE
-                )
+                r"\b(llc|lLP|dba|inc|ltd|corp|corporation)\b", re.IGNORECASE
+            )
     return _BUSINESS_NAME_REGEX
 
 
@@ -45,7 +45,7 @@ class NameValidator:
         matches = re.findall(regex, name)
 
         for match in matches:
-            normalized = match.upper().strip().replace(' ', '')
+            normalized = match.upper().strip().replace(" ", "")
             name = name.replace(match, normalized)
 
         return name

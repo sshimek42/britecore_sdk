@@ -2,6 +2,7 @@ from britecore_libraries.api.api_calls import api_client
 
 API_CLIENT = api_client
 
+
 def list_files(report_id, **kwargs):
     required_json = {"report_id": report_id}
 

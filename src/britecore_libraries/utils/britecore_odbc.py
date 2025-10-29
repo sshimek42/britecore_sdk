@@ -4,7 +4,6 @@ import sys
 
 import pyodbc
 import sclogging.sclogging_main as scl
-
 from config import settings
 
 

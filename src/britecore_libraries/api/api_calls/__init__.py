@@ -1,7 +1,6 @@
 import os
 
-from britecore_libraries.api.britecore_api_client import (_LOGGER,
-                                                           BritecoreAPIClient)
+from britecore_libraries.api.britecore_api_client import _LOGGER, BritecoreAPIClient
 
 _LOGGER = _LOGGER
 

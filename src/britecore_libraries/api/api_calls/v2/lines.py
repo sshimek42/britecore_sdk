@@ -2,12 +2,12 @@ from json import loads
 from typing import Any, Callable
 
 import pyinputplus as py_menu
-
 from urllib3 import HTTPResponse
 
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import _LOGGER, api_client
 
 API_CLIENT = api_client
+
 
 def get_export_line_file(
     line: tuple, line_type: str, line_name: str, **kwargs
@@ -39,14 +39,11 @@ def get_export_line_file(
         )
     elif line_type == "Policy":
         request_result = API_CLIENT.do_request(
-            path="/api/v2/policies/get_policies"
-        )
+            path="/api/v2/policies/get_policies")
 
     _LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
 
-    API_CLIENT.process_results = API_CLIENT.process_result(
-        request_result
-    )
+    API_CLIENT.process_results = API_CLIENT.process_result(request_result)
     if API_CLIENT.process_results is not None:
         return loads(API_CLIENT.process_results)
 
