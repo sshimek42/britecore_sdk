@@ -10,11 +10,23 @@ This package provides:
 
 __version__ = "1.0.0"
 
+# Constants
+from britecore_libraries.constants import (
+    COMMON_CITY_REPLACEMENT,
+    DEFAULT_ADDRESS_TYPE,
+    DEFAULT_EMAIL_TYPE,
+    DEFAULT_PHONE_TYPE,
+)
+
+# Exceptions
+from britecore_libraries.exceptions import BritecoreError
+from britecore_libraries.maps import compiled_regexes, name_groups
+
 # Core models
 from britecore_libraries.models import (
     BritecoreContact,
     BritecorePolicy,
-    )
+)
 
 # Validators
 from britecore_libraries.validators import (
@@ -22,30 +34,15 @@ from britecore_libraries.validators import (
     EmailValidator,
     NameValidator,
     PhoneValidator,
-    fix_suffix_capitalisation,
     fix_apostrophe_capitalisation,
-    normalize_business_name
-    )
-
-# Exceptions
-from britecore_libraries.exceptions import BritecoreError
-
-# Constants
-from britecore_libraries.constants import (
-    DEFAULT_ADDRESS_TYPE,
-    DEFAULT_EMAIL_TYPE,
-    DEFAULT_PHONE_TYPE,
-    COMMON_CITY_REPLACEMENT,
-    )
-
-from britecore_libraries.maps import name_groups, compiled_regexes
-
+    fix_suffix_capitalisation,
+    normalize_business_name,
+)
 
 __all__ = [
     # Models
     "BritecoreContact",
     "BritecorePolicy",
-
     # Validators
     "AddressValidator",
     "EmailValidator",
@@ -54,19 +51,15 @@ __all__ = [
     "fix_suffix_capitalisation",
     "fix_apostrophe_capitalisation",
     "normalize_business_name",
-
     # Exceptions
     "BritecoreError",
-
     # Constants
     "DEFAULT_ADDRESS_TYPE",
     "DEFAULT_EMAIL_TYPE",
     "DEFAULT_PHONE_TYPE",
     "COMMON_CITY_REPLACEMENT",
-
     "compiled_regexes",
     "name_groups",
-
     # Version
     "__version__",
-    ]
+]
