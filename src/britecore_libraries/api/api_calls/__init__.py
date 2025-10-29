@@ -1,9 +1,6 @@
 import os
 
-from britecore_libraries.api.britecore_api_client import _LOGGER, BritecoreAPIClient
-
-_LOGGER = _LOGGER
-
+from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
 
 def init_api_client(target_site=os.environ.get("target_site")):
     _api_client = BritecoreAPIClient(target_site)
