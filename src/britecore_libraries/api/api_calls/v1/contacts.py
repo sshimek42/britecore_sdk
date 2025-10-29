@@ -1,6 +1,6 @@
 from json import loads
 
-from britecore_libraries.api.api_calls import _LOGGER, api_client
+from britecore_libraries.api.api_calls import api_client
 
 API_CLIENT = api_client
 
