@@ -1,4 +1,3 @@
-
 """
 BriteCore custom exceptions.
 
@@ -17,7 +16,7 @@ class BritecoreError:
             self,
             message: str,
             request: str | None = None,
-            http_error: str | None = None
+            http_error: str | None = None,
         ):
             self.message = message
             self.request = request

@@ -20,14 +20,15 @@ def _get_regexes() -> Dict:
     if _COMPILED_REGEXES is None:
         try:
             from maps.britecore_policy_name_map import compiled_regexes
+
             _COMPILED_REGEXES = compiled_regexes
         except ImportError:
             # Fallback basic email regex
             _COMPILED_REGEXES = {
                 "reg_email": re.compile(
-                    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-                    )
-                }
+                    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                )
+            }
     return _COMPILED_REGEXES
 
 
@@ -76,9 +77,9 @@ class EmailValidator:
                 email_list.append(
                     {
                         "email": normalized,
-                        "type" : email_type,
-                        }
-                    )
+                        "type": email_type,
+                    }
+                )
 
         return email_list
 
