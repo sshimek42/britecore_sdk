@@ -27,7 +27,7 @@ class BritecorePolicy:
         manual_policy_number: bool = True,
         previous_inspection_date: Optional[datetime.datetime] = None,
         next_inspection_date: Optional[datetime.datetime] = None,
-        ):
+    ):
         """
         Initialize a BriteCore policy.
 
@@ -66,19 +66,19 @@ class BritecorePolicy:
             Dictionary representation of policy
         """
         return {
-            "contacts"                : self.contacts,
-            "policy_number"           : self.policy_number,
-            "inception_date"          : self.inception_date,
-            "effective_date"          : self.effective_date,
-            "term_type"               : self.term_type,
-            "renewal_term_type"       : self.renewal_term_type,
-            "is_renewal"              : self.is_renewal,
-            "as_agent"                : self.as_agent,
-            "manual_policy_number"    : self.manual_policy_number,
-            "policy_type_id"          : self.policy_type_id,
+            "contacts": self.contacts,
+            "policy_number": self.policy_number,
+            "inception_date": self.inception_date,
+            "effective_date": self.effective_date,
+            "term_type": self.term_type,
+            "renewal_term_type": self.renewal_term_type,
+            "is_renewal": self.is_renewal,
+            "as_agent": self.as_agent,
+            "manual_policy_number": self.manual_policy_number,
+            "policy_type_id": self.policy_type_id,
             "previous_inspection_date": self.previous_inspection_date,
-            "next_inspection_date"    : self.next_inspection_date,
-            }
+            "next_inspection_date": self.next_inspection_date,
+        }
 
     # For backward compatibility
     @property

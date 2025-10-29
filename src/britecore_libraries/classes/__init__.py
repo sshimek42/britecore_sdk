@@ -1,4 +1,3 @@
-
 """
 Deprecated: Classes module.
 
@@ -8,20 +7,19 @@ New code should import from britecore_libraries.models and britecore_libraries.v
 
 import warnings
 
+from britecore_libraries.exceptions import BritecoreError
+
 # Import from new locations
 from britecore_libraries.models import BritecoreContact, BritecorePolicy
-from britecore_libraries.validators import (
-    AddressValidator as BritecoreAddress,
-    EmailValidator as BritecoreEmail,
-    PhoneValidator as BritecorePhone,
-)
-from britecore_libraries.exceptions import BritecoreError
+from britecore_libraries.validators import AddressValidator as BritecoreAddress
+from britecore_libraries.validators import EmailValidator as BritecoreEmail
+from britecore_libraries.validators import PhoneValidator as BritecorePhone
 
 warnings.warn(
     "Importing from britecore_libraries.classes is deprecated. "
     "Use britecore_libraries.models and britecore_libraries.validators instead.",
     DeprecationWarning,
-    stacklevel=2
+    stacklevel=2,
 )
 
 __all__ = [
