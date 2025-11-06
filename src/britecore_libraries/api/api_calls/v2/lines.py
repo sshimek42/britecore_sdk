@@ -2,13 +2,13 @@ from json import loads
 from typing import Any, Callable
 
 import pyinputplus as py_menu
-
 from urllib3 import HTTPResponse
 
 from britecore_libraries.api.api_calls import api_client, logger
 
 API_CLIENT = api_client
 _LOGGER = logger
+
 
 def get_export_line_file(
     line: tuple, line_type: str, line_name: str, **kwargs
@@ -39,15 +39,11 @@ def get_export_line_file(
             **kwargs,
         )
     elif line_type == "Policy":
-        request_result = API_CLIENT.do_request(
-            path="/api/v2/policies/get_policies"
-        )
+        request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
 
     _LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
 
-    API_CLIENT.process_results = API_CLIENT.process_result(
-        request_result
-    )
+    API_CLIENT.process_results = API_CLIENT.process_result(request_result)
     if API_CLIENT.process_results is not None:
         return loads(API_CLIENT.process_results)
 
@@ -162,6 +158,7 @@ def line_menu() -> tuple[
         eff_line[1],
     )
 
+
 def get_all_effective_dates():
     request_results = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates",
@@ -169,15 +166,17 @@ def get_all_effective_dates():
 
     return API_CLIENT.process_result(request_results)
 
-def get_all_states(effective_date_id):
 
+def get_all_states(effective_date_id):
     effective_date_json = {"effective_date_id": effective_date_id}
 
     request_results = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states",
-        json=effective_date_json,)
+        json=effective_date_json,
+    )
 
     return API_CLIENT.process_result(request_results)
+
 
 def get_all_lines(effective_date_id, location_id):
     current_lines_json = {
@@ -187,9 +186,11 @@ def get_all_lines(effective_date_id, location_id):
 
     request_results = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_lines",
-        json=current_lines_json,)
+        json=current_lines_json,
+    )
 
     return API_CLIENT.process_result(request_results)
+
 
 def list_policy_types(effective_date_id, location_id):
     policy_types_json = {
@@ -199,6 +200,7 @@ def list_policy_types(effective_date_id, location_id):
 
     request_results = API_CLIENT.do_request(
         path="/api/v2/lines/list_policy_types",
-        json=policy_types_json,)
+        json=policy_types_json,
+    )
 
     return API_CLIENT.process_result(request_results)
