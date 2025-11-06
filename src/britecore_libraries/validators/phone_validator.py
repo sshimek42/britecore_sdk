@@ -40,8 +40,6 @@ class PhoneValidator:
         Args:
             phone_numbers: List of phone number dictionaries with 'phone' and 'type' keys
         """
-        # global _LOGGER
-        # _LOGGER = scl.get_parent_logger()
         self.phone_numbers = phone_numbers
 
     def process(self) -> List[Dict[str, str]]:
