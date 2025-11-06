@@ -1,25 +1,26 @@
 """Name validation and normalization utilities."""
 
 import re
-from typing import Pattern
+from typing import Pattern, Dict
+from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 
 # Lazy-loaded from maps if needed
 _BUSINESS_NAME_REGEX: Pattern | None = None
+_COMPILED_REGEXES: Dict = {}
 
+
+def _get_regexes() -> Dict:
+    """Lazy load compiled regexes from maps."""
+    global _COMPILED_REGEXES
+    if not _COMPILED_REGEXES:
+        _COMPILED_REGEXES, _name_groups = load_regexes()
+    return _COMPILED_REGEXES
 
 def _get_business_name_regex() -> Pattern:
     """Lazy load business name regex from maps."""
     global _BUSINESS_NAME_REGEX
-    if _BUSINESS_NAME_REGEX is None:
-        try:
-            from maps.britecore_policy_name_map import compiled_regexes
-
-            _BUSINESS_NAME_REGEX = compiled_regexes.get("reg_business_name")
-        except ImportError:
-            # Fallback pattern for LLC, LLP, DBA, etc.
-            _BUSINESS_NAME_REGEX = re.compile(
-                r"\b(llc|lLP|dba|inc|ltd|corp|corporation)\b", re.IGNORECASE
-            )
+    _get_regexes()
+    _BUSINESS_NAME_REGEX = _COMPILED_REGEXES.get("reg_business_name")
     return _BUSINESS_NAME_REGEX
 
 
