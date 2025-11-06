@@ -7,23 +7,19 @@ from typing import Dict, List, Optional
 import sclogging.sclogging_main as scl
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
+from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
 
 # Lazy-loaded regex patterns
-_COMPILED_REGEXES: Dict | None = None
+_COMPILED_REGEXES: Dict = {}
 
 
 def _get_regexes() -> Dict:
     """Lazy load compiled regexes from maps."""
     global _COMPILED_REGEXES
-    if _COMPILED_REGEXES is None:
-        try:
-            from maps.britecore_policy_name_map import compiled_regexes
-
-            _COMPILED_REGEXES = compiled_regexes
-        except ImportError:
-            _COMPILED_REGEXES = {}
+    if not _COMPILED_REGEXES:
+        _COMPILED_REGEXES, _name_groups = load_regexes()
     return _COMPILED_REGEXES
 
 
@@ -44,8 +40,8 @@ class PhoneValidator:
         Args:
             phone_numbers: List of phone number dictionaries with 'phone' and 'type' keys
         """
-        global _LOGGER
-        _LOGGER = scl.get_parent_logger()
+        # global _LOGGER
+        # _LOGGER = scl.get_parent_logger()
         self.phone_numbers = phone_numbers
 
     def process(self) -> List[Dict[str, str]]:

@@ -20,7 +20,7 @@ from britecore_libraries.constants import (
 
 # Exceptions
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps import compiled_regexes, name_groups
+from britecore_libraries.maps import load_regexes
 
 # Core models
 from britecore_libraries.models import (
@@ -58,8 +58,7 @@ __all__ = [
     "DEFAULT_EMAIL_TYPE",
     "DEFAULT_PHONE_TYPE",
     "COMMON_CITY_REPLACEMENT",
-    "compiled_regexes",
-    "name_groups",
+    "load_regexes",
     # Version
     "__version__",
 ]
