@@ -286,7 +286,6 @@ class AddressValidator:
         if re.search(r"^T:\d", address):
             return address
 
-
         # Remove repeated punctuation
         address = cls._remove_repeated_punctuation(address)
 
