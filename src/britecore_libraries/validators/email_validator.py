@@ -40,8 +40,6 @@ class EmailValidator:
         Args:
             emails: List of email dictionaries with 'email' and 'type' keys
         """
-        # global _LOGGER
-        # _LOGGER = scl.get_parent_logger()
         self.emails = emails
 
     def process(self) -> List[Dict[str, str]]:
