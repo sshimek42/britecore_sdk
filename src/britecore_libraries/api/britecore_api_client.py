@@ -7,8 +7,8 @@ from typing import Any, Dict, Optional  # added typing
 
 import sclogging.sclogging_main as scl
 import urllib3
-from britecore_libraries import BritecoreError
-from .britecore_oauth_token_manager import OAuthToken
+from britecore_libraries.exceptions import BritecoreError
+from britecore_libraries.api.britecore_oauth_token_manager import OAuthToken
 from urllib3.exceptions import (
     ProtocolError,
     RequestError,
@@ -26,7 +26,10 @@ LOGGER_UPDATED = False
 class LoadClientSettings:
     def __init__(self, target_site):
         if not target_site:
-            target_site = os.environ.get("target_site")
+            try:
+                target_site = os.environ.get("target_site")
+            except KeyError:
+                _LOGGER.error("Missing environment variable 'target_site'")
         self.target_site = target_site
 
     def load_config(self):
