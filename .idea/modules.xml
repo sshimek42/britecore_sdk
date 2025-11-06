@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/bclibs.iml" filepath="$PROJECT_DIR$/.idea/bclibs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/britecore_libraries.iml" filepath="$PROJECT_DIR$/.idea/britecore_libraries.iml" />
     </modules>
   </component>
 </project>

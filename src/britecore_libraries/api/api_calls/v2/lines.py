@@ -5,9 +5,10 @@ import pyinputplus as py_menu
 
 from urllib3 import HTTPResponse
 
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import api_client, logger
 
 API_CLIENT = api_client
+_LOGGER = logger
 
 def get_export_line_file(
     line: tuple, line_type: str, line_name: str, **kwargs
@@ -160,3 +161,44 @@ def line_menu() -> tuple[
         eff_state[1],
         eff_line[1],
     )
+
+def get_all_effective_dates():
+    request_results = API_CLIENT.do_request(
+        path="/api/v2/lines/get_all_effective_dates",
+    )
+
+    return API_CLIENT.process_result(request_results)
+
+def get_all_states(effective_date_id):
+
+    effective_date_json = {"effective_date_id": effective_date_id}
+
+    request_results = API_CLIENT.do_request(
+        path="/api/v2/lines/get_all_states",
+        json=effective_date_json,)
+
+    return API_CLIENT.process_result(request_results)
+
+def get_all_lines(effective_date_id, location_id):
+    current_lines_json = {
+        "effective_date_id": effective_date_id,
+        "location_id": location_id,
+    }
+
+    request_results = API_CLIENT.do_request(
+        path="/api/v2/lines/get_all_lines",
+        json=current_lines_json,)
+
+    return API_CLIENT.process_result(request_results)
+
+def list_policy_types(effective_date_id, location_id):
+    policy_types_json = {
+        "effective_date_id": effective_date_id,
+        "location_id": location_id,
+    }
+
+    request_results = API_CLIENT.do_request(
+        path="/api/v2/lines/list_policy_types",
+        json=policy_types_json,)
+
+    return API_CLIENT.process_result(request_results)
