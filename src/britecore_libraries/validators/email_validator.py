@@ -12,7 +12,8 @@ from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 _LOGGER: logging.Logger = scl.get_parent_logger()
 
 # Lazy-loaded regex patterns
-_COMPILED_REGEXES: Dict  = {}
+_COMPILED_REGEXES: Dict = {}
+
 
 def _get_regexes() -> Dict:
     """Lazy load compiled regexes from maps."""

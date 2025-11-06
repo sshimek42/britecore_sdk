@@ -6,6 +6,8 @@ from sclogging import sclogging_main as scl
 logger = scl.get_parent_logger()
 if not logger:
     logger = scl.get_logger(__file__)
+
+
 def load_regexes():
     mutual_system = os.environ.get("system", "")
 
@@ -26,7 +28,9 @@ def load_regexes():
         "reg_city_state": re.compile(r"[^0-9a-zA-Z\s]+"),
         "reg_zip": re.compile(r"[^0-9a-zA-Z]+"),
         "reg_phone": re.compile(r"-|\(|\)|\s"),
-        "reg_email": re.compile(r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"),
+        "reg_email": re.compile(
+            r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"
+        ),
         "reg_name": re.compile(r"[^0-9a-zA-Z\s#+&'/-]+"),
         "reg_small_name": re.compile(r"\s(Du|Des)\s"),
         "reg_business_name": re.compile(r"\s(llc|llp|dba|inc)(?:\s|$)", re.IGNORECASE),
@@ -66,13 +70,11 @@ def load_regexes():
             ),
         },
         "spectrum_v2": {
-            "search_name_single": re.compile(
-                r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"
-                ),
-            "search_name_mult"  : re.compile(
+            "search_name_single": re.compile(r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"),
+            "search_name_mult": re.compile(
                 r"(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)?\s(&)\s(\w*\W\w?\W|\w*\W?\w{0})?(\W*\w*)?(\W*\w*)?"
-                ),
-            },
+            ),
+        },
     }
 
     common_compiled_regexes.update(system_compiled_regexes[mutual_system])
@@ -100,15 +102,15 @@ def load_regexes():
         },
         "spectrum_v2": {
             "multi": {
-                "last_name_1" : 5,
-                "last_name_2" : 2,
+                "last_name_1": 5,
+                "last_name_2": 2,
                 "first_name_1": 1,
                 "first_name_2": 4,
-                "suffix"      : 6,
-                }
-            },
+                "suffix": 6,
+            }
+        },
     }
 
     name_groups = system_naming_groups[mutual_system]
 
-    return compiled_regexes,name_groups
+    return compiled_regexes, name_groups
