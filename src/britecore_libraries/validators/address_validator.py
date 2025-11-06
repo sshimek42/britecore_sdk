@@ -148,7 +148,6 @@ class AddressValidator:
     @classmethod
     def validate_city(cls, city: str, zipcode: str) -> str:
         """Validate and correct city based on zip code."""
-        # regexes = _get_regexes()
         city = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", city)
 
         tmp_zipcode = zipcode[:5]
@@ -183,7 +182,6 @@ class AddressValidator:
     @staticmethod
     def normalize_zipcode(zipcode: str) -> str:
         """Normalize and validate zip code format."""
-        # regexes = _get_regexes()
         zipcode = zipcode.strip().replace("-", "").zfill(5)
 
         if zipcode == "00000" or len(zipcode) > 10 or not zipcode.isnumeric():
@@ -199,7 +197,6 @@ class AddressValidator:
     @classmethod
     def validate_state(cls, state: str, zipcode: str) -> str:
         """Validate and correct state based on zip code."""
-        # regexes = _get_regexes()
         state = state.strip().upper()
         state = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", state)
 
@@ -228,7 +225,6 @@ class AddressValidator:
     @staticmethod
     def _normalize_street_name(address: str) -> str | bytes | Literal[""]:
         """Normalize street abbreviations and directions."""
-        # regexes = _get_regexes()
         street_replacements = _COMPILED_REGEXES.get("street_name_replacement", {})
 
         for pattern, replacement in street_replacements.items():
@@ -290,8 +286,6 @@ class AddressValidator:
         if re.search(r"^T:\d", address):
             return address
 
-        # regexes = _get_regexes()
-
         # Remove repeated punctuation
         address = cls._remove_repeated_punctuation(address)
 
@@ -321,7 +315,6 @@ def normalize_business_name(business_name: str):
     Returns:
         Name with standardized capitalization for business suffixes.
     """
-    # regexes = _get_regexes()
     check_business = re.findall(
         _COMPILED_REGEXES.get("reg_business_name", ""), business_name
     )
@@ -341,7 +334,6 @@ def fix_apostrophe_capitalisation(name: str) -> str:
     :param name: Name to fix
     :return: Fixed name
     """
-    # regexes = _get_regexes()
     name = re.sub(
         _COMPILED_REGEXES.get("reg_double_apostrophe", ""),
         lambda mo: mo.group(0).lower(),
