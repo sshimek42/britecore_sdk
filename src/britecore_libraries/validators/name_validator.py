@@ -1,7 +1,8 @@
 """Name validation and normalization utilities."""
 
 import re
-from typing import Pattern, Dict
+from typing import Dict, Pattern
+
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 
 # Lazy-loaded from maps if needed
@@ -15,6 +16,7 @@ def _get_regexes() -> Dict:
     if not _COMPILED_REGEXES:
         _COMPILED_REGEXES, _name_groups = load_regexes()
     return _COMPILED_REGEXES
+
 
 def _get_business_name_regex() -> Pattern:
     """Lazy load business name regex from maps."""
