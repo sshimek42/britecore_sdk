@@ -12,6 +12,7 @@ from britecore_libraries.validators.phone_validator import PhoneValidator
 
 _LOGGER: logging.Logger = scl.get_parent_logger()
 
+
 class BritecoreContact:
     """
     BriteCore contact with validation and processing.
