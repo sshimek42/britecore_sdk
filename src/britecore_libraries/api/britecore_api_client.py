@@ -8,9 +8,11 @@ from typing import Any, Dict, Optional  # added typing
 import sclogging.sclogging_main as scl
 import urllib3
 from urllib3.exceptions import (
-    ProtocolError, RequestError, ResponseError,
-    TimeoutError as urlTimeoutError,
-    )
+    ProtocolError,
+    RequestError,
+    ResponseError,
+)
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_libraries.api.britecore_oauth_token_manager import OAuthToken
@@ -84,9 +86,7 @@ class BritecoreAPIClient:
 
         if self.site_settings.base_url:
             self.base_url = self.site_settings.base_url
-            self.base_url = Url(
-                scheme="https", host=self.base_url, path=None
-                ).url
+            self.base_url = Url(scheme="https", host=self.base_url, path=None).url
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
         else:
@@ -118,24 +118,21 @@ class BritecoreAPIClient:
             total=self.web_retry,
             status_forcelist=frozenset({502, 503, 504, 500}),
             backoff_factor=0.5,
-            )
+        )
         self.http = urllib3.PoolManager(
             retries=retries, timeout=timeout, maxsize=5, num_pools=5
-            )
+        )
 
         BritecoreAPIClient.http = self.http
 
         self.use_api_key = (
-                self.site_settings.client_id == "" or
-                self.site_settings.client_secret == ""
+            self.site_settings.client_id == "" or self.site_settings.client_secret == ""
         )
 
         BritecoreAPIClient.use_api_key = self.use_api_key
 
         if self.use_api_key:
-            _LOGGER.info(
-                "client_id and/or client_secret not found. Using api_key."
-                )
+            _LOGGER.info("client_id and/or client_secret not found. Using api_key.")
             try:
                 self.api_key = self.site_settings.api_key
             except AttributeError:
@@ -143,7 +140,7 @@ class BritecoreAPIClient:
                     "api_key not found. Please set the api_key in your "
                     ".secrets.toml "
                     "file."
-                    )
+                )
 
         if self.use_api_key:
             self.token_class = None
@@ -152,7 +149,7 @@ class BritecoreAPIClient:
                 self.site_settings.client_id,
                 self.site_settings.client_secret,
                 self.site_settings.base_url,
-                )
+            )
 
         BritecoreAPIClient.token_class = self.token_class
 
@@ -171,9 +168,7 @@ class BritecoreAPIClient:
                 LOGGER_UPDATED = True
 
     @classmethod
-    def process_result(
-        cls, response: urllib3.HTTPResponse, logs: bool = False
-        ) -> Any:
+    def process_result(cls, response: urllib3.HTTPResponse, logs: bool = False) -> Any:
         """Processes BriteCore response
         :param response: Request to parse
         :type response: HTTPResponse
@@ -192,7 +187,7 @@ class BritecoreAPIClient:
             _LOGGER.error(f"Error - {response.status} - {response.reason}")
             raise BritecoreError.NoDataReturned(
                 f"Error - {response.status} - {response.reason}"
-                )
+            )
             return None
 
         json_result = loads(response.data.decode("utf-8"))
@@ -200,14 +195,12 @@ class BritecoreAPIClient:
         result = json_result.get("success", None)
         message = json_result.get(
             "message", json_result.get("messages", "Unknown error")
-            )
+        )
 
         if not result:
             _LOGGER.error(f"Error - {message}")
-            raise BritecoreError.NoDataReturned(
-                f"Error - {message}"
-                )
-            #return None
+            raise BritecoreError.NoDataReturned(f"Error - {message}")
+            # return None
 
         data = json_result["data"]
         if logs:
@@ -230,7 +223,7 @@ class BritecoreAPIClient:
         # timer_start_note: str = "",
         # timer_end_note: str = "",
         method: str = "POST",
-        ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]:
+    ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]:
         """Do web request
         :param path: URL to request
         :type path: str
@@ -262,8 +255,7 @@ class BritecoreAPIClient:
         if request_headers is None or BritecoreAPIClient.use_api_key:
             request_headers = {}
         if not request_headers and not BritecoreAPIClient.use_api_key:
-            request_headers = (
-                BritecoreAPIClient.token_class.get_authorization_headers())
+            request_headers = BritecoreAPIClient.token_class.get_authorization_headers()
 
         request_url = _full_url(BritecoreAPIClient.base_url, path)
 
@@ -279,12 +271,10 @@ class BritecoreAPIClient:
                     body=dumps(json).encode("utf-8"),
                     timeout=request_timeout,
                     retries=request_retries,
-                    )
+                )
             else:
                 if BritecoreAPIClient.use_api_key:
-                    json = dumps(
-                        {"api_key": cls.site_settings.api_key}
-                        ).encode("utf-8")
+                    json = dumps({"api_key": cls.site_settings.api_key}).encode("utf-8")
                 request_result = cls.http.request(
                     method=method,
                     url=request_url,
@@ -292,13 +282,13 @@ class BritecoreAPIClient:
                     timeout=request_timeout,
                     retries=request_retries,
                     body=json,
-                    )
+                )
         except (
-                ProtocolError,
-                ResponseError,
-                urlTimeoutError,
-                RequestError,
-                ) as request_error:
+            ProtocolError,
+            ResponseError,
+            urlTimeoutError,
+            RequestError,
+        ) as request_error:
             _LOGGER.error(request_error)
             raise BritecoreError.NoDataReturned(request_error)
 
