@@ -6,6 +6,7 @@ from typing import Optional
 
 from britecore_libraries.models.contact import BritecoreContact
 
+
 @dataclass()
 class BritecorePolicy:
     """
@@ -13,6 +14,7 @@ class BritecorePolicy:
 
     Represents an insurance policy with associated contacts and metadata.
     """
+
     policy_number: str
     contacts: list[BritecoreContact]
     effective_date: datetime.datetime
