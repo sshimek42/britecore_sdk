@@ -100,7 +100,7 @@ class EmailValidator:
 
         if not email_match:
             if email:
-                _LOGGER.info(f"Invalid email address: {email}")
+                _LOGGER.debug(f"Invalid email address: {email}")
             return ""
 
         return email_match.group(0)

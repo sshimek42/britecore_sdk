@@ -1,10 +1,9 @@
 import os
 
-from sclogging import sclogging_main as scl
-
+from britecore_libraries import logger
 from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
 
-logger = scl.get_parent_logger()
+_LOGGER = logger
 
 
 def init_api_client(target_site=os.environ.get("target_site")):
