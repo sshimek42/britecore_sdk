@@ -5,7 +5,6 @@ Defines specific error types for handling various situations such as
 invalid data, missing tokens, or invalid input formats.
 """
 
-
 class BritecoreError:
     """Collection of custom exceptions related to BriteCore operations."""
 
@@ -100,4 +99,4 @@ class BritecoreError:
             super().__init__(self.message)
 
         def __str__(self) -> str:
-            return "No target site assigned"
+            return self.message

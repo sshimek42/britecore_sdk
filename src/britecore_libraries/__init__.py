@@ -8,6 +8,10 @@ This package provides:
 - Custom exceptions
 """
 
+from sclogging import sclogging_main as scl
+
+logger = scl.get_parent_logger()
+
 __version__ = "1.0.0"
 
 # Constants
@@ -61,4 +65,5 @@ __all__ = [
     "load_regexes",
     # Version
     "__version__",
+    "logger"
 ]
