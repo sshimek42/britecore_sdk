@@ -4,15 +4,17 @@ from types import MappingProxyType
 from typing import Mapping  # typing added
 
 import urllib3
-from britecore_libraries.exceptions import BritecoreError
 from urllib3 import Retry, Timeout
 from urllib3.util import Url, parse_url
+
 from britecore_libraries import logger
+from britecore_libraries.exceptions import BritecoreError
 
 # logger = scl.get_logger(__file__)
 timeout = Timeout(10)
 retries = Retry(total=5, status_forcelist=frozenset({502, 503, 504}))
-http = urllib3.PoolManager(retries=retries, timeout=timeout, maxsize=5, num_pools=5)
+http = urllib3.PoolManager(
+    retries=retries, timeout=timeout, maxsize=5, num_pools=5)
 
 # Token safety buffer and default headers introduced to avoid magic literals
 TOKEN_SKEW_SECONDS = 60
@@ -40,7 +42,8 @@ class OAuthToken:
         scheme = parsed.scheme or "https"
         host = parsed.host or url  # fallback if a bare host was passed
         self.scope = Url(scheme=scheme, host=host, path="/api").url
-        self.url = Url(scheme=scheme, host=host, path="/api/auth/oauth2/token").url
+        self.url = Url(scheme=scheme, host=host,
+                       path="/api/auth/oauth2/token").url
         self.token: str = ""
         self.token_time: datetime = datetime(1970, 1, 1)
 
@@ -50,7 +53,8 @@ class OAuthToken:
 
     def _request_new_token(self) -> None:
         """Request and store a new OAuth2 token, exiting on fatal failure."""
-        http_request = {"grant_type": "client_credentials", "scope": self.scope}
+        http_request = {
+            "grant_type": "client_credentials", "scope": self.scope}
         http_header = urllib3.make_headers(
             basic_auth=f"{self.client_id}:{self.client_secret}"
         )

@@ -4,8 +4,8 @@ from typing import Any, Callable
 import pyinputplus as py_menu
 from urllib3 import HTTPResponse
 
-from britecore_libraries.api.api_calls import api_client
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import api_client
 
 LOGGER = logger
 
@@ -41,7 +41,8 @@ def get_export_line_file(
             **kwargs,
         )
     elif line_type == "Policy":
-        request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
+        request_result = API_CLIENT.do_request(
+            path="/api/v2/policies/get_policies")
 
     LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
 

@@ -2,13 +2,14 @@
 
 from typing import Dict, Optional
 
+from britecore_libraries import logger
 from britecore_libraries.validators.address_validator import AddressValidator
 from britecore_libraries.validators.email_validator import EmailValidator
 from britecore_libraries.validators.name_validator import NameValidator
 from britecore_libraries.validators.phone_validator import PhoneValidator
-from britecore_libraries import logger
 
 LOGGER = logger
+
 
 class BritecoreContact:
     """

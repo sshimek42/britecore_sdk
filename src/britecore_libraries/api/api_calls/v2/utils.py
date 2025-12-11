@@ -1,8 +1,9 @@
-from britecore_libraries.api.api_calls import api_client
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import api_client
 
 LOGGER = logger
 API_CLIENT = api_client
+
 
 def get_available_function_names(**kwargs) -> dict:
     """
@@ -19,6 +20,7 @@ def get_available_function_names(**kwargs) -> dict:
     )
 
     return API_CLIENT.process_result(request_result)
+
 
 def rebuild_search_index(index_to_rebuild: list, **kwargs) -> bool:
     """

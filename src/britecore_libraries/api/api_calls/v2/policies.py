@@ -1,9 +1,7 @@
 from urllib3 import Timeout
 
-from britecore_libraries.api.api_calls import (api_client,
-                                                web_timeout_long)
-
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import api_client, web_timeout_long
 
 LOGGER = logger
 

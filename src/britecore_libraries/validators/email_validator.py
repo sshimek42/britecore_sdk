@@ -3,9 +3,9 @@
 import re
 from typing import Dict, List
 
+from britecore_libraries import logger
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
-from britecore_libraries import logger
 
 LOGGER = logger
 

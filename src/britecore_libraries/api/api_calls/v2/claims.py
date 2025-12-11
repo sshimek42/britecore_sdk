@@ -1,9 +1,10 @@
-from britecore_libraries.api.api_calls import api_client
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import api_client
 
 LOGGER = logger
 
 API_CLIENT = api_client
+
 
 def get_claim(claim_id: str, **kwargs) -> dict:
     """

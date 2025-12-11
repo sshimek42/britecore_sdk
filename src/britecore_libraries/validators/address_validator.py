@@ -4,11 +4,11 @@ import re
 from ast import literal_eval
 from typing import Dict, List, Literal
 
+from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
-from britecore_libraries import logger
 
 LOGGER = logger
 
@@ -123,7 +123,8 @@ class AddressValidator:
         """Validate and correct county based on zip code."""
         tmp_zipcode = zipcode[:5]
         county_lookup = ZIP_CODE_DF
-        county_lookup = county_lookup.loc[county_lookup["postal code"] == tmp_zipcode]
+        county_lookup = county_lookup.loc[county_lookup["postal code"]
+                                          == tmp_zipcode]
 
         try:
             county_lookup_value = county_lookup["admin name2"].values[0]
@@ -151,7 +152,8 @@ class AddressValidator:
         tmp_zipcode = zipcode[:5]
 
         city_lookup = ZIP_CODE_DF
-        city_lookup = city_lookup.loc[city_lookup["postal code"] == tmp_zipcode]
+        city_lookup = city_lookup.loc[city_lookup["postal code"]
+                                      == tmp_zipcode]
 
         try:
             city_lookup_value = city_lookup["place name"].values[0]
@@ -183,7 +185,8 @@ class AddressValidator:
         zipcode = zipcode.strip().replace("-", "").zfill(5)
 
         if zipcode == "00000" or len(zipcode) > 10 or not zipcode.isnumeric():
-            raise BritecoreError.InvalidAddress(f"Invalid Zip Code - {zipcode}")
+            raise BritecoreError.InvalidAddress(
+                f"Invalid Zip Code - {zipcode}")
 
         zipcode = re.sub(_COMPILED_REGEXES.get("reg_zip", r""), "", zipcode)
 
@@ -201,7 +204,8 @@ class AddressValidator:
         tmp_zipcode = zipcode[:5]
 
         state_lookup = ZIP_CODE_DF
-        state_lookup = state_lookup.loc[state_lookup["postal code"] == tmp_zipcode]
+        state_lookup = state_lookup.loc[state_lookup["postal code"]
+                                        == tmp_zipcode]
 
         try:
             state_lookup_value = state_lookup["admin code1"].values[0]
@@ -223,7 +227,8 @@ class AddressValidator:
     @staticmethod
     def _normalize_street_name(address: str) -> str | bytes | Literal[""]:
         """Normalize street abbreviations and directions."""
-        street_replacements = _COMPILED_REGEXES.get("street_name_replacement", {})
+        street_replacements = _COMPILED_REGEXES.get(
+            "street_name_replacement", {})
 
         for pattern, replacement in street_replacements.items():
             address = re.sub(pattern, replacement, address)
@@ -288,14 +293,16 @@ class AddressValidator:
         address = cls._remove_repeated_punctuation(address)
 
         # Remove illegal characters
-        address = re.sub(_COMPILED_REGEXES.get("reg_address", r""), "", address)
+        address = re.sub(_COMPILED_REGEXES.get(
+            "reg_address", r""), "", address)
 
         # Normalize street names
         address = cls._normalize_street_name(address)
         address = cls._normalize_street_casing(address)
 
         # Remove business tokens from address lines
-        address = re.sub(_COMPILED_REGEXES.get("reg_address2", r""), "", address)
+        address = re.sub(_COMPILED_REGEXES.get(
+            "reg_address2", r""), "", address)
 
         # Collapse multiple spaces
         address = re.sub(r"\s{2,}", " ", address).strip()
