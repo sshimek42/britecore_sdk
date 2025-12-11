@@ -5,6 +5,7 @@ Defines specific error types for handling various situations such as
 invalid data, missing tokens, or invalid input formats.
 """
 
+
 class BritecoreError:
     """Collection of custom exceptions related to BriteCore operations."""
 
