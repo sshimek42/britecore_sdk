@@ -4,10 +4,9 @@ API_CLIENT = api_client
 
 
 def create_full_quote(quote_json: dict, **kwargs):
-
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
-        )
+    )
 
     json_info = API_CLIENT.process_result(request_result)
 
@@ -22,7 +21,7 @@ def get_quote(id: str, **kwargs):
 
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
-        )
+    )
 
     quote_info = API_CLIENT.process_result(request_result)
 
