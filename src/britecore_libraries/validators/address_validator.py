@@ -1,18 +1,16 @@
 """Address validation and normalization."""
 
-import logging
 import re
 from ast import literal_eval
 from typing import Dict, List, Literal
-
-import sclogging.sclogging_main as scl
 
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
+from britecore_libraries import logger
 
-_LOGGER: logging.Logger = scl.get_parent_logger()
+LOGGER = logger
 
 # Reference to zip code data
 ZIP_CODE_DF = zip_codes
@@ -93,7 +91,7 @@ class AddressValidator:
                         & (city == ZIP_CODE_DF["place name"])
                     )
                 ]["postal code"].values[0]
-                _LOGGER.debug(
+                LOGGER.debug(
                     f"Zip code missing - using {zip_code} for city of {city} "
                     f"and state of {state}"
                 )
@@ -117,7 +115,7 @@ class AddressValidator:
             }
         ]
 
-        _LOGGER.debug(f"Created address {fixed_address}")
+        LOGGER.debug(f"Created address {fixed_address}")
         return fixed_address
 
     @classmethod
@@ -138,7 +136,7 @@ class AddressValidator:
             county = county_lookup_value
 
         if county_lookup_value.lower() != county.lower() and county != "":
-            _LOGGER.debug(
+            LOGGER.debug(
                 f"County '{county}' not found in zip code '{zipcode}' - "
                 f"zip code matches '{county_lookup_value}'"
             )
@@ -172,7 +170,7 @@ class AddressValidator:
             city = city_lookup_value
 
         if city_lookup_value.lower() != city.lower() and city != "":
-            _LOGGER.debug(
+            LOGGER.debug(
                 f"City %f.yellow%'{city}%f%' not found in zip code %f.yellow%'{zipcode}'%f% - "
                 f"zip code matches %f.yellow%'{city_lookup_value}'%f% - no changes made"
             )
@@ -214,7 +212,7 @@ class AddressValidator:
             state = state_lookup_value
 
         if state_lookup_value.lower() != state.lower() and state != "":
-            _LOGGER.debug(
+            LOGGER.debug(
                 f"State '{state}' not found in zip code '{zipcode}' - "
                 f"zip code matches '{state_lookup_value}'"
             )

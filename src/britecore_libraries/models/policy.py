@@ -33,17 +33,4 @@ class BritecorePolicy:
         Returns:
             Dictionary representation of policy
         """
-        return {
-            "contacts": self.contacts,
-            "policy_number": self.policy_number,
-            "inception_date": self.inception_date,
-            "effective_date": self.effective_date,
-            "term_type": self.term_type,
-            "renewal_term_type": self.renewal_term_type,
-            "is_renewal": self.is_renewal,
-            "as_agent": self.as_agent,
-            "manual_policy_number": self.manual_policy_number,
-            "policy_type_id": self.policy_type_id,
-            "previous_inspection_date": self.previous_inspection_date,
-            "next_inspection_date": self.next_inspection_date,
-        }
+        return self.__dict__

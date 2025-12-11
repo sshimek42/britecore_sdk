@@ -1,4 +1,7 @@
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import api_client
+from britecore_libraries import logger
+
+LOGGER = logger
 
 API_CLIENT = api_client
 
@@ -12,7 +15,7 @@ def list_attachments(policy_id: str, **kwargs) -> list:
     :return: Attachments
     :rtype: list
     """
-    _LOGGER.debug("Getting attachments")
+    LOGGER.debug("Getting attachments")
     attachments_search = {"policy_id": policy_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/deliverables/list_attachments",
@@ -32,7 +35,7 @@ def get_attachment(file_id: str, **kwargs) -> dict:
     :return: Attachment
     :rtype: dict
     """
-    _LOGGER.debug("Getting attachment")
+    LOGGER.debug("Getting attachment")
     file_search = {"file_id": file_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs

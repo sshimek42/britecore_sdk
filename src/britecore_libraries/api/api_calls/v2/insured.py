@@ -1,5 +1,7 @@
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import api_client
+from britecore_libraries import logger
 
+LOGGER = logger
 API_CLIENT = api_client
 
 
@@ -11,7 +13,7 @@ def get_property_information_and_photos(property_id: str, **kwargs) -> dict:
     :return: Property data
     :rtype: dict
     """
-    _LOGGER.debug("Getting property info")
+    LOGGER.debug("Getting property info")
     property_json = API_CLIENT.do_request(
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},

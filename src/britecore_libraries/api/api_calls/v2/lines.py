@@ -4,10 +4,12 @@ from typing import Any, Callable
 import pyinputplus as py_menu
 from urllib3 import HTTPResponse
 
-from britecore_libraries.api.api_calls import api_client, logger
+from britecore_libraries.api.api_calls import api_client
+from britecore_libraries import logger
+
+LOGGER = logger
 
 API_CLIENT = api_client
-_LOGGER = logger
 
 
 def get_export_line_file(
@@ -24,7 +26,7 @@ def get_export_line_file(
     :rtype: dict[Any, Any] or str
     """
     request_result = ""
-    _LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
+    LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
 
     if line_type == "Line":
         web_request_json = {
@@ -41,7 +43,7 @@ def get_export_line_file(
     elif line_type == "Policy":
         request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
 
-    _LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
+    LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
 
     API_CLIENT.process_results = API_CLIENT.process_result(request_result)
     if API_CLIENT.process_results is not None:
@@ -106,13 +108,13 @@ def line_menu() -> tuple[
         print(f"{tmp_line} selected")
         return line_id, name
 
-    _LOGGER.debug("Getting dates")
+    LOGGER.debug("Getting dates")
     request_results = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates",
     )
     get_dates = API_CLIENT.process_result(request_results)
 
-    _LOGGER.debug("Getting states")
+    LOGGER.debug("Getting states")
     menu_options = {}
     menu_default = ""
     for make_menu in get_dates:

@@ -1,15 +1,13 @@
 """Email address validation and normalization."""
 
-import logging
 import re
 from typing import Dict, List
 
-import sclogging.sclogging_main as scl
-
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+from britecore_libraries import logger
 
-_LOGGER: logging.Logger = scl.get_parent_logger()
+LOGGER = logger
 
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: Dict = {}
@@ -100,7 +98,7 @@ class EmailValidator:
 
         if not email_match:
             if email:
-                _LOGGER.debug(f"Invalid email address: {email}")
+                LOGGER.debug(f"Invalid email address: {email}")
             return ""
 
         return email_match.group(0)

@@ -1,15 +1,10 @@
 """Phone number validation and normalization."""
 
-import logging
 import re
 from typing import Dict, List, Optional
 
-import sclogging.sclogging_main as scl
-
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
-
-_LOGGER: logging.Logger = scl.get_parent_logger()
 
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: Dict = {}

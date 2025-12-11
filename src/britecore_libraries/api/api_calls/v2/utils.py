@@ -1,5 +1,7 @@
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import api_client
+from britecore_libraries import logger
 
+LOGGER = logger
 API_CLIENT = api_client
 
 def get_available_function_names(**kwargs) -> dict:
@@ -10,7 +12,7 @@ def get_available_function_names(**kwargs) -> dict:
     :return: Functions
     :rtype: dict
     """
-    _LOGGER.debug("Retrieving functions")
+    LOGGER.debug("Retrieving functions")
     request_result = API_CLIENT.do_request(
         path="/api/v2/utils/get_available_function_names",
         **kwargs,
@@ -28,7 +30,7 @@ def rebuild_search_index(index_to_rebuild: list, **kwargs) -> bool:
     :return: Result
     :rtype: bool
     """
-    _LOGGER.debug("Rebuilding index")
+    LOGGER.debug("Rebuilding index")
     rebuild_index = {"only_build": index_to_rebuild}
     request_result = API_CLIENT.do_request(
         path="/api/v2/utils/rebuild_search_index",

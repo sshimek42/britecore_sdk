@@ -5,7 +5,8 @@ import sys
 from json import dumps, loads
 from typing import Any, Dict, Optional  # added typing
 
-import sclogging.sclogging_main as scl
+from britecore_libraries import logger
+
 import urllib3
 from urllib3.exceptions import (
     ProtocolError, RequestError, ResponseError,
@@ -17,9 +18,7 @@ from britecore_libraries.api.britecore_oauth_token_manager import OAuthToken
 from britecore_libraries.config import settings
 from britecore_libraries.exceptions import BritecoreError
 
-_LOGGER = scl.get_logger()
-LOGGER_UPDATED = False
-
+LOGGER = logger
 
 class LoadClientSettings:
     def __init__(self, target_site):
@@ -27,7 +26,7 @@ class LoadClientSettings:
             try:
                 target_site = os.environ.get("target_site")
             except KeyError:
-                _LOGGER.error("Missing environment variable 'target_site'")
+                LOGGER.error("Missing environment variable 'target_site'")
         self.target_site = target_site
 
     def load_config(self):
@@ -71,7 +70,7 @@ class BritecoreAPIClient:
     def init_client(self):
         target_site = self.target_site
 
-        self._ensure_logger()
+        # self._ensure_logger()
 
         if not target_site:
             raise BritecoreError.NoSiteError("No site has been specified")
@@ -90,7 +89,7 @@ class BritecoreAPIClient:
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
         else:
-            _LOGGER.critical(self.bad_url_error)
+            LOGGER.critical(self.bad_url_error)
             sys.exit(self.bad_url_error)
 
         BritecoreAPIClient.base_url = self.base_url
@@ -133,7 +132,7 @@ class BritecoreAPIClient:
         BritecoreAPIClient.use_api_key = self.use_api_key
 
         if self.use_api_key:
-            _LOGGER.info(
+            LOGGER.info(
                 "client_id and/or client_secret not found. Using api_key."
                 )
             try:
@@ -158,17 +157,17 @@ class BritecoreAPIClient:
 
     # helper utilities
 
-    @classmethod
-    def _ensure_logger(cls) -> None:
-        """Ensure the module _LOGGER uses the parent _LOGGER if available (
-        one-time)."""
-        global _LOGGER
-        global LOGGER_UPDATED
-        if not LOGGER_UPDATED:
-            plogger = scl.get_parent_logger()
-            if plogger is not None:
-                _LOGGER = plogger
-                LOGGER_UPDATED = True
+    # @classmethod
+    # def _ensure_logger(cls) -> None:
+    #     """Ensure the module LOGGER uses the parent LOGGER if available (
+    #     one-time)."""
+    #     global LOGGER
+    #     global LOGGER_UPDATED
+    #     if not LOGGER_UPDATED:
+    #         plogger = scl.get_parent_logger()
+    #         if plogger is not None:
+    #             LOGGER = plogger
+    #             LOGGER_UPDATED = True
 
     @classmethod
     def process_result(
@@ -184,16 +183,16 @@ class BritecoreAPIClient:
         """
 
         if response is None:
-            _LOGGER.error("Error - No response")
+            LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
             # return None
 
         if response.status != 200:
-            _LOGGER.error(f"Error - {response.status} - {response.reason}")
+            LOGGER.error(f"Error - {response.status} - {response.reason}")
             raise BritecoreError.NoDataReturned(
                 f"Error - {response.status} - {response.reason}"
                 )
-            return None
+
 
         json_result = loads(response.data.decode("utf-8"))
 
@@ -203,7 +202,7 @@ class BritecoreAPIClient:
             )
 
         if not result:
-            _LOGGER.error(f"Error - {message}")
+            LOGGER.error(f"Error - {message}")
             raise BritecoreError.NoDataReturned(
                 f"Error - {message}"
                 )
@@ -211,10 +210,10 @@ class BritecoreAPIClient:
 
         data = json_result["data"]
         if logs:
-            _LOGGER.debug(data)
+            LOGGER.debug(data)
 
         if not data:
-            _LOGGER.warning("No data returned")
+            LOGGER.warning("No data returned")
 
         return data
 
@@ -253,7 +252,7 @@ class BritecoreAPIClient:
         :return: Request result
         :rtype: HTTPResponse | None
         """
-
+        
         if not request_timeout:
             request_timeout = BritecoreAPIClient.web_timeout
         if not request_retries:
@@ -267,7 +266,7 @@ class BritecoreAPIClient:
 
         request_url = _full_url(BritecoreAPIClient.base_url, path)
 
-        request_result: Optional[urllib3.BaseHTTPResponse] = None
+        # request_result: Optional[urllib3.BaseHTTPResponse] = None
         try:
             if json:
                 if BritecoreAPIClient.use_api_key:
@@ -299,11 +298,11 @@ class BritecoreAPIClient:
                 urlTimeoutError,
                 RequestError,
                 ) as request_error:
-            _LOGGER.error(request_error)
+            LOGGER.error(request_error)
             raise BritecoreError.NoDataReturned(request_error)
 
         if not request_result:
-            _LOGGER.error("Error getting request")
+            LOGGER.error("Error getting request")
             raise BritecoreError.NoDataReturned("Error getting request")
 
         return request_result

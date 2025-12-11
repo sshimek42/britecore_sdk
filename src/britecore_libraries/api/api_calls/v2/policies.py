@@ -1,7 +1,11 @@
 from urllib3 import Timeout
 
-from britecore_libraries.api.api_calls import (_LOGGER, api_client,
+from britecore_libraries.api.api_calls import (api_client,
                                                 web_timeout_long)
+
+from britecore_libraries import logger
+
+LOGGER = logger
 
 API_CLIENT = api_client
 
@@ -13,7 +17,7 @@ def retrieve_policy(policy_number: str, **kwargs) -> dict:
     :return: Request result
     :rtype: dict
     """
-    _LOGGER.debug("Retrieving policy")
+    LOGGER.debug("Retrieving policy")
     policy_request_json = {"policy_number": policy_number}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_policy",
@@ -34,7 +38,7 @@ def add_line_item(revision: str, line: str, **kwargs) -> bool:
     :return: Result
     :rtype: bool
     """
-    _LOGGER.debug("Adding line")
+    LOGGER.debug("Adding line")
     line_add_json = {
         "item_id": str(line),
         "revision_id": str(revision),
@@ -47,7 +51,7 @@ def add_line_item(revision: str, line: str, **kwargs) -> bool:
     line_json = API_CLIENT.process_result(request_result)
 
     if line_json is not None:
-        _LOGGER.debug(line_json["added_items"])
+        LOGGER.debug(line_json["added_items"])
         return bool(line_json["added_items"])
 
     return False
@@ -61,7 +65,7 @@ def retrieve_policy_ids(policy: str, **kwargs) -> tuple[str, str]:
     :return: Revision ID, Property ID
     :rtype: tuple[str, str]
     """
-    _LOGGER.debug("Getting policy info")
+    LOGGER.debug("Getting policy info")
     policy_json = retrieve_policy(policy, **kwargs)
     active_revision = policy_json["active_revision"]
     revision_id = active_revision["id"]
@@ -81,7 +85,7 @@ def retrieve_policy_list_from_user(
     :return: List of polices
     :rtype: list
     """
-    _LOGGER.debug(f"Searching for {contact_name}")
+    LOGGER.debug(f"Searching for {contact_name}")
     user_request_json = {
         "sort_obj": {"field": "policy_number", "order": "asc"},
         "current_page": 1,
@@ -120,7 +124,7 @@ def retrieve_policy_contact_info(policy: str, **kwargs) -> list:
     :return: List of insured attached to the policy
     :rtype: list
     """
-    _LOGGER.debug("Getting contact info")
+    LOGGER.debug("Getting contact info")
     contact_json = retrieve_policy(policy, **kwargs)
 
     return contact_json["active_revision"]["named_insureds"]
@@ -138,7 +142,7 @@ def create_policy(
     effective_date: str = "",
     **kwargs,
 ):
-    _LOGGER.debug("Creating policy")
+    LOGGER.debug("Creating policy")
     policy_request_json = {
         "policy_number": policy_number,
         "policy_type_id": policy_type_id,
@@ -171,7 +175,7 @@ def retrieve_policy_terms(policy_id: str, **kwargs) -> list[dict[str, list[dict]
     :return: Policy info
     :rtype: list[dict[str, list[dict]]]
     """
-    _LOGGER.debug("Retrieving terms")
+    LOGGER.debug("Retrieving terms")
     policy_retrieve_json = {"policy_id": policy_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_policy_terms",
@@ -192,7 +196,7 @@ def rate_revision(revision: str, **kwargs) -> dict:
     :return:
     :rtype: dict
     """
-    _LOGGER.debug("Re-rating policy")
+    LOGGER.debug("Re-rating policy")
     policy_retrieve_json = {"revision_id": revision}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/rate_revision",
@@ -213,7 +217,7 @@ def retrieve_revision_details(revision: str, **kwargs) -> dict:
     :return: Revision details
     :rtype: dict
     """
-    _LOGGER.debug("Getting revision")
+    LOGGER.debug("Getting revision")
     revision_retrieve_json = {"revision_id": revision}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_revision_details",
@@ -235,7 +239,7 @@ def retrieve_risks(revision: str, **kwargs) -> dict:
     :return: Risk ID
     :rtype: dict
     """
-    _LOGGER.debug("Getting risks")
+    LOGGER.debug("Getting risks")
     revision_retrieve_json = {"revision_id": revision}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_risks",
@@ -256,7 +260,7 @@ def retrieve_risk_details(risk_id: str, **kwargs) -> dict:
     :return: Risk details
     :rtype: dict
     """
-    _LOGGER.debug("Getting risk details")
+    LOGGER.debug("Getting risk details")
     revision_retrieve_json = {"risk_id": risk_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_risk_details",
@@ -283,7 +287,7 @@ def update_rating_information(
     :return: Success/fail
     :rtype: list
     """
-    _LOGGER.debug("Updating line item")
+    LOGGER.debug("Updating line item")
     revision_retrieve_json = {
         "property_id": property_id,
         "items": [{"id": line, "limit": limit}],
@@ -307,7 +311,7 @@ def rate_risk(risk_id: str, **kwargs) -> dict[str, float]:
     :return: Re-rated premium
     :rtype: Dict[str, float]
     """
-    _LOGGER.debug("Re-rating policy")
+    LOGGER.debug("Re-rating policy")
     revision_retrieve_json = {"risk_id": risk_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/rate_risk",
@@ -328,7 +332,7 @@ def retrieve_policy_billing_schedule(policy: str, **kwargs) -> dict:
     :return: Result
     :rtype: bool
     """
-    _LOGGER.debug("Getting billing schedule")
+    LOGGER.debug("Getting billing schedule")
     billing_search = {"policy_number": policy}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_billing_schedule_options",
@@ -360,7 +364,7 @@ def new_revision_contact(
     :rtype: dict
     """
     request_result = None
-    _LOGGER.debug("Adding contact")
+    LOGGER.debug("Adding contact")
 
     contact_add = {
         "revision_id": revision_id,
