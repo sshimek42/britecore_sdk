@@ -1,4 +1,7 @@
-from britecore_libraries.api.api_calls import api_client, _LOGGER
+from britecore_libraries.api.api_calls import api_client
+from britecore_libraries import logger
+
+LOGGER = logger
 
 API_CLIENT = api_client
 
@@ -24,7 +27,7 @@ def new_contact(
     :param contact_type: Contact type (Defaults to "individual")
     :type contact_type: str
     """
-    _LOGGER.debug("Creating contact")
+    LOGGER.debug("Creating contact")
     if not phone:
         phone = [{}]
     if not email:
@@ -54,10 +57,10 @@ def new_contact(
         new_id = "Fail"
 
     if new_id == "Fail":
-        _LOGGER.error(f"Failed to add contact - {name}")
+        LOGGER.error(f"Failed to add contact - {name}")
         return None, None
 
-    _LOGGER.debug(f"Added {name}")
+    LOGGER.debug(f"Added {name}")
     return contact_json, new_id
 
 def add_contact_to_role(contact_id, role="Named Insured", **kwargs) -> dict:
@@ -69,7 +72,7 @@ def add_contact_to_role(contact_id, role="Named Insured", **kwargs) -> dict:
     :return: Results of request
     :rtype: dict
     """
-    _LOGGER.debug("Adding role")
+    LOGGER.debug("Adding role")
     role_request_json = {"contact_id": contact_id, "role_name": role}
     request_result = API_CLIENT.do_request(
         path="/api/v2/contacts/add_contact_to_role",
@@ -86,7 +89,7 @@ def update_contact(contact: dict, **kwargs) -> dict:
     :return: Request result
     :rtype: dict
     """
-    _LOGGER.debug("Updating contact")
+    LOGGER.debug("Updating contact")
     update_request_json = {"contact": contact}
     request_result = API_CLIENT.do_request(
         path="/api/v2/contacts/update_contact",
@@ -106,7 +109,7 @@ def get_contact(contact_id: str, **kwargs) -> dict:
     :return: Contact info
     :rtype: dict
     """
-    _LOGGER.debug("Retrieving contact")
+    LOGGER.debug("Retrieving contact")
     contact_retrieve_json = {"contact_id": contact_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/contacts/get_contact",
@@ -117,7 +120,7 @@ def get_contact(contact_id: str, **kwargs) -> dict:
     return API_CLIENT.process_result(request_result)
 
 def find_contact_by_params(name, **kwargs):
-    _LOGGER.debug("Retrieving contact")
+    LOGGER.debug("Retrieving contact")
     contact_retrieve_json = {"name": name}
     request_result = API_CLIENT.do_request(
         path="/api/v2/contacts/find_contact_by_params",

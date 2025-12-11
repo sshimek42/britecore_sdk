@@ -1,12 +1,10 @@
-import os
-
+from pathlib import Path
 import pandas as pd
-from sclogging import sclogging_main as scl
+from britecore_libraries import logger
 
-import_file = os.path.join(os.path.dirname(
-    __file__), "../resources", "zip_codes.csv")
+LOGGER = logger
 
-logger = scl.get_logger()
+import_file = Path(Path(__file__).parent / "../resources" / "zip_codes.csv")
 
 
 def load_zip_codes():
@@ -15,7 +13,7 @@ def load_zip_codes():
     try:
         loaded_zip_codes = pd.read_csv(import_file, dtype=str)
     except FileNotFoundError:
-        logger.error("Zip Code lookup file is missing")
+        LOGGER.error("Zip Code lookup file is missing")
 
     return loaded_zip_codes
 

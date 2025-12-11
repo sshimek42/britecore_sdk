@@ -1,17 +1,14 @@
 """BriteCore contact model."""
 
-import logging
 from typing import Dict, Optional
-
-import sclogging.sclogging_main as scl
 
 from britecore_libraries.validators.address_validator import AddressValidator
 from britecore_libraries.validators.email_validator import EmailValidator
 from britecore_libraries.validators.name_validator import NameValidator
 from britecore_libraries.validators.phone_validator import PhoneValidator
+from britecore_libraries import logger
 
-_LOGGER: logging.Logger = scl.get_parent_logger()
-
+LOGGER = logger
 
 class BritecoreContact:
     """
@@ -73,6 +70,6 @@ class BritecoreContact:
             "policy_number": self.policy_number,
         }
 
-        _LOGGER.debug(f"Created contact {final_contact}")
+        LOGGER.debug(f"Created contact {final_contact}")
 
         return final_contact

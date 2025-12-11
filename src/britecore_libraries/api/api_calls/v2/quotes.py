@@ -17,7 +17,7 @@ def create_full_quote(quote_json: dict, **kwargs):
     return json_info, json_info["id"]
 
 
-def get_quote(id, **kwargs):
+def get_quote(id: str, **kwargs):
     quote_json = {"id": id}
 
     request_result = API_CLIENT.do_request(

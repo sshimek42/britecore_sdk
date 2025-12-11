@@ -8,9 +8,10 @@ This package provides:
 - Custom exceptions
 """
 
-from sclogging import sclogging_main as scl
+from britecore_libraries.base_logger import SCLogger
 
-logger = scl.get_parent_logger()
+logger_class = SCLogger(__package__, level="DEBUG")
+logger = logger_class.get_logger()
 
 __version__ = "1.0.0"
 

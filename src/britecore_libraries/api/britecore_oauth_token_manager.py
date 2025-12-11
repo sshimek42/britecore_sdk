@@ -3,13 +3,13 @@ from json import loads
 from types import MappingProxyType
 from typing import Mapping  # typing added
 
-import sclogging.sclogging_main as scl
 import urllib3
 from britecore_libraries.exceptions import BritecoreError
 from urllib3 import Retry, Timeout
 from urllib3.util import Url, parse_url
+from britecore_libraries import logger
 
-logger = scl.get_logger(__file__)
+# logger = scl.get_logger(__file__)
 timeout = Timeout(10)
 retries = Retry(total=5, status_forcelist=frozenset({502, 503, 504}))
 http = urllib3.PoolManager(retries=retries, timeout=timeout, maxsize=5, num_pools=5)

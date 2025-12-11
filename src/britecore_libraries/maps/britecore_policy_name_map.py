@@ -1,12 +1,6 @@
 import os
 import re
 
-from sclogging import sclogging_main as scl
-
-logger = scl.get_parent_logger()
-if not logger:
-    logger = scl.get_logger(__file__)
-
 
 def load_regexes():
     mutual_system = os.environ.get("system", "")

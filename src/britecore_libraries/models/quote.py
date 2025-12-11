@@ -1,11 +1,10 @@
 """BriteCore policy model."""
-
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, Union
-from sclogging import sclogging_main as scl
+from britecore_libraries import logger
 
-_LOGGER = scl.get_parent_logger()
+LOGGER = logger
 
 @dataclass
 class BritecoreQuote:
@@ -40,28 +39,10 @@ class BritecoreQuote:
         """
 
         if not isinstance(self.underwriting_questions, list):
-            _LOGGER.debug("Missing or invalid underwriting questions")
+            LOGGER.debug("Missing or invalid underwriting questions")
             self.underwriting_questions = []
 
-        # if isinstance(self.inception_date, str):
-        #     self.inception_date = datetime.strptime(
-        #         self.inception_date, "%Y-%m-%d"
-        #         )
-
-        quote_dict = {
-            "number"                : self.number,
-            "number_origin"         : self.number_origin,
-            "underwriting_questions": self.underwriting_questions,
-            "effective_date"        : self.effective_date,
-            "policy_type_id"        : self.policy_type_id,
-            "transaction_type"      : self.transaction_type,
-            "term_type"             : self.term_type,
-            "agency_id"             : self.agency_id,
-            "named_insureds"        : self.named_insureds,
-            "risks"                 : self.risks,
-            "inception_date"        : self.inception_date,
-            "description"           : self.description
-            }
+        quote_dict = self.__dict__
 
         if self.description == "":
             quote_dict.update(
@@ -71,20 +52,10 @@ class BritecoreQuote:
                     }
                 )
 
-        if self.next_inspection_date:
-            quote_dict.update(
-                {
-                    "next_inspection_date":
-                        self.next_inspection_date
-                    }
-                )
+        if not self.next_inspection_date:
+            del quote_dict["next_inspection_date"]
 
-        if self.previous_inspection_date:
-            quote_dict.update(
-                {
-                    "previous_inspection_date":
-                        self.previous_inspection_date
-                    }
-                )
+        if not self.previous_inspection_date:
+            del quote_dict["previous_inspection_date"]
 
         return quote_dict

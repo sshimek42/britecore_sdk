@@ -2,8 +2,11 @@ from json import loads
 
 from urllib3 import Timeout
 
-from britecore_libraries.api.api_calls import (api_client, _LOGGER,
+from britecore_libraries.api.api_calls import (api_client, 
                                             web_timeout_long)
+from britecore_libraries import logger
+
+LOGGER = logger
 
 API_CLIENT = api_client
 
@@ -15,7 +18,7 @@ def retrieve_notes(policy_id: str) -> list:
     :return: Notes
     :rtype: list
     """
-    _LOGGER.debug("Getting notes")
+    LOGGER.debug("Getting notes")
     notes_search = {
         "id": policy_id,
         "pageSize": 1000,
