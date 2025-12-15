@@ -101,3 +101,23 @@ class BritecoreError:
 
         def __str__(self) -> str:
             return self.message
+
+    class MissingParameter(Exception):
+        """Raised when a required parameter is missing."""
+
+        def __init__(self, message: str):
+            self.message = message
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            return self.message
+
+    class ConflictingParameters(Exception):
+        """Raised when multiple conflicting parameters are specified."""
+
+        def __init__(self, message: str):
+            self.message = message
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            return self.message

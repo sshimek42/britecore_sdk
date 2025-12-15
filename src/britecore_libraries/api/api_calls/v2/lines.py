@@ -1,20 +1,25 @@
 from json import loads
-from typing import Any, Callable
+from logging import Logger
+from typing import Any, Optional, Unpack
 
 import pyinputplus as py_menu
-from urllib3 import HTTPResponse
+from urllib3 import BaseHTTPResponse, HTTPResponse
 
-from britecore_libraries.api.api_calls import api_client
-from britecore_libraries import logger
+from britecore_libraries import logger, BritecoreError
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 
-LOGGER = logger
+LOGGER: Logger = logger
 
-API_CLIENT = api_client
+API_CLIENT: BritecoreAPIClient = api_client
 
 
 def get_export_line_file(
-    line: tuple, line_type: str, line_name: str, **kwargs
-) -> str | HTTPResponse | None | Any:
+    line: tuple, line_type: str, line_name: str, include_custom_sequences: Optional[bool] = False, **kwargs: Unpack[RequestParameters]
+) -> Any:
     """Gets line export
     :param line: Line ID
     :type line: str
@@ -22,20 +27,25 @@ def get_export_line_file(
     :type line_type: str
     :param line_name: Name of line
     :type line_name: str
+    :param include_custom_sequences: Whether or not to include any non-default data from custom_sequences that is associated with the policy types (Default False)
+    :type include_custom_sequences: bool
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
     :return: Export of selected line
-    :rtype: dict[Any, Any] or str
+    :rtype: Any
     """
-    request_result = ""
+    request_result: Optional[BaseHTTPResponse, HTTPResponse] = None
     LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
 
     if line_type == "Line":
-        web_request_json = {
+        web_request_json: dict[str, str | bool] = {
             "curr_eff_date_id": line[0],
             "curr_line_id": line[2],
             "curr_state_id": line[1],
-        }
+            "include_custom_sequences":include_custom_sequences
+            }
 
-        request_result = API_CLIENT.do_request(
+        request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
             path="/api/v2/lines/get_export_line_file",
             json=web_request_json,
             **kwargs,
@@ -52,25 +62,20 @@ def get_export_line_file(
     return request_result
 
 
-def line_menu() -> tuple[
-    Callable[[object], int],
-    Callable[[object], int],
-    Callable[[object], int],
-    list[Any] | str | Any,
-    list[Any] | str | Any,
-    list[Any] | str | Any,
-]:
+def line_menu(**kwargs: Unpack[RequestParameters]) -> tuple[list, list, list, str, str, str]:
     """Generates ids needed for get_lines.
-    :return:effective date id, state id, line id(s),
-    date name, state name, line name
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: effective date id, state id, line id(s), date name, state name, line name
     :rtype: tuple[list, list, list, list, list, list]
     """
+    request_result: Optional[BaseHTTPResponse, HTTPResponse]
 
     def print_menu(
         print_menu_title: str,
         print_menu_options: dict,
         print_menu_default: str,
-    ) -> tuple[Callable[[object], int], list[Any] | str | Any]:
+    ) -> tuple[list, str]:
         """Creates menus for each different line option
         :param print_menu_title: Title
         :type print_menu_title: str
@@ -81,11 +86,14 @@ def line_menu() -> tuple[
         :return:
         :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
         """
+        line_id: str | list[str]
+        name: str | list[str]
+
         print(
             f"\nChoose {print_menu_title.lower()}\n{'=' * (len(print_menu_title) + 7)}"
         )
         if len(print_menu_options) > 1:
-            menu_options_list = list(print_menu_options.keys())
+            menu_options_list: list = list(print_menu_options.keys())
             tmp_line = py_menu.inputMenu(
                 menu_options_list,
                 lettered=False,
@@ -109,43 +117,46 @@ def line_menu() -> tuple[
         return line_id, name
 
     LOGGER.debug("Getting dates")
-    request_results = API_CLIENT.do_request(
+    request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates",
+        **kwargs
     )
-    get_dates = API_CLIENT.process_result(request_results)
+    get_dates: Any = API_CLIENT.process_result(request_result)
 
     LOGGER.debug("Getting states")
-    menu_options = {}
-    menu_default = ""
+    menu_options: dict[str, str] = {}
+    menu_default: str = ""
     for make_menu in get_dates:
         menu_options.update({make_menu["description"]: make_menu["id"]})
         menu_default = make_menu["description"]
-    eff_date = print_menu("Date", menu_options, menu_default)
-    eff_date_json = {"effective_date_id": eff_date[0]}
+    eff_date: tuple[list[str], str] = print_menu("Date", menu_options, menu_default)
+    eff_date_json: Optional[dict[str, list[str]]] = {"effective_date_id": eff_date[0]}
 
-    request_results = API_CLIENT.do_request(
+    request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states",
         json=eff_date_json,
+        **kwargs
     )
-    get_states = API_CLIENT.process_result(request_results)
+    get_states: Any = API_CLIENT.process_result(request_result)
 
     menu_options = {}
     for make_menu in get_states:
         menu_options.update({make_menu["name"]: make_menu["id"]})
         menu_default = make_menu["name"]
     eff_state = print_menu("State", menu_options, menu_default)
-    eff_state_json = {
+    eff_state_json: dict[str, list[str]] = {
         "effective_date_id": eff_date[0],
         "location_id": eff_state[0],
     }
 
-    request_results = API_CLIENT.do_request(
+    request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_lines",
         json=eff_state_json,
+        **kwargs
     )
-    all_lines = API_CLIENT.process_result(request_results)
-    menu_options = {}
-    menu_name = []
+    all_lines: Any = API_CLIENT.process_result(request_result)
+    menu_options: dict[str, str] = {}
+    menu_name: list[str] = []
     for make_menu in all_lines:
         menu_options.update({make_menu["name"]: make_menu["id"]})
         menu_name.append(make_menu["name"])
@@ -161,48 +172,104 @@ def line_menu() -> tuple[
     )
 
 
-def get_all_effective_dates():
-    request_results = API_CLIENT.do_request(
+def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
+    """Get all effective dates
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: All effective line dates
+    :rtype: Any
+    """
+    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates",
+        **kwargs
     )
 
-    return API_CLIENT.process_result(request_results)
+    return API_CLIENT.process_result(request_result)
 
 
-def get_all_states(effective_date_id):
-    effective_date_json = {"effective_date_id": effective_date_id}
+def get_all_states(effective_date_id: Optional[str] = None, **kwargs: Unpack[RequestParameters]) -> Any:
+    """
+    Returns all states using effective date
+    :param effective_date_id: Effective Date ID
+    :type effective_date_id: str
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: All active states
+    :rtype: Any
+    """
 
-    request_results = API_CLIENT.do_request(
+    effective_date_json: Optional[dict[str,str]] = {}
+
+    if effective_date_id:
+        effective_date_json = {"effective_date_id": effective_date_id}
+
+    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states",
         json=effective_date_json,
+        **kwargs
     )
 
-    return API_CLIENT.process_result(request_results)
+    return API_CLIENT.process_result(request_result)
 
 
-def get_all_lines(effective_date_id, location_id):
-    current_lines_json = {
+def get_all_lines(effective_date_id: str, location_id: Optional[str] = None, **kwargs: Unpack[RequestParameters]) -> Any:
+    """
+    Gets all active lines from provided effective date_id and state_id
+    :param effective_date_id: Effective Date ID
+    :type effective_date_id: str
+    :param location_id: State ID
+    :type location_id: Optional[str]
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: line_ids for provided effective_date_id and location_id
+    :rtype: Any
+    """
+    current_lines_json: dict[str, str] = {
         "effective_date_id": effective_date_id,
-        "location_id": location_id,
     }
 
-    request_results = API_CLIENT.do_request(
+    if location_id:
+        current_lines_json.update({"location_id": location_id})
+
+    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_lines",
         json=current_lines_json,
+        **kwargs
     )
 
-    return API_CLIENT.process_result(request_results)
+    return API_CLIENT.process_result(request_result)
 
 
-def list_policy_types(effective_date_id, location_id):
-    policy_types_json = {
-        "effective_date_id": effective_date_id,
-        "location_id": location_id,
-    }
+def list_policy_types(location_id: str, effective_date_id: Optional[str] = None,  effective_date: Optional[str] = None, **kwargs:Unpack[RequestParameters]) -> Any:
+    """
+    Gets all active policy types from provided effective date (or effective date id) and state id
+    :param effective_date_id: Effective Date ID
+    :type effective_date_id: str
+    :param effective_date: Effective Date (yyyy-mm-dd)
+    :type effective_date: str
+    :param location_id: State ID
+    :type location_id: str
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: policy_ids for provided effective_date_id and location_id
+    :rtype: Any
+    """
 
-    request_results = API_CLIENT.do_request(
+    if not effective_date and effective_date_id:
+        BritecoreError.MissingParameter("Either effective_date or effective_date is required")
+
+    parameter_list: list[dict[str, str | None]] = [{"effective_date": effective_date},
+                                                {"effective_date_id": effective_date_id}]
+    parameter_priority: list[str] = ["effective_date_id", "effective_date"]
+
+    policy_types_json: dict[str, str] = api_client.multiple_parameter_varification(parameter_list,parameter_priority)
+
+    policy_types_json.update({"location_id": location_id})
+
+    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/lines/list_policy_types",
         json=policy_types_json,
+        **kwargs
     )
 
-    return API_CLIENT.process_result(request_results)
+    return API_CLIENT.process_result(request_result)

@@ -1,42 +1,49 @@
-from britecore_libraries.api.api_calls import api_client
+from logging import Logger
+from typing import Any, Optional, Unpack
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import BritecoreAPIClient, api_client, RequestParameters
 
-LOGGER = logger
+LOGGER: Logger = logger
 
-API_CLIENT = api_client
+API_CLIENT: BritecoreAPIClient = api_client
+
 
 def new_contact(
     name: str,
-    address: list,
-    phone: list,
-    email: list,
-    contact_type: str = "individual",
-    **kwargs,
-) -> tuple:
-    """Add contact
+    address: list[dict[str,str]],
+    phone: Optional[list[Optional[dict[str, str]]]] = None,
+    email: Optional[list[Optional[dict[str, str]]]] = None,
+    contact_type: Optional[str] = "individual",
+    **kwargs:Unpack[RequestParameters],
+) -> tuple[str | None, str | None]:
+    """Creates a new contact
     :param name: Contact name
     :type name: str
-    :param address: List of contact's address dictionary
-    :type address: list
-    :param phone: List of contact's phone dictionary
-    :type phone: list
-    :param email: List of contact's email dictionary
-    :type email: list
-    :return: Full request result, new contact id
-    :rtype: tuple
+    :param address: List of dictionaries with contact's addresses
+    :type address: list[dict[str,str]]
+    :param phone: List of dictionaries with contact's phone numbers
+    :type phone: Optional[list[Optional[dict[str, str]]]]
+    :param email: List of dictionaries with contact's e-mails
+    :type email: Optional[list[Optional[dict[str, str]]]]
     :param contact_type: Contact type (Defaults to "individual")
-    :type contact_type: str
+    :type contact_type: Optional[str]
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: Request result and new Contact ID
+    :rtype: tuple[str | None, str | None]
     """
-    LOGGER.debug("Creating contact")
+    LOGGER.debug(f"Creating contact %f.yellow%{name}%f%")
     if not phone:
         phone = [{}]
     if not email:
         email = [{}]
-    contact_request_json = {
+    contact_request_json: dict[str, str | list] = {
         "name": name,
         "addresses": address,
     }
-    contact_request_json.update(**kwargs)
     if email[0] != {}:
         contact_request_json.update({"emails": email})
     if phone[0] != {}:
@@ -44,37 +51,42 @@ def new_contact(
 
     contact_request_json.update({"type": contact_type})
 
-    request_result = API_CLIENT.do_request(
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/contacts/new_contact",
         json=contact_request_json,
+        **kwargs
     )
 
-    contact_json = API_CLIENT.process_result(request_result)
+    contact_json: Any = API_CLIENT.process_result(request_result)
 
     try:
-        new_id = contact_json.get("contact_id", "Fail")
+        new_id: str = contact_json.get("contact_id", "Fail")
     except AttributeError:
-        new_id = "Fail"
+        new_id: str = "Fail"
 
     if new_id == "Fail":
-        LOGGER.error(f"Failed to add contact - {name}")
+        LOGGER.error(f"Failed to add contact - %f.yellow%{name}%f%")
         return None, None
 
-    LOGGER.debug(f"Added {name}")
+    LOGGER.debug(f"Added %f.yellow%{name}%f%")
     return contact_json, new_id
 
-def add_contact_to_role(contact_id, role="Named Insured", **kwargs) -> dict:
+
+def add_contact_to_role(contact_id: str, role: Optional[str] = "Named Insured",
+                        **kwargs:Unpack[RequestParameters] )-> Any:
     """Adds role to existing contact
     :param contact_id: Contact ID
     :type contact_id: str
     :param role: Requested role (Defaults to "Named Insured")
     :type role: str
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
     :return: Results of request
-    :rtype: dict
+    :rtype: Any
     """
-    LOGGER.debug("Adding role")
-    role_request_json = {"contact_id": contact_id, "role_name": role}
-    request_result = API_CLIENT.do_request(
+    LOGGER.debug(f"Adding role %f.yellow%{role}%f% to %f.yellow%{contact_id}%f%")
+    role_request_json: dict[str, str] = {"contact_id": contact_id, "role_name": role}
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/contacts/add_contact_to_role",
         json=role_request_json,
         **kwargs,
@@ -82,16 +94,20 @@ def add_contact_to_role(contact_id, role="Named Insured", **kwargs) -> dict:
 
     return API_CLIENT.process_result(request_result)
 
-def update_contact(contact: dict, **kwargs) -> dict:
+
+def update_contact(contact: dict[str, str | list[dict[str, str]]],
+                   **kwargs:Unpack[RequestParameters]) -> Any:
     """Updates contact
     :param contact: Dictionary with changes
-    :type contact: dict
+    :type contact: dict[str, str | list[dict[str, str]]]
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
     :return: Request result
-    :rtype: dict
+    :rtype: Any
     """
-    LOGGER.debug("Updating contact")
-    update_request_json = {"contact": contact}
-    request_result = API_CLIENT.do_request(
+    LOGGER.debug(f"Updating contact information\n%f.yellow%{contact}%f%")
+    update_request_json: dict[str, dict] = {"contact": contact}
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/contacts/update_contact",
         json=update_request_json,
         **kwargs,
@@ -99,19 +115,20 @@ def update_contact(contact: dict, **kwargs) -> dict:
 
     return API_CLIENT.process_result(request_result)
 
-def get_contact(contact_id: str, **kwargs) -> dict:
+
+def get_contact(contact_id: str, **kwargs:Unpack[RequestParameters]) -> Any:
     """
     Gets contact info
     :param contact_id: Contact ID to lookup
     :type contact_id: str
-    :param kwargs:
-    :type kwargs:
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
     :return: Contact info
-    :rtype: dict
+    :rtype: Any
     """
-    LOGGER.debug("Retrieving contact")
-    contact_retrieve_json = {"contact_id": contact_id}
-    request_result = API_CLIENT.do_request(
+    LOGGER.debug(f"Retrieving contact id %f.yellow%{contact_id}%f%")
+    contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/contacts/get_contact",
         json=contact_retrieve_json,
         **kwargs,
@@ -119,10 +136,30 @@ def get_contact(contact_id: str, **kwargs) -> dict:
 
     return API_CLIENT.process_result(request_result)
 
-def find_contact_by_params(name, **kwargs):
-    LOGGER.debug("Retrieving contact")
-    contact_retrieve_json = {"name": name}
-    request_result = API_CLIENT.do_request(
+
+def find_contact_by_params(
+    name: str, role_name: Optional[str] = None, dob: Optional[str] = None, **kwargs
+:Unpack[RequestParameters]) -> Any:
+    """
+    Find contact from provided parameters
+    :param name: Name to search for
+    :type: str
+    :param role_name: Assigned role
+    :type role_name: Optional[str]
+    :param dob: Date of birth (yyyy-mm-dd)
+    :type dob: Optional[str]
+    :param kwargs: Keywords to pass to urllib3 request
+    :type kwargs: Optional[dict[str,Any]]
+    :return: Search results
+    :rtype: Any
+    """
+    LOGGER.debug(f"Finding contact %f.yellow%{name}%f%")
+    contact_retrieve_json: dict[str, str | None] = {
+        "name": name,
+        "role_name": role_name,
+        "dob": dob,
+    }
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/contacts/find_contact_by_params",
         json=contact_retrieve_json,
         **kwargs,
