@@ -262,7 +262,7 @@ def list_policy_types(location_id: str, effective_date_id: Optional[str] = None,
                                                 {"effective_date_id": effective_date_id}]
     parameter_priority: list[str] = ["effective_date_id", "effective_date"]
 
-    policy_types_json: dict[str, str] = api_client.multiple_parameter_varification(parameter_list,parameter_priority)
+    policy_types_json: dict[str, str] = api_client.multiple_parameter_verification(parameter_list,parameter_priority)
 
     policy_types_json.update({"location_id": location_id})
 
