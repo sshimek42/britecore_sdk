@@ -52,7 +52,7 @@ def list_attachments(
     parameter_list: list[dict[str, str | None]] = [{"policy_id": policy_id},{"contact_id":contact_id},{"revision_id": revision_id}]
     parameter_priority: list[str] = ["revision_id", "contact_id", "policy_id"]
 
-    attachments_search = api_client.multiple_parameter_varification(parameter_list, parameter_priority)
+    attachments_search = api_client.multiple_parameter_verification(parameter_list, parameter_priority)
 
     for _, (k, v) in enumerate(local_env.items()):  #Add any non-default parameters to request
         if v and k not in parameter_priority:
