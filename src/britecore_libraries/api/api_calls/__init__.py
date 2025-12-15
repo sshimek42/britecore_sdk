@@ -1,6 +1,9 @@
 import os
 
-from britecore_libraries.api.britecore_api_client import BritecoreAPIClient, RequestParameters
+from britecore_libraries.api.britecore_api_client import (
+    BritecoreAPIClient,
+    RequestParameters,
+)
 
 
 def init_api_client(target_site=os.environ.get("target_site")) -> BritecoreAPIClient:

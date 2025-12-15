@@ -1,26 +1,38 @@
 from json import loads
 from logging import Logger
+from typing import Any, Optional, Unpack
 
-from typing import Any, Unpack, Optional
+from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
-from urllib3 import Timeout, BaseHTTPResponse, HTTPResponse
-
-from britecore_libraries.api.api_calls import (api_client, 
-                                            web_timeout_long,
-                                               RequestParameters, BritecoreAPIClient)
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+    web_timeout_long,
+)
 
-LOGGER:Logger = logger
+LOGGER: Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
 
-def retrieve_notes(id: str, pageSize:Optional[int] = 1000,
-                   searchString: Optional[str] = None, aggregateAll: Optional[bool] = False,
-                   advSearch: Optional[bool] = False, filterAlerts: Optional[bool] = False,
-                   filterUserGen: Optional[bool] = False, orderBy: Optional[str] = "",
-                   page: Optional[int] = 0, ascending: Optional[bool] = False, type: Optional[str] = "",
-                   filterExcludeAlerts: Optional[bool] = False, filterSystemNotesOnly: Optional[bool] = False
-                   ,**kwargs: Unpack[RequestParameters]) -> Any:
+
+def retrieve_notes(
+    id: str,
+    pageSize: Optional[int] = 1000,
+    searchString: Optional[str] = None,
+    aggregateAll: Optional[bool] = False,
+    advSearch: Optional[bool] = False,
+    filterAlerts: Optional[bool] = False,
+    filterUserGen: Optional[bool] = False,
+    orderBy: Optional[str] = "",
+    page: Optional[int] = 0,
+    ascending: Optional[bool] = False,
+    type: Optional[str] = "",
+    filterExcludeAlerts: Optional[bool] = False,
+    filterSystemNotesOnly: Optional[bool] = False,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
     """
     Retrieve policy notes - See original API docs for all parameter descriptions
     :param id: Policy ID
@@ -57,23 +69,22 @@ def retrieve_notes(id: str, pageSize:Optional[int] = 1000,
 
     LOGGER.debug("Getting notes")
 
-    notes_json: dict[str,Any] = {}
+    notes_json: dict[str, Any] = {}
     local_env: dict[str, Optional[str]] = {**locals}
 
-    for _, (k,v) in enumerate(local_env.items()):   #Add any non-default parameters to the request
+    for _, (k, v) in enumerate(
+        local_env.items()
+    ):  # Add any non-default parameters to the request
         if v:
-            notes_json.update({k:v})
+            notes_json.update({k: v})
 
     provided_timeout: Optional[Timeout] = kwargs.get("request_timeout", None)
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse]  = (
-        API_CLIENT.do_request(
-        path="/api/v2/notes/retrieveNotes",
-        json=notes_json,
-        **kwargs
-    ))
+    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+        path="/api/v2/notes/retrieveNotes", json=notes_json, **kwargs
+    )
     if not request_result:
         return []
     try:
