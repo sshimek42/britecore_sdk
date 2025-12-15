@@ -3,7 +3,8 @@
 import os
 import sys
 from json import dumps, loads
-from typing import Any, Dict, Optional  # added typing
+from logging import Logger
+from typing import Any, NotRequired, Optional, TypedDict  # added typing
 
 from britecore_libraries import logger
 
@@ -18,21 +19,21 @@ from britecore_libraries.api.britecore_oauth_token_manager import OAuthToken
 from britecore_libraries.config import settings
 from britecore_libraries.exceptions import BritecoreError
 
-LOGGER = logger
+LOGGER:Logger = logger
 
 class LoadClientSettings:
-    def __init__(self, target_site):
+    def __init__(self, target_site: str) -> None:
         if not target_site:
             try:
                 target_site = os.environ.get("target_site")
             except KeyError:
                 LOGGER.error("Missing environment variable 'target_site'")
-        self.target_site = target_site
+        self.target_site:str = target_site
 
-    def load_config(self):
-        target_site = self.target_site
+    def load_config(self) -> Any:
+        target_site:str = self.target_site
 
-        site_settings = settings.__getattr__("default")
+        site_settings:Any = settings.__getattr__("default")
         site_settings += settings.__getattr__(target_site)
 
         return site_settings
@@ -44,33 +45,38 @@ def _full_url(host: str, path: str) -> str:
 
 
 class BritecoreAPIClient:
-    site_settings = None
-    http = None
-    token_class = None
-    use_api_key = None
-    web_retry = None
-    web_timeout = None
-    web_timeout_long = None
-    base_url = None
 
-    def __init__(self, target_site: str | None):
-        self.api_key = None
-        self.token_class = None
-        self.use_api_key = None
-        self.http = None
-        self.web_retry = None
-        self.web_timeout_long = None
-        self.web_timeout = None
-        self.base_url = None
-        self.bad_url_error = None
-        self.enable_timers = None
-        self.site_settings = None
+    site_settings: Any = None
+    http: urllib3.PoolManager = None
+    token_class: OAuthToken = None
+    use_api_key: bool = None
+    web_retry: int = None
+    web_timeout: int = None
+    web_timeout_long: int = None
+    base_url: str = None
+
+    def __init__(self, target_site: Optional[str]) -> None:
+
+        self.api_key: Optional[str] = None
+        self.token_class: Optional[OAuthToken] = None
+        self.use_api_key: Optional[bool] = None
+        self.http: Optional[urllib3.PoolManager] = None
+        self.web_retry: Optional[int] = None
+        self.web_timeout_long: Optional[int] = None
+        self.web_timeout: Optional[int] = None
+        self.base_url: Optional[str] = None
+        self.bad_url_error: Optional[str] = None
+        self.enable_timers: Optional[bool] = None
+        self.site_settings: Any = None
         self.target_site = target_site
 
-    def init_client(self):
+    def init_client(self) -> None:
+        """
+        Initialize API Client
+        :return:
+        :rtype: None
+        """
         target_site = self.target_site
-
-        # self._ensure_logger()
 
         if not target_site:
             raise BritecoreError.NoSiteError("No site has been specified")
@@ -89,7 +95,7 @@ class BritecoreAPIClient:
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
         else:
-            LOGGER.critical(self.bad_url_error)
+            logger.critical(self.bad_url_error)
             sys.exit(self.bad_url_error)
 
         BritecoreAPIClient.base_url = self.base_url
@@ -112,8 +118,8 @@ class BritecoreAPIClient:
 
         BritecoreAPIClient.web_retry = self.web_retry
 
-        timeout = Timeout(self.web_timeout)
-        retries = Retry(
+        timeout:Timeout = Timeout(self.web_timeout)
+        retries:Retry = Retry(
             total=self.web_retry,
             status_forcelist=frozenset({502, 503, 504, 500}),
             backoff_factor=0.5,
@@ -155,19 +161,6 @@ class BritecoreAPIClient:
 
         BritecoreAPIClient.token_class = self.token_class
 
-    # helper utilities
-
-    # @classmethod
-    # def _ensure_logger(cls) -> None:
-    #     """Ensure the module LOGGER uses the parent LOGGER if available (
-    #     one-time)."""
-    #     global LOGGER
-    #     global LOGGER_UPDATED
-    #     if not LOGGER_UPDATED:
-    #         plogger = scl.get_parent_logger()
-    #         if plogger is not None:
-    #             LOGGER = plogger
-    #             LOGGER_UPDATED = True
 
     @classmethod
     def process_result(
@@ -185,7 +178,6 @@ class BritecoreAPIClient:
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
-            # return None
 
         if response.status != 200:
             LOGGER.error(f"Error - {response.status} - {response.reason}")
@@ -193,8 +185,7 @@ class BritecoreAPIClient:
                 f"Error - {response.status} - {response.reason}"
                 )
 
-
-        json_result = loads(response.data.decode("utf-8"))
+        json_result:Any = loads(response.data.decode("utf-8"))
 
         result = json_result.get("success", None)
         message = json_result.get(
@@ -206,9 +197,8 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned(
                 f"Error - {message}"
                 )
-            #return None
 
-        data = json_result["data"]
+        data:Any = json_result["data"]
         if logs:
             LOGGER.debug(data)
 
@@ -221,38 +211,29 @@ class BritecoreAPIClient:
     def do_request(
         cls,
         path: str,
-        json: dict = None,
+        json: Optional[dict[str, Any]] = None,
         request_timeout: urllib3.util.Timeout = None,
         request_retries: urllib3.util.Retry = None,
-        request_headers: Optional[Dict[str, Any]] = None,
-        # timer: bool = None,
-        # timer_start_note: str = "",
-        # timer_end_note: str = "",
-        method: str = "POST",
+        request_headers: Optional[dict[str, Any]] = None,
+        method: Optional[str] = "POST",
         ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]:
         """Do web request
         :param path: URL to request
         :type path: str
-        :param json: Request options
-        :type json: dict
+        :param json: Dictionary to convert to JSON
+        :type json: dict[str, Any]
         :param request_timeout: urllib3 Timeout object
         :type request_timeout: urllib3.util.Timeout
         :param request_retries: urllib3 Retry object
         :type request_retries: urllib3.util.Retry
         :param request_headers: Headers (defaults to retrieving auth token)
-        :type request_headers: dict
-        # :param timer: Option to time request
-        # :type timer: bool
-        # :param timer_start_note: Note for start timer
-        # :type timer_start_note: str
-        # :param timer_end_note: Note for stop timer
-        # :type timer_end_note: str
-        :param method: POST, GET, etc.
+        :type request_headers: dict[str,str]
+        :param method: POST, GET, etc. (Defaults to POST)
         :type method: str
         :return: Request result
-        :rtype: HTTPResponse | None
+        :rtype: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None
         """
-        
+
         if not request_timeout:
             request_timeout = BritecoreAPIClient.web_timeout
         if not request_retries:
@@ -264,14 +245,13 @@ class BritecoreAPIClient:
             request_headers = (
                 BritecoreAPIClient.token_class.get_authorization_headers())
 
-        request_url = _full_url(BritecoreAPIClient.base_url, path)
+        request_url:str = _full_url(BritecoreAPIClient.base_url, path)
 
-        # request_result: Optional[urllib3.BaseHTTPResponse] = None
         try:
             if json:
                 if BritecoreAPIClient.use_api_key:
                     json.update({"api_key": cls.site_settings.api_key})
-                request_result = cls.http.request(
+                request_result:urllib3.BaseHTTPResponse = cls.http.request(
                     method=method,
                     url=request_url,
                     headers=request_headers,
@@ -284,7 +264,7 @@ class BritecoreAPIClient:
                     json = dumps(
                         {"api_key": cls.site_settings.api_key}
                         ).encode("utf-8")
-                request_result = cls.http.request(
+                request_result:urllib3.BaseHTTPResponse = cls.http.request(
                     method=method,
                     url=request_url,
                     headers=request_headers,
@@ -306,3 +286,82 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned("Error getting request")
 
         return request_result
+
+    @classmethod
+    def multiple_parameter_verification(cls,
+        parameter_list: list[dict[str, str | None]], parameter_priority: list[str]
+    ) -> dict[str, str | None]:
+        """
+        Returns single dictionary from list of competing parameters
+        :param parameter_list: List of dictionaries with possible conflicting values
+        :type parameter_list: list[dict[str,str]]
+        :param parameter_priority: List of keys in priority order
+        :type parameter_priority: list[str]]
+        :return: Returns the first non-empty dictionary in parameter_priority order or the first priority if all values are None
+        :rtype: dict[str, str | None]
+        """
+
+        multiple_found: bool = False
+        non_empty_dict: dict[str, str] = {}
+        parameter_used: str = ""
+        correct_parameter: dict[str, str | None] = {}
+
+        for each_parameter in parameter_list:
+            for k, v in each_parameter.items():
+                if v:
+                    non_empty_dict.update({k: v})
+
+        if len(non_empty_dict) > 1:
+            multiple_found = True
+        else:
+            parameter_used = list(non_empty_dict.keys())[0]
+            correct_parameter = non_empty_dict
+
+        if multiple_found:
+            for each_priority in parameter_priority:
+                if non_empty_dict.get(each_priority, None):
+                    parameter_used = each_priority
+                    correct_parameter = {
+                        each_priority: non_empty_dict.get(each_priority)
+                    }
+                    break
+
+            if not correct_parameter:
+                parameter_used = parameter_priority[0]
+                correct_parameter = {parameter_used: None}
+
+            print(f"Sending {parameter_used}")
+
+        return correct_parameter
+
+
+    @classmethod
+    def json_dict_builder(cls, request_arguments:dict[str, Any]) \
+            -> dict[str,Any]:
+        """
+        Takes all passed parameters and combines all non-empty values into
+        one dictionary
+        :param request_arguments: All arguments passed from a function
+        :type request_arguments: dict[str,Any]
+        """
+        request_dict: dict[str,Any] = {}
+        for _, (k,v) in enumerate(request_arguments.items()):
+            if v:
+                request_dict.update({k:v})
+
+        return request_dict
+
+
+class RequestParameters(TypedDict):
+    """
+    Optional keyword parameters for HTTP request
+    Attributes:
+        request_timeout (urllib3.util.Timeout): Timeout settings
+        request_retries (urllib3.util.Retry): Retry settings
+        request_headers (dict[str, Any]): Request headers
+        method (str): Request method (Default: "POST")
+    """
+    request_timeout: NotRequired[urllib3.util.Timeout]
+    request_retries: NotRequired[urllib3.util.Retry]
+    request_headers: NotRequired[dict[str, Any]]
+    method: NotRequired[str]
