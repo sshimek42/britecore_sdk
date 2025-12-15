@@ -1,7 +1,12 @@
-from typing import Unpack, Any, Optional
+from typing import Any, Optional, Unpack
 
-from britecore_libraries.api.api_calls import api_client, BritecoreAPIClient, RequestParameters
 from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 
 API_CLIENT: BritecoreAPIClient = api_client
 
@@ -16,7 +21,7 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     :return: Files related to report
     :rtype: Any
     """
-    list_json: dict[str,str] = {"report_id": report_id}
+    list_json: dict[str, str] = {"report_id": report_id}
 
     result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         "/api/v2/reports/list_files",
@@ -37,7 +42,7 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
     """
     required_json = None
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse]  = API_CLIENT.do_request(
+    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         "/api/v2/reports/retrieve_reports", json=required_json, **kwargs
     )
 
@@ -54,7 +59,7 @@ def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     :return: Report definition
     :rtype: Any
     """
-    report_json: dict[str,str] = {"report_id": report_id}
+    report_json: dict[str, str] = {"report_id": report_id}
 
     result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         "/api/v2/reports/retrieve_report", json=report_json, **kwargs

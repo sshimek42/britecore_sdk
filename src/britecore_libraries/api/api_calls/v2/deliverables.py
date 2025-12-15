@@ -4,8 +4,11 @@ from typing import Any, Optional, Unpack
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
 from britecore_libraries import logger
-from britecore_libraries.api.api_calls import (BritecoreAPIClient,
-                                               api_client, RequestParameters)
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 from britecore_libraries.exceptions import BritecoreError
 
 LOGGER: Logger = logger
@@ -47,14 +50,23 @@ def list_attachments(
     """
     local_env: dict[str, Optional[str]] = {**locals}
     if not policy_id and not contact_id and not revision_id:
-        BritecoreError.MissingParameter("policy_id, contact_id or revision_id required")
+        BritecoreError.MissingParameter(
+            "policy_id, contact_id or revision_id required")
 
-    parameter_list: list[dict[str, str | None]] = [{"policy_id": policy_id},{"contact_id":contact_id},{"revision_id": revision_id}]
+    parameter_list: list[dict[str, str | None]] = [
+        {"policy_id": policy_id},
+        {"contact_id": contact_id},
+        {"revision_id": revision_id},
+    ]
     parameter_priority: list[str] = ["revision_id", "contact_id", "policy_id"]
 
-    attachments_search = api_client.multiple_parameter_verification(parameter_list, parameter_priority)
+    attachments_search = api_client.multiple_parameter_verification(
+        parameter_list, parameter_priority
+    )
 
-    for _, (k, v) in enumerate(local_env.items()):  #Add any non-default parameters to request
+    for _, (k, v) in enumerate(
+        local_env.items()
+    ):  # Add any non-default parameters to request
         if v and k not in parameter_priority:
             attachments_search.update({k: v})
 
@@ -69,7 +81,7 @@ def list_attachments(
     return API_CLIENT.process_result(request_result)
 
 
-def get_attachment(file_id: str, **kwargs:Unpack[RequestParameters]) -> Any:
+def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     Retrieve policy attachment
     :param file_id: Attachment ID
@@ -89,8 +101,10 @@ def get_attachment(file_id: str, **kwargs:Unpack[RequestParameters]) -> Any:
 
 
 def get_edeliverables(
-    date_from: str, date_to: str, unprocessed_only: Optional[bool] = True,
-    **kwargs:Unpack[RequestParameters]
+    date_from: str,
+    date_to: str,
+    unprocessed_only: Optional[bool] = True,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Get E-Deliverables
     :param date_from: Start date (yyyy-mm-dd)

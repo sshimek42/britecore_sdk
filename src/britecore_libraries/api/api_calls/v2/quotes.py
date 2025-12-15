@@ -1,20 +1,23 @@
 from logging import Logger
-from typing import Any, Unpack, Optional
-
-from britecore_libraries.api.api_calls import (api_client, RequestParameters,
-                                               BritecoreAPIClient)
-from britecore_libraries import logger
+from typing import Any, Optional, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 
 LOGGER: Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def create_full_quote(quote_json: dict[str,Any], **kwargs: Unpack[
-    RequestParameters]) -> tuple[dict[str,
-Any] | None, str | None]:
+def create_full_quote(
+    quote_json: dict[str, Any], **kwargs: Unpack[RequestParameters]
+) -> tuple[dict[str, Any] | None, str | None]:
     """
     Create new quote
     :param quote_json: Full quote JSON
@@ -46,7 +49,7 @@ def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     :return: Quote information in JSON format
     :rtype: Any
     """
-    quote_json: dict[str,str] = {"id": id}
+    quote_json: dict[str, str] = {"id": id}
 
     LOGGER.debug("Getting quote")
 
