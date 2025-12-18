@@ -54,7 +54,7 @@ class PhoneValidator:
         Returns:
             list[dict[str, str]]: List of normalized phone number dictionaries
         """
-        phone_number_list: list[dict[str,str]] = []
+        phone_number_list: list[dict[str, str]] = []
 
         for each_phone in self.phone_numbers:
             phone_number = each_phone.get("phone", "")

@@ -2,12 +2,16 @@ from json import loads
 from logging import Logger
 from typing import Any, Optional, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout, Retry
+from urllib3 import BaseHTTPResponse, HTTPResponse, Retry, Timeout
 
-from britecore_libraries.api.api_calls import BritecoreAPIClient, api_client, RequestParameters
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 
-LOGGER:Logger = logger
+LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
@@ -15,7 +19,7 @@ def get_to_be_printed(
     from_date: str,
     to_date: str,
     ignore_state: Optional[bool] = True,
-    **kwargs: Unpack[RequestParameters]
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
     Retrieve a list of files that are pending to be printed within a specified date range.
@@ -39,7 +43,7 @@ def get_to_be_printed(
 
     # default parameters
     request_timeout = Timeout(120)
-    request_retries = Retry(total=3, status_forcelist=[502,503,504])
+    request_retries = Retry(total=3, status_forcelist=[502, 503, 504])
 
     if not kwargs.get("request_timeout"):
         kwargs.update({"request_timeout": request_timeout})
@@ -70,7 +74,7 @@ def get_to_be_printed(
     return return_data
 
 
-def mark_as_printed(file_ids: list[str], **kwargs:Unpack[RequestParameters]) -> Any:
+def mark_as_printed(file_ids: list[str], **kwargs: Unpack[RequestParameters]) -> Any:
     """
     Mark specified files as printed in the system.
 

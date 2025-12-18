@@ -3,11 +3,13 @@ from pathlib import Path
 
 import pandas
 import pandas as pd
+
 from britecore_libraries import logger
 
 LOGGER: Logger = logger
 
-import_file: Path = Path(Path(__file__).parent / "../resources" / "zip_codes.csv")
+import_file: Path = Path(Path(__file__).parent /
+                         "../resources" / "zip_codes.csv")
 
 
 def load_zip_codes() -> pandas.DataFrame:
