@@ -1,7 +1,7 @@
 """Email address validation and normalization."""
 
 import re
-from typing import Dict, List
+from typing import Any, Pattern
 
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
@@ -10,11 +10,22 @@ from britecore_libraries import logger
 LOGGER = logger
 
 # Lazy-loaded regex patterns
-_COMPILED_REGEXES: Dict = {}
+_COMPILED_REGEXES: dict[str, Pattern[str]] = {}
 
 
-def _get_regexes() -> Dict:
-    """Lazy load compiled regexes from maps."""
+def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
+    """
+    Retrieves compiled regular expressions used for parsing and validation.
+
+    This function manages a global cache of compiled regular expressions to avoid
+    recompiling them on each call. It initializes the cache if it hasn't been
+    populated yet by calling the load_regexes() function.
+
+    Returns:
+        dict[str | Any, Pattern[str] | Any]: A dictionary containing compiled
+        regular expressions keyed by their names or identifiers. The values are
+        compiled regex patterns that can be used for pattern matching operations.
+    """
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
         _COMPILED_REGEXES, _name_groups = load_regexes()
@@ -23,31 +34,30 @@ def _get_regexes() -> Dict:
 
 class EmailValidator:
     """
-    Email address validation and normalization for BriteCore.
+    Validates and normalizes email addresses.
 
-    Handles:
-    - Email format validation
-    - Email normalization (lowercase, trim)
-    - Email type assignment
+    Provides functionality to process a list of email dictionaries, normalize
+    email addresses, and validate their format. Supports setting default email
+    types and filtering out invalid entries.
     """
 
-    def __init__(self, emails: List[Dict[str, str]]) -> None:
+    def __init__(self, emails: list[dict[str, str]]) -> None:
         """
         Initialize email validator.
 
-        Args:
-            emails: List of email dictionaries with 'email' and 'type' keys
+        Parameters:
+            emails (list[dict[str,str]]): List of email dictionaries with 'email' and 'type' keys
         """
         self.emails = emails
 
-    def process(self) -> List[Dict[str, str]]:
+    def process(self) -> list[dict[str, str]]:
         """
         Process and validate email addresses.
 
         Returns:
-            List of normalized email dictionaries
+            list[dict[str, str]]: List of normalized email dictionaries
         """
-        email_list = []
+        email_list: list[dict[str, str]] = []
 
         for each_email in self.emails:
             email_address = each_email.get("email", "").lower()
@@ -75,11 +85,11 @@ class EmailValidator:
         """
         Normalize and validate email address.
 
-        Args:
-            email: Raw email address
+        Parameters:
+            email (str): Raw email address
 
         Returns:
-            Normalized email address or empty string if invalid
+            str: Normalized email address or empty string if invalid
 
         Example:
             >>> EmailValidator.normalize_email("  User@Example.COM  ")
@@ -108,11 +118,11 @@ class EmailValidator:
         """
         Check if email address is valid.
 
-        Args:
-            email: Email address to validate
+        Parameters:
+            email (str): Email address to validate
 
         Returns:
-            True if valid, False otherwise
+            bool: True if valid, False otherwise
         """
         normalized = cls.normalize_email(email)
         return normalized != ""

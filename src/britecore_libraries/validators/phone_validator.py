@@ -1,17 +1,27 @@
 """Phone number validation and normalization."""
 
 import re
-from typing import Dict, List, Optional
+from typing import Optional, Pattern
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 
 # Lazy-loaded regex patterns
-_COMPILED_REGEXES: Dict = {}
+_COMPILED_REGEXES: dict[str, Pattern[str]] = {}
 
 
-def _get_regexes() -> Dict:
-    """Lazy load compiled regexes from maps."""
+def _get_regexes() -> dict[str, Pattern[str]]:
+    """
+    Retrieve compiled regex patterns for parsing.
+
+    This function returns a dictionary of pre-compiled regular expressions
+    used for parsing various components of the input data. The regex patterns
+    are loaded once and cached for subsequent calls to improve performance.
+
+    Returns:
+        dict[str, Pattern[str]]: A dictionary mapping regex pattern names to
+        their compiled regular expression objects.
+    """
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
         _COMPILED_REGEXES, _name_groups = load_regexes()
@@ -28,23 +38,23 @@ class PhoneValidator:
     - Phone type assignment
     """
 
-    def __init__(self, phone_numbers: List[Dict[str, str]]) -> None:
+    def __init__(self, phone_numbers: list[dict[str, str]]) -> None:
         """
         Initialize phone validator.
 
-        Args:
-            phone_numbers: List of phone number dictionaries with 'phone' and 'type' keys
+        Parameters:
+            phone_numbers (list[dict[str,str]]): List of phone number dictionaries with 'phone' and 'type' keys
         """
         self.phone_numbers = phone_numbers
 
-    def process(self) -> List[Dict[str, str]]:
+    def process(self) -> list[dict[str, str]]:
         """
         Process and validate phone numbers.
 
         Returns:
-            List of normalized phone number dictionaries
+            list[dict[str, str]]: List of normalized phone number dictionaries
         """
-        phone_number_list = []
+        phone_number_list: list[dict[str,str]] = []
 
         for each_phone in self.phone_numbers:
             phone_number = each_phone.get("phone", "")
@@ -76,11 +86,11 @@ class PhoneValidator:
         """
         Check if phone number should be skipped.
 
-        Args:
-            phone: Phone number to check
+        Parameters:
+            phone (str): Phone number to check
 
         Returns:
-            True if phone should be skipped, False otherwise
+            bool: True if phone should be skipped, False otherwise
         """
         if not phone:
             return True
@@ -98,11 +108,11 @@ class PhoneValidator:
         """
         Normalize phone number to standard format: 1-###-###-####.
 
-        Args:
-            phone: Raw phone number string
+        Parameters:
+            phone (str): Raw phone number string
 
         Returns:
-            Normalized phone number or None if invalid
+            Optional[str]: Normalized phone number or None if invalid
 
         Example:
             >>> PhoneValidator.normalize_phone("(920) 555-1234")
@@ -130,11 +140,11 @@ class PhoneValidator:
         """
         Check if phone number is valid.
 
-        Args:
-            phone: Phone number to validate
+        Parameters:
+            phone (str): Phone number to validate
 
         Returns:
-            True if valid, False otherwise
+            bool: True if valid, False otherwise
         """
         if cls._is_invalid_phone(phone):
             return False

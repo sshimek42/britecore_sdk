@@ -18,17 +18,23 @@ def get_to_be_printed(
     **kwargs: Unpack[RequestParameters]
 ) -> Any:
     """
-    Get File IDs to be printed
-    :param from_date: Start Date (yyyy-mm-dd)
-    :type from_date: str
-    :param to_date: End Date (yyyy-mm-dd)
-    :type to_date: str
-    :param ignore_state: Ignore printed state (Default: True)
-    :type ignore_state: Optional[bool]
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: List of document IDs
-    :rtype: Any
+    Retrieve a list of files that are pending to be printed within a specified date range.
+
+    This function fetches the list of files scheduled for printing between the given
+    from_date and to_date. It allows optional filtering based on state and supports
+    additional request parameters.
+
+    Parameters:
+        from_date: The start date for filtering files to be printed, formatted as string. (YYYY-MM-DD)
+        to_date: The end date for filtering files to be printed, formatted as string. (YYYY-MM-DD)
+        ignore_state: If True, includes files regardless of their printing state.
+                      Defaults to True.
+        **kwargs: Additional keyword arguments passed to the API request, including
+                  request_timeout and request_retries.
+
+    Returns:
+        The parsed response data containing the list of files to be printed, or None
+        if the request fails or returns no data.
     """
 
     # default parameters
@@ -66,13 +72,23 @@ def get_to_be_printed(
 
 def mark_as_printed(file_ids: list[str], **kwargs:Unpack[RequestParameters]) -> Any:
     """
-    Mark files as printed
-    :param file_ids: File IDs to mark as printed
-    :type file_ids: list[str]
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Marking results
-    :rtype: Any
+    Mark specified files as printed in the system.
+
+    This function sends a request to mark the given file IDs as printed. It constructs
+    a JSON payload with the file IDs and sends it to the printing endpoint. The function
+    logs the IDs being marked and processes the API response.
+
+    Parameters:
+        file_ids: List of file identifiers to mark as printed
+        **kwargs: Additional request parameters that will be passed to the API client
+
+    Returns:
+        The processed result from the API request, which may contain the response
+        data or status information depending on the API client implementation
+
+    Raises:
+        Any exceptions that may occur during the HTTP request or response processing
+        by the underlying API client
     """
 
     required_json: dict[str, list] = {"file_ids": file_ids}

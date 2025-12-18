@@ -1,7 +1,7 @@
 """BriteCore policy model."""
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional, Any
 from britecore_libraries import logger
 
 LOGGER = logger
@@ -14,9 +14,9 @@ class BritecoreQuote:
     number: str
     policy_type_id: str
     agency_id: str
-    named_insureds: list
-    risks: list
-    underwriting_questions: Union[list, None] = None
+    named_insureds: list[str]
+    risks: list[str]
+    underwriting_questions: Optional[list] = None
     description: Optional[str] = ""
     number_origin: str = "manual"
     transaction_type: str = "renewal"
@@ -27,10 +27,11 @@ class BritecoreQuote:
     effective_date: str = datetime.today().strftime(
         "%Y-%m-%d"
         )
-    next_inspection_date: Union[None, str] = None
-    previous_inspection_date: Union[None, str] = None
 
-    def to_dict(self) -> dict:
+    next_inspection_date: Optional[str] = None
+    previous_inspection_date: Optional[str] = None
+
+    def to_dict(self) -> dict[Any, Any]:
         """
         Convert policy to dictionary format for API submission.
 

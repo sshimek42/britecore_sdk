@@ -1,11 +1,13 @@
 import os
 import re
 
+from typing import Any, Pattern
 
-def load_regexes():
+def load_regexes() -> tuple[dict[str | Any, Pattern[str] | Any], dict[str,
+dict[str, int]]]:
     mutual_system = os.environ.get("system", "")
 
-    common_compiled_regexes = {
+    common_compiled_regexes: dict[str | Any, Pattern[str] | Any] = {
         "search_name_mult": re.compile(
             r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?("
             r"\W*\w*)?"
@@ -75,7 +77,7 @@ def load_regexes():
 
     compiled_regexes = common_compiled_regexes
 
-    system_naming_groups = {
+    system_naming_groups: dict[str,dict[str,dict[str,int]]] = {
         "mips": {
             "multi": {
                 "last_name_1": 1,

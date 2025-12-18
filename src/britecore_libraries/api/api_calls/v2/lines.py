@@ -20,19 +20,24 @@ API_CLIENT: BritecoreAPIClient = api_client
 def get_export_line_file(
     line: tuple, line_type: str, line_name: str, include_custom_sequences: Optional[bool] = False, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Gets line export
-    :param line: Line ID
-    :type line: str
-    :param line_type: Export type (Line or Policy)
-    :type line_type: str
-    :param line_name: Name of line
-    :type line_name: str
-    :param include_custom_sequences: Whether or not to include any non-default data from custom_sequences that is associated with the policy types (Default False)
-    :type include_custom_sequences: bool
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Export of selected line
-    :rtype: Any
+    """
+    Retrieve export line file data based on line type and parameters.
+
+    This function fetches line or policy data from an API endpoint based on the specified line type.
+    It supports both 'Line' and 'Policy' types, with optional inclusion of custom sequences for line data.
+
+    Args:
+        line: A tuple containing line information (current effective date ID, current state ID, current line ID).
+        line_type: String indicating the type of line data to retrieve ('Line' or 'Policy').
+        line_name: String identifier for the line being processed, used in logging.
+        include_custom_sequences: Boolean flag to include custom sequences in the request for line data.
+        **kwargs: Additional keyword arguments passed to the API client request method.
+
+    Returns:
+        The processed API response data, either as parsed JSON or the raw response object.
+
+    Raises:
+        Any exceptions raised by the underlying API client or JSON parsing operations.
     """
     request_result: Optional[BaseHTTPResponse, HTTPResponse] = None
     LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
@@ -63,11 +68,21 @@ def get_export_line_file(
 
 
 def line_menu(**kwargs: Unpack[RequestParameters]) -> tuple[list, list, list, str, str, str]:
-    """Generates ids needed for get_lines.
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: effective date id, state id, line id(s), date name, state name, line name
-    :rtype: tuple[list, list, list, list, list, list]
+    """
+    Creates menus for each different line option
+
+    This function generates interactive menus to select effective date, state, and line
+    options from API data. It handles user input for choosing from multiple options
+    and returns the selected values along with their identifiers.
+
+    :param print_menu_title: Title for the menu being displayed
+    :type print_menu_title: str
+    :param print_menu_options: Dictionary mapping option names to their identifiers
+    :type print_menu_options: dict
+    :param print_menu_default: Default selection option
+    :type print_menu_default: str
+    :return: Tuple containing the selected identifiers and names
+    :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
     """
     request_result: Optional[BaseHTTPResponse, HTTPResponse]
 
@@ -76,15 +91,23 @@ def line_menu(**kwargs: Unpack[RequestParameters]) -> tuple[list, list, list, st
         print_menu_options: dict,
         print_menu_default: str,
     ) -> tuple[list, str]:
-        """Creates menus for each different line option
-        :param print_menu_title: Title
-        :type print_menu_title: str
-        :param print_menu_options: Dictionary of options
-        :type print_menu_options: dict
-        :param print_menu_default: Default selection
-        :type print_menu_default: str
-        :return:
-        :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
+        """
+        Display a menu with given title and options, and return the selected option's ID and name.
+
+        This function prints a formatted menu based on the provided title and options,
+        allows the user to make a selection, and returns the corresponding ID and name
+        of the selected option. It supports both single and multiple options, handling
+        special cases like "All" selection and default values.
+
+        Parameters:
+            print_menu_title: The title to display above the menu options.
+            print_menu_options: A dictionary mapping option names to their corresponding IDs.
+            print_menu_default: The default option to select if only one option is available.
+
+        Returns:
+            A tuple containing:
+                - line_id: The ID of the selected option, which can be a string or a list of strings.
+                - name: The name of the selected option, which can be a string or a list of strings.
         """
         line_id: str | list[str]
         name: str | list[str]
@@ -173,11 +196,36 @@ def line_menu(**kwargs: Unpack[RequestParameters]) -> tuple[list, list, list, st
 
 
 def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Get all effective dates
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: All effective line dates
-    :rtype: Any
+    """
+    Retrieve all effective dates for lines from the API.
+
+    This function makes a request to the API endpoint to fetch all effective dates
+    associated with lines. It uses the API client to perform the HTTP request and
+    process the response.
+
+    Parameters
+    ----------
+    **kwargs : Unpack[RequestParameters]
+        Variable length argument list containing request parameters.
+        These parameters are passed directly to the API client's request method.
+
+    Returns
+    -------
+    Any
+        The processed result from the API response. The exact type depends on
+        the structure of the API response and how it's processed by the client.
+
+    Raises
+    ------
+    HTTPException
+        If the HTTP request fails or returns an error status code.
+        The specific exception type may vary based on the API client implementation.
+
+    Notes
+    -----
+    The function uses the API client's do_request method to execute the HTTP request
+    and process_result method to handle the response. The path parameter is
+    hardcoded to "/api/v2/lines/get_all_effective_dates".
     """
     request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates",
@@ -189,13 +237,24 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
 
 def get_all_states(effective_date_id: Optional[str] = None, **kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Returns all states using effective date
-    :param effective_date_id: Effective Date ID
-    :type effective_date_id: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: All active states
-    :rtype: Any
+    Retrieve all states from the API endpoint.
+
+    This function fetches all states from the API using the specified effective date ID
+    and any additional request parameters. It constructs a request to the
+    /api/v2/lines/get_all_states endpoint and processes the response.
+
+    Parameters:
+        effective_date_id (str, optional): The effective date ID to filter states.
+                                           If None, all states are retrieved.
+        **kwargs: Additional request parameters to be passed to the API client.
+
+    Returns:
+        Any: The processed result from the API request, typically containing
+             the states data.
+
+    Raises:
+        Any exceptions raised by the underlying API client or request processing
+        mechanisms are propagated as-is.
     """
 
     effective_date_json: Optional[dict[str,str]] = {}
@@ -214,15 +273,24 @@ def get_all_states(effective_date_id: Optional[str] = None, **kwargs: Unpack[Req
 
 def get_all_lines(effective_date_id: str, location_id: Optional[str] = None, **kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Gets all active lines from provided effective date_id and state_id
-    :param effective_date_id: Effective Date ID
-    :type effective_date_id: str
-    :param location_id: State ID
-    :type location_id: Optional[str]
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: line_ids for provided effective_date_id and location_id
-    :rtype: Any
+    Retrieve all lines based on effective date ID with optional location filter.
+
+    This function fetches line information from the API using the provided effective date ID.
+    An optional location ID can be specified to filter results by a specific location.
+
+    Parameters:
+        effective_date_id (str): The ID of the effective date to filter lines by.
+        location_id (str, optional): The ID of the location to filter lines by. If not provided,
+            lines from all locations will be returned.
+        **kwargs: Additional keyword arguments passed to the API client request.
+
+    Returns:
+        Any: The processed result from the API request, typically containing line information
+            matching the specified criteria.
+
+    Raises:
+        HTTPException: If the API request fails or returns an error status code.
+        RequestException: If there is an issue with the request construction or execution.
     """
     current_lines_json: dict[str, str] = {
         "effective_date_id": effective_date_id,
@@ -242,17 +310,22 @@ def get_all_lines(effective_date_id: str, location_id: Optional[str] = None, **k
 
 def list_policy_types(location_id: str, effective_date_id: Optional[str] = None,  effective_date: Optional[str] = None, **kwargs:Unpack[RequestParameters]) -> Any:
     """
-    Gets all active policy types from provided effective date (or effective date id) and state id
-    :param effective_date_id: Effective Date ID
-    :type effective_date_id: str
-    :param effective_date: Effective Date (yyyy-mm-dd)
-    :type effective_date: str
-    :param location_id: State ID
-    :type location_id: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: policy_ids for provided effective_date_id and location_id
-    :rtype: Any
+    Retrieve policy types for a given location with optional effective date parameters.
+
+    This function fetches policy types based on the provided location ID and effective date
+    information. It requires either effective_date or effective_date_id to be specified.
+
+    Args:
+        location_id: The ID of the location for which to retrieve policy types
+        effective_date_id: The ID of the effective date to filter policy types
+        effective_date: The effective date to filter policy types
+        **kwargs: Additional keyword arguments to pass to the API client
+
+    Returns:
+        The processed API response containing policy types information
+
+    Raises:
+        BritecoreError.MissingParameter: If neither effective_date nor effective_date_id is provided
     """
 
     if not effective_date and effective_date_id:

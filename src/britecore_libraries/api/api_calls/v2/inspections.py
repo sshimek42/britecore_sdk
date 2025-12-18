@@ -22,19 +22,24 @@ def update_inspection_dates(policy_number:Optional[str] = None,
                             inspection_date_request:Optional[str] = None,
                             **kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Update inspection dates
-    :param policy_number: Policy Number
-    :type policy_number: str
-    :param property_id: Property ID
-    :type property_id: str
-    :param next_inspection_date: Next Inspection Date (yyyy-mm-dd)
-    :type next_inspection_date: str
-    :param inspection_date_request: Request Inspection Date (yyyy-mm-dd)
-    :type inspection_date_request: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Returns result
-    :rtype: Any
+    Update inspection dates for a policy or property.
+
+    This function allows updating inspection dates by providing either a policy number
+    or property ID. It verifies the provided parameters and constructs a request to
+    update the inspection dates through the API.
+
+    Args:
+        policy_number: The policy number for which inspection dates need to be updated.
+        property_id: The property ID for which inspection dates need to be updated.
+        next_inspection_date: The next inspection date to be set. (YYYY-MM-DD)
+        inspection_date_request: The inspection date request to be set. (YYYY-MM-DD)
+        **kwargs: Additional keyword arguments to be passed to the API client.
+
+    Returns:
+        The result of the API request processing.
+
+    Raises:
+        BritecoreError.MissingParameter: If neither policy_number nor property_id is provided.
     """
     local_env: dict[str, Optional[str]] = {**locals}
 

@@ -14,13 +14,24 @@ API_CLIENT:BritecoreAPIClient = api_client
 def get_property_information_and_photos(property_id: str, **kwargs:
 Unpack[RequestParameters]) -> Any:
     """
-    Retrieve a single property and return data needed to add item to policy
-    :param property_id:Property ID
-    :type: property_id: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Property data
-    :rtype: Any
+    Retrieve comprehensive property information and associated photos using the specified property ID.
+
+    This function makes a request to the API endpoint to fetch detailed information about a property
+    including photos. It handles the API communication and result processing.
+
+    Parameters:
+        property_id (str): Unique identifier for the property to retrieve information for
+        **kwargs: Additional keyword arguments to pass to the underlying HTTP request
+
+    Returns:
+        Any: The processed API response containing property information and photos
+
+    Raises:
+        Any exceptions raised by the underlying API client or HTTP request handling
+
+    Note:
+        The function uses a global API client instance to make the request and processes the
+        result before returning it to the caller
     """
     LOGGER.debug(f"Getting property information for property_id %f.yellow%"
                  f"{property_id}%f%")
