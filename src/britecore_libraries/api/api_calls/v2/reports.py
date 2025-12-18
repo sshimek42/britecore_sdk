@@ -8,13 +8,28 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Get list of files associated with report
-    :param report_id: UUID of the report associated with the file
-    :type report_id: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: dict[str,Any]
-    :return: Files related to report
-    :rtype: Any
+    Retrieve a list of files associated with a specific report.
+
+    This function fetches the list of files linked to a given report ID by making a
+    request to the API endpoint for report files.
+
+    Parameters
+    ----------
+    report_id : str
+        The unique identifier of the report for which to retrieve file list.
+    **kwargs : Unpack[RequestParameters]
+        Additional keyword arguments to pass to the API request.
+
+    Returns
+    -------
+    Any
+        The result of processing the API response, typically containing the list
+        of files associated with the report.
+
+    Raises
+    ------
+    Any exceptions raised by the underlying API client or request processing
+    mechanism are propagated as-is.
     """
     list_json: dict[str,str] = {"report_id": report_id}
 
@@ -29,11 +44,36 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
 def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Retrieves all available Reports, grouped in their Report Categories
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: dict[str,Any]
-    :return: Reports
-    :rtype: Any
+    Retrieve reports from the API endpoint.
+
+    This function sends a request to the API to retrieve reports. It uses the
+    API client to perform the HTTP request and processes the result.
+
+    Parameters
+    ----------
+    **kwargs : Unpack[RequestParameters]
+        Additional keyword arguments to pass to the API client's do_request method.
+        These parameters are unpacked from a RequestParameters type.
+
+    Returns
+    -------
+    Any
+        The processed result from the API request, which can be of any type
+        depending on the response data structure.
+
+    Raises
+    ------
+    Any exceptions raised by the underlying API client or HTTP request
+    mechanism are propagated as-is.
+
+    Notes
+    -----
+    - The function internally uses API_CLIENT.do_request to perform the actual
+      HTTP request to the "/api/v2/reports/retrieve_reports" endpoint.
+    - The required_json parameter is set to None, indicating no JSON payload
+      is sent with the request.
+    - The result from the request is processed using API_CLIENT.process_result
+      before being returned.
     """
     required_json = None
 
@@ -46,13 +86,26 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
 
 def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Retrieves a single report's full definition
-    :param report_id: Report UUID
-    :type report_id: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: dict[str,Any]
-    :return: Report definition
-    :rtype: Any
+    Retrieve a report by its ID from the API.
+
+    This function fetches a report from the API using the provided report ID. It constructs
+    a request with the report ID and sends it to the API endpoint for report retrieval.
+
+    Parameters
+    ----------
+    report_id : str
+        The unique identifier of the report to retrieve
+    **kwargs : Unpack[RequestParameters]
+        Additional keyword arguments to pass to the API request
+
+    Returns
+    -------
+    Any
+        The result of the API request processing, typically the report data
+
+    Raises
+    ------
+    Any exceptions raised by the underlying API client or request processing
     """
     report_json: dict[str,str] = {"report_id": report_id}
 

@@ -14,6 +14,7 @@ LOGGER:Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
 
+
 def retrieve_notes(id: str, pageSize:Optional[int] = 1000,
                    searchString: Optional[str] = None, aggregateAll: Optional[bool] = False,
                    advSearch: Optional[bool] = False, filterAlerts: Optional[bool] = False,
@@ -22,37 +23,29 @@ def retrieve_notes(id: str, pageSize:Optional[int] = 1000,
                    filterExcludeAlerts: Optional[bool] = False, filterSystemNotesOnly: Optional[bool] = False
                    ,**kwargs: Unpack[RequestParameters]) -> Any:
     """
-    Retrieve policy notes - See original API docs for all parameter descriptions
-    :param id: Policy ID
-    :type id: str
-    :param pageSize: Page size (Default 1000)
-    :type pageSize: Optional[int]
-    :param searchString: Search string (Default: "")
-    :type searchString: Optional[str]
-    :param aggregateAll: If True, the API will assume the id is a contactId (Default: False)
-    :type aggregateAll: Optional[bool]
-    :param advSearch: Advanced search (Default: False)
-    :type advSearch: Optional[bool]
-    :param filterAlerts: Filter alerts (Default: False)
-    :type filterAlerts: Optional[bool]
-    :param filterUserGen: Filter user generated notes (Default: False)
-    :type filterUserGen: Optional[bool]
-    :param orderBy: Order by column (Default: "")
-    :type orderBy: Optional[str]
-    :param page: Starting search page (Default: 0)
-    :type page: Optional[int]
-    :param ascending: Return search in ascending order (Default: False)
-    :type ascending: Optional[bool]
-    :param type: Type of note (Default: "")
-    :type type: Optional[str]
-    :param filterExcludeAlerts: Exclude alerts from request (Default: False)
-    :type filterExcludeAlerts: Optional[bool]
-    :param filterSystemNotesOnly: Get system notes only (Default: False)
-    :type filterSystemNotesOnly: Optional[bool]
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Notes
-    :rtype: Any
+    Retrieves notes from the API based on the specified parameters.
+
+    This function fetches notes from the API endpoint `/api/v2/notes/retrieveNotes` with various filtering and sorting options.
+    It handles request timeouts and processes the response to extract note records.
+
+    Parameters:
+        id (str): The identifier for the notes to retrieve.
+        pageSize (int, optional): The number of records to return per page. Defaults to 1000.
+        searchString (str, optional): A string to search for within the notes. Defaults to None.
+        aggregateAll (bool, optional): Whether to aggregate all notes. Defaults to False.
+        advSearch (bool, optional): Whether to perform an advanced search. Defaults to False.
+        filterAlerts (bool, optional): Whether to filter out alerts. Defaults to False.
+        filterUserGen (bool, optional): Whether to filter out user-generated notes. Defaults to False.
+        orderBy (str, optional): The field to order results by. Defaults to "".
+        page (int, optional): The page number to retrieve. Defaults to 0.
+        ascending (bool, optional): Whether to sort in ascending order. Defaults to False.
+        type (str, optional): The type of notes to retrieve. Defaults to "".
+        filterExcludeAlerts (bool, optional): Whether to exclude alerts from filtering. Defaults to False.
+        filterSystemNotesOnly (bool, optional): Whether to filter for system notes only. Defaults to False.
+        **kwargs: Additional keyword arguments to pass to the API client request.
+
+    Returns:
+        list: A list of note records retrieved from the API, or an empty list if the request fails or no records are found.
     """
 
     LOGGER.debug("Getting notes")

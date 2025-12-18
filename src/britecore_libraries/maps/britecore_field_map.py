@@ -11,14 +11,12 @@ This module provides:
   (carrier <- BriteCore).
 """
 
-from typing import Dict, List, Union
-
 # Type aliases for clarity
 FieldName = str
 BritecoreFieldName = str
-Section = Dict[FieldName, Union[BritecoreFieldName, List[FieldName]]]
-CarrierSections = Dict[str, Section]
-CarrierFieldMap = Dict[str, CarrierSections]
+Section = dict[FieldName, BritecoreFieldName | list[FieldName]]
+CarrierSections = dict[str, Section]
+CarrierFieldMap = dict[str, CarrierSections]
 
 field_map_to_britecore: CarrierFieldMap = {
     "mips"     : {
@@ -144,7 +142,7 @@ field_map_to_britecore: CarrierFieldMap = {
     }
 
 # Reverse mapping: BriteCore named insured fields back to carrier headers.
-field_map_to_named_insured: Dict[str, Dict[str, str]] = {
+field_map_to_named_insured: dict[str, dict[str, str]] = {
     "mips"    : {
         v: k
         for k, v in field_map_to_britecore["mips"]["policy_list"].items()
@@ -163,7 +161,7 @@ field_map_to_named_insured: Dict[str, Dict[str, str]] = {
     }
 
 # Reverse mapping: BriteCore risk location fields back to carrier headers.
-field_map_to_risk_location: Dict[str, Dict[str, str]] = {
+field_map_to_risk_location: dict[str, dict[str, str]] = {
     "mips"    : {
         v: k
         for k, v in field_map_to_britecore["mips"]["location_list"].items()

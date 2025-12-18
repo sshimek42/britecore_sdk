@@ -7,6 +7,7 @@ from urllib3 import BaseHTTPResponse, HTTPResponse
 from britecore_libraries.api.api_calls import (BritecoreAPIClient,
                                                api_client, RequestParameters)
 from britecore_libraries import logger
+from britecore_libraries.models.contact import ROLETYPES
 
 LOGGER:Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
@@ -14,25 +15,31 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def retrieve_contact_list(
     search_str: str,
-    search_filter: str = "Named Insured",
+    search_filter: Optional[ROLETYPES] = "Named Insured",
     current_page: Optional[str] = "1",
     page_size: Optional[str] = "10",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
-    Retrieve named insured contacts
-    :param search_str: Name to search for
-    :type search_str: str
-    :param search_filter: Role to search for (Default: 'Named Insured')
-    :type search_filter: str
-    :param current_page: Starting Search Page (Default: '1')
-    :type current_page: Optional[str]
-    :param page_size: Search Page Size (Default: '10')
-    :type page_size: Optional[str]
-    :param kwargs: urllib3 keywords to pass for request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Search results
-    :rtype: Any
+    Retrieve a list of contacts based on search criteria.
+
+    This function performs a contact search operation using the provided
+    search string and optional filters. It constructs a request payload with
+    the specified parameters and sends it to the API endpoint for contact
+    retrieval.
+
+    Parameters:
+        search_str: The string to search for in contact records
+        search_filter: The filter type to apply to the search (default: "Named Insured")
+        current_page: The page number to retrieve (default: "1")
+        page_size: The number of records per page (default: "10")
+        **kwargs: Additional request parameters to pass to the API client
+
+    Returns:
+        A list of contact records matching the search criteria
+
+    Raises:
+        Any exceptions raised by the underlying API client or HTTP request
     """
     contact_request_json: dict[str, str] = {
         "searchString": search_str,

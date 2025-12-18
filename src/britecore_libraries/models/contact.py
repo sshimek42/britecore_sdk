@@ -1,14 +1,41 @@
 """BriteCore contact model."""
 
-from typing import Dict, Optional
+from typing import Dict, Literal, Optional
 
+from britecore_libraries import logger
 from britecore_libraries.validators.address_validator import AddressValidator
 from britecore_libraries.validators.email_validator import EmailValidator
 from britecore_libraries.validators.name_validator import NameValidator
 from britecore_libraries.validators.phone_validator import PhoneValidator
-from britecore_libraries import logger
 
 LOGGER = logger
+
+ROLETYPES = Literal[
+        "Additional Insured",
+        "Additional Interest",
+        "Administrator",
+        "Agent",
+        "Attorney",
+        "Board Member",
+        "Claim Administrator",
+        "Claimant",
+        "Claims Adjuster",
+        "Claims Supervisor",
+        "Contractor",
+        "Driver",
+        "Employee",
+        "External Claims Adjuster",
+        "In Care Of",
+        "Inspector",
+        "Loss Payee",
+        "Medical Provider",
+        "Named Insured",
+        "Public Claims Adjuster",
+        "Surplus Lines Producer",
+        "Underwriter",
+        "Unlisted Payor",
+        "Vendor",
+    ]
 
 class BritecoreContact:
     """
@@ -26,7 +53,7 @@ class BritecoreContact:
         phone_number: Optional[list[Dict[str, str]]] = None,
         email: Optional[list[Dict[str, str]]] = None,
         contact_id: Optional[str] = None,
-        contact_type: str = "individual",
+        contact_type: Optional[Literal["individual", "organization"]] = "individual",
     ):
         """
         Initialize a BriteCore contact.

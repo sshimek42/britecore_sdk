@@ -22,7 +22,31 @@ from britecore_libraries.exceptions import BritecoreError
 LOGGER:Logger = logger
 
 class LoadClientSettings:
+    """
+    Loads and manages client configuration settings for a specified target site.
+
+    This class is responsible for initializing with a target site and loading
+    configuration settings that combine default settings with site-specific
+    overrides. It retrieves the target site from either constructor argument or
+    environment variable and uses it to fetch appropriate settings.
+    """
     def __init__(self, target_site: str) -> None:
+        """
+        Initialize the object with a target site.
+
+        This constructor sets up the target site for the object. If no target site is
+        provided during initialization, it attempts to retrieve the site from the
+        environment variable 'target_site'. If the environment variable is not found,
+        an error will be logged.
+
+        Args:
+            target_site: The target site to be set. If None or empty, the value will be
+                retrieved from the 'target_site' environment variable.
+
+        Raises:
+            KeyError: If the 'target_site' environment variable is not set and no
+                target_site is provided during initialization.
+        """
         if not target_site:
             try:
                 target_site = os.environ.get("target_site")
@@ -31,6 +55,15 @@ class LoadClientSettings:
         self.target_site:str = target_site
 
     def load_config(self) -> Any:
+        """
+        Load and return configuration settings for the target site.
+
+        This method retrieves the default configuration settings and merges them
+        with site-specific settings based on the target site identifier.
+
+        Returns:
+            Any: Combined configuration settings for the target site
+        """
         target_site:str = self.target_site
 
         site_settings:Any = settings.__getattr__("default")
@@ -40,12 +73,30 @@ class LoadClientSettings:
 
 
 def _full_url(host: str, path: str) -> str:
-    """Build a full URL using the configured base_url."""
+    """
+    Constructs a full URL from a host and path.
+
+    This function takes a host string and a path string and combines them to
+    form a complete URL using the Url class.
+
+    Parameters:
+        host (str): The host portion of the URL.
+        path (str): The path portion of the URL.
+
+    Returns:
+        str: The complete URL formed by combining the host and path.
+    """
     return Url(host=host, path=path).url
 
 
 class BritecoreAPIClient:
+    """
+    Client for interacting with the Britecore API.
 
+    This class provides functionality to initialize an API client with
+    configuration settings, handle authentication using either API keys or
+    OAuth tokens, and execute HTTP requests to Britecore API endpoints.
+    """
     site_settings: Any = None
     http: urllib3.PoolManager = None
     token_class: OAuthToken = None
@@ -72,9 +123,16 @@ class BritecoreAPIClient:
 
     def init_client(self) -> None:
         """
-        Initialize API Client
-        :return:
-        :rtype: None
+        Initializes the Britecore API client with configuration settings and HTTP components.
+
+        This method sets up the client by loading site-specific settings, configuring
+        HTTP timeouts and retries, and initializing authentication components. It ensures
+        that all necessary configuration parameters are present and valid before proceeding
+        with client initialization.
+
+        Raises:
+            BritecoreError.NoSiteError: If no target site has been specified.
+            BritecoreError.BritecoreKeyError: If api_key is not found when required.
         """
         target_site = self.target_site
 
@@ -166,13 +224,23 @@ class BritecoreAPIClient:
     def process_result(
         cls, response: urllib3.HTTPResponse, logs: bool = False
         ) -> Any:
-        """Processes BriteCore response
-        :param response: Request to parse
-        :type response: HTTPResponse
-        :param logs: Write full result to log
-        :type logs: bool
-        :return: Parsed data
-        :rtype: Any
+        """
+        Process HTTP response and extract data from successful API calls.
+
+        This class method handles the processing of HTTP responses from API calls,
+        validating the response status, parsing JSON data, and raising appropriate
+        exceptions for errors or missing data.
+
+        Parameters:
+            response: HTTPResponse object containing the API response
+            logs: Boolean flag to enable debug logging of the response data
+
+        Returns:
+            Parsed data from the API response if successful
+
+        Raises:
+            BritecoreError.NoDataReturned: When response is None, status code is not 200,
+                                           or the API returns a failure status
         """
 
         if response is None:
@@ -217,21 +285,28 @@ class BritecoreAPIClient:
         request_headers: Optional[dict[str, Any]] = None,
         method: Optional[str] = "POST",
         ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]:
-        """Do web request
-        :param path: URL to request
-        :type path: str
-        :param json: Dictionary to convert to JSON
-        :type json: dict[str, Any]
-        :param request_timeout: urllib3 Timeout object
-        :type request_timeout: urllib3.util.Timeout
-        :param request_retries: urllib3 Retry object
-        :type request_retries: urllib3.util.Retry
-        :param request_headers: Headers (defaults to retrieving auth token)
-        :type request_headers: dict[str,str]
-        :param method: POST, GET, etc. (Defaults to POST)
-        :type method: str
-        :return: Request result
-        :rtype: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None
+        """
+        Execute an HTTP request to the specified path with optional JSON payload and headers.
+
+        This method constructs a full URL using the base URL and the provided path, then
+        sends an HTTP request using the configured HTTP client. It handles API key
+        injection into the JSON payload when required and manages request headers
+        appropriately based on authentication settings.
+
+        Parameters:
+            path (str): The endpoint path to which the request is sent.
+            json (Optional[dict[str, Any]]): The JSON payload to send with the request.
+            request_timeout (urllib3.util.Timeout): The timeout configuration for the request.
+            request_retries (urllib3.util.Retry): The retry configuration for the request.
+            request_headers (Optional[dict[str, Any]]): Custom headers to include in the request.
+            method (Optional[str]): The HTTP method to use for the request, defaults to "POST".
+
+        Returns:
+            Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None]: The response from the HTTP request,
+            or None if no response is received.
+
+        Raises:
+            BritecoreError.NoDataReturned: If the request fails due to network issues or if no response is returned from the server.
         """
 
         if not request_timeout:
@@ -292,12 +367,18 @@ class BritecoreAPIClient:
         parameter_list: list[dict[str, str | None]], parameter_priority: list[str]
     ) -> dict[str, str | None]:
         """
-        Returns single dictionary from list of competing parameters
-        :param parameter_list: List of dictionaries with possible conflicting values
-        :type parameter_list: list[dict[str,str]]
-        :param parameter_priority: List of keys in priority order
-        :type parameter_priority: list[str]]
-        :return: Returns the first non-empty dictionary in parameter_priority order or the first priority if all values are None
+        Verify multiple parameters and return the correct one based on priority.
+
+        This method takes a list of parameter dictionaries and a priority list to determine
+        which parameter should be used when multiple parameters are present. If multiple
+        parameters are found, the method selects the one with the highest priority.
+        If no parameters are found, it returns the first parameter from the priority list.
+
+        :param parameter_list: List of dictionaries containing parameters
+        :type parameter_list: list[dict[str, str | None]]
+        :param parameter_priority: List of parameter names in order of priority
+        :type parameter_priority: list[str]
+        :return: Dictionary containing the selected parameter
         :rtype: dict[str, str | None]
         """
 

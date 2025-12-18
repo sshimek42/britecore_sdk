@@ -2,7 +2,7 @@
 
 import re
 from ast import literal_eval
-from typing import Dict, List, Literal
+from typing import Any, Pattern
 
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
@@ -16,11 +16,21 @@ LOGGER = logger
 ZIP_CODE_DF = zip_codes
 
 # Lazy-loaded regex patterns
-_COMPILED_REGEXES: Dict = {}
+_COMPILED_REGEXES: dict[str | Any, Pattern[str] | Any] = {}
 
 
-def _get_regexes() -> Dict:
-    """Lazy load compiled regexes from maps."""
+def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
+    """
+    Retrieves compiled regular expressions used for parsing and processing.
+
+    This function manages a global cache of compiled regular expressions to avoid
+    recompiling them on each call. It initializes the cache if it hasn't been
+    populated yet by calling the load_regexes() function.
+
+    Returns:
+        Dict: A dictionary containing compiled regular expressions that can be
+            used for pattern matching and text processing operations.
+    """
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
         _COMPILED_REGEXES, _name_groups = load_regexes()
@@ -29,34 +39,50 @@ def _get_regexes() -> Dict:
 
 class AddressValidator:
     """
-    Address validation and normalization for BriteCore.
+    Validates and normalizes address information.
 
-    Handles:
-    - Address line normalization
-    - City/state/zip validation and correction
-    - County lookup
-    - Street name standardization
+    This class processes address components to ensure they meet validation
+    criteria and are properly formatted. It handles zip code lookup, state
+    and city validation, and normalizes address line formatting.
+
+    Attributes:
+        full_address: Dictionary containing address components to be validated
     """
 
-    def __init__(self, full_address: Dict[str, str]) -> None:
+    def __init__(self, full_address: dict[str, str]) -> None:
         """
-        Initialize address validator.
+
+        Initialize the object with a full address dictionary.
+
+        This constructor sets up the instance with the provided full address
+        and initializes any necessary regex patterns for address parsing.
 
         Args:
-            full_address: Dictionary containing address components
+            full_address: A dictionary containing address components with string keys
+                          and string values representing the full address information.
+
         """
         self.full_address = full_address
         _get_regexes()
 
-    def process(self) -> List[Dict]:
+    def process(self) -> list[dict[str,str]]:
         """
-        Process and validate address.
+        Processes and validates address components from a full address dictionary.
+
+        This method extracts individual address components such as zip code, street lines,
+        state, county, city, and property name from the full address. It performs validation
+        on the address lines and ensures that missing zip codes are looked up using a
+        reference DataFrame. The method also normalizes and validates the extracted values
+        before returning a standardized address dictionary.
+
+        The method raises BritecoreError.InvalidAddress if the address is missing or
+        invalid, particularly when required fields like address line 1 are absent or
+        when a zip code cannot be determined.
 
         Returns:
-            List containing single normalized address dictionary
-
-        Raises:
-            BritecoreError.InvalidAddress: If address validation fails
+            list[dict[str, str]]: A list containing a single dictionary with standardized
+            address components including address_line1, address_line2, address_state,
+            address_country, address_zip, type, address_county, address_city, and property.
         """
         full_address = self.full_address
 
@@ -120,10 +146,28 @@ class AddressValidator:
 
     @classmethod
     def validate_county(cls, county: str, zipcode: str) -> str:
-        """Validate and correct county based on zip code."""
+        """
+        Validates and returns the county name based on the provided county string and zipcode.
+
+        This method performs validation of the county name by checking against a lookup table
+        using the first five digits of the zipcode. It handles cases where the county might
+        be missing or different from the zip code lookup, and applies common city replacements
+        when necessary.
+
+        Parameters:
+            county (str): The county name to validate
+            zipcode (str): The zipcode to use for lookup validation
+
+        Returns:
+            str: The validated county name, which may be the original county name,
+                 a replacement from common city replacements, or the county name from
+                 the zip code lookup table
+        """
         tmp_zipcode = zipcode[:5]
         county_lookup = ZIP_CODE_DF
         county_lookup = county_lookup.loc[county_lookup["postal code"] == tmp_zipcode]
+
+        county_lookup_value: str
 
         try:
             county_lookup_value = county_lookup["admin name2"].values[0]
@@ -145,13 +189,30 @@ class AddressValidator:
 
     @classmethod
     def validate_city(cls, city: str, zipcode: str) -> str:
-        """Validate and correct city based on zip code."""
+        """
+        Validates and normalizes a city name based on provided zipcode data.
+
+        This method processes the input city name by removing certain regex patterns,
+        checking against a zip code lookup table, and applying common replacements
+        and abbreviations normalization. If the city name is not found in the lookup
+        table, it will attempt to use the matched city from the zip code data.
+
+        Parameters:
+            city (str): The city name to validate and normalize.
+            zipcode (str): The zip code associated with the city for lookup purposes.
+
+        Returns:
+            str: The validated and normalized city name. If no match is found in the
+            lookup table, the original city name is returned after processing.
+        """
         city = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", city)
 
         tmp_zipcode = zipcode[:5]
 
         city_lookup = ZIP_CODE_DF
         city_lookup = city_lookup.loc[city_lookup["postal code"] == tmp_zipcode]
+
+        city_lookup_value: str
 
         try:
             city_lookup_value = city_lookup["place name"].values[0]
@@ -179,7 +240,27 @@ class AddressValidator:
 
     @staticmethod
     def normalize_zipcode(zipcode: str) -> str:
-        """Normalize and validate zip code format."""
+        """
+        Normalizes a zip code string to a standard 5-digit format or 5-digit+4-digit format.
+
+        This static method processes a zip code string by removing hyphens, padding with
+        leading zeros if necessary, and validating the format. It handles various input
+        formats and ensures the output conforms to standard zip code formatting rules.
+
+        Parameters:
+            zipcode (str): The zip code string to normalize. May contain hyphens,
+                           spaces, or be improperly padded.
+
+        Returns:
+            str: The normalized zip code in either 5-digit format (e.g., "12345") or
+                 5-digit+4-digit format (e.g., "12345-6789").
+
+        Raises:
+            BritecoreError.InvalidAddress: If the zip code is invalid due to:
+                - Being exactly "00000"
+                - Having more than 10 digits
+                - Containing non-numeric characters after cleaning
+        """
         zipcode = zipcode.strip().replace("-", "").zfill(5)
 
         if zipcode == "00000" or len(zipcode) > 10 or not zipcode.isnumeric():
@@ -194,7 +275,27 @@ class AddressValidator:
 
     @classmethod
     def validate_state(cls, state: str, zipcode: str) -> str:
-        """Validate and correct state based on zip code."""
+        """
+        Validates and corrects a state abbreviation based on postal code lookup.
+
+        This method processes a state string by normalizing it and attempts to
+        validate it against a postal code database. If the state cannot be
+        validated, a default fallback is applied.
+
+        Parameters:
+            state (str): The state abbreviation to validate, may contain
+                whitespace or special characters
+            zipcode (str): The postal code used for validation lookup
+
+        Returns:
+            str: The validated state abbreviation, potentially corrected
+                based on postal code database or default fallback
+
+        Notes:
+            This method uses a global ZIP_CODE_DF dataframe for lookups and
+            a global LOGGER for debug output. The method applies regex
+            normalization to the state string before lookup.
+        """
         state = state.strip().upper()
         state = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", state)
 
@@ -202,6 +303,8 @@ class AddressValidator:
 
         state_lookup = ZIP_CODE_DF
         state_lookup = state_lookup.loc[state_lookup["postal code"] == tmp_zipcode]
+
+        state_lookup_value: str
 
         try:
             state_lookup_value = state_lookup["admin code1"].values[0]
@@ -221,9 +324,25 @@ class AddressValidator:
         return state
 
     @staticmethod
-    def _normalize_street_name(address: str) -> str | bytes | Literal[""]:
-        """Normalize street abbreviations and directions."""
+    def _normalize_street_name(address: str) -> str | bytes:
+        """
+        Normalizes street names in addresses by applying regex replacements.
+
+        This static method processes an address string to normalize street names
+        by applying a series of regex substitutions defined in the street name
+        replacements dictionary. It also handles trailing non-alphanumeric characters
+        in the normalized address.
+
+        Parameters:
+            address (str): The input address string to normalize
+
+        Returns:
+            str | bytes: The normalized address string, or empty string if input is empty
+        """
         street_replacements = _COMPILED_REGEXES.get("street_name_replacement", {})
+
+        pattern: Pattern[str]
+        replacement: str
 
         for pattern, replacement in street_replacements.items():
             address = re.sub(pattern, replacement, address)
@@ -235,7 +354,20 @@ class AddressValidator:
 
     @staticmethod
     def _normalize_street_casing(address: str) -> str:
-        """Fix street capitalization quirks (11Th -> 11th, Highway Bb -> Highway BB)."""
+        """
+        Normalizes street casing in address strings.
+
+        This static method applies several normalization rules to street address
+        strings to ensure consistent formatting. It handles number street
+        capitalization, removes excessive letter repetitions, and corrects
+        capitalization of the last character when preceded by a space.
+
+        Parameters:
+            address (str): The input address string to normalize
+
+        Returns:
+            str: The normalized address string with consistent casing
+        """
         # Fix number streets (11Th -> 11th)
         address = re.sub(r"\s\d..\s*", lambda mo: mo.group(0).lower(), address)
 
@@ -256,8 +388,25 @@ class AddressValidator:
 
     @staticmethod
     def _remove_repeated_punctuation(address: str) -> str:
-        """Remove repeated non-alphanumeric characters."""
-        reg_dbl_non_letter = r"(\W+|\s..)\1"
+        """
+        Remove repeated punctuation from address string.
+
+        This static method identifies and removes repeated punctuation characters
+        or sequences of non-letter characters that appear consecutively in the
+        address string. It uses a regular expression pattern to detect duplicate
+        non-letter characters and replaces them with a single instance of the
+        last character in the repeated sequence.
+
+        Parameters:
+            address (str): The input address string that may contain repeated
+                        punctuation characters
+
+        Returns:
+            str: The address string with repeated punctuation characters
+                 removed, leaving only single instances of consecutive
+                 non-letter characters
+        """
+        reg_dbl_non_letter: str = r"(\W+|\s..)\1"
         if re.search(reg_dbl_non_letter, address):
             match = re.search(reg_dbl_non_letter, address)
             if match:
@@ -266,15 +415,21 @@ class AddressValidator:
         return address
 
     @classmethod
-    def normalize_address_line(cls, address: str | bytes | Literal[""]) -> str:
+    def normalize_address_line(cls, address: str) -> str:
         """
-        Comprehensive address line normalization.
+        Normalize an address line by applying multiple cleaning and formatting operations.
 
-        Args:
-            address: Address line to normalize
+        This method processes an address string by stripping whitespace, converting to title case,
+        and applying various normalization rules including removal of repeated punctuation,
+        illegal characters, and business tokens. Special formats like tax parcel IDs are preserved
+        as-is. Street names are normalized and casing is adjusted. Multiple spaces are collapsed
+        into single spaces.
+
+        Parameters:
+            address (str): The address string to normalize
 
         Returns:
-            Normalized address line
+            str: The normalized address string
         """
         address = address.strip().title()
         if address == "":
@@ -303,15 +458,15 @@ class AddressValidator:
         return address
 
 
-def normalize_business_name(business_name: str):
+def normalize_business_name(business_name: str) -> str:
     """
     Fix capitalization for business suffix tokens (LLC, LLP, DBA).
 
     Args:
-        business_name: Contact name to fix.
+        business_name (str): Contact name to fix.
 
     Returns:
-        Name with standardized capitalization for business suffixes.
+        str: Name with standardized capitalization for business suffixes.
     """
     check_business = re.findall(
         _COMPILED_REGEXES.get("reg_business_name", ""), business_name
@@ -327,10 +482,20 @@ def normalize_business_name(business_name: str):
 
 
 def fix_apostrophe_capitalisation(name: str) -> str:
-    """Fixes capitalization on names with apostrophe (Karen'S to Karen's)
-    Also adds escape character for SQL insert
-    :param name: Name to fix
-    :return: Fixed name
+    """
+    Fix apostrophe capitalization in a given name string.
+
+    This function processes a name string to ensure that double apostrophes
+    are properly lowercased, which helps maintain consistent formatting
+    across different name representations.
+
+    Parameters:
+        name (str): The input name string that may contain double apostrophes
+                    which need capitalization correction.
+
+    Returns:
+        str: The processed name string with double apostrophes converted to
+             lowercase format.
     """
     name = re.sub(
         _COMPILED_REGEXES.get("reg_double_apostrophe", ""),
@@ -340,12 +505,22 @@ def fix_apostrophe_capitalisation(name: str) -> str:
     return name
 
 
-def fix_suffix_capitalisation(suffix: str) -> str:
-    """Check for repeated letters in suffix and capitalize if necessary
-    :param suffix: Suffix
-    :return: suffix
+def fix_suffix_capitalization(suffix: str) -> str:
     """
-    count = {}
+    Fix capitalization of suffix string based on specific rules.
+
+    This function processes a suffix string to determine appropriate capitalization.
+    If the suffix is "iv", it is converted to uppercase. For other suffixes, the
+    function analyzes character frequency and converts the entire suffix to uppercase
+    if any character appears more than twice.
+
+    Parameters:
+        suffix (str): The suffix string to process
+
+    Returns:
+        str: The suffix with adjusted capitalization according to the rules
+    """
+    count: dict[Any, Any] = {}
     suffix_lower = suffix.lower()
     if suffix_lower == "iv":
         suffix = suffix.upper()

@@ -2,6 +2,7 @@ from sclogging import sclogging_main as scl
 
 
 class Singleton(type):
+
     _instances = {}
 
     def __call__(cls, *args, **kwargs):

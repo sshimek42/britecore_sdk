@@ -25,25 +25,28 @@ def list_attachments(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
-    Retrieve policy attachments
-    :param policy_id: Policy Id
-    :type policy_id: str
-    :param revision_id: Revision ID
-    :type contact_id: str
-    :param print_date_from: Start Date (yyyy-mm-dd)
-    :type print_date_from: str
-    :param print_date_to: End Date (yyyy-mm-dd)
-    :type print_date_to: str
-    :param print_state_ne: Do not get attachments from this state
-    :type print_state_ne: str
-    :param print_state: Get attachments from this state only
-    :type print_state: str
-    :param order_by: Order list by
-    :type order_by: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Attachment IDs
-    :rtype: Any
+    Retrieve a list of attachments based on specified criteria.
+
+    This function fetches attachments associated with policies, contacts, or revisions,
+    using various optional filters. It constructs a request with the provided parameters
+    and sends it to the API endpoint for retrieving attachments.
+
+    Parameters:
+        policy_id (str, optional): The ID of the policy to filter attachments by.
+        revision_id (str, optional): The ID of the revision to filter attachments by.
+        contact_id (str, optional): The ID of the contact to filter attachments by.
+        print_date_from (str, optional): The start date for filtering attachments by print date. (YYYY-MM-DD)
+        print_date_to (str, optional): The end date for filtering attachments by print date. (YYYY-MM-DD)
+        print_state_ne (str, optional): Exclude attachments with this print state.
+        print_state (str, optional): Filter attachments by this print state.
+        order_by (str, optional): Specify the order of results.
+        **kwargs (Unpack[RequestParameters]): Additional request parameters to be passed to the API.
+
+    Returns:
+        Any: The result of the API request, typically containing the list of attachments.
+
+    Raises:
+        BritecoreError.MissingParameter: If none of policy_id, contact_id, or revision_id are provided.
     """
     local_env: dict[str, Optional[str]] = {**locals}
     if not policy_id and not contact_id and not revision_id:
@@ -71,13 +74,24 @@ def list_attachments(
 
 def get_attachment(file_id: str, **kwargs:Unpack[RequestParameters]) -> Any:
     """
-    Retrieve policy attachment
-    :param file_id: Attachment ID
-    :type file_id: str
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: Requested file
-    :rtype: Any
+    Retrieve attachment data by file ID.
+
+    This function fetches attachment information from the API using the provided file ID.
+    It constructs a request to the deliverables endpoint and processes the response.
+
+    Parameters:
+        file_id (str): The unique identifier of the file to retrieve
+        **kwargs (Unpack[RequestParameters]): Additional request parameters
+
+    Returns:
+        Any: The processed result from the API response, typically attachment data
+
+    Raises:
+        Any exceptions raised by the underlying API client or HTTP request handling
+
+    Note:
+        The function logs the attachment retrieval operation at debug level
+        The function uses the global API_CLIENT instance for making requests
     """
     LOGGER.debug(f"Getting attachment %f.yellow%{file_id}%f%")
     file_search: dict[str, str] = {"file_id": file_id}
@@ -92,17 +106,27 @@ def get_edeliverables(
     date_from: str, date_to: str, unprocessed_only: Optional[bool] = True,
     **kwargs:Unpack[RequestParameters]
 ) -> Any:
-    """Get E-Deliverables
-    :param date_from: Start date (yyyy-mm-dd)
-    :type date_from: str
-    :param date_to: End date (yyyy-mm-dd)
-    :type date_from: str
-    :param unprocessed_only: Unprocessed or processed policies (Default: True)
-    :type unprocessed_only: Optional[bool]
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: Optional[dict[str,Any]]
-    :return: E-Deliverables
-    :rtype: Any
+    """
+    Retrieve E-Deliverables data within a specified date range.
+
+    This function fetches E-Deliverables information from the API for a given date
+    range. It allows filtering for unprocessed items only and supports additional
+    request parameters.
+
+    Parameters:
+        date_from: Start date for the query in string format (YYYY-MM-DD)
+        date_to: End date for the query in string format (YYYY-MM-DD)
+        unprocessed_only: If True, returns only unprocessed deliverables
+        **kwargs: Additional request parameters to be passed to the API client
+
+    Returns:
+        The processed result from the API request, type depends on the API response
+
+    Raises:
+        Any exceptions raised by the underlying API client or HTTP request handling
+
+    Note:
+        The function uses a debug logger to trace the request being made
     """
     required_json: dict[str, str] = {
         "date_from": date_from,
