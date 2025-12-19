@@ -62,7 +62,8 @@ def get_export_line_file(
             )
         )
     elif line_type == "Policy":
-        request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
+        request_result = API_CLIENT.do_request(
+            path="/api/v2/policies/get_policies")
 
     LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
 
@@ -159,8 +160,10 @@ def line_menu(
     for make_menu in get_dates:
         menu_options.update({make_menu["description"]: make_menu["id"]})
         menu_default = make_menu["description"]
-    eff_date: tuple[list[str], str] = print_menu("Date", menu_options, menu_default)
-    eff_date_json: Optional[dict[str, list[str]]] = {"effective_date_id": eff_date[0]}
+    eff_date: tuple[list[str], str] = print_menu(
+        "Date", menu_options, menu_default)
+    eff_date_json: Optional[dict[str, list[str]]] = {
+        "effective_date_id": eff_date[0]}
 
     request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states", json=eff_date_json, **kwargs

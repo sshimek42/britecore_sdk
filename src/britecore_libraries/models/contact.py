@@ -54,7 +54,8 @@ class BritecoreContact:
         phone_number: Optional[list[Dict[str, str]]] = None,
         email: Optional[list[Dict[str, str]]] = None,
         contact_id: Optional[str] = None,
-        contact_type: Optional[Literal["individual", "organization"]] = "individual",
+        contact_type: Optional[Literal["individual",
+                                       "organization"]] = "individual",
     ):
         """
         Initialize a BriteCore contact.

@@ -42,7 +42,8 @@ class OAuthToken:
         scheme: str = parsed.scheme or "https"
         host: str = parsed.host or url  # fallback if a bare host was passed
         self.scope = Url(scheme=scheme, host=host, path="/api").url
-        self.url = Url(scheme=scheme, host=host, path="/api/auth/oauth2/token").url
+        self.url = Url(scheme=scheme, host=host,
+                       path="/api/auth/oauth2/token").url
         self.token: str = ""
         self.token_time: datetime = datetime(1970, 1, 1)
 

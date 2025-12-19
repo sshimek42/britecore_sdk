@@ -46,7 +46,8 @@ def update_inspection_dates(
     local_env: dict[str, Optional[str]] = {**locals}
 
     if not policy_number and not property_id:
-        BritecoreError.MissingParameter("policy_number or property_id is required")
+        BritecoreError.MissingParameter(
+            "policy_number or property_id is required")
 
     parameter_list: list[dict[str, str | None]] = [
         {"policy_number": policy_number},

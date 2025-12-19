@@ -21,7 +21,8 @@ def new_contact(
     address: list[dict[str, str]],
     phone: Optional[list[Optional[dict[str, str]]]] = None,
     email: Optional[list[Optional[dict[str, str]]]] = None,
-    contact_type: Optional[Literal["individual", "organization"]] = "individual",
+    contact_type: Optional[Literal["individual",
+                                   "organization"]] = "individual",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[str | None, str | None]:
     """
@@ -98,7 +99,8 @@ def add_contact_to_role(
     Returns:
         Any: The result of processing the API response, typically the response data or None.
     """
-    LOGGER.debug(f"Adding role %f.yellow%{role}%f% to %f.yellow%{contact_id}%f%")
+    LOGGER.debug(
+        f"Adding role %f.yellow%{role}%f% to %f.yellow%{contact_id}%f%")
     role_request_json: dict[
         Literal["contact_id", "role_name"], Optional[str | ROLETYPES]
     ] = {"contact_id": contact_id, "role_name": role}

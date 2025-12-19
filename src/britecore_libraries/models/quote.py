@@ -46,7 +46,8 @@ class BritecoreQuote:
         quote_dict = self.__dict__
 
         if self.description == "":
-            quote_dict.update({"description": f"From Policy {self.number[3:]}"})
+            quote_dict.update(
+                {"description": f"From Policy {self.number[3:]}"})
 
         if not self.next_inspection_date:
             del quote_dict["next_inspection_date"]

@@ -53,7 +53,8 @@ def list_attachments(
     """
     local_env: dict[str, Optional[str]] = {**locals}
     if not policy_id and not contact_id and not revision_id:
-        BritecoreError.MissingParameter("policy_id, contact_id or revision_id required")
+        BritecoreError.MissingParameter(
+            "policy_id, contact_id or revision_id required")
 
     parameter_list: list[dict[str, str | None]] = [
         {"policy_id": policy_id},

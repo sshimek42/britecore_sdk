@@ -12,9 +12,7 @@ from urllib3.exceptions import (
     RequestError,
     ResponseError,
 )
-from urllib3.exceptions import (
-    TimeoutError as urlTimeoutError,
-)
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_libraries import logger
@@ -156,7 +154,8 @@ class BritecoreAPIClient:
 
         if self.site_settings.base_url:
             self.base_url = self.site_settings.base_url
-            self.base_url = Url(scheme="https", host=self.base_url, path=None).url
+            self.base_url = Url(
+                scheme="https", host=self.base_url, path=None).url
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
         else:
@@ -202,7 +201,8 @@ class BritecoreAPIClient:
         BritecoreAPIClient.use_api_key = self.use_api_key
 
         if self.use_api_key:
-            LOGGER.info("client_id and/or client_secret not found. Using api_key.")
+            LOGGER.info(
+                "client_id and/or client_secret not found. Using api_key.")
             try:
                 self.api_key = self.site_settings.api_key
             except AttributeError:
@@ -334,7 +334,8 @@ class BritecoreAPIClient:
                 )
             else:
                 if BritecoreAPIClient.use_api_key:
-                    json = dumps({"api_key": cls.site_settings.api_key}).encode("utf-8")
+                    json = dumps(
+                        {"api_key": cls.site_settings.api_key}).encode("utf-8")
                 request_result: urllib3.BaseHTTPResponse = cls.http.request(
                     method=method,
                     url=request_url,

@@ -3,9 +3,9 @@ import re
 from typing import Any, Pattern
 
 
-def load_regexes() -> (
-    tuple[dict[str | Any, Pattern[str] | Any], dict[str, dict[str, int]]]
-):
+def load_regexes() -> tuple[
+    dict[str | Any, Pattern[str] | Any], dict[str, dict[str, int]]
+]:
     """
     Load and compile regular expressions and naming groups for different systems.
 
@@ -27,11 +27,13 @@ def load_regexes() -> (
 
     common_compiled_regexes: dict[str | Any, Pattern[str] | Any] = {
         "search_name_mult": re.compile(
-            r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?(" r"\W*\w*)?"
+            r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?("
+            r"\W*\w*)?"
         ),
         "search_name_single": re.compile(r"^(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)(\W\w*)?"),
         "search_email": re.compile(
-            r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{" r"2,64}"
+            r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
+            r"2,64}"
         ),
         "reg_name_c": re.compile(r"[^0-9a-zA-Z\s#+&',/-]+"),
         "reg_and_or": re.compile(r"\W(&/or|and/or|and|or)\W", re.IGNORECASE),

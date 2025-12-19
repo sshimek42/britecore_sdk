@@ -1,5 +1,4 @@
 # noqa: E402
-
 """
 BriteCore Libraries - Core utilities for BriteCore API integration.
 
@@ -11,31 +10,18 @@ This package provides:
 """
 
 from britecore_libraries.base_logger import SCLogger
-
-logger_class = SCLogger(__package__, level="DEBUG")
-logger = logger_class.get_logger()
-
-__version__ = "1.0.0"
-
-# Constants
 from britecore_libraries.constants import (
     COMMON_CITY_REPLACEMENT,
     DEFAULT_ADDRESS_TYPE,
     DEFAULT_EMAIL_TYPE,
     DEFAULT_PHONE_TYPE,
 )
-
-# Exceptions
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps import load_regexes
-
-# Core models
 from britecore_libraries.models import (
     BritecoreContact,
     BritecorePolicy,
 )
-
-# Validators
 from britecore_libraries.validators import (
     AddressValidator,
     EmailValidator,
@@ -45,6 +31,19 @@ from britecore_libraries.validators import (
     fix_suffix_capitalization,
     normalize_business_name,
 )
+
+logger_class = SCLogger(__package__, level="DEBUG")
+logger = logger_class.get_logger()
+
+__version__ = "1.0.0"
+
+# Constants
+
+# Exceptions
+
+# Core models
+
+# Validators
 
 __all__ = [
     # Models
