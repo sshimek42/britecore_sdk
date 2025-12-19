@@ -4,12 +4,15 @@ from typing import Any, Optional, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
-from britecore_libraries.api.api_calls import (BritecoreAPIClient,
-                                               api_client, RequestParameters)
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 from britecore_libraries.models.contact import ROLETYPES
 
-LOGGER:Logger = logger
+LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 

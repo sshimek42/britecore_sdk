@@ -1,3 +1,5 @@
+# noqa: E402
+
 """
 BriteCore Libraries - Core utilities for BriteCore API integration.
 
@@ -39,8 +41,8 @@ from britecore_libraries.validators import (
     EmailValidator,
     NameValidator,
     PhoneValidator,
-    fix_apostrophe_capitalisation,
-    fix_suffix_capitalisation,
+    fix_apostrophe_capitalization,
+    fix_suffix_capitalization,
     normalize_business_name,
 )
 
@@ -53,8 +55,8 @@ __all__ = [
     "EmailValidator",
     "NameValidator",
     "PhoneValidator",
-    "fix_suffix_capitalisation",
-    "fix_apostrophe_capitalisation",
+    "fix_suffix_capitalization",
+    "fix_apostrophe_capitalization",
     "normalize_business_name",
     # Exceptions
     "BritecoreError",
@@ -66,5 +68,5 @@ __all__ = [
     "load_regexes",
     # Version
     "__version__",
-    "logger"
+    "logger",
 ]

@@ -11,16 +11,18 @@ from britecore_libraries.api.api_calls import (
 )
 from britecore_libraries.exceptions import BritecoreError
 
-LOGGER:Logger = logger
+LOGGER: Logger = logger
 
-API_CLIENT:BritecoreAPIClient = api_client
+API_CLIENT: BritecoreAPIClient = api_client
 
 
-def update_inspection_dates(policy_number:Optional[str] = None,
-                            property_id:Optional[str] = None,
-                            next_inspection_date:Optional[str] = None,
-                            inspection_date_request:Optional[str] = None,
-                            **kwargs: Unpack[RequestParameters]) -> Any:
+def update_inspection_dates(
+    policy_number: Optional[str] = None,
+    property_id: Optional[str] = None,
+    next_inspection_date: Optional[str] = None,
+    inspection_date_request: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
     """
     Update inspection dates for a policy or property.
 
@@ -46,17 +48,21 @@ def update_inspection_dates(policy_number:Optional[str] = None,
     if not policy_number and not property_id:
         BritecoreError.MissingParameter("policy_number or property_id is required")
 
-    parameter_list:list[dict[str,str|None]] = [{"policy_number": policy_number},
-                                               {"property_id":property_id}]
+    parameter_list: list[dict[str, str | None]] = [
+        {"policy_number": policy_number},
+        {"property_id": property_id},
+    ]
     parameter_priority: list[str] = ["property_id", "policy_number"]
 
-    inspection_json:dict[str,str] = api_client.multiple_parameter_verification(parameter_list,parameter_priority)
+    inspection_json: dict[str, str] = api_client.multiple_parameter_verification(
+        parameter_list, parameter_priority
+    )
 
     LOGGER.debug("Updating inspection dates")
 
-    for _, (k,v) in enumerate(local_env.items()):
+    for _, (k, v) in enumerate(local_env.items()):
         if v and k not in parameter_priority:
-            inspection_json.update({k:v})
+            inspection_json.update({k: v})
 
     request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/inspections/update_inspection_dates",

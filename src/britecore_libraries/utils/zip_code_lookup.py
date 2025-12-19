@@ -1,8 +1,8 @@
 from logging import Logger
 from pathlib import Path
 
-import pandas
 import pandas as pd
+
 from britecore_libraries import logger
 
 LOGGER: Logger = logger
@@ -10,7 +10,7 @@ LOGGER: Logger = logger
 import_file: Path = Path(Path(__file__).parent / "../resources" / "zip_codes.csv")
 
 
-def load_zip_codes() -> pandas.DataFrame:
+def load_zip_codes() -> pd.DataFrame:
     """
     Load zip codes from a CSV file into a pandas DataFrame.
 
@@ -20,7 +20,7 @@ def load_zip_codes() -> pandas.DataFrame:
 
     Returns
     -------
-    pandas.DataFrame
+    pd.DataFrame
         DataFrame containing the zip code data with all columns as strings.
 
     Raises

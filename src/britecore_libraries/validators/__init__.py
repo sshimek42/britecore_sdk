@@ -2,8 +2,8 @@
 
 from britecore_libraries.validators.address_validator import (
     AddressValidator,
-    fix_apostrophe_capitalisation,
-    fix_suffix_capitalisation,
+    fix_apostrophe_capitalization,
+    fix_suffix_capitalization,
     normalize_business_name,
 )
 from britecore_libraries.validators.email_validator import EmailValidator
@@ -15,7 +15,7 @@ __all__ = [
     "EmailValidator",
     "NameValidator",
     "PhoneValidator",
-    "fix_apostrophe_capitalisation",
-    "fix_suffix_capitalisation",
+    "fix_apostrophe_capitalization",
+    "fix_suffix_capitalization",
     "normalize_business_name",
 ]

@@ -66,7 +66,7 @@ def retrieve_policy(
     if revision_state:
         policy_request_json.update({"revision_state": revision_state})
 
-    provided_timeout: Optional[Timeout] = kwargs.get("request_timeout", None)
+    provided_timeout: Optional[Timeout] = kwargs.get("request_timeout")
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
@@ -694,7 +694,9 @@ def new_revision_contact(
         Literal["revision_id", "role"],
         Literal[
             "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
-        ] | str | None,
+        ]
+        | str
+        | None,
     ] = {
         "revision_id": revision_id,
         "role": contact_role,

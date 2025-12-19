@@ -1,21 +1,37 @@
 import os
 import re
-
 from typing import Any, Pattern
 
-def load_regexes() -> tuple[dict[str | Any, Pattern[str] | Any], dict[str,
-dict[str, int]]]:
+
+def load_regexes() -> (
+    tuple[dict[str | Any, Pattern[str] | Any], dict[str, dict[str, int]]]
+):
+    """
+    Load and compile regular expressions and naming groups for different systems.
+
+    This function compiles a set of regular expressions commonly used for
+    processing names, emails, addresses, and other text data. It also loads
+    system-specific naming group configurations that define how to extract
+    components from names based on the system being used.
+
+    The function retrieves the system type from the environment variable 'system'.
+    If the variable is not set, it defaults to an empty string, which will result
+    in using the common regexes and naming groups without system-specific overrides.
+
+    Returns a tuple containing:
+    - A dictionary of compiled regular expressions
+    - A dictionary of naming groups for the specified system
+    """
+
     mutual_system = os.environ.get("system", "")
 
     common_compiled_regexes: dict[str | Any, Pattern[str] | Any] = {
         "search_name_mult": re.compile(
-            r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?("
-            r"\W*\w*)?"
+            r"^(\w*\W\w?\W|\w*\W)(\w*\s?\w)?\s(&)\s(\w*\W\w?\W|\w*\W?\w*)?(" r"\W*\w*)?"
         ),
         "search_name_single": re.compile(r"^(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)(\W\w*)?"),
         "search_email": re.compile(
-            r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{"
-            r"2,64}"
+            r"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{" r"2,64}"
         ),
         "reg_name_c": re.compile(r"[^0-9a-zA-Z\s#+&',/-]+"),
         "reg_and_or": re.compile(r"\W(&/or|and/or|and|or)\W", re.IGNORECASE),
@@ -57,7 +73,7 @@ dict[str, int]]]:
         "reg_no_split": re.compile(r"(\sof\s|c\\o|-|trust|')", re.IGNORECASE),
     }
 
-    system_compiled_regexes = {
+    system_compiled_regexes: dict[str, dict[str, Pattern[str] | None]] = {
         "mips": {},
         "spectrum_v1": {
             "search_name_single": re.compile(r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"),
@@ -77,7 +93,7 @@ dict[str, int]]]:
 
     compiled_regexes = common_compiled_regexes
 
-    system_naming_groups: dict[str,dict[str,dict[str,int]]] = {
+    system_naming_groups: dict[str, dict[str, dict[str, int]]] = {
         "mips": {
             "multi": {
                 "last_name_1": 1,

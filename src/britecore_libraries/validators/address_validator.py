@@ -4,11 +4,11 @@ import re
 from ast import literal_eval
 from typing import Any, Pattern
 
+from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
-from britecore_libraries import logger
 
 LOGGER = logger
 
@@ -65,7 +65,7 @@ class AddressValidator:
         self.full_address = full_address
         _get_regexes()
 
-    def process(self) -> list[dict[str,str]]:
+    def process(self) -> list[dict[str, str]]:
         """
         Processes and validates address components from a full address dictionary.
 
@@ -481,7 +481,7 @@ def normalize_business_name(business_name: str) -> str:
     return business_name
 
 
-def fix_apostrophe_capitalisation(name: str) -> str:
+def fix_apostrophe_capitalization(name: str) -> str:
     """
     Fix apostrophe capitalization in a given name string.
 

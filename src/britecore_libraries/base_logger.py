@@ -1,3 +1,5 @@
+from logging import Logger
+
 from sclogging import sclogging_main as scl
 
 
@@ -21,5 +23,13 @@ class SCLogger(metaclass=Singleton):
         if not self._logger:
             self._logger = scl.get_logger(*args, **kwargs)
 
-    def get_logger(self):
+    def get_logger(self) -> Logger:
+        """
+
+        Retrieves the logger instance associated with this object.
+
+        Returns:
+            Logger: The logger instance used for logging messages.
+        """
+
         return self._logger
