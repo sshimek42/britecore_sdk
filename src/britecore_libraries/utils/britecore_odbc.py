@@ -50,7 +50,7 @@ def get_cursor(
         return cursor
 
 
-def close_cursor(cursor: pyodbc.Cursor):
+def close_cursor(cursor: pyodbc.Cursor) -> None:
     """Close cursor and connection
     :param cursor: Cursor to close
     :type cursor: pyodbc.Cursor
@@ -62,9 +62,9 @@ def close_cursor(cursor: pyodbc.Cursor):
     except AttributeError:
         logger.error("Cursor already closed")
         return None
-    else:
-        cursor.close()
-        logger.debug("Cursor closed")
-        conn1.close()
-        logger.debug("Connection closed")
-        return None
+
+    cursor.close()
+    logger.debug("Cursor closed")
+    conn1.close()
+    logger.debug("Connection closed")
+    return None

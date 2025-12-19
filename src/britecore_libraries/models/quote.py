@@ -1,16 +1,20 @@
 """BriteCore policy model."""
+
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional, Any
+from typing import Any, Optional
+
 from britecore_libraries import logger
 
 LOGGER = logger
+
 
 @dataclass
 class BritecoreQuote:
     """
     BriteCore quote model.
     """
+
     number: str
     policy_type_id: str
     agency_id: str
@@ -21,12 +25,8 @@ class BritecoreQuote:
     number_origin: str = "manual"
     transaction_type: str = "renewal"
     term_type: str = "1 Year"
-    inception_date: str = datetime.today().strftime(
-        "%Y-%m-%d"
-        )
-    effective_date: str = datetime.today().strftime(
-        "%Y-%m-%d"
-        )
+    inception_date: str = datetime.today().strftime("%Y-%m-%d")
+    effective_date: str = datetime.today().strftime("%Y-%m-%d")
 
     next_inspection_date: Optional[str] = None
     previous_inspection_date: Optional[str] = None
@@ -46,12 +46,7 @@ class BritecoreQuote:
         quote_dict = self.__dict__
 
         if self.description == "":
-            quote_dict.update(
-                {
-                    "description": f"From Policy "
-                                   f"{self.number[3:]}"
-                    }
-                )
+            quote_dict.update({"description": f"From Policy {self.number[3:]}"})
 
         if not self.next_inspection_date:
             del quote_dict["next_inspection_date"]

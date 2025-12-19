@@ -2,7 +2,7 @@
 
 import datetime
 from dataclasses import dataclass
-from typing import Optional
+from typing import Any, Optional
 
 from britecore_libraries.models.contact import BritecoreContact
 
@@ -28,7 +28,7 @@ class BritecorePolicy:
     previous_inspection_date: Optional[datetime.datetime] = None
     next_inspection_date: Optional[datetime.datetime] = None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[Any, Any]:
         """
         Convert policy to dictionary format for API submission.
 

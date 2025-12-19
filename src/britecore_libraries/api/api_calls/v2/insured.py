@@ -1,18 +1,22 @@
 from logging import Logger
-
-from britecore_libraries.api.api_calls import api_client, BritecoreAPIClient, RequestParameters
-from britecore_libraries import logger
-
-from typing import Optional, Any, Unpack
+from typing import Any, Optional, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
-LOGGER:Logger = logger
-API_CLIENT:BritecoreAPIClient = api_client
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+API_CLIENT: BritecoreAPIClient = api_client
 
 
-def get_property_information_and_photos(property_id: str, **kwargs:
-Unpack[RequestParameters]) -> Any:
+def get_property_information_and_photos(
+    property_id: str, **kwargs: Unpack[RequestParameters]
+) -> Any:
     """
     Retrieve comprehensive property information and associated photos using the specified property ID.
 
@@ -33,14 +37,14 @@ Unpack[RequestParameters]) -> Any:
         The function uses a global API client instance to make the request and processes the
         result before returning it to the caller
     """
-    LOGGER.debug(f"Getting property information for property_id %f.yellow%"
-                 f"{property_id}%f%")
-    property_json: Optional[BaseHTTPResponse | HTTPResponse] = (
-        API_CLIENT.do_request(
+    LOGGER.debug(
+        f"Getting property information for property_id %f.yellow%{property_id}%f%"
+    )
+    property_json: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},
         **kwargs,
-    ))
+    )
     property_json = API_CLIENT.process_result(property_json)
 
     return property_json

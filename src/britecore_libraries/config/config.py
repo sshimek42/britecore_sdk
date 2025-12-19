@@ -1,15 +1,15 @@
 """Settings config"""
 
-import os
+from pathlib import Path
 
 from dynaconf import Dynaconf, Validator
 
-curr_dir = os.path.dirname(__file__)
-setting_files = [".secrets.toml", "settings.toml"]
+curr_dir = Path(__file__).parent
+setting_files: list[str] = [".secrets.toml", "settings.toml"]
 
-setting_files_full = []
+setting_files_full: list[Path] = []
 for each_file in setting_files:
-    setting_files_full.append(os.path.join(curr_dir, each_file))
+    setting_files_full.append(curr_dir / each_file)
 
 settings = Dynaconf(settings_files=setting_files_full, enviroments=True)
 
