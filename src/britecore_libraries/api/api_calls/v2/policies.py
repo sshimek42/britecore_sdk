@@ -218,7 +218,7 @@ def retrieve_policy_contact_info(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> list:
     """
-    Retrieve contact information for policy holders based on policy number.
+    Retrieve contact information for policyholders based on policy number.
 
     This function fetches the contact details of named insureds associated with a
     given policy number by retrieving the policy data and extracting the relevant
