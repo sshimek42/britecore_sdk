@@ -60,7 +60,8 @@ def retrieve_policy(
     priority_list: list[str] = ["revision_id", "policy_id", "policy_number"]
 
     policy_request_json: dict[str, str | None] = (
-        API_CLIENT.multiple_parameter_verification(verification_list, priority_list)
+        API_CLIENT.multiple_parameter_verification(
+            verification_list, priority_list)
     )
 
     if revision_state:
@@ -269,7 +270,8 @@ def create_policy(
     ] = "1 Year",
     expiration_date: Optional[str] = "",  # Required if term_type is "Custom"
     renewal_term_type: Optional[
-        Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"]
+        Literal["3 Years", "18 Months", "1 Year",
+                "9 Months", "6 Months", "3 Months"]
     ] = "1 Year",
     is_renewal: Optional[bool] = False,
     as_agent: Optional[bool] = False,
@@ -314,11 +316,13 @@ def create_policy(
     """
 
     if term_type == "Custom" and not expiration_date:
-        BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
+        BritecoreError.MissingParameter(
+            "expiation_date needed with 'Custom' term_type")
 
     LOGGER.debug(f"Creating policy %f.yellow%{policy_number}%f%")
     local_env: dict[str, Any] = locals()
-    policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
+    policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({
+                                                                       **local_env})
     request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/policies/create_policy",
         json=policy_request_json,
@@ -355,7 +359,8 @@ def retrieve_policy_terms(
     """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
-        BritecoreError.MissingParameter("Either policy_id or policy_number is required")
+        BritecoreError.MissingParameter(
+            "Either policy_id or policy_number is required")
 
     parameter_list: list[dict[str, str]] = [
         {"policy_id": policy_id},
@@ -643,7 +648,8 @@ def retrieve_billing_schedule_options(
     local_env = locals()
 
     LOGGER.debug("Getting billing schedule")
-    billing_search_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
+    billing_search_json: dict[str, Any] = API_CLIENT.json_dict_builder({
+                                                                       **local_env})
     request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_billing_schedule_options",
         json=billing_search_json,
