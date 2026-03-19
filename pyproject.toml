@@ -9,6 +9,6 @@ dependencies = [
     "pyodbc~=5.3.0",
     "sclogging~=1.2.1",
     "selenium~=4.41.0",
-    "setuptools~=80.10.2",
+    "setuptools~=82.0.1",
     "urllib3~=2.6.2",
 ]
