@@ -1,6 +1,6 @@
 pandas~=3.0.1
 sclogging~=1.2.1
-dynaconf~=3.2.12
+dynaconf~=3.2.13
 PyInputPlus~=0.2.12
 urllib3~=2.6.3
 selenium~=4.41.0
