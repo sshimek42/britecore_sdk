@@ -3,7 +3,7 @@ name = "britecore_libraries"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "dynaconf~=3.2.12",
+    "dynaconf~=3.2.13",
     "pandas~=3.0.1",
     "pyinputplus~=0.2.12",
     "pyodbc~=5.3.0",
