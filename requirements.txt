@@ -1,4 +1,4 @@
-pandas~=3.0.0
+pandas~=3.0.1
 sclogging~=1.2.1
 dynaconf~=3.2.12
 PyInputPlus~=0.2.12
