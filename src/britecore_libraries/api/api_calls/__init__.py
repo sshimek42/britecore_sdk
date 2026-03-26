@@ -28,14 +28,68 @@ def init_api_client(target_site=os.environ.get("target_site")) -> BritecoreAPICl
     return _api_client
 
 
-api_client: BritecoreAPIClient = init_api_client()
-web_timeout_long: int = api_client.web_timeout_long
-web_timeout: int = api_client.web_timeout
+# Lazy initialization: _api_client is only created on first access to avoid
+# import-time failures in contexts without config/env setup.
+_api_client: BritecoreAPIClient | None = None
+
+
+def get_api_client() -> BritecoreAPIClient:
+    """
+    Get or lazily initialize the global API client instance.
+
+    Returns:
+        BritecoreAPIClient: A configured and initialized Britecore API client instance.
+
+    Raises:
+        Any exceptions from BritecoreAPIClient.init_client() if initialization fails.
+    """
+    global _api_client
+    if _api_client is None:
+        _api_client = init_api_client()
+    return _api_client
+
+
+# Backward compatibility: module-level api_client proxy that triggers lazy init
+class _LazyAPIClient:
+    """Lazy-loading proxy for the global API client."""
+
+    def __getattr__(self, name: str):
+        return getattr(get_api_client(), name)
+
+
+api_client = _LazyAPIClient()
+
+
+# Lazy module attributes for timeouts (accessed via get_api_client())
+class _LazyModule:
+    """Module-level lazy loader for timeout attributes."""
+
+    @property
+    def web_timeout_long(self) -> int:
+        """Get or lazily initialize web_timeout_long from the API client."""
+        return get_api_client().web_timeout_long
+
+    @property
+    def web_timeout(self) -> int:
+        """Get or lazily initialize web_timeout from the API client."""
+        return get_api_client().web_timeout
+
+
+# Fallback values for direct access (will be overridden by lazy loading on first access)
+def _get_web_timeout_long() -> int:
+    """Lazy getter for web_timeout_long."""
+    return get_api_client().web_timeout_long
+
+
+def _get_web_timeout() -> int:
+    """Lazy getter for web_timeout."""
+    return get_api_client().web_timeout
+
 
 __all__ = [
     "RequestParameters",
     "api_client",
+    "get_api_client",
+    "init_api_client",
     "BritecoreAPIClient",
-    "web_timeout_long",
-    "web_timeout",
 ]

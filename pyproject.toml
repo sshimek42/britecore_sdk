@@ -3,12 +3,51 @@ name = "britecore_libraries"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "dynaconf~=3.2.12",
-    "pandas~=3.0.0",
+    "dynaconf~=3.2.13",
+    "pandas~=3.0.1",
     "pyinputplus~=0.2.12",
     "pyodbc~=5.3.0",
-    "sclogging~=1.2.0",
-    "selenium~=4.40.0",
-    "setuptools~=80.10.2",
-    "urllib3~=2.6.2",
+    "sclogging==1.2.1",
+    "selenium~=4.41.0",
+    "setuptools~=82.0.1",
+    "urllib3~=2.6.3",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-mock>=3.11.1",
+    "pytest-cov>=4.1.0",
+    "python-dotenv>=1.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=src/britecore_libraries --cov-report=html --cov-report=term-missing --strict-markers"
+markers = [
+    "unit: unit tests",
+    "integration: integration tests",
+    "slow: slow tests",
+]
+
+[tool.coverage.run]
+source = ["src/britecore_libraries"]
+omit = [
+    "*/tests/*",
+    "*/site-packages/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+

@@ -12,10 +12,12 @@ This package provides:
 
 from britecore_libraries.base_logger import SCLogger
 
-logger_class = SCLogger(__package__, level="DEBUG")
+logger_class = SCLogger(
+    __package__, level="INFO", log_to_file=True, log_file_level="INFO"
+)
 logger = logger_class.get_logger()
 
-__version__ = "1.0.0"
+__version__ = "0.1.0"
 
 # Constants
 from britecore_libraries.constants import (

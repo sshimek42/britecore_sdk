@@ -68,7 +68,9 @@ class OAuthToken:
             encode_multipart=False,
         )
         if http_result.status != 200 and not self.token:
-            raise BritecoreError.NoTokenReturned
+            raise BritecoreError.NoTokenReturned(
+                "Failed to retrieve OAuth token from endpoint"
+            )
         logger.debug("Received token")
         http_result_dict: Any = loads(http_result.data)
         self.token: str = http_result_dict.get("access_token", "")

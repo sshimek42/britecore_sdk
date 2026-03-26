@@ -11,7 +11,7 @@ setting_files_full: list[Path] = []
 for each_file in setting_files:
     setting_files_full.append(curr_dir / each_file)
 
-settings = Dynaconf(settings_files=setting_files_full, enviroments=True)
+settings = Dynaconf(settings_files=setting_files_full, environments=True)
 
 settings.validators.register(
     Validator(
