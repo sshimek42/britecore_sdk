@@ -11,7 +11,7 @@
 **Cause:** Package not installed in current environment
 
 **Solution:**
-```bash
+```powershell
 # Install in editable mode
 pip install -e .
 
@@ -29,7 +29,7 @@ python -c "import britecore_libraries; print(britecore_libraries.__version__)"
 **Cause:** Network issues or large dependency tree
 
 **Solution:**
-```bash
+```powershell
 # Try with timeout
 pip install -e . --default-timeout=100
 
@@ -48,13 +48,13 @@ python --version  # Should be 3.14+
 **Cause:** Insufficient permissions
 
 **Solution:**
-```bash
+```powershell
 # Use --user flag
 pip install --user -e .
 
 # Or use virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -e .
 ```
 
@@ -67,11 +67,9 @@ pip install -e .
 **Cause:** Missing environment variable
 
 **Solution:**
-```bash
+```powershell
 # Set environment variable
-export target_site=your_site  # On Linux/Mac
-# OR
-$env:target_site = "your_site"  # On Windows PowerShell
+$env:target_site = "your_site"
 
 # Verify
 python -c "import os; print(os.environ.get('target_site'))"
@@ -98,10 +96,10 @@ web_retry = 3                     # Required
 ```
 
 **Or use environment variables:**
-```bash
-export BRITECORE_BASE_URL="https://..."
-export BRITECORE_API_KEY="..."
-export BRITECORE_WEB_TIMEOUT="5"
+```powershell
+$env:BRITECORE_BASE_URL="https://..."
+$env:BRITECORE_API_KEY="..."
+$env:BRITECORE_WEB_TIMEOUT="5"
 ```
 
 ---
@@ -262,7 +260,7 @@ from britecore_libraries.models import *
 **Cause:** Test dependencies not installed
 
 **Solution:**
-```bash
+```powershell
 pip install -e ".[dev]"
 python -m pytest tests/ -v
 ```
@@ -291,7 +289,7 @@ with patch("britecore_libraries.api.api_calls.API_CLIENT") as mock:
 **Cause:** Coverage tool not configured
 
 **Solution:**
-```bash
+```powershell
 # Make sure pytest-cov installed
 pip install -e ".[dev]"
 
@@ -299,7 +297,7 @@ pip install -e ".[dev]"
 python -m pytest tests/ --cov=src/britecore_libraries --cov-report=html
 
 # View report
-open htmlcov/index.html  # Or your OS equivalent
+Invoke-Item htmlcov/index.html
 ```
 
 ---
@@ -309,7 +307,7 @@ open htmlcov/index.html  # Or your OS equivalent
 **Cause:** Running pytest from wrong directory
 
 **Solution:**
-```bash
+```powershell
 # Run from project root
 cd britecore_libraries
 python -m pytest tests/ -v
@@ -486,8 +484,8 @@ for i in range(10000):
 
 ### Check These First
 
-1. **Environment Variables:** `echo $target_site`
-2. **Config File:** `cat src/britecore_libraries/config/settings.toml`
+1. **Environment Variables:** `echo $env:target_site`
+2. **Config File:** `Get-Content src/britecore_libraries/config/settings.toml`
 3. **Python Version:** `python --version` (should be 3.14+)
 4. **Package Installation:** `pip show britecore-libraries`
 5. **Test Suite:** `python -m pytest tests/unit/test_maps.py -v`
