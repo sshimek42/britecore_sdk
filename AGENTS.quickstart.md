@@ -12,5 +12,5 @@ For full guidance, see `AGENTS.md`.
 - Config comes from Dynaconf in `config/.secrets.toml` + `config/settings.toml`; validated site keys include `base_url`, `client_id`, `client_secret`, `api_key`.
 - Important env vars in code paths: `target_site` (client init) and `system` (regex selection in maps, with sensible defaults if unset).
 - Prefer imports from `models`/`validators`; `classes` is a deprecated compatibility shim.
-- No local tests under `src/`; validate edits with focused import/smoke checks from repo root.
+- Tests are under `tests/` (not `src/`); run targeted pytest for changed modules, then focused import/smoke checks when config-sensitive paths are involved.
 

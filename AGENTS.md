@@ -4,11 +4,11 @@ For a compact version, see `AGENTS.quickstart.md`.
 
 ## Scope and source of truth
 - Treat `src/britecore_libraries/` as the active codebase; ignore generated copies in `build/`, `dist/`, `env/`, and `*.egg-info/` unless packaging issues require them.
-- This repo currently has no local test suite (`**/*test*.py` under `src/` not found), so validate changes with focused import/smoke checks.
+- Tests live under `tests/` (not under `src/`), so run targeted pytest for changed modules and keep focused import/smoke checks for config-sensitive paths.
 
 ## Big-picture architecture
 - API access centers on `BritecoreAPIClient` in `src/britecore_libraries/api/britecore_api_client.py`; endpoint wrappers call `do_request(...)` then `process_result(...)`.
-- Module import side effect: `src/britecore_libraries/api/api_calls/__init__.py` creates a global `api_client = init_api_client()` at import time, using `target_site` from env by default.
+- API module client access is lazy in `src/britecore_libraries/api/api_calls/__init__.py`: `api_client` is a proxy and initializes through `get_api_client()` on first use.
 - Auth mode is selected in `BritecoreAPIClient.init_client()`: API key if `client_id`/`client_secret` are blank, otherwise OAuth via `OAuthToken` (`src/britecore_libraries/api/britecore_oauth_token_manager.py`).
 - Domain shaping is separate from transport: models in `src/britecore_libraries/models/` and validators in `src/britecore_libraries/validators/` prepare payloads, API modules send them.
 - Legacy compatibility layer exists in `src/britecore_libraries/classes/__init__.py` and emits `DeprecationWarning`; prefer imports from `models`/`validators`.

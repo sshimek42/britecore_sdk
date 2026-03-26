@@ -8,9 +8,11 @@
 
 This document provides reference for all implemented API endpoints.
 
-**Total Endpoints:** 374 in britecore_api.json  
-**Currently Implemented:** 250 endpoints (66.8%)  
-**Coverage by Category:** See sections below
+Coverage changes over time. Treat this page as a usage reference and verify module-level coverage against:
+
+- `britecore_api.json`
+- `src/britecore_libraries/api/api_calls/v2/`
+- `API_COVERAGE_ANALYSIS.md`
 
 ---
 
@@ -62,7 +64,7 @@ response = policies.retrieve_policy(
 
 ## Implemented Endpoints
 
-### 1. Policies (87 endpoints) ✅ COMPLETE
+### 1. Policies ✅
 
 **File:** `api/api_calls/v2/policies.py`
 
@@ -111,7 +113,7 @@ item = add_line_item(revision_id="uuid", item_id="uuid")
 
 ---
 
-### 2. Contacts (42 endpoints) ✅ COMPLETE
+### 2. Contacts ✅
 
 **File:** `api/api_calls/v2/contacts.py`
 
@@ -138,7 +140,7 @@ remove_contact_from_role(contact_id="uuid", role_name="Named Insured")
 
 ---
 
-### 3. Quotes (15 endpoints) ✅ COMPLETE
+### 3. Quotes ✅
 
 **File:** `api/api_calls/v2/quotes.py`
 
@@ -161,7 +163,7 @@ updated = update_quote(quote_id="uuid", ...)
 
 ---
 
-### 4. Reports (14 endpoints) ✅ COMPLETE
+### 4. Reports ✅
 
 **File:** `api/api_calls/v2/reports.py`
 
@@ -184,7 +186,7 @@ report = create_report(report_json={...})
 
 ---
 
-### 5. Deliverables (24 endpoints) ✅ COMPLETE
+### 5. Deliverables ✅
 
 **File:** `api/api_calls/v2/deliverables.py`
 
@@ -203,7 +205,7 @@ deliverable = create_deliverable(deliverable_json={...})
 
 ---
 
-### 6. Utilities (24 endpoints) ✅ COMPLETE
+### 6. Utilities ✅
 
 **File:** `api/api_calls/v2/utils.py`
 
@@ -226,7 +228,7 @@ meta_info = meta()
 
 ---
 
-### 7. Lines (16 endpoints) ✅ COMPLETE
+### 7. Lines ✅
 
 **File:** `api/api_calls/v2/lines.py`
 
@@ -249,7 +251,7 @@ updated = update_line(line_id="uuid", ...)
 
 ---
 
-### 8. Claims (7 endpoints) ✅ COMPLETE
+### 8. Claims ✅
 
 **File:** `api/api_calls/v2/claims.py`
 
@@ -272,7 +274,7 @@ claim = create_claim(claim_json={...})
 
 ---
 
-### 9. Insured (16 endpoints) ✅ COMPLETE
+### 9. Insured ✅
 
 **File:** `api/api_calls/v2/insured.py`
 
@@ -291,7 +293,7 @@ insured = add_insured(policy_id="uuid", ...)
 
 ---
 
-### 10. Notes (4 endpoints) ✅ COMPLETE
+### 10. Notes ✅
 
 **File:** `api/api_calls/v2/notes.py`
 
@@ -310,7 +312,7 @@ note = create_note(policy_id="uuid", ...)
 
 ---
 
-### 11. Inspections (1 endpoint) ✅ COMPLETE
+### 11. Inspections ✅
 
 **File:** `api/api_calls/v2/inspections.py`
 
@@ -327,33 +329,33 @@ inspections = get_inspections(policy_id="uuid")
 
 ## Not Yet Implemented
 
-### High Priority (42 endpoints)
+### High Priority
 
-- ❌ **payments.py** (29 endpoints) - Payment processing [CRITICAL]
-- ❌ **billing.py** (4 endpoints) - Billing management
-- ❌ **commissions.py** (9 endpoints) - Commission tracking
+- ❌ **payments.py** - Payment processing [CRITICAL]
+- ❌ **billing.py** - Billing management
+- ❌ **commissions.py** - Commission tracking
 
-### Medium Priority (61 endpoints)
+### Medium Priority
 
-- ❌ **settings.py** (11 endpoints)
-- ❌ **vendors.py** (16 endpoints)
-- ❌ **attachments.py** (11 endpoints)
-- ❌ **dashboards.py** (8 endpoints)
-- ❌ **nightly_jobs.py** (4 endpoints)
-- ❌ **printing.py** (5 endpoints)
-- ❌ **intacct.py** (5 endpoints)
-- ❌ **signatures.py** (6 endpoints)
+- ❌ **settings.py**
+- ❌ **vendors.py**
+- ❌ **attachments.py**
+- ❌ **dashboards.py**
+- ❌ **nightly_jobs.py**
+- ❌ **printing.py**
+- ❌ **intacct.py**
+- ❌ **signatures.py**
 
-### Low Priority (21 endpoints)
+### Low Priority
 
-- ❌ **accounting.py** (3 endpoints)
-- ❌ **custom_ui.py** (4 endpoints)
-- ❌ **notifications.py** (2 endpoints)
-- ❌ **search.py** (2 endpoints)
-- ❌ **data.py** (2 endpoints)
-- ❌ **errors.py** (1 endpoint)
-- ❌ **uploads.py** (1 endpoint)
-- ❌ **return_premium.py** (1 endpoint)
+- ❌ **accounting.py**
+- ❌ **custom_ui.py**
+- ❌ **notifications.py**
+- ❌ **search.py**
+- ❌ **data.py**
+- ❌ **errors.py**
+- ❌ **uploads.py**
+- ❌ **return_premium.py**
 
 See [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for implementation roadmap.
 
@@ -616,7 +618,9 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 
 ---
 
-**API Version:** 2.0.0  
-**Last Updated:** March 26, 2026  
-**Status:** 250/374 endpoints implemented (66.8%)
+## Documentation Freshness
+
+- Last verified: `2026-03-26`
+- Verified against: `britecore_api.json` and `src/britecore_libraries/api/api_calls/v2/`
+- For current implementation progress, see [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md)
 
