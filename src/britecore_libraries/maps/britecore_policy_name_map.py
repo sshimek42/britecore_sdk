@@ -24,6 +24,9 @@ def load_regexes() -> (
     """
 
     mutual_system = os.environ.get("system", "")
+    # Fallback to 'mips' if system is not set or not found in system_compiled_regexes
+    if not mutual_system or mutual_system not in ("mips", "spectrum_v1", "spectrum_v2"):
+        mutual_system = "mips"
 
     common_compiled_regexes: dict[str | Any, Pattern[str] | Any] = {
         "search_name_mult": re.compile(
