@@ -390,6 +390,9 @@ class BritecoreAPIClient:
 
         if len(non_empty_dict) > 1:
             multiple_found = True
+        elif not non_empty_dict:
+            parameter_used = parameter_priority[0]
+            correct_parameter = {parameter_used: None}
         else:
             parameter_used = list(non_empty_dict.keys())[0]
             correct_parameter = non_empty_dict
@@ -442,3 +445,10 @@ class RequestParameters(TypedDict):
     request_retries: NotRequired[urllib3.util.Retry]
     request_headers: NotRequired[dict[str, Any]]
     method: NotRequired[str]
+    cache_enabled: NotRequired[bool]
+    cache_ttl_seconds: NotRequired[int]
+    cache_namespace: NotRequired[str]
+    cache_key_parts: NotRequired[list[str] | tuple[str, ...]]
+    cache_bypass: NotRequired[bool]
+    cache_invalidate_on_success: NotRequired[list[str] | tuple[str, ...]]
+    dedupe_in_flight: NotRequired[bool]

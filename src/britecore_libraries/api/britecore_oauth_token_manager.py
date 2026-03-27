@@ -71,9 +71,23 @@ class OAuthToken:
             raise BritecoreError.NoTokenReturned(
                 "Failed to retrieve OAuth token from endpoint"
             )
+        if http_result.status != 200:
+            logger.warning("OAuth token refresh failed; continuing to use existing token")
+            return
         logger.debug("Received token")
         http_result_dict: Any = loads(http_result.data)
-        self.token: str = http_result_dict.get("access_token", "")
+        access_token = http_result_dict.get("access_token", "")
+        if not access_token:
+            if not self.token:
+                raise BritecoreError.NoTokenReturned(
+                    "OAuth endpoint did not return an access token"
+                )
+            logger.warning(
+                "OAuth token refresh response did not include an access token; "
+                "continuing to use existing token"
+            )
+            return
+        self.token = access_token
         expires_in: float = float(http_result_dict.get("expires_in", 0))
         self.token_time: datetime = (
             datetime.now()
