@@ -13,6 +13,7 @@ Related docs:
 
 - [README.md](README.md) for a high-level overview
 - [API.md](API.md) for endpoint reference
+- [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior
 - [ARCHITECTURE.md](ARCHITECTURE.md) for design details
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common errors
 
@@ -75,6 +76,28 @@ from britecore_libraries.api.api_calls.v2 import policies
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
 ```
+
+## Async cached wrappers
+
+Use async wrappers from `britecore_libraries.api.api_calls.v2` for non-blocking API calls.
+Read wrappers are cache-aware by default and mutation wrappers invalidate related namespaces.
+For exact behavior, supported cache kwargs, and invalidation examples, use
+[docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+
+```python
+import asyncio
+
+from britecore_libraries.api.api_calls.v2 import aget_quote
+
+
+async def main() -> None:
+    quote = await aget_quote("quote_123")
+    print(quote)
+
+
+asyncio.run(main())
+```
+
 
 ## Run tests
 

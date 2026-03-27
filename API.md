@@ -14,6 +14,8 @@ Coverage changes over time. Treat this page as a usage reference and verify modu
 - `src/britecore_libraries/api/api_calls/v2/`
 - `API_COVERAGE_ANALYSIS.md`
 
+For async cache-specific usage and controls, see [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+
 ---
 
 ## Authentication
@@ -59,6 +61,20 @@ response = policies.retrieve_policy(
     "message": "Success"  # or "messages": ["msg1", "msg2"]
 }
 ```
+
+---
+
+## Async Cached Wrappers (v2)
+
+Canonical guide: [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md)
+
+Async wrappers are exported from `src/britecore_libraries/api/api_calls/v2/__init__.py`.
+These wrappers call `AsyncBritecoreAPIClient.ado_request(...)` and use in-memory TTL caching
+from `src/britecore_libraries/api/request_cache.py`.
+
+- Use this section as a quick pointer; implementation-level async cache behavior is documented in [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+- Read wrappers in async `v2` are cache-aware by default, and mutation wrappers invalidate related cache namespaces on successful requests.
+- Per-call cache tuning is available through `RequestParameters` (`cache_enabled`, `cache_ttl_seconds`, `cache_bypass`, `cache_invalidate_on_success`, `dedupe_in_flight`, etc.).
 
 ---
 

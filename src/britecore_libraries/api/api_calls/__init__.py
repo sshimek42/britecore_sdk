@@ -1,12 +1,14 @@
 import os
+from typing import Optional
 
+from britecore_libraries.api.britecore_async_api_client import AsyncBritecoreAPIClient
 from britecore_libraries.api.britecore_api_client import (
     BritecoreAPIClient,
     RequestParameters,
 )
 
 
-def init_api_client(target_site=os.environ.get("target_site")) -> BritecoreAPIClient:
+def init_api_client(target_site: Optional[str] = None) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
 
@@ -23,14 +25,22 @@ def init_api_client(target_site=os.environ.get("target_site")) -> BritecoreAPICl
 
     """
 
-    _api_client: BritecoreAPIClient = BritecoreAPIClient(target_site)
+    resolved_target_site = target_site or os.environ.get("target_site")
+    _api_client: BritecoreAPIClient = BritecoreAPIClient(resolved_target_site)
     _api_client.init_client()
     return _api_client
+
+
+def init_async_api_client(target_site: Optional[str] = None) -> AsyncBritecoreAPIClient:
+    """Initialize and return a lazy async API client wrapper."""
+    resolved_target_site = target_site or os.environ.get("target_site")
+    return AsyncBritecoreAPIClient(resolved_target_site)
 
 
 # Lazy initialization: _api_client is only created on first access to avoid
 # import-time failures in contexts without config/env setup.
 _api_client: BritecoreAPIClient | None = None
+_async_api_client: AsyncBritecoreAPIClient | None = None
 
 
 def get_api_client() -> BritecoreAPIClient:
@@ -49,6 +59,14 @@ def get_api_client() -> BritecoreAPIClient:
     return _api_client
 
 
+def get_async_api_client() -> AsyncBritecoreAPIClient:
+    """Get or lazily initialize the global async API client instance."""
+    global _async_api_client
+    if _async_api_client is None:
+        _async_api_client = init_async_api_client()
+    return _async_api_client
+
+
 # Backward compatibility: module-level api_client proxy that triggers lazy init
 class _LazyAPIClient:
     """Lazy-loading proxy for the global API client."""
@@ -58,6 +76,16 @@ class _LazyAPIClient:
 
 
 api_client = _LazyAPIClient()
+
+
+class _LazyAsyncAPIClient:
+    """Lazy-loading proxy for the global async API client."""
+
+    def __getattr__(self, name: str):
+        return getattr(get_async_api_client(), name)
+
+
+async_api_client = _LazyAsyncAPIClient()
 
 
 # Lazy module attributes for timeouts (accessed via get_api_client())
@@ -89,7 +117,11 @@ def _get_web_timeout() -> int:
 __all__ = [
     "RequestParameters",
     "api_client",
+    "async_api_client",
     "get_api_client",
+    "get_async_api_client",
     "init_api_client",
+    "init_async_api_client",
     "BritecoreAPIClient",
+    "AsyncBritecoreAPIClient",
 ]
