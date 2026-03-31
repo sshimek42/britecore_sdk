@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check src tests
+
+      - name: Format check (black)
+        run: black --check src tests
+
+      - name: Type check (mypy)
+        run: |
+          mypy \
+            src/britecore_libraries/exceptions.py \
+            src/britecore_libraries/api/britecore_api_client.py \
+            src/britecore_libraries/api/types.py \
+            src/britecore_libraries/api/api_calls/v2/accounting.py \
+            src/britecore_libraries/api/api_calls/v2/attachments.py \
+            src/britecore_libraries/api/api_calls/v2/billing.py \
+            src/britecore_libraries/api/api_calls/v2/commissions.py \
+            src/britecore_libraries/api/api_calls/v2/custom_ui.py \
+            src/britecore_libraries/api/api_calls/v2/dashboards.py \
+            src/britecore_libraries/api/api_calls/v2/data.py \
+            src/britecore_libraries/api/api_calls/v2/errors.py \
+            src/britecore_libraries/api/api_calls/v2/intacct.py \
+            src/britecore_libraries/api/api_calls/v2/nightly_jobs.py \
+            src/britecore_libraries/api/api_calls/v2/notifications.py \
+            src/britecore_libraries/api/api_calls/v2/payments.py \
+            src/britecore_libraries/api/api_calls/v2/printing.py \
+            src/britecore_libraries/api/api_calls/v2/return_premium.py \
+            src/britecore_libraries/api/api_calls/v2/search.py \
+            src/britecore_libraries/api/api_calls/v2/settings.py \
+            src/britecore_libraries/api/api_calls/v2/signatures.py \
+            src/britecore_libraries/api/api_calls/v2/uploads.py \
+            src/britecore_libraries/api/api_calls/v2/vendors.py
+
+      - name: Unit tests
+        run: |
+          pytest tests/unit -m unit --cov=src/britecore_libraries --cov-report=term-missing --cov-fail-under=60
+
+      - name: Upload coverage report
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: htmlcov/

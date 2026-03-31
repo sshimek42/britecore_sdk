@@ -1,40 +1,115 @@
-"""BriteCore data API stubs (generated from britecore_api.json).
-This module intentionally contains placeholders for API calls that are not yet
-implemented in the SDK. Use these stubs for discovery and planning; concrete
-request wrappers will be added in a future implementation phase.
+"""BriteCore v2 Data API endpoint wrappers.
+
+Provides:
+    export_data_as_csv        -- Export data as a CSV file.
+    get_available_dashboards  -- Retrieve the list of available dashboards.
 """
-from typing import Any, Final
-# NOTE: Keys are planned wrapper function names; values are API endpoint paths.
-UNIMPLEMENTED_CALLS: Final[dict[str, str]] = {
-    "export_data_as_csv": "/api/v2/data/export_data_as_csv",
-    "get_available_dashboards": "/api/v2/data/get_available_dashboards",
-}
-def list_unimplemented_calls() -> dict[str, str]:
-    """Return a copy of the unimplemented call map for this API domain."""
-    return dict(UNIMPLEMENTED_CALLS)
-def not_implemented_call(
-    call_name: str,
-    payload: dict[str, Any] | None = None,
+from logging import Logger
+from typing import Any, Optional, Unpack, cast
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload, omitting keys whose value is ``None``."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: Optional[dict[str, Any]] = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Placeholder dispatcher for unimplemented calls in this module.
-    Parameters:
-        call_name: Planned wrapper function name from ``UNIMPLEMENTED_CALLS``.
-        payload: Optional future request body payload.
-    Raises:
-        ValueError: If ``call_name`` is unknown.
-        NotImplementedError: Always, for known stub calls.
-    """
-    if call_name not in UNIMPLEMENTED_CALLS:
-        raise ValueError(
-            f"Unknown stub call '{call_name}'. "
-            f"Valid values: {', '.join(sorted(UNIMPLEMENTED_CALLS))}"
-        )
-    _ = payload
-    raise NotImplementedError(
-        f"Call '{call_name}' ({UNIMPLEMENTED_CALLS[call_name]}) is not yet implemented."
+    """Send a data request and normalize the response."""
+    LOGGER.debug("Calling data endpoint %s", path)
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path=path,
+        json=payload if payload is not None else {},
+        **kwargs,
     )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def export_data_as_csv(
+    as_of_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    nonprep_dfs: Optional[str] = None,
+    prep_dfs: Optional[str] = None,
+    start_date: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Export data as a CSV file.
+
+    Parameters
+    ----------
+    as_of_date : str, optional
+        As-of date for the export in ``YYYY-MM-DD`` format.
+    end_date : str, optional
+        End date of the export range in ``YYYY-MM-DD`` format.
+    nonprep_dfs : str, optional
+        Non-prepared data frames to include.
+    prep_dfs : str, optional
+        Prepared data frames to include.
+    start_date : str, optional
+        Start date of the export range in ``YYYY-MM-DD`` format.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response containing the CSV export data.
+    """
+    return _post(
+        "/api/v2/data/export_data_as_csv",
+        _build_payload(
+            as_of_date=as_of_date,
+            end_date=end_date,
+            nonprep_dfs=nonprep_dfs,
+            prep_dfs=prep_dfs,
+            start_date=start_date,
+        ),
+        **kwargs,
+    )
+
+
+def get_available_dashboards(
+    module: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve the list of dashboards available for a module.
+
+    Parameters
+    ----------
+    module : str, optional
+        Module name to filter available dashboards by.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response containing available dashboard definitions.
+    """
+    return _post(
+        "/api/v2/data/get_available_dashboards",
+        _build_payload(module=module),
+        **kwargs,
+    )
+
+
 __all__ = [
-    "UNIMPLEMENTED_CALLS",
-    "list_unimplemented_calls",
-    "not_implemented_call",
+    "export_data_as_csv",
+    "get_available_dashboards",
 ]

@@ -10,6 +10,8 @@ This package provides:
 - Custom exceptions
 """
 
+from importlib.metadata import PackageNotFoundError, version
+
 from britecore_libraries.base_logger import SCLogger
 
 logger_class = SCLogger(
@@ -17,7 +19,10 @@ logger_class = SCLogger(
 )
 logger = logger_class.get_logger()
 
-__version__ = "1.0.0"
+try:
+    __version__ = version("britecore_libraries")
+except PackageNotFoundError:  # pragma: no cover
+    __version__ = "0.0.0"
 
 # Constants
 from britecore_libraries.constants import (
@@ -48,6 +53,12 @@ from britecore_libraries.validators import (
     normalize_business_name,
 )
 
+# API client helpers — exposed at package root for convenience
+from britecore_libraries.api.api_calls import (
+    get_api_client,
+    get_async_api_client,
+)
+
 __all__ = [
     # Models
     "BritecoreContact",
@@ -68,6 +79,9 @@ __all__ = [
     "DEFAULT_PHONE_TYPE",
     "COMMON_CITY_REPLACEMENT",
     "load_regexes",
+    # API client helpers
+    "get_api_client",
+    "get_async_api_client",
     # Version
     "__version__",
     "logger",

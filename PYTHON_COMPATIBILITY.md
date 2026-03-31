@@ -61,8 +61,8 @@ Starting from `1.0.0` the library follows **semantic versioning**:
 
 ### Deprecation policy
 
-1. A deprecation warning (`DeprecationWarning`) is emitted for at least **one
-   minor release** before removal.
+1. A deprecation warning (`DeprecationWarning`) is emitted for at least **two
+   minor releases** before removal for public API symbols.
 2. The deprecated symbol is removed in the next **major** release.
 3. The CHANGELOG documents every deprecation at introduction and removal.
 
@@ -89,12 +89,10 @@ The CI pipeline validates the following matrix:
 
 | Python | OS           | Auth mode  |
 |--------|--------------|------------|
-| 3.11   | Ubuntu 22.04 | API key    |
-| 3.11   | Ubuntu 22.04 | OAuth2     |
-| 3.12   | Ubuntu 22.04 | API key    |
-| 3.12   | Windows 2022 | API key    |
-| 3.13   | Ubuntu 22.04 | API key    |
-| 3.14   | Ubuntu 22.04 | API key    |
+| 3.11   | Ubuntu latest | API key    |
+| 3.12   | Ubuntu latest | API key    |
+| 3.13   | Ubuntu latest | API key    |
+| 3.14   | Ubuntu latest | API key    |
 
 ---
 

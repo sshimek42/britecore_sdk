@@ -76,6 +76,37 @@ class TestBritecoreExceptions:
         with pytest.raises(BritecoreError.ConflictingParameters):
             raise BritecoreError.ConflictingParameters("Multiple parameters specified")
 
+    @pytest.mark.unit
+    def test_all_sdk_exceptions_inherit_sdk_base(self):
+        """All exposed custom exceptions should inherit BritecoreError.Base."""
+        exception_types = (
+            BritecoreError.NoDataReturned,
+            BritecoreError.NoTokenReturned,
+            BritecoreError.InvalidPhoneNumber,
+            BritecoreError.InvalidEmailAddress,
+            BritecoreError.InvalidAddress,
+            BritecoreError.BritecoreKeyError,
+            BritecoreError.NoSiteError,
+            BritecoreError.MissingParameter,
+            BritecoreError.ConflictingParameters,
+            BritecoreError.AuthenticationError,
+            BritecoreError.RateLimitError,
+            BritecoreError.ServerError,
+            BritecoreError.ValidationError,
+            BritecoreError.NotFoundError,
+            BritecoreError.ConflictError,
+            BritecoreError.ConfigurationError,
+            BritecoreError.RequestTimeoutError,
+        )
+        for exc_type in exception_types:
+            assert issubclass(exc_type, BritecoreError.Base)
+
+    @pytest.mark.unit
+    def test_sdk_base_can_catch_specific_exceptions(self):
+        """Consumers should be able to catch all SDK exceptions via one base class."""
+        with pytest.raises(BritecoreError.Base):
+            raise BritecoreError.NotFoundError("not found")
+
 
 class TestDeprecationWarnings:
     """Tests for deprecation warnings."""
@@ -91,7 +122,8 @@ class TestDeprecationWarnings:
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             from britecore_libraries.classes import BritecoreContact  # noqa: F401
-            
+            assert w is not None
+
             # Check that a deprecation warning was raised
             assert len(w) >= 1
             assert issubclass(w[-1].category, DeprecationWarning)
@@ -104,7 +136,7 @@ class TestDeprecationWarnings:
         if "britecore_libraries.classes" in sys.modules:
             del sys.modules["britecore_libraries.classes"]
         
-        with warnings.catch_warnings():
+        with warnings.catch_warnings(record=True):
             warnings.simplefilter("ignore")
             
             from britecore_libraries.classes import (

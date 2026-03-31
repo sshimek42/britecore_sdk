@@ -1,42 +1,163 @@
-"""BriteCore nightly_jobs API stubs (generated from britecore_api.json).
-This module intentionally contains placeholders for API calls that are not yet
-implemented in the SDK. Use these stubs for discovery and planning; concrete
-request wrappers will be added in a future implementation phase.
+"""BriteCore v2 Nightly Jobs API endpoint wrappers.
+
+Provides:
+    process_auto_pays                               -- Process automatic payments for a date.
+    process_cancellation_pending_or_non_renewals    -- Process cancellation-pending or non-renewal policies.
+    process_non_pays_and_cancellations              -- Process non-pay and cancellation events.
+    process_renewals                                -- Process policy renewals for a date.
 """
-from typing import Any, Final
-# NOTE: Keys are planned wrapper function names; values are API endpoint paths.
-UNIMPLEMENTED_CALLS: Final[dict[str, str]] = {
-    "process_auto_pays": "/api/v2/nightly_jobs/process_auto_pays",
-    "process_cancellation_pending_or_non_renewals": "/api/v2/nightly_jobs/process_cancellation_pending_or_non_renewals",
-    "process_non_pays_and_cancellations": "/api/v2/nightly_jobs/process_non_pays_and_cancellations",
-    "process_renewals": "/api/v2/nightly_jobs/process_renewals",
-}
-def list_unimplemented_calls() -> dict[str, str]:
-    """Return a copy of the unimplemented call map for this API domain."""
-    return dict(UNIMPLEMENTED_CALLS)
-def not_implemented_call(
-    call_name: str,
-    payload: dict[str, Any] | None = None,
+from logging import Logger
+from typing import Any, Optional, Unpack, cast
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload, omitting keys whose value is ``None``."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: Optional[dict[str, Any]] = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Placeholder dispatcher for unimplemented calls in this module.
-    Parameters:
-        call_name: Planned wrapper function name from ``UNIMPLEMENTED_CALLS``.
-        payload: Optional future request body payload.
-    Raises:
-        ValueError: If ``call_name`` is unknown.
-        NotImplementedError: Always, for known stub calls.
-    """
-    if call_name not in UNIMPLEMENTED_CALLS:
-        raise ValueError(
-            f"Unknown stub call '{call_name}'. "
-            f"Valid values: {', '.join(sorted(UNIMPLEMENTED_CALLS))}"
-        )
-    _ = payload
-    raise NotImplementedError(
-        f"Call '{call_name}' ({UNIMPLEMENTED_CALLS[call_name]}) is not yet implemented."
+    """Send a nightly_jobs request and normalize the response."""
+    LOGGER.debug("Calling nightly_jobs endpoint %s", path)
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path=path,
+        json=payload if payload is not None else {},
+        **kwargs,
     )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def process_auto_pays(
+    on_date: Optional[str] = None,
+    policy_number: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Process automatic payments for a given date.
+
+    Parameters
+    ----------
+    on_date : str, optional
+        Date on which to process auto-pays in ``YYYY-MM-DD`` format.
+    policy_number : str, optional
+        Limit processing to a specific policy number.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response indicating the outcome.
+    """
+    return _post(
+        "/api/v2/nightly_jobs/process_auto_pays",
+        _build_payload(on_date=on_date, policy_number=policy_number),
+        **kwargs,
+    )
+
+
+def process_cancellation_pending_or_non_renewals(
+    on_date: Optional[str] = None,
+    policy_number: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Process cancellation-pending or non-renewal policies for a date.
+
+    Parameters
+    ----------
+    on_date : str, optional
+        Date on which to run the job in ``YYYY-MM-DD`` format.
+    policy_number : str, optional
+        Limit processing to a specific policy number.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response indicating the outcome.
+    """
+    return _post(
+        "/api/v2/nightly_jobs/process_cancellation_pending_or_non_renewals",
+        _build_payload(on_date=on_date, policy_number=policy_number),
+        **kwargs,
+    )
+
+
+def process_non_pays_and_cancellations(
+    on_date: Optional[str] = None,
+    policy_number: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Process non-pay events and policy cancellations for a date.
+
+    Parameters
+    ----------
+    on_date : str, optional
+        Date on which to run the job in ``YYYY-MM-DD`` format.
+    policy_number : str, optional
+        Limit processing to a specific policy number.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response indicating the outcome.
+    """
+    return _post(
+        "/api/v2/nightly_jobs/process_non_pays_and_cancellations",
+        _build_payload(on_date=on_date, policy_number=policy_number),
+        **kwargs,
+    )
+
+
+def process_renewals(
+    policy_number: Optional[str] = None,
+    renew_date: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Process policy renewals for a given renewal date.
+
+    Parameters
+    ----------
+    policy_number : str, optional
+        Limit processing to a specific policy number.
+    renew_date : str, optional
+        Renewal date to process in ``YYYY-MM-DD`` format.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response indicating the outcome.
+    """
+    return _post(
+        "/api/v2/nightly_jobs/process_renewals",
+        _build_payload(policy_number=policy_number, renew_date=renew_date),
+        **kwargs,
+    )
+
+
 __all__ = [
-    "UNIMPLEMENTED_CALLS",
-    "list_unimplemented_calls",
-    "not_implemented_call",
+    "process_auto_pays",
+    "process_cancellation_pending_or_non_renewals",
+    "process_non_pays_and_cancellations",
+    "process_renewals",
 ]

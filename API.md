@@ -11,47 +11,26 @@
 
 This document provides reference for all implemented API endpoints.
 
-Coverage changes over time. Treat this page as a usage reference and verify module-level coverage against:
+All 374 endpoints in `britecore_api.json` are now fully implemented across
+30 domain modules in `src/britecore_libraries/api/api_calls/v2/`.
 
-- `britecore_api.json`
-- `src/britecore_libraries/api/api_calls/v2/`
-- `UNIMPLEMENTED_API_STUBS.md` (living backlog of generated stubs for future work)
-- `API_COVERAGE_ANALYSIS.md` (historical planning snapshot)
-
-For async cache-specific usage and controls, see [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+See also:
+- [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for per-module endpoint counts
+- [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
+- [CHANGELOG.md](CHANGELOG.md) for what changed in each release
 
 ---
 
-## Using Unimplemented Stubs (Phased Rollout)
-
-For API domains that are not fully implemented yet, the SDK now includes
-generated stub modules in `src/britecore_libraries/api/api_calls/v2/`.
-
-Each stub module exposes:
-
-- `UNIMPLEMENTED_CALLS`: mapping of planned function names to endpoint paths
-- `list_unimplemented_calls()`: convenience accessor for the mapping
-- `not_implemented_call(...)`: explicit placeholder that raises `NotImplementedError`
-
-Use this pattern in orchestration code when you want clear fail-fast behavior
-for not-yet-implemented domains:
+## Quick import pattern
 
 ```python
-from britecore_libraries.api.api_calls.v2 import payments
+# Import the domain module (recommended)
+from britecore_libraries.api.api_calls.v2 import policies, contacts, quotes
 
-# Discover planned calls for this domain
-planned = payments.list_unimplemented_calls()
-print(f"{len(planned)} planned payment calls")
-
-# Raise a clear placeholder error for a future call
-try:
-    payments.not_implemented_call("add_payment_method", {"contact_id": "c123"})
-except NotImplementedError as exc:
-    print(exc)
+result = policies.retrieve_policy(policy_number="POL-001")
 ```
 
-For the full current backlog (all missing domains and planned calls), see
-`UNIMPLEMENTED_API_STUBS.md`.
+All 30 domain modules are importable from `britecore_libraries.api.api_calls.v2`.
 
 ---
 
@@ -380,15 +359,118 @@ inspections = get_inspections(policy_id="uuid")
 
 ---
 
+### 12. Accounting ✅
+
+**File:** `api/api_calls/v2/accounting.py`
+
+```python
+from britecore_libraries.api.api_calls.v2.accounting import (
+    get_accounting_deliverable,
+    get_invoices,
+    run_rescind_underwriting_cancellation_pending_logic,
+)
+
+deliverable = get_accounting_deliverable(
+    account_history_id="uuid",
+    deliverable_date="2026-03-31",
+)
+
+invoices = get_invoices(policy_id="uuid", page_number=1, page_size=25)
+
+result = run_rescind_underwriting_cancellation_pending_logic(
+    revision_id="uuid",
+    old_status="cancellation_pending",
+)
+```
+
+---
+
+### 13. Billing ✅
+
+**File:** `api/api_calls/v2/billing.py`
+
+```python
+from britecore_libraries.api.api_calls.v2.billing import (
+    get_installments_preview,
+    get_installments_preview_mid_term,
+    rating_factors,
+)
+
+preview = get_installments_preview(
+    billing_schedule_ids=["schedule_uuid"],
+    effective_date="2026-04-01",
+    premium=125.50,
+    payment_method="credit_card",
+)
+
+mid_term = get_installments_preview_mid_term(
+    billing_schedule_ids=["schedule_uuid"],
+    policy_id="policy_uuid",
+    revision_effective_date="2026-05-01",
+    prorated_premium=42.00,
+)
+
+factors = rating_factors(policy_id="policy_uuid")
+```
+
+---
+
+### 14. Payments ✅
+
+**File:** `api/api_calls/v2/payments.py`
+
+```python
+from britecore_libraries.api.api_calls.v2.payments import (
+    add_payment_method,
+    make_payment_by_invoice_or_policy,
+    retrieve_payment_methods,
+)
+
+method = add_payment_method(
+    contact_id="contact_uuid",
+    type="card",
+    card_type="visa",
+    card_number="4111111111111111",
+    card_expires_mm="04",
+    card_expires_yy="2030",
+)
+
+payment = make_payment_by_invoice_or_policy(
+    invoice_number="INV-1001",
+    amount=100.00,
+    payment_date="2026-04-01",
+)
+
+methods = retrieve_payment_methods(contact_ids=["contact_uuid"])
+```
+
+---
+
+### 15. Commissions ✅
+
+**File:** `api/api_calls/v2/commissions.py`
+
+```python
+from britecore_libraries.api.api_calls.v2.commissions import (
+    get_commission_payees,
+    save_payment,
+    update_commission_payments_complete,
+)
+
+payees = get_commission_payees()
+
+payment = save_payment(amount=1250.00, agency_number="AGENCY-001")
+
+complete = update_commission_payments_complete(
+    commission_payment_ids=["commission_payment_uuid"],
+)
+```
+
+---
+
 ## Not Yet Implemented
 
 ### High Priority
-
-- ❌ **payments.py** - Payment processing [CRITICAL]
-- ❌ **billing.py** - Billing management
-- ❌ **commissions.py** - Commission tracking
-
-### Medium Priority
 
 - ❌ **settings.py**
 - ❌ **vendors.py**
@@ -399,9 +481,8 @@ inspections = get_inspections(policy_id="uuid")
 - ❌ **intacct.py**
 - ❌ **signatures.py**
 
-### Low Priority
+### Medium Priority
 
-- ❌ **accounting.py**
 - ❌ **custom_ui.py**
 - ❌ **notifications.py**
 - ❌ **search.py**
@@ -423,10 +504,18 @@ from urllib3 import Timeout, Retry
 
 endpoint(
     # ... required and optional endpoint-specific parameters ...
-    request_timeout=Timeout(total=5),      # Custom timeout
+    request_timeout=Timeout(total=5),      # Custom timeout (seconds)
     request_retries=Retry(total=3),        # Custom retries
 )
 ```
+
+Retry defaults from `BritecoreAPIClient.init_client()` are:
+
+- `web_timeout`: `5` seconds
+- `web_timeout_long`: `50` seconds
+- `web_retry`: `5` retries with exponential backoff (`0.5` factor)
+
+`request_retries` should be used for idempotent/retry-safe operations only.
 
 ---
 
@@ -438,9 +527,13 @@ from britecore_libraries.api.api_calls.v2 import policies
 
 try:
     policy = policies.retrieve_policy(policy_number="INVALID")
-except BritecoreError.NoDataReturned as e:
+except BritecoreError.NotFoundError as e:
     print(f"Not found: {e}")
-except BritecoreError as e:
+except BritecoreError.AuthenticationError as e:
+    print(f"Auth error: {e}")
+except BritecoreError.RateLimitError as e:
+    print(f"Rate limit hit: {e}")
+except BritecoreError.Base as e:
     print(f"API Error: {e}")
 except Exception as e:
     print(f"Unexpected error: {e}")
@@ -463,9 +556,9 @@ for attempt in range(max_retries):
     try:
         policy = policies.retrieve_policy(policy_number="POL001")
         break
-    except BritecoreError.NoDataReturned as e:
+    except BritecoreError.RateLimitError as e:
         if attempt < max_retries - 1:
-            time.sleep(retry_delay)
+            time.sleep(e.retry_after or retry_delay)
         else:
             raise
 ```
