@@ -1,3 +1,12 @@
+"""BriteCore v2 Contacts API endpoint wrappers.
+
+Provides:
+    new_contact            -- Create a new individual or organization contact.
+    add_contact_to_role    -- Assign an existing contact to a named role.
+    update_contact         -- Update fields on an existing contact record.
+    get_contact            -- Retrieve a contact by its unique ID.
+    find_contact_by_params -- Search for contacts by name, role, or date of birth.
+"""
 from logging import Logger
 from typing import Any, Literal, Optional, Unpack
 

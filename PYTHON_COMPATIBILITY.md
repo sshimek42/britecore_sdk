@@ -1,0 +1,123 @@
+# Python Compatibility Matrix
+
+*Last updated: March 31, 2026*
+*Document type: Living compatibility policy*
+
+**BriteCore Libraries** — supported Python versions and compatibility commitments.
+
+---
+
+## Supported Python Versions
+
+| Python Version | Status        | Notes                                      |
+|----------------|---------------|--------------------------------------------|
+| 3.11           | ✅ Supported  | Minimum supported version                  |
+| 3.12           | ✅ Supported  | Recommended for most production deployments|
+| 3.13           | ✅ Supported  | —                                          |
+| 3.14           | ✅ Supported  | Original development target; fully tested  |
+| 3.10 and below | ❌ Unsupported| Uses `X | Y` union types (PEP 604); will not parse |
+
+### Why ≥3.11?
+
+The codebase uses several Python 3.10+ features:
+
+- **`X | Y` union type syntax** (PEP 604) — e.g. `str | None` in signatures
+- **`match`/`case`** is not used but structural pattern matching is available
+- **`TypedDict` with `NotRequired`** (PEP 655) — requires 3.11 for full runtime
+  support
+
+Syntax compatibility with 3.10 is marginal; 3.11 is the safe floor because
+`tomllib` (used by tooling), `Self`, and `LiteralString` are stdlib on 3.11.
+
+---
+
+## BriteCore API Version Compatibility
+
+| Library Version | BriteCore API | Notes                              |
+|-----------------|---------------|------------------------------------|
+| 1.0.0           | v2 (current)  | All v2 endpoints supported         |
+| 1.0.0           | v1 (legacy)   | contacts, printing — legacy only   |
+| 0.x             | v1 + v2       | Pre-release; no stability guarantee|
+
+---
+
+## Stability Commitment (≥1.0.0)
+
+Starting from `1.0.0` the library follows **semantic versioning**:
+
+| Change Type              | Version Bump | Example                                  |
+|--------------------------|--------------|------------------------------------------|
+| Bug fixes, doc updates   | Patch (x.x.**Z**) | 1.0.0 → 1.0.1                      |
+| New backwards-compatible features | Minor (x.**Y**.0) | 1.0.0 → 1.1.0          |
+| Breaking public API changes | Major (**X**.0.0) | 1.0.0 → 2.0.0             |
+
+### What counts as "public API"?
+
+- All symbols exported in `britecore_libraries.__all__`
+- All functions in `api/api_calls/v2/` with documented signatures
+- `BritecoreAPIClient.do_request()`, `.process_result()`, `.init_client()`
+- `BritecoreError` exception hierarchy
+- `RequestParameters` TypedDict
+
+### Deprecation policy
+
+1. A deprecation warning (`DeprecationWarning`) is emitted for at least **one
+   minor release** before removal.
+2. The deprecated symbol is removed in the next **major** release.
+3. The CHANGELOG documents every deprecation at introduction and removal.
+
+---
+
+## Dependency Version Policy
+
+Runtime dependencies are pinned with `~=` (compatible-release) constraints:
+
+```toml
+urllib3~=2.6          # HTTP transport
+dynaconf~=3.2         # Configuration management
+pandas~=3.0           # Data utilities
+```
+
+This means patch-level updates are picked up automatically; minor upgrades
+require an explicit update to `pyproject.toml`.
+
+---
+
+## Testing Matrix
+
+The CI pipeline validates the following matrix:
+
+| Python | OS           | Auth mode  |
+|--------|--------------|------------|
+| 3.11   | Ubuntu 22.04 | API key    |
+| 3.11   | Ubuntu 22.04 | OAuth2     |
+| 3.12   | Ubuntu 22.04 | API key    |
+| 3.12   | Windows 2022 | API key    |
+| 3.13   | Ubuntu 22.04 | API key    |
+| 3.14   | Ubuntu 22.04 | API key    |
+
+---
+
+## Known Limitations by Python Version
+
+### Python 3.11
+
+- `tomllib` is stdlib; no `tomli` backport needed.
+- `Self` type (`typing.Self`) available.
+- `LiteralString` available.
+
+### Python 3.12+
+
+- `@override` decorator available (`typing.override`) — not yet adopted in this
+  codebase but safe to use.
+- `sys.monitoring` instrumentation available for deeper tracing.
+
+### Python 3.14
+
+- Original development target. All type annotations validated.
+- `annotationlib` changes do not affect runtime behaviour of this library.
+
+---
+
+*Last updated: 2026-03-31*
+

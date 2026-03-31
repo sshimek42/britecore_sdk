@@ -25,7 +25,7 @@ class BritecoreError:
 
         def __str__(self) -> str:
             return (
-                f"BriteCore was unable to return any data - {self.message}\n"
+                f"No data returned - {self.message}\n"
                 f"Request: {self.request}\n"
                 f"HTTP Error: {self.http_error}"
             )
@@ -121,3 +121,77 @@ class BritecoreError:
 
         def __str__(self) -> str:
             return self.message
+
+    class AuthenticationError(Exception):
+        """Raised when API authentication fails (invalid key, expired token, 401/403)."""
+
+        def __init__(
+            self,
+            message: str,
+            http_status: int | None = None,
+        ) -> None:
+            self.message = message
+            self.http_status = http_status
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            status_info = f" (HTTP {self.http_status})" if self.http_status else ""
+            return f"BriteCore authentication failed{status_info} - {self.message}"
+
+    class RateLimitError(Exception):
+        """Raised when the API rate limit is exceeded (HTTP 429)."""
+
+        def __init__(
+            self,
+            message: str,
+            retry_after: int | None = None,
+        ) -> None:
+            self.message = message
+            self.retry_after = retry_after
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            retry_info = f" Retry after {self.retry_after}s." if self.retry_after else ""
+            return f"BriteCore rate limit exceeded - {self.message}.{retry_info}"
+
+    class ServerError(Exception):
+        """Raised when the API returns a 5xx server error."""
+
+        def __init__(
+            self,
+            message: str,
+            http_status: int | None = None,
+        ) -> None:
+            self.message = message
+            self.http_status = http_status
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            status_info = f" (HTTP {self.http_status})" if self.http_status else ""
+            return f"BriteCore server error{status_info} - {self.message}"
+
+    class ConfigurationError(Exception):
+        """Raised when the client is misconfigured (missing base_url, api_key, etc.)."""
+
+        def __init__(self, message: str) -> None:
+            self.message = message
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            return f"BriteCore configuration error - {self.message}"
+
+    class RequestTimeoutError(Exception):
+        """Raised when an API request exceeds its configured timeout."""
+
+        def __init__(
+            self,
+            message: str,
+            timeout_seconds: int | float | None = None,
+        ) -> None:
+            self.message = message
+            self.timeout_seconds = timeout_seconds
+            super().__init__(self.message)
+
+        def __str__(self) -> str:
+            timeout_info = f" (timeout={self.timeout_seconds}s)" if self.timeout_seconds else ""
+            return f"BriteCore request timed out{timeout_info} - {self.message}"

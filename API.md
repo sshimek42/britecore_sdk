@@ -1,5 +1,8 @@
 # API Reference
 
+*Last updated: March 31, 2026*
+*Document type: Living reference guide*
+
 **BriteCore Libraries** - Complete API endpoint documentation
 
 ---
@@ -12,9 +15,43 @@ Coverage changes over time. Treat this page as a usage reference and verify modu
 
 - `britecore_api.json`
 - `src/britecore_libraries/api/api_calls/v2/`
-- `API_COVERAGE_ANALYSIS.md`
+- `UNIMPLEMENTED_API_STUBS.md` (living backlog of generated stubs for future work)
+- `API_COVERAGE_ANALYSIS.md` (historical planning snapshot)
 
 For async cache-specific usage and controls, see [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+
+---
+
+## Using Unimplemented Stubs (Phased Rollout)
+
+For API domains that are not fully implemented yet, the SDK now includes
+generated stub modules in `src/britecore_libraries/api/api_calls/v2/`.
+
+Each stub module exposes:
+
+- `UNIMPLEMENTED_CALLS`: mapping of planned function names to endpoint paths
+- `list_unimplemented_calls()`: convenience accessor for the mapping
+- `not_implemented_call(...)`: explicit placeholder that raises `NotImplementedError`
+
+Use this pattern in orchestration code when you want clear fail-fast behavior
+for not-yet-implemented domains:
+
+```python
+from britecore_libraries.api.api_calls.v2 import payments
+
+# Discover planned calls for this domain
+planned = payments.list_unimplemented_calls()
+print(f"{len(planned)} planned payment calls")
+
+# Raise a clear placeholder error for a future call
+try:
+    payments.not_implemented_call("add_payment_method", {"contact_id": "c123"})
+except NotImplementedError as exc:
+    print(exc)
+```
+
+For the full current backlog (all missing domains and planned calls), see
+`UNIMPLEMENTED_API_STUBS.md`.
 
 ---
 

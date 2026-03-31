@@ -1,5 +1,8 @@
 # Contributing
 
+*Last updated: March 31, 2026*
+*Document type: Living contributor guide*
+
 This guide covers the project workflow for contributing changes safely and consistently.
 
 ## Start here

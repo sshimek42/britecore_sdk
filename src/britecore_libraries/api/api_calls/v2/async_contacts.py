@@ -1,3 +1,16 @@
+"""BriteCore v2 Async Contacts API endpoint wrappers.
+
+Asynchronous (cached) counterparts to the synchronous wrappers in contacts.py.
+Uses AsyncBritecoreAPIClient for non-blocking, TTL-cached HTTP requests.
+
+Provides:
+    anew_contact            -- Async create a new contact.
+    aadd_contact_to_role    -- Async assign a contact to a named role.
+    aupdate_contact         -- Async update contact fields.
+    aget_contact            -- Async retrieve a contact by ID (cached by default).
+    afind_contact_by_params -- Async search for contacts.
+"""
+
 from logging import Logger
 from typing import Any, Literal, Optional, Unpack
 

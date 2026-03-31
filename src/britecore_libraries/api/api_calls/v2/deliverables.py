@@ -1,3 +1,10 @@
+"""BriteCore v2 Deliverables API endpoint wrappers.
+
+Provides:
+    list_attachments   -- List file attachments filtered by policy, contact, or revision.
+    get_attachment     -- Retrieve a single attachment by file ID.
+    get_edeliverables  -- Retrieve e-deliverables within a date range.
+"""
 from logging import Logger
 from typing import Any, Optional, Unpack
 
@@ -51,7 +58,7 @@ def list_attachments(
     Raises:
         BritecoreError.MissingParameter: If none of policy_id, contact_id, or revision_id are provided.
     """
-    local_env: dict[str, Optional[str]] = {**locals}
+    local_env: dict[str, Optional[str]] = {**locals()}
     if not policy_id and not contact_id and not revision_id:
         BritecoreError.MissingParameter("policy_id, contact_id or revision_id required")
 

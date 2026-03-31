@@ -5,7 +5,10 @@ from typing import Any, Pattern
 
 from britecore_libraries import logger
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
+from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+
+
 
 LOGGER = logger
 
@@ -69,9 +72,15 @@ class EmailValidator:
 
             normalized = self.normalize_email(email_address)
 
-            # Only add if email is valid
-            if normalized:
-                email_list.append(
+            # Raise if email is present but invalid
+            if not normalized:
+                if email_address:
+                    raise BritecoreError.InvalidEmailAddress(
+                        f"Invalid email address: {email_address}"
+                    )
+                continue
+
+            email_list.append(
                     {
                         "email": normalized,
                         "type": email_type,

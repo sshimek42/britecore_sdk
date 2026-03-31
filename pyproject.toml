@@ -1,7 +1,7 @@
 [project]
 name = "britecore_libraries"
-version = "0.1.0"
-requires-python = ">=3.14"
+version = "1.0.0"
+requires-python = ">=3.11"
 dependencies = [
     "dynaconf~=3.2.13",
     "pandas~=3.0.1",
@@ -15,15 +15,16 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4.0",
-    "pytest-mock>=3.11.1",
-    "pytest-cov>=4.1.0",
-    "python-dotenv>=1.0.0",
+    "pytest>=9.0.2",
+    "pytest-mock>=3.15.1",
+    "pytest-cov>=7.1.0",
+    "python-dotenv>=1.2.2",
+    "black>=26.3.1"
 ]
 docs = [
-    "sphinx>=8.2.0",
-    "myst-parser>=4.0.0",
-    "sphinx-rtd-theme>=3.0.0",
+    "sphinx>=9.1.0",
+    "myst-parser>=5.0.0",
+    "sphinx-rtd-theme>=3.1.0",
 ]
 
 [tool.pytest.ini_options]
@@ -34,7 +35,8 @@ python_functions = ["test_*"]
 addopts = "--cov=src/britecore_libraries --cov-report=html --cov-report=term-missing --strict-markers"
 markers = [
     "unit: unit tests",
-    "integration: integration tests",
+    "integration: integration tests (mocked transport)",
+    "sandbox: live sandbox tests (requires BRITECORE_INTEGRATION_TESTS=true)",
     "slow: slow tests",
 ]
 

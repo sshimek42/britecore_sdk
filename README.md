@@ -1,5 +1,8 @@
 # britecore_libraries
 
+*Last updated: March 31, 2026*
+*Document type: Living guide*
+
 [![Documentation Status](https://readthedocs.org/projects/britecore-libraries/badge/?version=latest)](https://britecore-libraries.readthedocs.io/en/latest/)
 
 Python utilities and API wrappers for working with BriteCore services.
@@ -15,10 +18,30 @@ Key docs:
 - [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
 - [API.md](API.md) for endpoint reference and coverage details
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
+- [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
+- [UNIMPLEMENTED_API_STUBS.md](UNIMPLEMENTED_API_STUBS.md) for the current stub backlog of unimplemented API domains/calls
 - [ARCHITECTURE.md](ARCHITECTURE.md) for component-level design
 - [CONTRIBUTING.md](CONTRIBUTING.md) for contribution workflow
 - [AGENTS.md](AGENTS.md) for repository-specific coding guidance
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
+
+## Documentation map
+
+Current guidance (living docs):
+
+- [GETTING_STARTED.md](GETTING_STARTED.md)
+- [API.md](API.md)
+- [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md)
+- [UNIMPLEMENTED_API_STUBS.md](UNIMPLEMENTED_API_STUBS.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+
+Historical and status snapshots:
+
+- [production_grade_assessment.md](production_grade_assessment.md) for the dated production-readiness assessment and tier roadmap snapshot
+- [TIER1_COMPLETION.md](TIER1_COMPLETION.md) for the critical-fixes completion snapshot
+- [TIER3_COMPLETION.md](TIER3_COMPLETION.md) for the production-polish completion snapshot
 
 ## What this package provides
 
@@ -32,7 +55,13 @@ Key docs:
 
 Requirements:
 
-- Python `>=3.14` (from `pyproject.toml`)
+- Python `>=3.11` (from `pyproject.toml`)
+
+Current package status:
+
+- Version: `1.0.0`
+- Stability commitment: semantic versioning from `1.0.0` onward
+- Recommended starting point for compatibility details: `PYTHON_COMPATIBILITY.md`
 
 Install:
 

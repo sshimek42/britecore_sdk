@@ -4,6 +4,7 @@ import re
 from typing import Optional, Pattern
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
+from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 
 # Lazy-loaded regex patterns
@@ -70,9 +71,13 @@ class PhoneValidator:
 
             normalized = self.normalize_phone(phone_number)
 
-            # Only add if normalization succeeded
-            if normalized:
-                phone_number_list.append(
+            # Raise if phone is present but invalid
+            if not normalized:
+                raise BritecoreError.InvalidPhoneNumber(
+                    f"Invalid phone number: {phone_number}"
+                )
+
+            phone_number_list.append(
                     {
                         "phone": normalized,
                         "type": phone_type,

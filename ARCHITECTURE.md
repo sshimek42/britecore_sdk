@@ -1,5 +1,8 @@
 # System Architecture
 
+*Last updated: March 31, 2026*
+*Document type: Living design reference*
+
 **BriteCore Libraries** - Technical design and component overview
 
 ---
