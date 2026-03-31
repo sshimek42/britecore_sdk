@@ -42,6 +42,22 @@ guidance, examples, and broader endpoint notes, see the repository-level
 
 ## v2 synchronous endpoint modules
 
+### Accounting
+
+```{automodule} britecore_libraries.api.api_calls.v2.accounting
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
+### Billing
+
+```{automodule} britecore_libraries.api.api_calls.v2.billing
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
 ### Quotes
 
 ```{automodule} britecore_libraries.api.api_calls.v2.quotes
@@ -69,6 +85,14 @@ guidance, examples, and broader endpoint notes, see the repository-level
 ### Claims
 
 ```{automodule} britecore_libraries.api.api_calls.v2.claims
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
+### Commissions
+
+```{automodule} britecore_libraries.api.api_calls.v2.commissions
 :members:
 :undoc-members:
 :show-inheritance:
@@ -109,6 +133,14 @@ guidance, examples, and broader endpoint notes, see the repository-level
 ### Notes
 
 ```{automodule} britecore_libraries.api.api_calls.v2.notes
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
+### Payments
+
+```{automodule} britecore_libraries.api.api_calls.v2.payments
 :members:
 :undoc-members:
 :show-inheritance:

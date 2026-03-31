@@ -1,41 +1,188 @@
-"""BriteCore accounting API stubs (generated from britecore_api.json).
-This module intentionally contains placeholders for API calls that are not yet
-implemented in the SDK. Use these stubs for discovery and planning; concrete
-request wrappers will be added in a future implementation phase.
+"""BriteCore v2 Accounting API endpoint wrappers.
+
+Provides:
+    get_accounting_deliverable                            -- Retrieve values needed to generate account-history deliverables.
+    get_invoices                                          -- Retrieve a paginated list of invoices, optionally filtered by policy and date range.
+    run_rescind_underwriting_cancellation_pending_logic   -- Run the rescind underwriting cancellation-pending logic for a revision.
 """
-from typing import Any, Final
-# NOTE: Keys are planned wrapper function names; values are API endpoint paths.
-UNIMPLEMENTED_CALLS: Final[dict[str, str]] = {
-    "get_accounting_deliverable": "/api/v2/accounting/get_accounting_deliverable",
-    "get_invoices": "/api/v2/accounting/get_invoices",
-    "run_rescind_underwriting_cancellation_pending_logic": "/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic",
-}
-def list_unimplemented_calls() -> dict[str, str]:
-    """Return a copy of the unimplemented call map for this API domain."""
-    return dict(UNIMPLEMENTED_CALLS)
-def not_implemented_call(
-    call_name: str,
-    payload: dict[str, Any] | None = None,
+from logging import Logger
+from typing import Any, Optional, Unpack, cast
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def get_accounting_deliverable(
+    account_history_id: str,
+    deliverable_date: str,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Placeholder dispatcher for unimplemented calls in this module.
-    Parameters:
-        call_name: Planned wrapper function name from ``UNIMPLEMENTED_CALLS``.
-        payload: Optional future request body payload.
-    Raises:
-        ValueError: If ``call_name`` is unknown.
-        NotImplementedError: Always, for known stub calls.
+    """Retrieve all values necessary to generate deliverables related to
+    the account history in a policy term.
+
+    Parameters
+    ----------
+    account_history_id : str
+        Account history ID from which values are to be filtered.
+    deliverable_date : str
+        Process date of the deliverable in the format ``YYYY-MM-DD``.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides forwarded to the
+        underlying HTTP request.
+
+    Returns
+    -------
+    Any
+        Processed API response.  On success the ``data`` key contains the
+        queried values for the deliverable.
     """
-    if call_name not in UNIMPLEMENTED_CALLS:
-        raise ValueError(
-            f"Unknown stub call '{call_name}'. "
-            f"Valid values: {', '.join(sorted(UNIMPLEMENTED_CALLS))}"
-        )
-    _ = payload
-    raise NotImplementedError(
-        f"Call '{call_name}' ({UNIMPLEMENTED_CALLS[call_name]}) is not yet implemented."
+    LOGGER.debug("Getting accounting deliverable for account_history_id=%s", account_history_id)
+
+    request_json: dict[str, str] = {
+        "account_history_id": account_history_id,
+        "deliverable_date": deliverable_date,
+    }
+
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path="/api/v2/accounting/get_accounting_deliverable",
+        json=request_json,
+        **kwargs,
     )
+
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def get_invoices(
+    policy_id: Optional[str] = None,
+    bill_from_date: Optional[str] = None,
+    bill_to_date: Optional[str] = None,
+    due_from_date: Optional[str] = None,
+    due_to_date: Optional[str] = None,
+    sorting_order: Optional[str] = None,
+    page_number: Optional[int] = None,
+    page_size: Optional[int] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve a paginated list of invoices related to a policy.
+
+    Parameters
+    ----------
+    policy_id : str, optional
+        Filter invoices by policy UUID.
+    bill_from_date : str, optional
+        Filter invoices with bill date > ``bill_from_date`` (``YYYY-MM-DD``).
+    bill_to_date : str, optional
+        Filter invoices with bill date < ``bill_to_date`` (``YYYY-MM-DD``).
+    due_from_date : str, optional
+        Filter invoices with due date > ``due_from_date`` (``YYYY-MM-DD``).
+    due_to_date : str, optional
+        Filter invoices with due date < ``due_to_date`` (``YYYY-MM-DD``).
+    sorting_order : str, optional
+        Ascending/descending order.  Choices: ``{'asc', 'desc'}``.
+    page_number : int, optional
+        Page number, starting from 1.
+    page_size : int, optional
+        Page size; must be > 0.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides forwarded to the
+        underlying HTTP request.
+
+    Returns
+    -------
+    Any
+        Processed API response.  On success the ``data`` key contains the
+        paginated invoice list along with filter and pagination metadata.
+    """
+    LOGGER.debug("Getting invoices for policy_id=%s", policy_id)
+
+    request_json: dict[str, Any] = {}
+
+    if policy_id is not None:
+        request_json["policy_id"] = policy_id
+    if bill_from_date is not None:
+        request_json["bill_from_date"] = bill_from_date
+    if bill_to_date is not None:
+        request_json["bill_to_date"] = bill_to_date
+    if due_from_date is not None:
+        request_json["due_from_date"] = due_from_date
+    if due_to_date is not None:
+        request_json["due_to_date"] = due_to_date
+    if sorting_order is not None:
+        request_json["sorting_order"] = sorting_order
+    if page_number is not None:
+        request_json["page_number"] = page_number
+    if page_size is not None:
+        request_json["page_size"] = page_size
+
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path="/api/v2/accounting/get_invoices",
+        json=request_json,
+        **kwargs,
+    )
+
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def run_rescind_underwriting_cancellation_pending_logic(
+    revision_id: str,
+    old_status: str,
+    date_cursor: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Run the rescind-underwriting cancellation-pending logic for a revision.
+
+    Parameters
+    ----------
+    revision_id : str
+        UUID of the revision to process.
+    old_status : str
+        The previous status of the revision before the cancellation-pending
+        state was entered.
+    date_cursor : str, optional
+        Optional date cursor used by the underlying logic (``YYYY-MM-DD``).
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides forwarded to the
+        underlying HTTP request.
+
+    Returns
+    -------
+    Any
+        Processed API response indicating success or failure.
+    """
+    LOGGER.debug(
+        "Running rescind underwriting cancellation pending logic for revision_id=%s",
+        revision_id,
+    )
+
+    request_json: dict[str, Any] = {
+        "revision_id": revision_id,
+        "old_status": old_status,
+    }
+
+    if date_cursor is not None:
+        request_json["date_cursor"] = date_cursor
+
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path="/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic",
+        json=request_json,
+        **kwargs,
+    )
+
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
 __all__ = [
-    "UNIMPLEMENTED_CALLS",
-    "list_unimplemented_calls",
-    "not_implemented_call",
+    "get_accounting_deliverable",
+    "get_invoices",
+    "run_rescind_underwriting_cancellation_pending_logic",
 ]

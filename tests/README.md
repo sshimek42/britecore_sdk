@@ -10,6 +10,7 @@ tests/
 ├── unit/                          # Unit tests
 │   ├── test_config.py             # Configuration module tests
 │   ├── test_api_client.py         # API client and lazy init tests
+│   ├── test_core_client_coverage.py # Core do_request/process_result error paths
 │   ├── test_oauth_token_manager.py # OAuth token tests
 │   ├── test_maps.py               # Regex map tests
 │   ├── test_validators.py         # Validator tests
@@ -48,6 +49,12 @@ pytest tests/ -v
 
 ### Specific Test File
 ```powershell
+pytest tests/unit/test_api_client.py -v
+```
+
+### Minimum Validation Set (core SDK changes)
+```powershell
+pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 pytest tests/unit/test_api_client.py -v
 ```
 
@@ -97,7 +104,14 @@ pip install -e ".[dev]"
 
 ## CI Integration
 
-Tests are automatically run in CI/CD pipelines. Coverage reports are generated and can be viewed in `htmlcov/index.html`.
+Tests are automatically run in CI/CD pipelines together with:
+
+- `ruff` lint checks
+- `black --check` formatting checks
+- `mypy` checks for core client and key endpoint modules
+- unit-test coverage threshold enforcement
+
+Coverage reports are generated and can be viewed in `htmlcov/index.html`.
 
 ## Markers
 

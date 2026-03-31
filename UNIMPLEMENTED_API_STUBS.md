@@ -3,20 +3,21 @@
 *Last updated: March 31, 2026*
 *Document type: Living implementation backlog*
 
-This document tracks API domains and calls present in `britecore_api.json`
-that do not yet have implemented v2 wrappers in the SDK.
+## Status: Complete ✅
 
-Generated stubs were added under `src/britecore_libraries/api/api_calls/v2/`
-for each missing domain so the backlog is explicit and importable.
+All API domains previously tracked as stubs have been fully implemented
+as of **March 31, 2026**. There are currently **no unimplemented endpoints**.
 
-## Missing domains summary
+For the full list of implemented modules and endpoint counts, see
+[`API_COVERAGE_ANALYSIS.md`](API_COVERAGE_ANALYSIS.md).
 
-| Domain | Stub file | Unimplemented calls |
+---
+
+## Previously unimplemented domains (now complete)
+
+| Domain | Module file | Calls implemented |
 |---|---|---:|
-| `accounting` | `src/britecore_libraries/api/api_calls/v2/accounting.py` | 3 |
 | `attachments` | `src/britecore_libraries/api/api_calls/v2/attachments.py` | 11 |
-| `billing` | `src/britecore_libraries/api/api_calls/v2/billing.py` | 4 |
-| `commissions` | `src/britecore_libraries/api/api_calls/v2/commissions.py` | 9 |
 | `custom_ui` | `src/britecore_libraries/api/api_calls/v2/custom_ui.py` | 4 |
 | `dashboards` | `src/britecore_libraries/api/api_calls/v2/dashboards.py` | 8 |
 | `data` | `src/britecore_libraries/api/api_calls/v2/data.py` | 2 |
@@ -24,7 +25,6 @@ for each missing domain so the backlog is explicit and importable.
 | `intacct` | `src/britecore_libraries/api/api_calls/v2/intacct.py` | 5 |
 | `nightly_jobs` | `src/britecore_libraries/api/api_calls/v2/nightly_jobs.py` | 4 |
 | `notifications` | `src/britecore_libraries/api/api_calls/v2/notifications.py` | 2 |
-| `payments` | `src/britecore_libraries/api/api_calls/v2/payments.py` | 29 |
 | `printing` | `src/britecore_libraries/api/api_calls/v2/printing.py` | 5 |
 | `return_premium` | `src/britecore_libraries/api/api_calls/v2/return_premium.py` | 1 |
 | `search` | `src/britecore_libraries/api/api_calls/v2/search.py` | 2 |
@@ -33,15 +33,9 @@ for each missing domain so the backlog is explicit and importable.
 | `uploads` | `src/britecore_libraries/api/api_calls/v2/uploads.py` | 1 |
 | `vendors` | `src/britecore_libraries/api/api_calls/v2/vendors.py` | 16 |
 
+
+
 ## Unimplemented calls by domain
-
-### `accounting`
-
-| Planned function | Method | Endpoint path |
-|---|---|---|
-| `get_accounting_deliverable` | `POST` | `/api/v2/accounting/get_accounting_deliverable` |
-| `get_invoices` | `POST` | `/api/v2/accounting/get_invoices` |
-| `run_rescind_underwriting_cancellation_pending_logic` | `POST` | `/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic` |
 
 ### `attachments`
 
@@ -58,29 +52,6 @@ for each missing domain so the backlog is explicit and importable.
 | `retrieve_attachments` | `POST` | `/api/v2/attachments/retrieve_attachments` |
 | `upload_attachment_to_user_folder` | `POST` | `/api/v2/attachments/upload_attachment_to_user_folder` |
 | `upload_attachment_unified` | `POST` | `/api/v2/attachments/upload_attachment_unified` |
-
-### `billing`
-
-| Planned function | Method | Endpoint path |
-|---|---|---|
-| `get_installments_preview` | `POST` | `/api/v2/billing/get_installments_preview` |
-| `get_installments_preview_mid_term` | `POST` | `/api/v2/billing/get_installments_preview_mid_term` |
-| `get_renewal_installments_preview` | `POST` | `/api/v2/billing/get_renewal_installments_preview` |
-| `rating_factors` | `POST` | `/api/v2/billing/rating_factors` |
-
-### `commissions`
-
-| Planned function | Method | Endpoint path |
-|---|---|---|
-| `delete_batch_payments` | `POST` | `/api/v2/commissions/delete_batch_payments` |
-| `delete_payment` | `POST` | `/api/v2/commissions/delete_payment` |
-| `get_commission_payees` | `POST` | `/api/v2/commissions/get_commission_payees` |
-| `get_payment` | `POST` | `/api/v2/commissions/get_payment` |
-| `get_unexported_commissions` | `POST` | `/api/v2/commissions/get_unexported_commissions` |
-| `save_batch_payments` | `POST` | `/api/v2/commissions/save_batch_payments` |
-| `save_batch_payments_csv` | `POST` | `/api/v2/commissions/save_batch_payments_csv` |
-| `save_payment` | `POST` | `/api/v2/commissions/save_payment` |
-| `update_commission_payments_complete` | `POST` | `/api/v2/commissions/update_commission_payments_complete` |
 
 ### `custom_ui`
 
@@ -143,39 +114,6 @@ for each missing domain so the backlog is explicit and importable.
 | `acknowledge` | `POST` | `/api/v2/notifications/acknowledge` |
 | `current` | `POST` | `/api/v2/notifications/current` |
 
-### `payments`
-
-| Planned function | Method | Endpoint path |
-|---|---|---|
-| `makemanualpolicypayment` | `POST` | `/api/v1/payments/makeManualPolicyPayment` |
-| `add_payment_method` | `POST` | `/api/v2/payments/add_payment_method` |
-| `apply_selected_payments` | `POST` | `/api/v2/payments/apply_selected_payments` |
-| `change_payment_method` | `POST` | `/api/v2/payments/change_payment_method` |
-| `change_payment_method_single` | `POST` | `/api/v2/payments/change_payment_method_single` |
-| `create_payment_batch` | `POST` | `/api/v2/payments/create_payment_batch` |
-| `create_payment_entries` | `POST` | `/api/v2/payments/create_payment_entries` |
-| `delete_payment_batch` | `POST` | `/api/v2/payments/delete_payment_batch` |
-| `delete_payment_entries` | `POST` | `/api/v2/payments/delete_payment_entries` |
-| `get_payment_method_info` | `POST` | `/api/v2/payments/get_payment_method_info` |
-| `get_unpaid_invoices_by_date` | `POST` | `/api/v2/payments/get_unpaid_invoices_by_date` |
-| `import_payment_entries` | `POST` | `/api/v2/payments/import_payment_entries` |
-| `make_payment_by_contact_and_payment_method` | `POST` | `/api/v2/payments/make_payment_by_contact_and_payment_method` |
-| `make_payment_by_invoice_or_policy` | `POST` | `/api/v2/payments/make_payment_by_invoice_or_policy` |
-| `mark_payment_nsf` | `POST` | `/api/v2/payments/mark_payment_nsf` |
-| `remove_payment_method` | `POST` | `/api/v2/payments/remove_payment_method` |
-| `retrieve_account_payoff_amount` | `POST` | `/api/v2/payments/retrieve_account_payoff_amount` |
-| `retrieve_convenience_fee` | `POST` | `/api/v2/payments/retrieve_convenience_fee` |
-| `retrieve_payment` | `POST` | `/api/v2/payments/retrieve_payment` |
-| `retrieve_payment_batch_entries` | `POST` | `/api/v2/payments/retrieve_payment_batch_entries` |
-| `retrieve_payment_batches` | `POST` | `/api/v2/payments/retrieve_payment_batches` |
-| `retrieve_payment_entries` | `POST` | `/api/v2/payments/retrieve_payment_entries` |
-| `retrieve_payment_methods` | `POST` | `/api/v2/payments/retrieve_payment_methods` |
-| `retrieve_policy_billing_information` | `POST` | `/api/v2/payments/retrieve_policy_billing_information` |
-| `retrieve_sweep_payment_list` | `POST` | `/api/v2/payments/retrieve_sweep_payment_list` |
-| `retrieve_updated_invoice_balance` | `POST` | `/api/v2/payments/retrieve_updated_invoice_balance` |
-| `update_payment_batch` | `POST` | `/api/v2/payments/update_payment_batch` |
-| `update_payment_entries` | `POST` | `/api/v2/payments/update_payment_entries` |
-| `update_sweep_payments_complete` | `POST` | `/api/v2/payments/update_sweep_payments_complete` |
 
 ### `printing`
 

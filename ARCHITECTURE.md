@@ -125,8 +125,15 @@ response = API_CLIENT.do_request(
 
 # 3. Process response
 data = API_CLIENT.process_result(response)
-# Returns: {"success": true, "data": {...}, "message": "OK"}
+# Returns normalized payload from `data` (not the full envelope)
 ```
+
+`do_request(...)` defaults:
+
+- timeout: `web_timeout` (default 5s)
+- retries: `web_retry` (default 5 with urllib3 backoff)
+- authentication: API key injected into request payload for API-key mode,
+  bearer token header for OAuth mode
 
 ---
 
