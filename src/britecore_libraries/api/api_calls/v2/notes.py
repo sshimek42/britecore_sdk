@@ -1,3 +1,8 @@
+"""BriteCore v2 Notes API endpoint wrappers.
+
+Provides:
+    retrieve_notes -- Retrieve paginated, filterable notes for any entity ID.
+"""
 from json import loads
 from logging import Logger
 from typing import Any, Optional, Unpack
@@ -62,7 +67,7 @@ def retrieve_notes(
     LOGGER.debug("Getting notes")
 
     notes_json: dict[str, Any] = {}
-    local_env: dict[str, Optional[str]] = {**locals}
+    local_env: dict[str, Optional[str]] = {**locals()}
 
     for _, (k, v) in enumerate(
         local_env.items()

@@ -20,7 +20,7 @@ class TestBritecoreExceptions:
     def test_no_data_returned_str(self):
         """Test NoDataReturned string representation."""
         exc = BritecoreError.NoDataReturned("Test error")
-        assert "No data returned" in str(exc).lower()
+        assert "no data returned" in str(exc).lower()
 
     @pytest.mark.unit
     def test_no_token_returned_exception(self):

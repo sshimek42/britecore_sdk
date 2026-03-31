@@ -1,5 +1,13 @@
 # API Implementation Analysis: britecore_api.json vs Source Code
 
+*Last updated: March 31, 2026*
+*Document type: Historical analysis snapshot*
+
+> **Historical analysis snapshot:** This document captures a planning/coverage
+> analysis performed on **March 26, 2026**. It is useful as background context,
+> but it is not the canonical source for current package version, testing
+> status, or Tier completion outcomes.
+
 **Date:** March 26, 2026  
 **Analysis:** Comparison of documented API endpoints (374 total) vs implemented modules
 

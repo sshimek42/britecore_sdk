@@ -1,3 +1,18 @@
+"""BriteCore v2 Policies API endpoint wrappers.
+
+Provides helpers for the full policy lifecycle: retrieval, creation,
+endorsements, cancellations, reinstatements, renewals, line items,
+and revision management.
+
+Key functions:
+    retrieve_policy         -- Fetch a policy by number, ID, or revision ID.
+    retrieve_policy_ids     -- Convenience wrapper returning (revision_id, property_id).
+    add_line_item           -- Add a coverage line item to a revision.
+    cancel_policy           -- Initiate a policy cancellation.
+    reinstate_policy        -- Reinstate a previously cancelled policy.
+    renew_policy            -- Create a renewal for a policy term.
+    get_policies            -- List all policies (paginated).
+"""
 from logging import Logger
 from typing import Any, Literal, Optional, Unpack
 
