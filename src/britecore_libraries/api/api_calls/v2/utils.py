@@ -1,3 +1,8 @@
+"""BriteCore v2 Utils API endpoint wrappers.
+
+Provides administrative and system-utility helpers that don't belong to a
+specific business domain.
+"""
 from logging import Logger
 from typing import Any, Optional, Unpack
 

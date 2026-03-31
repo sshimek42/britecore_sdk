@@ -1,3 +1,13 @@
+"""BriteCore v2 Lines API endpoint wrappers.
+
+Provides interactive and programmatic helpers for working with BriteCore
+line/policy export data and line-menu selection flows.
+
+Key functions:
+    get_export_line_file -- Fetch export data for a specific line or policy type.
+    line_menu            -- Interactive CLI menu for selecting effective date,
+                            state, and line combinations.
+"""
 from json import loads
 from logging import Logger
 from typing import Any, Optional, Unpack
@@ -120,7 +130,7 @@ def line_menu(
         line_id: str | list[str]
         name: str | list[str]
 
-        print(
+        LOGGER.info(
             f"\nChoose {print_menu_title.lower()}\n{'=' * (len(print_menu_title) + 7)}"
         )
         if len(print_menu_options) > 1:
@@ -140,11 +150,11 @@ def line_menu(
                 line_id = print_menu_options[tmp_line]
                 name = tmp_line
         else:
-            print("1. " + print_menu_default)
+            LOGGER.info("1. " + print_menu_default)
             tmp_line = print_menu_default
             line_id = print_menu_options[menu_default]
             name = menu_default
-        print(f"{tmp_line} selected")
+        LOGGER.info(f"{tmp_line} selected")
         return line_id, name
 
     LOGGER.debug("Getting dates")

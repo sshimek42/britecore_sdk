@@ -1,3 +1,12 @@
+"""BriteCore v2 Async Quotes API endpoint wrappers.
+
+Asynchronous (cached) counterparts to the synchronous wrappers in quotes.py.
+Uses AsyncBritecoreAPIClient for non-blocking, TTL-cached HTTP requests.
+
+Provides:
+    async_create_full_quote -- Async create a full quote from a JSON payload.
+    async_get_quote         -- Async retrieve a quote by ID (cached by default).
+"""
 from logging import Logger
 from typing import Any, Unpack
 

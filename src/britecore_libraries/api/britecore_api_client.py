@@ -1,7 +1,8 @@
 """Wrapper for BriteCore API calls"""
 
 import os
-import sys
+import time
+import uuid
 from json import dumps, loads
 from logging import Logger
 from typing import Any, NotRequired, Optional, TypedDict  # added typing
@@ -64,19 +65,29 @@ class LoadClientSettings:
         """
         Load and return configuration settings for the target site.
 
-        This method retrieves the default configuration settings and merges them
-        with site-specific settings based on the target site identifier.
+        Switches Dynaconf into the target-site environment (which automatically
+        inherits ``[default]`` values) and snapshots all needed keys into a
+        plain ``SimpleNamespace`` so the result remains valid after the context
+        exits.
 
         Returns:
-            Any: Combined configuration settings for the target site
+            SimpleNamespace: Combined configuration settings for the target site.
         """
+        from types import SimpleNamespace
 
         target_site: str = self.target_site
 
-        site_settings: Any = settings.__getattr__("default")
-        site_settings += settings.__getattr__(target_site)
-
-        return site_settings
+        with settings.using_env(target_site):
+            return SimpleNamespace(
+                base_url=settings.get("base_url", default=""),
+                client_id=settings.get("client_id", default=""),
+                client_secret=settings.get("client_secret", default=""),
+                api_key=settings.get("api_key", default=""),
+                web_retry=settings.get("web_retry"),
+                web_timeout=settings.get("web_timeout"),
+                web_timeout_long=settings.get("web_timeout_long"),
+                web_browser=settings.get("web_browser", default=""),
+            )
 
 
 def _full_url(host: str, path: str) -> str:
@@ -104,16 +115,10 @@ class BritecoreAPIClient:
     This class provides functionality to initialize an API client with
     configuration settings, handle authentication using either API keys or
     OAuth tokens, and execute HTTP requests to Britecore API endpoints.
-    """
 
-    site_settings: Any = None
-    http: urllib3.PoolManager = None
-    token_class: OAuthToken = None
-    use_api_key: bool = None
-    web_retry: int = None
-    web_timeout: int = None
-    web_timeout_long: int = None
-    base_url: str = None
+    All state is instance-level; multiple clients can coexist in the same
+    process without interfering with each other.
+    """
 
     def __init__(self, target_site: Optional[str]) -> None:
         self.api_key: Optional[str] = None
@@ -140,7 +145,7 @@ class BritecoreAPIClient:
 
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
-            BritecoreError.BritecoreKeyError: If api_key is not found when required.
+            BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
         """
 
         target_site = self.target_site
@@ -149,10 +154,9 @@ class BritecoreAPIClient:
             raise BritecoreError.NoSiteError("No site has been specified")
 
         self.site_settings = LoadClientSettings(target_site).load_config()
-        BritecoreAPIClient.site_settings = self.site_settings
 
-        self.enable_timers = True  # renamed from timers
-        self.bad_url_error = "Invalid URL"  # renamed from bad_url_error
+        self.enable_timers = True
+        self.bad_url_error = "Invalid URL"
 
         if self.site_settings.base_url:
             self.base_url = self.site_settings.base_url
@@ -160,28 +164,22 @@ class BritecoreAPIClient:
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
         else:
-            logger.critical(self.bad_url_error)
-            sys.exit(self.bad_url_error)
-
-        BritecoreAPIClient.base_url = self.base_url
+            raise BritecoreError.BritecoreKeyError(
+                "base_url not configured. Please set base_url in your "
+                "settings.toml or .secrets.toml file."
+            )
 
         self.web_timeout = self.site_settings.web_timeout
         if not self.web_timeout:
             self.web_timeout = self.site_settings.web_timeout = 5
 
-        BritecoreAPIClient.web_timeout = self.web_timeout
-
         self.web_timeout_long = self.site_settings.web_timeout_long
         if not self.web_timeout_long:
             self.web_timeout_long = self.site_settings.web_timeout * 10
 
-        BritecoreAPIClient.web_timeout_long = self.web_timeout_long
-
         self.web_retry = self.site_settings.web_retry
         if not self.web_retry:
             self.web_retry = 5
-
-        BritecoreAPIClient.web_retry = self.web_retry
 
         timeout: Timeout = Timeout(self.web_timeout)
         retries: Retry = Retry(
@@ -193,13 +191,9 @@ class BritecoreAPIClient:
             retries=retries, timeout=timeout, maxsize=5, num_pools=5
         )
 
-        BritecoreAPIClient.http = self.http
-
         self.use_api_key = (
             self.site_settings.client_id == "" or self.site_settings.client_secret == ""
         )
-
-        BritecoreAPIClient.use_api_key = self.use_api_key
 
         if self.use_api_key:
             LOGGER.info("client_id and/or client_secret not found. Using api_key.")
@@ -208,11 +202,8 @@ class BritecoreAPIClient:
             except AttributeError:
                 raise BritecoreError.BritecoreKeyError(
                     "api_key not found. Please set the api_key in your "
-                    ".secrets.toml "
-                    "file."
+                    ".secrets.toml file."
                 )
-
-        if self.use_api_key:
             self.token_class = None
         else:
             self.token_class = OAuthToken(
@@ -220,8 +211,6 @@ class BritecoreAPIClient:
                 self.site_settings.client_secret,
                 self.site_settings.base_url,
             )
-
-        BritecoreAPIClient.token_class = self.token_class
 
     @classmethod
     def process_result(cls, response: urllib3.HTTPResponse, logs: bool = False) -> Any:
@@ -247,6 +236,32 @@ class BritecoreAPIClient:
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
+
+        if response.status == 401 or response.status == 403:
+            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
+            raise BritecoreError.AuthenticationError(
+                response.reason, http_status=response.status
+            )
+
+        if response.status == 429:
+            LOGGER.error("Rate limit exceeded")
+            retry_after = None
+            if hasattr(response, "headers") and response.headers:
+                retry_after_val = response.headers.get("Retry-After")
+                if retry_after_val is not None:
+                    try:
+                        retry_after = int(retry_after_val)
+                    except (ValueError, TypeError):
+                        pass
+            raise BritecoreError.RateLimitError(
+                response.reason or "Too Many Requests", retry_after=retry_after
+            )
+
+        if response.status >= 500:
+            LOGGER.error(f"Server error - {response.status} - {response.reason}")
+            raise BritecoreError.ServerError(
+                response.reason or "Internal Server Error", http_status=response.status
+            )
 
         if response.status != 200:
             LOGGER.error(f"Error - {response.status} - {response.reason}")
@@ -274,9 +289,8 @@ class BritecoreAPIClient:
 
         return data
 
-    @classmethod
     def do_request(
-        cls,
+        self,
         path: str,
         json: Optional[dict[str, Any]] = None,
         request_timeout: Optional[Timeout] = None,
@@ -287,11 +301,6 @@ class BritecoreAPIClient:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
 
-        This method constructs a full URL using the base URL and the provided path, then
-        sends an HTTP request using the configured HTTP client. It handles API key
-        injection into the JSON payload when required and manages request headers
-        appropriately based on authentication settings.
-
         Parameters:
             path (str): The endpoint path to which the request is sent.
             json (Optional[dict[str, Any]]): The JSON payload to send with the request.
@@ -301,30 +310,42 @@ class BritecoreAPIClient:
             method (Optional[str]): The HTTP method to use for the request, defaults to "POST".
 
         Returns:
-            Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]: The response from the HTTP request,
-            or None if no response is received.
+            Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]: The response from the
+            HTTP request, or None if no response is received.
 
         Raises:
-            BritecoreError.NoDataReturned: If the request fails due to network issues or if no response is returned from the server.
+            BritecoreError.RequestTimeoutError: If the request exceeds the configured timeout.
+            BritecoreError.NoDataReturned: If the request fails due to other network issues.
         """
 
         if not request_timeout:
-            request_timeout = BritecoreAPIClient.web_timeout
+            request_timeout = self.web_timeout
         if not request_retries:
-            request_retries = BritecoreAPIClient.web_retry
+            request_retries = self.web_retry
 
-        if request_headers is None or BritecoreAPIClient.use_api_key:
+        if request_headers is None or self.use_api_key:
             request_headers = {}
-        if not request_headers and not BritecoreAPIClient.use_api_key:
-            request_headers = BritecoreAPIClient.token_class.get_authorization_headers()
+        if not request_headers and not self.use_api_key:
+            request_headers = self.token_class.get_authorization_headers()
 
-        request_url: str = _full_url(BritecoreAPIClient.base_url, path)
+        request_url: str = _full_url(self.base_url, path)
+
+        # --- structured tracing -------------------------------------------------
+        request_id: str = uuid.uuid4().hex[:8]
+        _start: float = time.monotonic()
+        LOGGER.debug(
+            "[%s] → %s %s",
+            request_id,
+            method,
+            path,
+        )
+        # ------------------------------------------------------------------------
 
         try:
             if json:
-                if BritecoreAPIClient.use_api_key:
-                    json.update({"api_key": cls.site_settings.api_key})
-                request_result: urllib3.BaseHTTPResponse = cls.http.request(
+                if self.use_api_key:
+                    json.update({"api_key": self.site_settings.api_key})
+                request_result: urllib3.BaseHTTPResponse = self.http.request(
                     method=method,
                     url=request_url,
                     headers=request_headers,
@@ -333,9 +354,9 @@ class BritecoreAPIClient:
                     retries=request_retries,
                 )
             else:
-                if BritecoreAPIClient.use_api_key:
-                    json = dumps({"api_key": cls.site_settings.api_key}).encode("utf-8")
-                request_result: urllib3.BaseHTTPResponse = cls.http.request(
+                if self.use_api_key:
+                    json = dumps({"api_key": self.site_settings.api_key}).encode("utf-8")
+                request_result: urllib3.BaseHTTPResponse = self.http.request(
                     method=method,
                     url=request_url,
                     headers=request_headers,
@@ -343,18 +364,43 @@ class BritecoreAPIClient:
                     retries=request_retries,
                     body=json,
                 )
+        except urlTimeoutError as timeout_error:
+            _elapsed_ms = (time.monotonic() - _start) * 1000
+            LOGGER.error(
+                "[%s] ✗ timeout after %.1fms — %s",
+                request_id,
+                _elapsed_ms,
+                timeout_error,
+            )
+            raise BritecoreError.RequestTimeoutError(
+                str(timeout_error),
+                timeout_seconds=request_timeout if isinstance(request_timeout, (int, float)) else None,
+            )
         except (
             ProtocolError,
             ResponseError,
-            urlTimeoutError,
             RequestError,
         ) as request_error:
-            LOGGER.error(request_error)
+            _elapsed_ms = (time.monotonic() - _start) * 1000
+            LOGGER.error(
+                "[%s] ✗ request error after %.1fms — %s",
+                request_id,
+                _elapsed_ms,
+                request_error,
+            )
             raise BritecoreError.NoDataReturned(request_error)
 
         if not request_result:
-            LOGGER.error("Error getting request")
+            LOGGER.error("[%s] ✗ no result object returned", request_id)
             raise BritecoreError.NoDataReturned("Error getting request")
+
+        _elapsed_ms = (time.monotonic() - _start) * 1000
+        LOGGER.debug(
+            "[%s] ← HTTP %s  %.1fms",
+            request_id,
+            request_result.status,
+            _elapsed_ms,
+        )
 
         return request_result
 
@@ -408,9 +454,8 @@ class BritecoreAPIClient:
 
             if not correct_parameter:
                 parameter_used = parameter_priority[0]
-                correct_parameter = {parameter_used: None}
 
-            print(f"Sending {parameter_used}")
+            LOGGER.debug(f"Sending {parameter_used}")
 
         return correct_parameter
 

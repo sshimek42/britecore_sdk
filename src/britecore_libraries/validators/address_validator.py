@@ -18,6 +18,16 @@ ADDRESS_CHANGE = "ADDRESS UPDATED"
 # Reference to zip code data
 ZIP_CODE_DF = zip_codes
 
+# Valid US state/territory abbreviations
+VALID_US_STATES: frozenset[str] = frozenset({
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+    "DC", "PR", "VI", "GU", "AS", "MP",
+})
+
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: dict[str | Any, Pattern[str] | Any] = {}
 
@@ -95,13 +105,13 @@ class AddressValidator:
         if isinstance(self.full_address, str):
             full_address = literal_eval(str(self.full_address)[1:-2])
 
-        # Extract components
-        zip_code = full_address.get("address_zip", "").strip()
-        address1 = full_address.get("address_line1", "").strip()
-        address2 = full_address.get("address_line2", "").strip()
-        state = full_address.get("address_state", "").upper()
-        county = full_address.get("address_county", "").strip().title()
-        city = full_address.get("address_city", "").title().strip()
+        # Extract components, supporting both canonical keys and short aliases
+        zip_code = (full_address.get("address_zip") or full_address.get("zip", "")).strip()
+        address1 = (full_address.get("address_line1") or full_address.get("street", "")).strip()
+        address2 = (full_address.get("address_line2", "")).strip()
+        state = (full_address.get("address_state") or full_address.get("state", "")).upper()
+        county = (full_address.get("address_county") or full_address.get("county", "")).strip().title()
+        city = (full_address.get("address_city") or full_address.get("city", "")).title().strip()
         property_name = full_address.get("property", "").title().strip()
 
         # Validate address lines
@@ -306,6 +316,10 @@ class AddressValidator:
         """
         state = state.strip().upper()
         state = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", state)
+
+        # Reject state codes that are not valid US state/territory abbreviations
+        if state and state not in VALID_US_STATES:
+            raise BritecoreError.InvalidAddress(f"Invalid State - {state}")
 
         tmp_zipcode = zipcode[:5]
 

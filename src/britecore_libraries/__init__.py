@@ -17,7 +17,7 @@ logger_class = SCLogger(
 )
 logger = logger_class.get_logger()
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 # Constants
 from britecore_libraries.constants import (

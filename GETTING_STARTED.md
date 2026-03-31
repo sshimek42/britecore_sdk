@@ -1,5 +1,8 @@
 # Getting Started
 
+*Last updated: March 31, 2026*
+*Document type: Living guide*
+
 Use this guide for the fastest path from clone to first successful API call.
 
 ## Start here
@@ -14,12 +17,13 @@ Related docs:
 - [README.md](README.md) for a high-level overview
 - [API.md](API.md) for endpoint reference
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior
+- [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
 - [ARCHITECTURE.md](ARCHITECTURE.md) for design details
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common errors
 
 ## Prerequisites
 
-- Python `>=3.14`
+- Python `>=3.11`
 - PowerShell (commands below use PowerShell syntax)
 
 ## Install
