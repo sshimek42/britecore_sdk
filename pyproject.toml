@@ -1,6 +1,14 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "britecore_libraries"
 version = "1.0.0"
+description = "BriteCore Libraries - Core utilities for BriteCore API integration."
+readme = "README.md"
+license = { text = "Proprietary" }
+authors = [{ name = "sshimek" }]
 requires-python = ">=3.11"
 dependencies = [
     "dynaconf~=3.2.13",
@@ -39,8 +47,6 @@ docs = [
     "myst-parser>=5.0.0",
     "sphinx-rtd-theme>=3.1.0",
 ]
-
-[project.entry-points."britecore_libraries"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
