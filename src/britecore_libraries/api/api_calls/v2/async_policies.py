@@ -1,3 +1,13 @@
+"""BriteCore v2 Async Policies API endpoint wrappers.
+
+Asynchronous (cached) counterparts to the synchronous wrappers in policies.py.
+Uses AsyncBritecoreAPIClient for non-blocking, TTL-cached HTTP requests.
+
+Read operations (retrieve_policy, retrieve_revision_details, etc.) are cached
+with a short TTL by default.  Mutation operations (create, cancel, reinstate,
+etc.) automatically invalidate the policy cache namespace on success.
+"""
+
 from logging import Logger
 from typing import Any, Literal, Optional, Unpack
 

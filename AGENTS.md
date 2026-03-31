@@ -26,7 +26,7 @@ For a compact version, see `AGENTS.quickstart.md`.
 - External integrations: `urllib3` (HTTP), OAuth2 token endpoint `/api/auth/oauth2/token`, `pyodbc` in `utils/britecore_odbc.py`, Selenium helpers in `utils/britecore_selenium.py`, CSV-backed zip lookup in `utils/zip_code_lookup.py`.
 
 ## Developer workflow in this repo
-- Python target differs across metadata: `pyproject.toml` says `>=3.14`, while `.deepsource.toml` uses `3.x.x`; keep edits syntax-compatible with modern Python 3.
+- Python target in `pyproject.toml` is `>=3.11`; keep edits syntax-compatible with modern Python 3 and avoid introducing features that would unnecessarily raise the minimum version.
 - **Single source of truth:** Use `pyproject.toml` for version and dependency specs. Both `setup.py` and all `requirements.txt` files are kept in sync automatically.
 - Install editable package from repo root:
 

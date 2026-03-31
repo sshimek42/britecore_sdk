@@ -4,10 +4,19 @@ This site hosts generated API docs and key project guides.
 
 ```{toctree}
 :maxdepth: 2
-:caption: Contents
+:caption: Current guides
 
 api_reference
 ASYNC_CACHING
+Python compatibility <python_compatibility>
+Unimplemented API stubs <unimplemented_api_stubs>
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Historical assessments and milestones
+
+history
 ```
 
 

@@ -31,24 +31,16 @@ class TestLoadClientSettings:
     def test_load_config_merges_default(self, mock_settings):
         """Test that load_config merges default settings with site-specific."""
         from britecore_libraries.config.config import LoadClientSettings
-        
+
         with patch("britecore_libraries.config.config.settings") as mock_cfg:
-            default_settings = MagicMock()
-            site_settings = MagicMock()
-            
-            # Mock the __getattr__ method to return settings objects
-            def getattr_side_effect(key):
-                if key == "default":
-                    return default_settings
-                elif key == "test_site":
-                    return site_settings
-                raise KeyError(key)
-            
-            mock_cfg.__getattr__ = getattr_side_effect
-            
+            # Make using_env() work as a context manager
+            mock_cfg.using_env.return_value.__enter__ = MagicMock(return_value=mock_cfg)
+            mock_cfg.using_env.return_value.__exit__ = MagicMock(return_value=False)
+            mock_cfg.get.return_value = ""
+
             loader = LoadClientSettings("test_site")
             result = loader.load_config()
-            
+
             # Verify it returns something (the merged result)
             assert result is not None
 

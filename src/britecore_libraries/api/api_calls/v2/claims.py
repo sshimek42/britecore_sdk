@@ -1,3 +1,8 @@
+"""BriteCore v2 Claims API endpoint wrappers.
+
+Provides:
+    get_claim  -- Retrieve detailed claim information by claim ID.
+"""
 from logging import Logger
 from typing import Any, Optional, Unpack
 

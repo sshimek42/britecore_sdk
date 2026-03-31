@@ -1,3 +1,9 @@
+"""BriteCore v2 Insured API endpoint wrappers.
+
+Provides:
+    get_property_information_and_photos -- Retrieve comprehensive property
+                                           details and associated photos.
+"""
 from logging import Logger
 from typing import Any, Optional, Unpack
 

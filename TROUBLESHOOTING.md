@@ -1,5 +1,8 @@
 # Troubleshooting Guide
 
+*Last updated: March 31, 2026*
+*Document type: Living troubleshooting guide*
+
 **BriteCore Libraries** - Common issues and solutions
 
 ---
@@ -500,5 +503,4 @@ for i in range(10000):
 
 ---
 
-**Version:** 0.1.0 | **Last Updated:** March 26, 2026
 

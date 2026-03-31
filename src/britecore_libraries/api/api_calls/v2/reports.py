@@ -1,3 +1,10 @@
+"""BriteCore v2 Reports API endpoint wrappers.
+
+Provides:
+    list_files       -- List files associated with a report ID.
+    retrieve_reports -- Retrieve all available reports.
+    retrieve_report  -- Retrieve a single report by ID.
+"""
 from typing import Any, Optional, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse

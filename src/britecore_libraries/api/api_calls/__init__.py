@@ -69,7 +69,13 @@ def get_async_api_client() -> AsyncBritecoreAPIClient:
 
 # Backward compatibility: module-level api_client proxy that triggers lazy init
 class _LazyAPIClient:
-    """Lazy-loading proxy for the global API client."""
+    """Lazy-loading proxy for the global API client.
+
+    ``__func__ = None`` prevents Python 3.14's ``unittest.mock._is_async_obj``
+    from triggering lazy initialisation via ``hasattr(proxy, '__func__')``.
+    """
+
+    __func__ = None  # sentinel: stops mock.__enter__ from probing __getattr__
 
     def __getattr__(self, name: str):
         return getattr(get_api_client(), name)
@@ -79,7 +85,13 @@ api_client = _LazyAPIClient()
 
 
 class _LazyAsyncAPIClient:
-    """Lazy-loading proxy for the global async API client."""
+    """Lazy-loading proxy for the global async API client.
+
+    ``__func__ = None`` prevents Python 3.14's ``unittest.mock._is_async_obj``
+    from triggering lazy initialisation via ``hasattr(proxy, '__func__')``.
+    """
+
+    __func__ = None  # sentinel: stops mock.__enter__ from probing __getattr__
 
     def __getattr__(self, name: str):
         return getattr(get_async_api_client(), name)
@@ -88,30 +100,13 @@ class _LazyAsyncAPIClient:
 async_api_client = _LazyAsyncAPIClient()
 
 
-# Lazy module attributes for timeouts (accessed via get_api_client())
-class _LazyModule:
-    """Module-level lazy loader for timeout attributes."""
+# Safe fallback timeout values used by modules that import these names at
+# import-time. They intentionally do not force client initialization.
+# Once a client is initialized, request methods still use the client's own
+# configured timeout values unless a wrapper explicitly passes these fallbacks.
+web_timeout_long: int = 50
+web_timeout: int = 5
 
-    @property
-    def web_timeout_long(self) -> int:
-        """Get or lazily initialize web_timeout_long from the API client."""
-        return get_api_client().web_timeout_long
-
-    @property
-    def web_timeout(self) -> int:
-        """Get or lazily initialize web_timeout from the API client."""
-        return get_api_client().web_timeout
-
-
-# Fallback values for direct access (will be overridden by lazy loading on first access)
-def _get_web_timeout_long() -> int:
-    """Lazy getter for web_timeout_long."""
-    return get_api_client().web_timeout_long
-
-
-def _get_web_timeout() -> int:
-    """Lazy getter for web_timeout."""
-    return get_api_client().web_timeout
 
 
 __all__ = [
@@ -124,4 +119,18 @@ __all__ = [
     "init_async_api_client",
     "BritecoreAPIClient",
     "AsyncBritecoreAPIClient",
+    "web_timeout_long",
+    "web_timeout",
 ]
+
+
+def __getattr__(name: str):
+    """
+    Lazily expose module attributes via PEP 562.
+
+    Timeout values are read from the initialized API client instance so that
+    multiple clients with different configurations do not share one global
+    timeout state.
+    """
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+

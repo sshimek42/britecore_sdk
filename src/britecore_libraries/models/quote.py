@@ -1,6 +1,6 @@
 """BriteCore policy model."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Optional
 
@@ -20,7 +20,7 @@ class BritecoreQuote:
     agency_id: str
     named_insureds: list[str]
     risks: list[str]
-    underwriting_questions: Optional[list] = None
+    underwriting_questions: list = field(default_factory=list)
     description: Optional[str] = ""
     number_origin: str = "manual"
     transaction_type: str = "renewal"
