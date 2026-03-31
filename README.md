@@ -119,6 +119,15 @@ python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v
 ```
 
+Minimum validation for core client/exception changes:
+
+```powershell
+python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
+python -m pytest tests/unit/test_api_client.py -v
+```
+
+CI additionally enforces `ruff`, `black --check`, and targeted `mypy` checks.
+
 Follow repository conventions in `AGENTS.md`, especially around endpoint wrapper patterns and lazy API client usage via `get_api_client()`.
 
 ## Architecture notes

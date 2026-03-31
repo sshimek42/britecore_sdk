@@ -1,43 +1,157 @@
-"""BriteCore intacct API stubs (generated from britecore_api.json).
-This module intentionally contains placeholders for API calls that are not yet
-implemented in the SDK. Use these stubs for discovery and planning; concrete
-request wrappers will be added in a future implementation phase.
+"""BriteCore v2 Intacct API endpoint wrappers.
+
+Provides:
+    get_intacct_vendor_info                 -- Retrieve Intacct vendor information.
+    get_unexported_claim_transactions_xml   -- Retrieve unexported claim transactions as XML.
+    get_unexported_return_premiums_xml      -- Retrieve unexported return premiums as XML.
+    post_claim_transactions                 -- Post claim transactions to Intacct.
+    post_return_premiums                    -- Post return premiums to Intacct.
 """
-from typing import Any, Final
-# NOTE: Keys are planned wrapper function names; values are API endpoint paths.
-UNIMPLEMENTED_CALLS: Final[dict[str, str]] = {
-    "get_intacct_vendor_info": "/api/v2/intacct/get_intacct_vendor_info",
-    "get_unexported_claim_transactions_xml": "/api/v2/intacct/get_unexported_claim_transactions_xml",
-    "get_unexported_return_premiums_xml": "/api/v2/intacct/get_unexported_return_premiums_xml",
-    "post_claim_transactions": "/api/v2/intacct/post_claim_transactions",
-    "post_return_premiums": "/api/v2/intacct/post_return_premiums",
-}
-def list_unimplemented_calls() -> dict[str, str]:
-    """Return a copy of the unimplemented call map for this API domain."""
-    return dict(UNIMPLEMENTED_CALLS)
-def not_implemented_call(
-    call_name: str,
-    payload: dict[str, Any] | None = None,
+from logging import Logger
+from typing import Any, Optional, Unpack, cast
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload, omitting keys whose value is ``None``."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: Optional[dict[str, Any]] = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Placeholder dispatcher for unimplemented calls in this module.
-    Parameters:
-        call_name: Planned wrapper function name from ``UNIMPLEMENTED_CALLS``.
-        payload: Optional future request body payload.
-    Raises:
-        ValueError: If ``call_name`` is unknown.
-        NotImplementedError: Always, for known stub calls.
-    """
-    if call_name not in UNIMPLEMENTED_CALLS:
-        raise ValueError(
-            f"Unknown stub call '{call_name}'. "
-            f"Valid values: {', '.join(sorted(UNIMPLEMENTED_CALLS))}"
-        )
-    _ = payload
-    raise NotImplementedError(
-        f"Call '{call_name}' ({UNIMPLEMENTED_CALLS[call_name]}) is not yet implemented."
+    """Send an intacct request and normalize the response."""
+    LOGGER.debug("Calling intacct endpoint %s", path)
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path=path,
+        json=payload if payload is not None else {},
+        **kwargs,
     )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def get_intacct_vendor_info(
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve Intacct vendor information.
+
+    Parameters
+    ----------
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response containing Intacct vendor details.
+    """
+    return _post("/api/v2/intacct/get_intacct_vendor_info", {}, **kwargs)
+
+
+def get_unexported_claim_transactions_xml(
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve unexported claim transactions formatted as XML.
+
+    Parameters
+    ----------
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response containing the XML claim transactions.
+    """
+    return _post("/api/v2/intacct/get_unexported_claim_transactions_xml", {}, **kwargs)
+
+
+def get_unexported_return_premiums_xml(
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve unexported return premiums formatted as XML.
+
+    Parameters
+    ----------
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response containing the XML return premiums.
+    """
+    return _post("/api/v2/intacct/get_unexported_return_premiums_xml", {}, **kwargs)
+
+
+def post_claim_transactions(
+    payload: Optional[dict] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Post claim transactions to Intacct.
+
+    Parameters
+    ----------
+    payload : dict, optional
+        Object containing the claim transaction data to post.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response confirming the post result.
+    """
+    return _post(
+        "/api/v2/intacct/post_claim_transactions",
+        _build_payload(payload=payload),
+        **kwargs,
+    )
+
+
+def post_return_premiums(
+    payload: Optional[dict] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Post return premiums to Intacct.
+
+    Parameters
+    ----------
+    payload : dict, optional
+        Object containing the return premium data to post.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response confirming the post result.
+    """
+    return _post(
+        "/api/v2/intacct/post_return_premiums",
+        _build_payload(payload=payload),
+        **kwargs,
+    )
+
+
 __all__ = [
-    "UNIMPLEMENTED_CALLS",
-    "list_unimplemented_calls",
-    "not_implemented_call",
+    "get_intacct_vendor_info",
+    "get_unexported_claim_transactions_xml",
+    "get_unexported_return_premiums_xml",
+    "post_claim_transactions",
+    "post_return_premiums",
 ]

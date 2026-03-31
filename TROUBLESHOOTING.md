@@ -165,12 +165,27 @@ from britecore_libraries.exceptions import BritecoreError
 
 try:
     policy = policies.retrieve_policy(policy_number="INVALID")
+except BritecoreError.NotFoundError as e:
+    print(f"Not found: {e}")
+except BritecoreError.ValidationError as e:
+    print(f"Validation error: {e}")
 except BritecoreError.NoDataReturned as e:
     print(f"API Error: {e}")
     # Check if:
     # 1. Policy number is correct
     # 2. User has permission to access policy
     # 3. API endpoint is working
+```
+
+SDK exceptions can be caught via the common base class:
+
+```python
+from britecore_libraries.exceptions import BritecoreError
+
+try:
+    ...
+except BritecoreError.Base as exc:
+    print(f"SDK failure: {exc}")
 ```
 
 ---

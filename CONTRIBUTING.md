@@ -52,6 +52,14 @@ git checkout -b feature/short-description
 
 ## Testing workflow
 
+Minimum validation command set for API-client or exception changes:
+
+```powershell
+python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
+python -m pytest tests/unit/test_api_client.py -v
+python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
+```
+
 Run targeted tests first:
 
 ```powershell
@@ -67,6 +75,13 @@ python -m pytest tests/integration -m integration -v
 ```
 
 Coverage output is configured in `pyproject.toml` via pytest addopts.
+
+Quality gates run in CI:
+
+- `ruff check src tests`
+- `black --check src tests`
+- `mypy` for core client and key endpoint modules
+- `pytest tests/unit -m unit --cov ...`
 
 ## Project-specific coding conventions
 

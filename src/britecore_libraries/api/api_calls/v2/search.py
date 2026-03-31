@@ -1,40 +1,106 @@
-"""BriteCore search API stubs (generated from britecore_api.json).
-This module intentionally contains placeholders for API calls that are not yet
-implemented in the SDK. Use these stubs for discovery and planning; concrete
-request wrappers will be added in a future implementation phase.
+"""BriteCore v2 Search API endpoint wrappers.
+
+Provides:
+    add_to_index       -- Add a document to a search index.
+    remove_from_index  -- Remove a document from a search index.
 """
-from typing import Any, Final
-# NOTE: Keys are planned wrapper function names; values are API endpoint paths.
-UNIMPLEMENTED_CALLS: Final[dict[str, str]] = {
-    "add_to_index": "/api/v2/search/add_to_index",
-    "remove_from_index": "/api/v2/search/remove_from_index",
-}
-def list_unimplemented_calls() -> dict[str, str]:
-    """Return a copy of the unimplemented call map for this API domain."""
-    return dict(UNIMPLEMENTED_CALLS)
-def not_implemented_call(
-    call_name: str,
-    payload: dict[str, Any] | None = None,
+from logging import Logger
+from typing import Any, Optional, Unpack, cast
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload, omitting keys whose value is ``None``."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: Optional[dict[str, Any]] = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Placeholder dispatcher for unimplemented calls in this module.
-    Parameters:
-        call_name: Planned wrapper function name from ``UNIMPLEMENTED_CALLS``.
-        payload: Optional future request body payload.
-    Raises:
-        ValueError: If ``call_name`` is unknown.
-        NotImplementedError: Always, for known stub calls.
-    """
-    if call_name not in UNIMPLEMENTED_CALLS:
-        raise ValueError(
-            f"Unknown stub call '{call_name}'. "
-            f"Valid values: {', '.join(sorted(UNIMPLEMENTED_CALLS))}"
-        )
-    _ = payload
-    raise NotImplementedError(
-        f"Call '{call_name}' ({UNIMPLEMENTED_CALLS[call_name]}) is not yet implemented."
+    """Send a search request and normalize the response."""
+    LOGGER.debug("Calling search endpoint %s", path)
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path=path,
+        json=payload if payload is not None else {},
+        **kwargs,
     )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def add_to_index(
+    document: Optional[dict] = None,
+    id: Optional[str] = None,
+    index_name: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Add a document to a search index.
+
+    Parameters
+    ----------
+    document : dict, optional
+        The document object to index.
+    id : str, optional
+        Unique identifier for the document in the index.
+    index_name : str, optional
+        Name of the search index to add the document to.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response confirming the document was indexed.
+    """
+    return _post(
+        "/api/v2/search/add_to_index",
+        _build_payload(document=document, id=id, index_name=index_name),
+        **kwargs,
+    )
+
+
+def remove_from_index(
+    id: Optional[str] = None,
+    index_name: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Remove a document from a search index.
+
+    Parameters
+    ----------
+    id : str, optional
+        Unique identifier of the document to remove.
+    index_name : str, optional
+        Name of the search index to remove the document from.
+    **kwargs : Unpack[RequestParameters]
+        Optional timeout / retry / header overrides.
+
+    Returns
+    -------
+    Any
+        Processed API response confirming the document was removed.
+    """
+    return _post(
+        "/api/v2/search/remove_from_index",
+        _build_payload(id=id, index_name=index_name),
+        **kwargs,
+    )
+
+
 __all__ = [
-    "UNIMPLEMENTED_CALLS",
-    "list_unimplemented_calls",
-    "not_implemented_call",
+    "add_to_index",
+    "remove_from_index",
 ]
