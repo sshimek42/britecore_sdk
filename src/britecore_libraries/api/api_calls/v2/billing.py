@@ -1,42 +1,119 @@
-"""BriteCore billing API stubs (generated from britecore_api.json).
-This module intentionally contains placeholders for API calls that are not yet
-implemented in the SDK. Use these stubs for discovery and planning; concrete
-request wrappers will be added in a future implementation phase.
-"""
-from typing import Any, Final
-# NOTE: Keys are planned wrapper function names; values are API endpoint paths.
-UNIMPLEMENTED_CALLS: Final[dict[str, str]] = {
-    "get_installments_preview": "/api/v2/billing/get_installments_preview",
-    "get_installments_preview_mid_term": "/api/v2/billing/get_installments_preview_mid_term",
-    "get_renewal_installments_preview": "/api/v2/billing/get_renewal_installments_preview",
-    "rating_factors": "/api/v2/billing/rating_factors",
-}
-def list_unimplemented_calls() -> dict[str, str]:
-    """Return a copy of the unimplemented call map for this API domain."""
-    return dict(UNIMPLEMENTED_CALLS)
-def not_implemented_call(
-    call_name: str,
-    payload: dict[str, Any] | None = None,
+"""BriteCore v2 Billing API endpoint wrappers."""
+
+from logging import Logger
+from typing import Any, Optional, Unpack, cast
+
+from urllib3 import BaseHTTPResponse, HTTPResponse
+
+from britecore_libraries import logger
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+
+LOGGER: Logger = logger
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload while preserving explicit ``False`` values."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: Optional[dict[str, Any]] = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Placeholder dispatcher for unimplemented calls in this module.
-    Parameters:
-        call_name: Planned wrapper function name from ``UNIMPLEMENTED_CALLS``.
-        payload: Optional future request body payload.
-    Raises:
-        ValueError: If ``call_name`` is unknown.
-        NotImplementedError: Always, for known stub calls.
-    """
-    if call_name not in UNIMPLEMENTED_CALLS:
-        raise ValueError(
-            f"Unknown stub call '{call_name}'. "
-            f"Valid values: {', '.join(sorted(UNIMPLEMENTED_CALLS))}"
-        )
-    _ = payload
-    raise NotImplementedError(
-        f"Call '{call_name}' ({UNIMPLEMENTED_CALLS[call_name]}) is not yet implemented."
+    """Send a billing request and normalize the response."""
+    LOGGER.debug("Calling billing endpoint %s", path)
+    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+        path=path,
+        json=payload or {},
+        **kwargs,
     )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def get_installments_preview(
+    billing_schedule_ids: Optional[list[str]] = None,
+    effective_date: Optional[str] = None,
+    premium: Optional[float | int] = None,
+    payment_method: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve a billing installments preview for a new or updated premium."""
+    return _post(
+        "/api/v2/billing/get_installments_preview",
+        _build_payload(
+            billing_schedule_ids=billing_schedule_ids,
+            effective_date=effective_date,
+            premium=premium,
+            payment_method=payment_method,
+        ),
+        **kwargs,
+    )
+
+
+def get_installments_preview_mid_term(
+    billing_schedule_ids: Optional[list[str]] = None,
+    payment_method: Optional[str] = None,
+    revision_effective_date: Optional[str] = None,
+    prorated_premium: Optional[float | int] = None,
+    policy_id: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve a mid-term billing installments preview."""
+    return _post(
+        "/api/v2/billing/get_installments_preview_mid_term",
+        _build_payload(
+            billing_schedule_ids=billing_schedule_ids,
+            payment_method=payment_method,
+            revision_effective_date=revision_effective_date,
+            prorated_premium=prorated_premium,
+            policy_id=policy_id,
+        ),
+        **kwargs,
+    )
+
+
+def get_renewal_installments_preview(
+    billing_schedule_ids: Optional[list[str]] = None,
+    effective_date: Optional[str] = None,
+    premium: Optional[float | int] = None,
+    payment_method: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve a renewal billing installments preview."""
+    return _post(
+        "/api/v2/billing/get_renewal_installments_preview",
+        _build_payload(
+            billing_schedule_ids=billing_schedule_ids,
+            effective_date=effective_date,
+            premium=premium,
+            payment_method=payment_method,
+        ),
+        **kwargs,
+    )
+
+
+def rating_factors(
+    policy_id: Optional[str] = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve billing-related rating factors for a policy."""
+    return _post(
+        "/api/v2/billing/rating_factors",
+        _build_payload(policy_id=policy_id),
+        **kwargs,
+    )
+
+
 __all__ = [
-    "UNIMPLEMENTED_CALLS",
-    "list_unimplemented_calls",
-    "not_implemented_call",
+    "get_installments_preview",
+    "get_installments_preview_mid_term",
+    "get_renewal_installments_preview",
+    "rating_factors",
 ]

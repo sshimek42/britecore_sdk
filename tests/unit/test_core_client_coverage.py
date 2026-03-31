@@ -5,16 +5,15 @@ process_result() that were previously uncovered, including the
 new specific exception types added in Tier 2.
 """
 
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 import pytest
 from urllib3 import BaseHTTPResponse
 from urllib3.exceptions import (
     ProtocolError,
-    RequestError,
     ResponseError,
     TimeoutError as urlTimeoutError,
 )
-from urllib3.util import Retry, Timeout
+from urllib3.util import Timeout
 
 from britecore_libraries.exceptions import BritecoreError
 
@@ -124,6 +123,27 @@ class TestProcessResultStatusCodes:
             BritecoreAPIClient.process_result(resp)
 
     @pytest.mark.unit
+    def test_404_raises_not_found_error(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        resp = _make_response(b"", status=404, reason="Not Found")
+        with pytest.raises(BritecoreError.NotFoundError):
+            BritecoreAPIClient.process_result(resp)
+
+    @pytest.mark.unit
+    def test_409_raises_conflict_error(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        resp = _make_response(b"", status=409, reason="Conflict")
+        with pytest.raises(BritecoreError.ConflictError):
+            BritecoreAPIClient.process_result(resp)
+
+    @pytest.mark.unit
+    def test_422_raises_validation_error(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        resp = _make_response(b"", status=422, reason="Unprocessable Entity")
+        with pytest.raises(BritecoreError.ValidationError):
+            BritecoreAPIClient.process_result(resp)
+
+    @pytest.mark.unit
     def test_200_success_false_raises_no_data_returned(self):
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
         resp = _make_response(
@@ -161,6 +181,13 @@ class TestProcessResultStatusCodes:
         with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
             BritecoreAPIClient.process_result(resp)
         assert "Validation failed" in str(exc_info.value)
+
+    @pytest.mark.unit
+    def test_malformed_json_raises_no_data_returned(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        resp = _make_response(b"not-json", status=200)
+        with pytest.raises(BritecoreError.NoDataReturned):
+            BritecoreAPIClient.process_result(resp)
 
     @pytest.mark.unit
     def test_logs_flag_triggers_debug_log(self):
@@ -356,8 +383,11 @@ class TestNewExceptionTypes:
             (BritecoreError.ServerError, {"message": "x"}),
             (BritecoreError.ConfigurationError, {"message": "x"}),
             (BritecoreError.RequestTimeoutError, {"message": "x"}),
+            (BritecoreError.ValidationError, {"message": "x"}),
+            (BritecoreError.NotFoundError, {"message": "x"}),
+            (BritecoreError.ConflictError, {"message": "x"}),
         ):
-            with pytest.raises(Exception):
+            with pytest.raises(BritecoreError.Base):
                 raise exc_cls(**kwargs)
 
 

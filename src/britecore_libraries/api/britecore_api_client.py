@@ -3,7 +3,7 @@
 import os
 import time
 import uuid
-from json import dumps, loads
+from json import JSONDecodeError, dumps, loads
 from logging import Logger
 from typing import Any, NotRequired, Optional, TypedDict  # added typing
 
@@ -55,9 +55,8 @@ class LoadClientSettings:
         """
 
         if not target_site:
-            try:
-                target_site = os.environ.get("target_site")
-            except KeyError:
+            target_site = os.environ.get("target_site") or ""
+            if not target_site:
                 LOGGER.error("Missing environment variable 'target_site'")
         self.target_site: str = target_site
 
@@ -212,8 +211,35 @@ class BritecoreAPIClient:
                 self.site_settings.base_url,
             )
 
+    @staticmethod
+    def _extract_error_message(raw_message: Any) -> str:
+        """Normalize API error payloads into a readable message string."""
+        if isinstance(raw_message, list):
+            return "; ".join(str(item) for item in raw_message)
+        if isinstance(raw_message, dict):
+            return str(raw_message)
+        if raw_message is None:
+            return "Unknown error"
+        return str(raw_message)
+
+    @staticmethod
+    def _timeout_seconds(request_timeout: Any) -> int | float | None:
+        """Extract a numeric timeout value from urllib3 timeout objects or scalars."""
+        if isinstance(request_timeout, (int, float)):
+            return request_timeout
+        if isinstance(request_timeout, Timeout):
+            for attr in ("total", "connect_timeout", "read_timeout"):
+                value = getattr(request_timeout, attr, None)
+                if isinstance(value, (int, float)):
+                    return value
+        return None
+
     @classmethod
-    def process_result(cls, response: urllib3.HTTPResponse, logs: bool = False) -> Any:
+    def process_result(
+        cls,
+        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
+        logs: bool = False,
+    ) -> Any:
         """
         Process HTTP response and extract data from successful API calls.
 
@@ -240,7 +266,7 @@ class BritecoreAPIClient:
         if response.status == 401 or response.status == 403:
             LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
             raise BritecoreError.AuthenticationError(
-                response.reason, http_status=response.status
+                response.reason or "Unauthorized", http_status=response.status
             )
 
         if response.status == 429:
@@ -263,28 +289,50 @@ class BritecoreAPIClient:
                 response.reason or "Internal Server Error", http_status=response.status
             )
 
+        if response.status == 404:
+            LOGGER.error(f"Not found - {response.reason}")
+            raise BritecoreError.NotFoundError(
+                f"Error - {response.status} - {response.reason}"
+            )
+
+        if response.status == 409:
+            LOGGER.error(f"Conflict - {response.reason}")
+            raise BritecoreError.ConflictError(
+                f"Error - {response.status} - {response.reason}"
+            )
+
+        if response.status in {400, 422}:
+            LOGGER.error(f"Validation error - {response.status} - {response.reason}")
+            raise BritecoreError.ValidationError(
+                f"Error - {response.status} - {response.reason}"
+            )
+
         if response.status != 200:
             LOGGER.error(f"Error - {response.status} - {response.reason}")
             raise BritecoreError.NoDataReturned(
                 f"Error - {response.status} - {response.reason}"
             )
 
-        json_result: Any = loads(response.data.decode("utf-8"))
+        try:
+            json_result: Any = loads(response.data.decode("utf-8"))
+        except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
+            LOGGER.error("Error parsing API response: %s", parse_error)
+            raise BritecoreError.NoDataReturned(f"Error parsing API response: {parse_error}")
 
         result = json_result.get("success")
-        message = json_result.get(
-            "message", json_result.get("messages", "Unknown error")
+        message = cls._extract_error_message(
+            json_result.get("message", json_result.get("messages", "Unknown error"))
         )
 
         if not result:
             LOGGER.error(f"Error - {message}")
             raise BritecoreError.NoDataReturned(f"Error - {message}")
 
-        data: Any = json_result["data"]
+        data: Any = json_result.get("data")
         if logs:
             LOGGER.debug(data)
 
-        if not data:
+        if data is None:
             LOGGER.warning("No data returned")
 
         return data
@@ -293,10 +341,10 @@ class BritecoreAPIClient:
         self,
         path: str,
         json: Optional[dict[str, Any]] = None,
-        request_timeout: Optional[Timeout] = None,
-        request_retries: Optional[Retry] = None,
+        request_timeout: Optional[Timeout | int | float] = None,
+        request_retries: Optional[Retry | int] = None,
         request_headers: Optional[dict[str, Any]] = None,
-        method: Optional[str] = "POST",
+        method: str = "POST",
     ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
@@ -318,16 +366,17 @@ class BritecoreAPIClient:
             BritecoreError.NoDataReturned: If the request fails due to other network issues.
         """
 
-        if not request_timeout:
+        if request_timeout is None:
             request_timeout = self.web_timeout
-        if not request_retries:
+        if request_retries is None:
             request_retries = self.web_retry
 
-        if request_headers is None or self.use_api_key:
-            request_headers = {}
-        if not request_headers and not self.use_api_key:
-            request_headers = self.token_class.get_authorization_headers()
+        request_headers = dict(request_headers or {})
+        if not self.use_api_key and "Authorization" not in request_headers:
+            request_headers.update(self.token_class.get_authorization_headers())
 
+        if not self.base_url:
+            raise BritecoreError.ConfigurationError("base_url not configured")
         request_url: str = _full_url(self.base_url, path)
 
         # --- structured tracing -------------------------------------------------
@@ -342,28 +391,22 @@ class BritecoreAPIClient:
         # ------------------------------------------------------------------------
 
         try:
-            if json:
-                if self.use_api_key:
-                    json.update({"api_key": self.site_settings.api_key})
-                request_result: urllib3.BaseHTTPResponse = self.http.request(
-                    method=method,
-                    url=request_url,
-                    headers=request_headers,
-                    body=dumps(json).encode("utf-8"),
-                    timeout=request_timeout,
-                    retries=request_retries,
-                )
-            else:
-                if self.use_api_key:
-                    json = dumps({"api_key": self.site_settings.api_key}).encode("utf-8")
-                request_result: urllib3.BaseHTTPResponse = self.http.request(
-                    method=method,
-                    url=request_url,
-                    headers=request_headers,
-                    timeout=request_timeout,
-                    retries=request_retries,
-                    body=json,
-                )
+            request_body: dict[str, Any] = dict(json or {})
+            if self.use_api_key:
+                request_body.update({"api_key": self.site_settings.api_key})
+
+            body_bytes: bytes | None = None
+            if request_body:
+                body_bytes = dumps(request_body).encode("utf-8")
+
+            request_result: urllib3.BaseHTTPResponse = self.http.request(
+                method=method,
+                url=request_url,
+                headers=request_headers,
+                body=body_bytes,
+                timeout=request_timeout,
+                retries=request_retries,
+            )
         except urlTimeoutError as timeout_error:
             _elapsed_ms = (time.monotonic() - _start) * 1000
             LOGGER.error(
@@ -374,7 +417,7 @@ class BritecoreAPIClient:
             )
             raise BritecoreError.RequestTimeoutError(
                 str(timeout_error),
-                timeout_seconds=request_timeout if isinstance(request_timeout, (int, float)) else None,
+                timeout_seconds=self._timeout_seconds(request_timeout),
             )
         except (
             ProtocolError,
@@ -388,7 +431,7 @@ class BritecoreAPIClient:
                 _elapsed_ms,
                 request_error,
             )
-            raise BritecoreError.NoDataReturned(request_error)
+            raise BritecoreError.NoDataReturned(str(request_error))
 
         if not request_result:
             LOGGER.error("[%s] ✗ no result object returned", request_id)
