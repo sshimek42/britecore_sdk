@@ -35,6 +35,12 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   optional extras (`[database]`, `[browser]`, `[interactive]`). Existing
   consumers who use these utilities should add the relevant extra:
   `pip install "britecore_libraries[database]"`.
+- `sclogging` upgraded from `1.2.1` to `1.3.1`, the first upstream release
+  that declares Python `>=3.11` support, so dependency resolution now matches
+  the project CI matrix and package metadata.
+- Documentation dependencies now constrain `sphinx` to `>=8.2.3,<9.1` so the
+  `docs` extra remains resolvable on Python 3.11, matching the supported
+  project floor and CI verification range.
 - `__version__` is now resolved at runtime via `importlib.metadata` so
   `pyproject.toml` remains the single source of truth.
 - `vendors.get_wtw_score`: renamed parameter `property` → `property_descriptor`

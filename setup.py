@@ -1,13 +1,9 @@
-from setuptools import setup, find_packages
+"""Legacy setup.py shim — all package metadata and configuration lives in
+``pyproject.toml``.  This file exists only for compatibility with tools that
+require a ``setup.py`` entry point (e.g. ``pip install -e .`` on older pip
+versions, some IDE integrations).  Do not add metadata here; edit
+``pyproject.toml`` instead.
+"""
+from setuptools import setup
 
-setup(
-    name="britecore_libraries",
-    version="1.0.0",
-    packages=find_packages("src"),
-    package_dir={"": "src"},
-    url="",
-    license="",
-    author="sshimek",
-    author_email="",
-    description="BriteCore Libraries - Core utilities for BriteCore API integration.",
-)
+setup()
