@@ -41,7 +41,7 @@ pip install uv
 uv pip install -e .
 
 # Check Python version
-python --version  # Should be 3.14+
+python --version  # Should be 3.11+
 ```
 
 ---
@@ -504,7 +504,7 @@ for i in range(10000):
 
 1. **Environment Variables:** `echo $env:target_site`
 2. **Config File:** `Get-Content src/britecore_libraries/config/settings.toml`
-3. **Python Version:** `python --version` (should be 3.14+)
+3. **Python Version:** `python --version` (should be 3.11+)
 4. **Package Installation:** `pip show britecore-libraries`
 5. **Test Suite:** `python -m pytest tests/unit/test_maps.py -v`
 
