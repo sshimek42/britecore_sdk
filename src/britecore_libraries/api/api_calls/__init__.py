@@ -1,14 +1,14 @@
 import os
 from typing import Optional
 
-from britecore_libraries.api.britecore_async_api_client import AsyncBritecoreAPIClient
 from britecore_libraries.api.britecore_api_client import (
     BritecoreAPIClient,
     RequestParameters,
 )
+from britecore_libraries.api.britecore_async_api_client import AsyncBritecoreAPIClient
 
 
-def init_api_client(target_site: Optional[str] = None) -> BritecoreAPIClient:
+def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
 
@@ -31,7 +31,7 @@ def init_api_client(target_site: Optional[str] = None) -> BritecoreAPIClient:
     return _api_client
 
 
-def init_async_api_client(target_site: Optional[str] = None) -> AsyncBritecoreAPIClient:
+def init_async_api_client(target_site: str | None = None) -> AsyncBritecoreAPIClient:
     """Initialize and return a lazy async API client wrapper."""
     resolved_target_site = target_site or os.environ.get("target_site")
     return AsyncBritecoreAPIClient(resolved_target_site)
@@ -108,7 +108,6 @@ web_timeout_long: int = 50
 web_timeout: int = 5
 
 
-
 __all__ = [
     "RequestParameters",
     "api_client",
@@ -133,4 +132,3 @@ def __getattr__(name: str):
     timeout state.
     """
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-

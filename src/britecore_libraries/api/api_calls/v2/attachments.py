@@ -13,8 +13,9 @@ Provides:
     upload_attachment_to_user_folder    -- Upload a file to a specific user folder.
     upload_attachment_unified           -- Upload a file using the unified upload endpoint.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -37,12 +38,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send an attachments request and normalize the response."""
     LOGGER.debug("Calling attachments endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -51,10 +52,10 @@ def _post(
 
 
 def create_folder_in_user_folder(
-    folder_name: Optional[str] = None,
-    parent_folder_id: Optional[str] = None,
-    reference_id: Optional[str] = None,
-    reference_type: Optional[str] = None,
+    folder_name: str | None = None,
+    parent_folder_id: str | None = None,
+    reference_id: str | None = None,
+    reference_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a new folder inside a user folder.
@@ -90,7 +91,7 @@ def create_folder_in_user_folder(
 
 
 def delete_photo(
-    file_id: Optional[str] = None,
+    file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete an attachment photo by file ID.
@@ -115,13 +116,13 @@ def delete_photo(
 
 
 def get_attachments_file_list(
-    ascending: Optional[bool] = None,
-    folder_id: Optional[str] = None,
-    include_forms: Optional[bool] = None,
-    order_by: Optional[str] = None,
-    page: Optional[int] = None,
-    reference_id: Optional[str] = None,
-    reference_type: Optional[str] = None,
+    ascending: bool | None = None,
+    folder_id: str | None = None,
+    include_forms: bool | None = None,
+    order_by: str | None = None,
+    page: int | None = None,
+    reference_id: str | None = None,
+    reference_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a paginated list of attachment files for a reference.
@@ -166,7 +167,7 @@ def get_attachments_file_list(
 
 
 def get_file_metadata(
-    file_id: Optional[str] = None,
+    file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve metadata for a specific file.
@@ -191,7 +192,7 @@ def get_file_metadata(
 
 
 def get_resource_photos(
-    reference_id: Optional[str] = None,
+    reference_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve photos associated with a specific resource.
@@ -216,8 +217,8 @@ def get_resource_photos(
 
 
 def move_user_file(
-    file_id: Optional[str] = None,
-    to_folder_id: Optional[str] = None,
+    file_id: str | None = None,
+    to_folder_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Move a file to a different folder.
@@ -244,7 +245,7 @@ def move_user_file(
 
 
 def remove_attachments(
-    attachment_ids: Optional[list] = None,
+    attachment_ids: list | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Remove multiple attachments by their IDs.
@@ -269,8 +270,8 @@ def remove_attachments(
 
 
 def rename_user_file(
-    file_id: Optional[str] = None,
-    file_name: Optional[str] = None,
+    file_id: str | None = None,
+    file_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Rename an existing user file.
@@ -297,15 +298,15 @@ def rename_user_file(
 
 
 def retrieve_attachments(
-    ascending: Optional[bool] = None,
-    folder_id: Optional[str] = None,
-    list_view: Optional[bool] = None,
-    order_by: Optional[str] = None,
-    page: Optional[int] = None,
-    page_size: Optional[int] = None,
-    reference_id: Optional[str] = None,
-    reference_type: Optional[str] = None,
-    search_string: Optional[str] = None,
+    ascending: bool | None = None,
+    folder_id: str | None = None,
+    list_view: bool | None = None,
+    order_by: str | None = None,
+    page: int | None = None,
+    page_size: int | None = None,
+    reference_id: str | None = None,
+    reference_type: str | None = None,
+    search_string: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve attachments for a reference, with pagination and filtering.
@@ -356,12 +357,12 @@ def retrieve_attachments(
 
 
 def upload_attachment_to_user_folder(
-    file_data_base64: Optional[str] = None,
-    file_name: Optional[str] = None,
-    file_type: Optional[str] = None,
-    folder_id: Optional[str] = None,
-    reference_id: Optional[str] = None,
-    reference_type: Optional[str] = None,
+    file_data_base64: str | None = None,
+    file_name: str | None = None,
+    file_type: str | None = None,
+    folder_id: str | None = None,
+    reference_id: str | None = None,
+    reference_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Upload a Base64-encoded file to a specific user folder.
@@ -403,13 +404,13 @@ def upload_attachment_to_user_folder(
 
 
 def upload_attachment_unified(
-    file_data_base64: Optional[str] = None,
-    file_name: Optional[str] = None,
-    file_type: Optional[str] = None,
-    folder_id: Optional[str] = None,
-    reference_id: Optional[str] = None,
-    reference_type: Optional[str] = None,
-    revision_id: Optional[str] = None,
+    file_data_base64: str | None = None,
+    file_name: str | None = None,
+    file_type: str | None = None,
+    folder_id: str | None = None,
+    reference_id: str | None = None,
+    reference_type: str | None = None,
+    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Upload a file using the unified attachment upload endpoint.

@@ -25,6 +25,11 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "0.0.0"
 
 # Constants
+# API client helpers — exposed at package root for convenience
+from britecore_libraries.api.api_calls import (
+    get_api_client,
+    get_async_api_client,
+)
 from britecore_libraries.constants import (
     COMMON_CITY_REPLACEMENT,
     DEFAULT_ADDRESS_TYPE,
@@ -51,12 +56,6 @@ from britecore_libraries.validators import (
     fix_apostrophe_capitalization,
     fix_suffix_capitalization,
     normalize_business_name,
-)
-
-# API client helpers — exposed at package root for convenience
-from britecore_libraries.api.api_calls import (
-    get_api_client,
-    get_async_api_client,
 )
 
 __all__ = [

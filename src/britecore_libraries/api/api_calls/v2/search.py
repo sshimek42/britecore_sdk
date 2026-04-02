@@ -4,8 +4,9 @@ Provides:
     add_to_index       -- Add a document to a search index.
     remove_from_index  -- Remove a document from a search index.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -28,12 +29,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a search request and normalize the response."""
     LOGGER.debug("Calling search endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -42,9 +43,9 @@ def _post(
 
 
 def add_to_index(
-    document: Optional[dict] = None,
-    id: Optional[str] = None,
-    index_name: Optional[str] = None,
+    document: dict | None = None,
+    id: str | None = None,
+    index_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a document to a search index.
@@ -73,8 +74,8 @@ def add_to_index(
 
 
 def remove_from_index(
-    id: Optional[str] = None,
-    index_name: Optional[str] = None,
+    id: str | None = None,
+    index_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Remove a document from a search index.

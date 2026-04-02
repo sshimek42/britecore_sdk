@@ -5,7 +5,7 @@ import time
 import uuid
 from json import JSONDecodeError, dumps, loads
 from logging import Logger
-from typing import Any, NotRequired, Optional, TypedDict  # added typing
+from typing import Any, NotRequired, TypedDict  # added typing
 
 import urllib3
 from urllib3.exceptions import (
@@ -119,17 +119,17 @@ class BritecoreAPIClient:
     process without interfering with each other.
     """
 
-    def __init__(self, target_site: Optional[str]) -> None:
-        self.api_key: Optional[str] = None
-        self.token_class: Optional[OAuthToken] = None
-        self.use_api_key: Optional[bool] = None
-        self.http: Optional[urllib3.PoolManager] = None
-        self.web_retry: Optional[int] = None
-        self.web_timeout_long: Optional[int] = None
-        self.web_timeout: Optional[int] = None
-        self.base_url: Optional[str] = None
-        self.bad_url_error: Optional[str] = None
-        self.enable_timers: Optional[bool] = None
+    def __init__(self, target_site: str | None) -> None:
+        self.api_key: str | None = None
+        self.token_class: OAuthToken | None = None
+        self.use_api_key: bool | None = None
+        self.http: urllib3.PoolManager | None = None
+        self.web_retry: int | None = None
+        self.web_timeout_long: int | None = None
+        self.web_timeout: int | None = None
+        self.base_url: str | None = None
+        self.bad_url_error: str | None = None
+        self.enable_timers: bool | None = None
         self.site_settings: Any = None
         self.target_site = target_site
 
@@ -264,7 +264,9 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned("Error - No response")
 
         if response.status == 401 or response.status == 403:
-            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
+            LOGGER.error(
+                f"Authentication error - {response.status} - {response.reason}"
+            )
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
             )
@@ -317,7 +319,9 @@ class BritecoreAPIClient:
             json_result: Any = loads(response.data.decode("utf-8"))
         except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
             LOGGER.error("Error parsing API response: %s", parse_error)
-            raise BritecoreError.NoDataReturned(f"Error parsing API response: {parse_error}")
+            raise BritecoreError.NoDataReturned(
+                f"Error parsing API response: {parse_error}"
+            )
 
         result = json_result.get("success")
         message = cls._extract_error_message(
@@ -340,12 +344,12 @@ class BritecoreAPIClient:
     def do_request(
         self,
         path: str,
-        json: Optional[dict[str, Any]] = None,
-        request_timeout: Optional[Timeout | int | float] = None,
-        request_retries: Optional[Retry | int] = None,
-        request_headers: Optional[dict[str, Any]] = None,
+        json: dict[str, Any] | None = None,
+        request_timeout: Timeout | int | float | None = None,
+        request_retries: Retry | int | None = None,
+        request_headers: dict[str, Any] | None = None,
         method: str = "POST",
-    ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]:
+    ) -> urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
 

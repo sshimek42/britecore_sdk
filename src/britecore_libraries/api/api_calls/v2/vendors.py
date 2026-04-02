@@ -18,8 +18,9 @@ Provides:
     munichre_indepth_eligibility                          -- Check MunichRe in-depth eligibility for a property.
     update_value360_replacement_cost_value                -- Update the Value360 replacement cost value.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -42,12 +43,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a vendors request and normalize the response."""
     LOGGER.debug("Calling vendors endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -56,8 +57,8 @@ def _post(
 
 
 def build_ivans_manual_claim(
-    data_list: Optional[list] = None,
-    file_date: Optional[str] = None,
+    data_list: list | None = None,
+    file_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Build an IVANS manual claim file.
@@ -84,8 +85,8 @@ def build_ivans_manual_claim(
 
 
 def build_nxtech_initial_load(
-    contact_id: Optional[str] = None,
-    file_date: Optional[str] = None,
+    contact_id: str | None = None,
+    file_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Build an NxTech initial load file for a contact.
@@ -112,8 +113,8 @@ def build_nxtech_initial_load(
 
 
 def build_nxtech_manual_transactions(
-    data_list: Optional[list] = None,
-    file_date: Optional[str] = None,
+    data_list: list | None = None,
+    file_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Build NxTech manual transaction records.
@@ -140,7 +141,7 @@ def build_nxtech_manual_transactions(
 
 
 def commercial_munichre_indepth_eligibility(
-    property_id: Optional[str] = None,
+    property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Check commercial MunichRe in-depth eligibility for a property.
@@ -165,8 +166,8 @@ def commercial_munichre_indepth_eligibility(
 
 
 def fetch_motor_vehicle_report_for_drivers(
-    drivers: Optional[list] = None,
-    store_no_hit: Optional[bool] = None,
+    drivers: list | None = None,
+    store_no_hit: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Fetch Motor Vehicle Report (MVR) data for a list of drivers.
@@ -193,8 +194,8 @@ def fetch_motor_vehicle_report_for_drivers(
 
 
 def get_aon_cat_score(
-    geocoding_service: Optional[str] = None,
-    risk_id: Optional[str] = None,
+    geocoding_service: str | None = None,
+    risk_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve an AON CAT score for a specific risk.
@@ -221,7 +222,7 @@ def get_aon_cat_score(
 
 
 def get_prefill_services_data(
-    property_id: Optional[str] = None,
+    property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve prefill services data for a property.
@@ -246,8 +247,8 @@ def get_prefill_services_data(
 
 
 def get_value360_token(
-    home_type: Optional[str] = None,
-    property_id: Optional[str] = None,
+    home_type: str | None = None,
+    property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a Value360 token for a property valuation session.
@@ -274,7 +275,7 @@ def get_value360_token(
 
 
 def get_wtw_score(
-    property_descriptor: Optional[str] = None,
+    property_descriptor: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a Willis Towers Watson (WTW) score for a property.
@@ -299,8 +300,8 @@ def get_wtw_score(
 
 
 def invoice_cloud_autopay_enroll(
-    enable: Optional[Any] = None,
-    policy_number: Optional[str] = None,
+    enable: Any | None = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Enroll or unenroll a policy in Invoice Cloud autopay.
@@ -327,7 +328,7 @@ def invoice_cloud_autopay_enroll(
 
 
 def invoice_cloud_autopay_is_enrolled(
-    policy_number: Optional[str] = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Check the Invoice Cloud autopay enrollment status for a policy.
@@ -352,8 +353,8 @@ def invoice_cloud_autopay_is_enrolled(
 
 
 def invoice_cloud_suppress_insured_deliverable_printings(
-    enable: Optional[bool] = None,
-    policy_number: Optional[str] = None,
+    enable: bool | None = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Suppress or unsuppress insured deliverable printings via Invoice Cloud.
@@ -380,8 +381,8 @@ def invoice_cloud_suppress_insured_deliverable_printings(
 
 
 def ivans_edocs_build(
-    date_cursor: Optional[str] = None,
-    file_ids: Optional[list] = None,
+    date_cursor: str | None = None,
+    file_ids: list | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Build IVANS eDocs for a set of files.
@@ -408,8 +409,8 @@ def ivans_edocs_build(
 
 
 def ivans_file_upload(
-    file_name: Optional[str] = None,
-    ivans_type: Optional[str] = None,
+    file_name: str | None = None,
+    ivans_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Upload a file to IVANS.
@@ -436,7 +437,7 @@ def ivans_file_upload(
 
 
 def munichre_indepth_eligibility(
-    property_id: Optional[str] = None,
+    property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Check MunichRe in-depth eligibility for a residential property.
@@ -461,8 +462,8 @@ def munichre_indepth_eligibility(
 
 
 def update_value360_replacement_cost_value(
-    report_id: Optional[str] = None,
-    result: Optional[dict] = None,
+    report_id: str | None = None,
+    result: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update the Value360 replacement cost value from a report result.

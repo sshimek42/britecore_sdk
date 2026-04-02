@@ -4,8 +4,9 @@ Provides:
     get_property_information_and_photos -- Retrieve comprehensive property
                                            details and associated photos.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -46,7 +47,7 @@ def get_property_information_and_photos(
     LOGGER.debug(
         f"Getting property information for property_id %f.yellow%{property_id}%f%"
     )
-    property_json: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    property_json: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},
         **kwargs,

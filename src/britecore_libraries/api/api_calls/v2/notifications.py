@@ -4,8 +4,9 @@ Provides:
     acknowledge  -- Acknowledge one or more notifications.
     current      -- Retrieve current (unacknowledged) notifications.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -23,12 +24,12 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a notifications request and normalize the response."""
     LOGGER.debug("Calling notifications endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,

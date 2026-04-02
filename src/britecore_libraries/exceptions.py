@@ -112,7 +112,9 @@ class BritecoreError:
             super().__init__(message)
 
         def __str__(self) -> str:
-            retry_info = f" Retry after {self.retry_after}s." if self.retry_after else ""
+            retry_info = (
+                f" Retry after {self.retry_after}s." if self.retry_after else ""
+            )
             return f"BriteCore rate limit exceeded - {self.message}.{retry_info}"
 
     class ServerError(Base):
@@ -157,5 +159,7 @@ class BritecoreError:
             super().__init__(message)
 
         def __str__(self) -> str:
-            timeout_info = f" (timeout={self.timeout_seconds}s)" if self.timeout_seconds else ""
+            timeout_info = (
+                f" (timeout={self.timeout_seconds}s)" if self.timeout_seconds else ""
+            )
             return f"BriteCore request timed out{timeout_info} - {self.message}"
