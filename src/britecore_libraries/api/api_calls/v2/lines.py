@@ -11,7 +11,7 @@ Key functions:
 
 from json import loads
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 import pyinputplus as py_menu
 from urllib3 import BaseHTTPResponse, HTTPResponse
@@ -54,7 +54,7 @@ def get_export_line_file(
     Raises:
         Any exceptions raised by the underlying API client or JSON parsing operations.
     """
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = None
+    request_result: BaseHTTPResponse | HTTPResponse | None = None
     LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
 
     if line_type == "Line":
@@ -101,7 +101,7 @@ def line_menu(
     :return: Tuple containing the selected identifiers and names
     :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
     """
-    request_result: Optional[BaseHTTPResponse, HTTPResponse]
+    request_result: BaseHTTPResponse | HTTPResponse | None
 
     def print_menu(
         print_menu_title: str,
@@ -239,7 +239,7 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
     and process_result method to handle the response. The path parameter is
     hardcoded to "/api/v2/lines/get_all_effective_dates".
     """
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates", **kwargs
     )
 
@@ -275,7 +275,7 @@ def get_all_states(
     if effective_date_id:
         effective_date_json = {"effective_date_id": effective_date_id}
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states", json=effective_date_json, **kwargs
     )
 
@@ -314,7 +314,7 @@ def get_all_lines(
     if location_id:
         current_lines_json.update({"location_id": location_id})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_lines", json=current_lines_json, **kwargs
     )
 
@@ -363,7 +363,7 @@ def list_policy_types(
 
     policy_types_json.update({"location_id": location_id})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/list_policy_types", json=policy_types_json, **kwargs
     )
 

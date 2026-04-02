@@ -6,7 +6,7 @@ Provides:
 
 from json import loads
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
@@ -80,7 +80,7 @@ def retrieve_notes(
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/notes/retrieveNotes", json=notes_json, **kwargs
     )
     if not request_result:

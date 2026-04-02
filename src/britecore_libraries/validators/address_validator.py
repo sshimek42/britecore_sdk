@@ -201,8 +201,8 @@ class AddressValidator:
                     f"Zip code missing - using {zip_code} for city of {city} "
                     f"and state of {state}"
                 )
-            except IndexError:
-                raise BritecoreError.InvalidAddress("Missing Zip Code")
+            except IndexError as err:
+                raise BritecoreError.InvalidAddress("Missing Zip Code") from err
 
         # Validate and normalize zip code
         zip_code = self.normalize_zipcode(zip_code)
@@ -468,8 +468,8 @@ class AddressValidator:
             r"\b(.)\1{1,2}",
             lambda mo: mo.group(0).upper(),
             address,
-            0,
-            re.IGNORECASE,
+            count=0,
+            flags=re.IGNORECASE,
         )
 
         # Fix last character if preceded by space

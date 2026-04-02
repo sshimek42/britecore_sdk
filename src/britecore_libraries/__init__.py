@@ -1,4 +1,4 @@
-# noqa: E402
+# ruff: noqa: E402
 
 """
 BriteCore Libraries - Core utilities for BriteCore API integration.

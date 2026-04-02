@@ -31,9 +31,9 @@ def load_zip_codes() -> pd.DataFrame:
 
     try:
         loaded_zip_codes = pd.read_csv(import_file, dtype=str)
-    except FileNotFoundError:
+    except FileNotFoundError as err:
         LOGGER.error("Zip Code lookup file is missing")
-        raise FileNotFoundError
+        raise FileNotFoundError("Zip Code lookup file is missing") from err
 
     return loaded_zip_codes
 

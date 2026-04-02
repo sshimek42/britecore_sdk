@@ -196,11 +196,11 @@ class BritecoreAPIClient:
             LOGGER.info("client_id and/or client_secret not found. Using api_key.")
             try:
                 self.api_key = self.site_settings.api_key
-            except AttributeError:
+            except AttributeError as err:
                 raise BritecoreError.BritecoreKeyError(
                     "api_key not found. Please set the api_key in your "
                     ".secrets.toml file."
-                )
+                ) from err
             self.token_class = None
         else:
             self.token_class = OAuthToken(
@@ -319,7 +319,7 @@ class BritecoreAPIClient:
             LOGGER.error("Error parsing API response: %s", parse_error)
             raise BritecoreError.NoDataReturned(
                 f"Error parsing API response: {parse_error}"
-            )
+            ) from parse_error
 
         result = json_result.get("success")
         message = cls._extract_error_message(
@@ -420,7 +420,7 @@ class BritecoreAPIClient:
             raise BritecoreError.RequestTimeoutError(
                 str(timeout_error),
                 timeout_seconds=self._timeout_seconds(request_timeout),
-            )
+            ) from timeout_error
         except (
             ProtocolError,
             ResponseError,
@@ -433,7 +433,7 @@ class BritecoreAPIClient:
                 _elapsed_ms,
                 request_error,
             )
-            raise BritecoreError.NoDataReturned(str(request_error))
+            raise BritecoreError.NoDataReturned(str(request_error)) from request_error
 
         if not request_result:
             LOGGER.error("[%s] ✗ no result object returned", request_id)

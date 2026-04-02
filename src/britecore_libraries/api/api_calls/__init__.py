@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 from britecore_libraries.api.britecore_api_client import (
     BritecoreAPIClient,

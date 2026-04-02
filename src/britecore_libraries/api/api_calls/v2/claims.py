@@ -5,7 +5,7 @@ Provides:
 """
 
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -46,7 +46,7 @@ def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     LOGGER.debug("Getting claim information")
     claim_search: dict[str, str] = {"claim_id": claim_id}
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/claims/get_claim", json=claim_search, **kwargs
     )
     return API_CLIENT.process_result(request_result)
