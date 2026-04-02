@@ -727,9 +727,9 @@ class TestStructuredTracing:
 
         error_calls = [str(call) for call in list(mock_logger.error.call_args_list)]
         log_text = " ".join(error_calls)
-        assert "timeout" in log_text.lower(), (
-            f"Expected 'timeout' in error calls: {error_calls}"
-        )
+        assert (
+            "timeout" in log_text.lower()
+        ), f"Expected 'timeout' in error calls: {error_calls}"
 
 
 # ===========================================================================

@@ -13,9 +13,7 @@ from urllib3.exceptions import (
     ProtocolError,
     ResponseError,
 )
-from urllib3.exceptions import (
-    TimeoutError as urlTimeoutError,
-)
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Timeout
 
 from britecore_libraries.exceptions import BritecoreError

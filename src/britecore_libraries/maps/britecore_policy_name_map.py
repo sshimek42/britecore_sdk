@@ -4,9 +4,9 @@ from re import Pattern
 from typing import Any
 
 
-def load_regexes() -> tuple[
-    dict[str | Any, Pattern[str] | Any], dict[str, dict[str, int]]
-]:
+def load_regexes() -> (
+    tuple[dict[str | Any, Pattern[str] | Any], dict[str, dict[str, int]]]
+):
     """
     Load and compile regular expressions and naming groups for different systems.
 

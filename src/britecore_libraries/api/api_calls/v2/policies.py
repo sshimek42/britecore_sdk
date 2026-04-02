@@ -272,15 +272,23 @@ def create_policy(
     policy_number: str | None = "",
     policy_type_id: str | None = "",
     inception_date: str | None = "",
-    term_type: Literal[
-        "Custom", "3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"
-    ]
-    | None = "1 Year",
+    term_type: (
+        Literal[
+            "Custom",
+            "3 Years",
+            "18 Months",
+            "1 Year",
+            "9 Months",
+            "6 Months",
+            "3 Months",
+        ]
+        | None
+    ) = "1 Year",
     expiration_date: str | None = "",  # Required if term_type is "Custom"
-    renewal_term_type: Literal[
-        "3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"
-    ]
-    | None = "1 Year",
+    renewal_term_type: (
+        Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"]
+        | None
+    ) = "1 Year",
     is_renewal: bool | None = False,
     as_agent: bool | None = False,
     manual_policy_number: bool | None = True,
@@ -666,10 +674,12 @@ def new_revision_contact(
     revision_id: str,
     contact_id: str,
     x_id: str | None = None,
-    contact_role: Literal[
-        "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
-    ]
-    | None = "namedInsured",
+    contact_role: (
+        Literal[
+            "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
+        ]
+        | None
+    ) = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
