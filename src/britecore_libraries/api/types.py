@@ -15,9 +15,10 @@ Example::
     result = cast(PolicyData, policies.retrieve_policy(policy_number="POL-001"))
     print(result["policy_number"])
 """
-from typing import Any
 
-from typing_extensions import NotRequired, TypedDict
+from typing import Any, NotRequired
+
+from typing_extensions import TypedDict
 
 
 class BritecoreResponse(TypedDict, total=False):
@@ -153,4 +154,3 @@ __all__ = [
     "QuoteData",
     "RevisionData",
 ]
-

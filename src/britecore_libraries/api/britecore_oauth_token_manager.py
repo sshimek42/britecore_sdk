@@ -1,7 +1,8 @@
+from collections.abc import Mapping  # typing added
 from datetime import datetime, timedelta
 from json import loads
 from types import MappingProxyType
-from typing import Any, Mapping  # typing added
+from typing import Any
 
 import urllib3
 from urllib3 import BaseHTTPResponse, Retry, Timeout
@@ -72,7 +73,9 @@ class OAuthToken:
                 "Failed to retrieve OAuth token from endpoint"
             )
         if http_result.status != 200:
-            logger.warning("OAuth token refresh failed; continuing to use existing token")
+            logger.warning(
+                "OAuth token refresh failed; continuing to use existing token"
+            )
             return
         logger.debug("Received token")
         http_result_dict: Any = loads(http_result.data)

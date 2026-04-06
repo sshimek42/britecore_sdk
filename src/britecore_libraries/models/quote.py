@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from britecore_libraries import logger
 
@@ -21,15 +21,15 @@ class BritecoreQuote:
     named_insureds: list[str]
     risks: list[str]
     underwriting_questions: list = field(default_factory=list)
-    description: Optional[str] = ""
+    description: str | None = ""
     number_origin: str = "manual"
     transaction_type: str = "renewal"
     term_type: str = "1 Year"
     inception_date: str = datetime.today().strftime("%Y-%m-%d")
     effective_date: str = datetime.today().strftime("%Y-%m-%d")
 
-    next_inspection_date: Optional[str] = None
-    previous_inspection_date: Optional[str] = None
+    next_inspection_date: str | None = None
+    previous_inspection_date: str | None = None
 
     def to_dict(self) -> dict[Any, Any]:
         """

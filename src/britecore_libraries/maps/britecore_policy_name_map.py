@@ -1,6 +1,7 @@
 import os
 import re
-from typing import Any, Pattern
+from re import Pattern
+from typing import Any
 
 
 def load_regexes() -> (

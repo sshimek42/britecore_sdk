@@ -7,8 +7,9 @@ Provides:
     get_contact            -- Retrieve a contact by its unique ID.
     find_contact_by_params -- Search for contacts by name, role, or date of birth.
 """
+
 from logging import Logger
-from typing import Any, Literal, Optional, Unpack
+from typing import Any, Literal, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -28,9 +29,9 @@ API_CLIENT: BritecoreAPIClient = api_client
 def new_contact(
     name: str,
     address: list[dict[str, str]],
-    phone: Optional[list[Optional[dict[str, str]]]] = None,
-    email: Optional[list[Optional[dict[str, str]]]] = None,
-    contact_type: Optional[Literal["individual", "organization"]] = "individual",
+    phone: list[dict[str, str] | None] | None = None,
+    email: list[dict[str, str] | None] | None = None,
+    contact_type: Literal["individual", "organization"] | None = "individual",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[str | None, str | None]:
     """
@@ -68,7 +69,7 @@ def new_contact(
 
     contact_request_json.update({"type": contact_type})
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/contacts/new_contact", json=contact_request_json, **kwargs
     )
 
@@ -89,7 +90,7 @@ def new_contact(
 
 def add_contact_to_role(
     contact_id: str,
-    role: Optional[ROLETYPES] = "Named Insured",
+    role: ROLETYPES | None = "Named Insured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -109,9 +110,9 @@ def add_contact_to_role(
     """
     LOGGER.debug(f"Adding role %f.yellow%{role}%f% to %f.yellow%{contact_id}%f%")
     role_request_json: dict[
-        Literal["contact_id", "role_name"], Optional[str | ROLETYPES]
+        Literal["contact_id", "role_name"], str | ROLETYPES | None
     ] = {"contact_id": contact_id, "role_name": role}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/contacts/add_contact_to_role",
         json=role_request_json,
         **kwargs,
@@ -156,7 +157,7 @@ def update_contact(
     """
     LOGGER.debug(f"Updating contact information\n%f.yellow%{contact}%f%")
     update_request_json: dict[str, dict] = {"contact": contact}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/contacts/update_contact",
         json=update_request_json,
         **kwargs,
@@ -184,7 +185,7 @@ def get_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     LOGGER.debug(f"Retrieving contact id %f.yellow%{contact_id}%f%")
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/contacts/get_contact",
         json=contact_retrieve_json,
         **kwargs,
@@ -195,8 +196,8 @@ def get_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
 def find_contact_by_params(
     name: str,
-    role_name: Optional[ROLETYPES] = None,
-    dob: Optional[str] = None,
+    role_name: ROLETYPES | None = None,
+    dob: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -225,7 +226,7 @@ def find_contact_by_params(
         "role_name": role_name,
         "dob": dob,
     }
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/contacts/find_contact_by_params",
         json=contact_retrieve_json,
         **kwargs,

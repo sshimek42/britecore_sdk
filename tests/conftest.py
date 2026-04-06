@@ -1,9 +1,8 @@
 """Shared pytest fixtures and configuration."""
 
-import os
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -45,7 +44,9 @@ def mock_http_response():
     """Mock successful HTTP response."""
     response = MagicMock()
     response.status = 200
-    response.data = b'{"success": true, "data": {"id": "test_id", "name": "test"}, "message": "OK"}'
+    response.data = (
+        b'{"success": true, "data": {"id": "test_id", "name": "test"}, "message": "OK"}'
+    )
     response.reason = "OK"
     return response
 
@@ -125,4 +126,3 @@ def env_no_system(monkeypatch):
     monkeypatch.delenv("system", raising=False)
     yield
     monkeypatch.delenv("system", raising=False)
-

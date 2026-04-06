@@ -10,8 +10,9 @@ Provides:
     get_transaction_report      -- Retrieve a paginated transaction report.
     validate_loss_run           -- Validate a loss run for a policy/contact.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -34,12 +35,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a dashboards request and normalize the response."""
     LOGGER.debug("Calling dashboards endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -48,8 +49,8 @@ def _post(
 
 
 def get_agency_experience_data(
-    contact_id: Optional[str] = None,
-    to_date: Optional[str] = None,
+    contact_id: str | None = None,
+    to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve agency experience data for the dashboard.
@@ -76,7 +77,7 @@ def get_agency_experience_data(
 
 
 def get_csr_data(
-    contact_id: Optional[str] = None,
+    contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve CSR (Customer Service Representative) dashboard data.
@@ -101,8 +102,8 @@ def get_csr_data(
 
 
 def get_loss_ratio_chart(
-    contact_id: Optional[str] = None,
-    to_date: Optional[str] = None,
+    contact_id: str | None = None,
+    to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve loss ratio chart data for the dashboard.
@@ -129,8 +130,8 @@ def get_loss_ratio_chart(
 
 
 def get_policy_count_data(
-    contact_id: Optional[str] = None,
-    to_date: Optional[str] = None,
+    contact_id: str | None = None,
+    to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve policy count data for the dashboard.
@@ -157,8 +158,8 @@ def get_policy_count_data(
 
 
 def get_premium_data(
-    contact_id: Optional[str] = None,
-    to_date: Optional[str] = None,
+    contact_id: str | None = None,
+    to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve premium data for the dashboard.
@@ -185,10 +186,10 @@ def get_premium_data(
 
 
 def get_report_url(
-    contact_id: Optional[str] = None,
-    from_date: Optional[str] = None,
-    payment_types: Optional[str] = None,
-    to_date: Optional[str] = None,
+    contact_id: str | None = None,
+    from_date: str | None = None,
+    payment_types: str | None = None,
+    to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a dashboard report URL.
@@ -224,13 +225,13 @@ def get_report_url(
 
 
 def get_transaction_report(
-    contact_id: Optional[str] = None,
-    from_date: Optional[str] = None,
-    page: Optional[int] = None,
-    payment_types: Optional[str] = None,
-    records_per_page: Optional[str] = None,
-    sort_obj: Optional[str] = None,
-    to_date: Optional[str] = None,
+    contact_id: str | None = None,
+    from_date: str | None = None,
+    page: int | None = None,
+    payment_types: str | None = None,
+    records_per_page: str | None = None,
+    sort_obj: str | None = None,
+    to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a paginated transaction report.
@@ -275,8 +276,8 @@ def get_transaction_report(
 
 
 def validate_loss_run(
-    contact_id: Optional[str] = None,
-    policy_number: Optional[str] = None,
+    contact_id: str | None = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Validate a loss run for a policy or contact.

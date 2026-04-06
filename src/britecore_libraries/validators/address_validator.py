@@ -2,7 +2,8 @@
 
 import re
 from ast import literal_eval
-from typing import Any, Pattern
+from re import Pattern
+from typing import Any
 
 from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
@@ -19,14 +20,66 @@ ADDRESS_CHANGE = "ADDRESS UPDATED"
 ZIP_CODE_DF = zip_codes
 
 # Valid US state/territory abbreviations
-VALID_US_STATES: frozenset[str] = frozenset({
-    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
-    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
-    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
-    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
-    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
-    "DC", "PR", "VI", "GU", "AS", "MP",
-})
+VALID_US_STATES: frozenset[str] = frozenset(
+    {
+        "AL",
+        "AK",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "FL",
+        "GA",
+        "HI",
+        "ID",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "ME",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MS",
+        "MO",
+        "MT",
+        "NE",
+        "NV",
+        "NH",
+        "NJ",
+        "NM",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VT",
+        "VA",
+        "WA",
+        "WV",
+        "WI",
+        "WY",
+        "DC",
+        "PR",
+        "VI",
+        "GU",
+        "AS",
+        "MP",
+    }
+)
 
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: dict[str | Any, Pattern[str] | Any] = {}
@@ -106,12 +159,26 @@ class AddressValidator:
             full_address = literal_eval(str(self.full_address)[1:-2])
 
         # Extract components, supporting both canonical keys and short aliases
-        zip_code = (full_address.get("address_zip") or full_address.get("zip", "")).strip()
-        address1 = (full_address.get("address_line1") or full_address.get("street", "")).strip()
+        zip_code = (
+            full_address.get("address_zip") or full_address.get("zip", "")
+        ).strip()
+        address1 = (
+            full_address.get("address_line1") or full_address.get("street", "")
+        ).strip()
         address2 = (full_address.get("address_line2", "")).strip()
-        state = (full_address.get("address_state") or full_address.get("state", "")).upper()
-        county = (full_address.get("address_county") or full_address.get("county", "")).strip().title()
-        city = (full_address.get("address_city") or full_address.get("city", "")).title().strip()
+        state = (
+            full_address.get("address_state") or full_address.get("state", "")
+        ).upper()
+        county = (
+            (full_address.get("address_county") or full_address.get("county", ""))
+            .strip()
+            .title()
+        )
+        city = (
+            (full_address.get("address_city") or full_address.get("city", ""))
+            .title()
+            .strip()
+        )
         property_name = full_address.get("property", "").title().strip()
 
         # Validate address lines
@@ -134,8 +201,8 @@ class AddressValidator:
                     f"Zip code missing - using {zip_code} for city of {city} "
                     f"and state of {state}"
                 )
-            except IndexError:
-                raise BritecoreError.InvalidAddress("Missing Zip Code")
+            except IndexError as exc:
+                raise BritecoreError.InvalidAddress("Missing Zip Code") from exc
 
         # Validate and normalize zip code
         zip_code = self.normalize_zipcode(zip_code)
@@ -401,8 +468,8 @@ class AddressValidator:
             r"\b(.)\1{1,2}",
             lambda mo: mo.group(0).upper(),
             address,
-            0,
-            re.IGNORECASE,
+            count=0,
+            flags=re.IGNORECASE,
         )
 
         # Fix last character if preceded by space

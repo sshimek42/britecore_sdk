@@ -9,7 +9,7 @@ etc.) automatically invalidate the policy cache namespace on success.
 """
 
 from logging import Logger
-from typing import Any, Literal, Optional, Unpack
+from typing import Any, Literal, Unpack
 
 from urllib3.util import Timeout
 
@@ -55,10 +55,10 @@ async def _ensure_long_timeout(kwargs: dict[str, Any]) -> dict[str, Any]:
 
 
 async def aretrieve_policy(
-    policy_number: Optional[str] = None,
-    policy_id: Optional[str] = None,
-    revision_state: Optional[str] = None,
-    revision_id: Optional[str] = None,
+    policy_number: str | None = None,
+    policy_id: str | None = None,
+    revision_state: str | None = None,
+    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve policy information with cache enabled by default."""
@@ -96,10 +96,10 @@ async def aretrieve_policy(
 async def aadd_line_item(
     revision_id: str,
     item_id: str,
-    property_id: Optional[str] = "",
-    sub_line_id: Optional[str] = "",
-    link_id: Optional[str] = "",
-    check_for_subline: Optional[bool] = False,
+    property_id: str | None = "",
+    sub_line_id: str | None = "",
+    link_id: str | None = "",
+    check_for_subline: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
     """Add a line item and invalidate cached policy reads on success."""
@@ -148,10 +148,10 @@ async def aretrieve_policy_contact_info(
 
 
 async def acreate_policy(
-    policy_number: Optional[str] = "",
-    policy_type_id: Optional[str] = "",
-    inception_date: Optional[str] = "",
-    term_type: Optional[
+    policy_number: str | None = "",
+    policy_type_id: str | None = "",
+    inception_date: str | None = "",
+    term_type: (
         Literal[
             "Custom",
             "3 Years",
@@ -161,19 +161,21 @@ async def acreate_policy(
             "6 Months",
             "3 Months",
         ]
-    ] = "1 Year",
-    expiration_date: Optional[str] = "",
-    renewal_term_type: Optional[
+        | None
+    ) = "1 Year",
+    expiration_date: str | None = "",
+    renewal_term_type: (
         Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"]
-    ] = "1 Year",
-    is_renewal: Optional[bool] = False,
-    as_agent: Optional[bool] = False,
-    manual_policy_number: Optional[bool] = True,
-    effective_date: Optional[str] = "",
-    property_zip: Optional[str] = "",
-    underwriting_questions: Optional[list[Any]] = None,
-    underwriting_options: Optional[list[Any]] = None,
-    external_system_reference: Optional[str] = "",
+        | None
+    ) = "1 Year",
+    is_renewal: bool | None = False,
+    as_agent: bool | None = False,
+    manual_policy_number: bool | None = True,
+    effective_date: str | None = "",
+    property_zip: str | None = "",
+    underwriting_questions: list[Any] | None = None,
+    underwriting_options: list[Any] | None = None,
+    external_system_reference: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str]:
     """Create a policy and invalidate cached policy reads on success."""
@@ -213,8 +215,8 @@ async def acreate_policy(
 
 
 async def aretrieve_policy_terms(
-    policy_id: Optional[str] = "",
-    policy_number: Optional[str] = "",
+    policy_id: str | None = "",
+    policy_number: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve policy terms with caching enabled by default."""
@@ -241,7 +243,9 @@ async def aretrieve_policy_terms(
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_policy_terms",
         json=policy_retrieve_json,
-        **_apply_policy_read_cache(dict(kwargs), cache_key_parts=[p for p in cache_parts if p]),
+        **_apply_policy_read_cache(
+            dict(kwargs), cache_key_parts=[p for p in cache_parts if p]
+        ),
     )
     return await API_CLIENT.aprocess_result(request_result)
 
@@ -259,7 +263,7 @@ async def arate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) 
 
 async def aretrieve_revision_details(
     revision_id: str,
-    include_contact_details: Optional[bool] = True,
+    include_contact_details: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve revision details with long timeout and caching enabled by default."""
@@ -284,11 +288,11 @@ async def aretrieve_revision_details(
 
 async def aretrieve_risks(
     revision_id: str,
-    page: Optional[int] = 0,
-    page_size: Optional[int] = 10,
-    retrieve_remaining: Optional[bool] = True,
-    order_by: Optional[str] = "name",
-    risk_types: Optional[list[str]] = None,
+    page: int | None = 0,
+    page_size: int | None = 10,
+    retrieve_remaining: bool | None = True,
+    order_by: str | None = "name",
+    risk_types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve risks for a revision with caching enabled by default."""
@@ -330,16 +334,18 @@ async def aretrieve_risk_details(
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_risk_details",
         json={"risk_id": risk_id},
-        **_apply_policy_read_cache(dict(kwargs), cache_key_parts=[f"risk_id:{risk_id}"]),
+        **_apply_policy_read_cache(
+            dict(kwargs), cache_key_parts=[f"risk_id:{risk_id}"]
+        ),
     )
     return await API_CLIENT.aprocess_result(request_result)
 
 
 async def aupdate_rating_information(
-    property_id: Optional[str] = "",
-    revision_id: Optional[str] = "",
-    items: Optional[list[dict[str, Any]]] = None,
-    reset_premium: Optional[bool] = True,
+    property_id: str | None = "",
+    revision_id: str | None = "",
+    items: list[dict[str, Any]] | None = None,
+    reset_premium: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update rating information and invalidate cached policy reads on success."""
@@ -376,10 +382,13 @@ async def arate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 async def anew_revision_contact(
     revision_id: str,
     contact_id: str,
-    x_id: Optional[str] = None,
-    contact_role: Optional[
-        Literal["namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"]
-    ] = "namedInsured",
+    x_id: str | None = None,
+    contact_role: (
+        Literal[
+            "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
+        ]
+        | None
+    ) = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a contact to a revision and invalidate cached policy reads on success."""
@@ -416,9 +425,9 @@ async def anew_revision_contact(
 
 async def acreate_risk(
     revision_id: str,
-    property_group_number: Optional[int] = None,
-    building_number: Optional[int] = None,
-    force_categories: Optional[bool] = None,
+    property_group_number: int | None = None,
+    building_number: int | None = None,
+    force_categories: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a risk and invalidate cached policy reads on success."""
@@ -442,9 +451,9 @@ async def acreate_risk(
 
 async def aupdate_property_location(
     location: dict[str, Any],
-    soft_geoservice_bypass: Optional[bool] = None,
-    hard_geoservice_bypass: Optional[bool] = None,
-    reset_premiums: Optional[bool] = None,
+    soft_geoservice_bypass: bool | None = None,
+    hard_geoservice_bypass: bool | None = None,
+    reset_premiums: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update property location and invalidate cached policy reads on success."""
@@ -468,9 +477,7 @@ async def aupdate_property_location(
     return await API_CLIENT.aprocess_result(request_result)
 
 
-async def anew_mortgagee(
-    property_id: str, **kwargs: Unpack[RequestParameters]
-) -> Any:
+async def anew_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Create a new mortgagee and invalidate cached policy reads on success."""
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/new_mortgagee",

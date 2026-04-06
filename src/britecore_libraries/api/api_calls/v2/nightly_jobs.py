@@ -6,8 +6,9 @@ Provides:
     process_non_pays_and_cancellations              -- Process non-pay and cancellation events.
     process_renewals                                -- Process policy renewals for a date.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -30,12 +31,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a nightly_jobs request and normalize the response."""
     LOGGER.debug("Calling nightly_jobs endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -44,8 +45,8 @@ def _post(
 
 
 def process_auto_pays(
-    on_date: Optional[str] = None,
-    policy_number: Optional[str] = None,
+    on_date: str | None = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Process automatic payments for a given date.
@@ -72,8 +73,8 @@ def process_auto_pays(
 
 
 def process_cancellation_pending_or_non_renewals(
-    on_date: Optional[str] = None,
-    policy_number: Optional[str] = None,
+    on_date: str | None = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Process cancellation-pending or non-renewal policies for a date.
@@ -100,8 +101,8 @@ def process_cancellation_pending_or_non_renewals(
 
 
 def process_non_pays_and_cancellations(
-    on_date: Optional[str] = None,
-    policy_number: Optional[str] = None,
+    on_date: str | None = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Process non-pay events and policy cancellations for a date.
@@ -128,8 +129,8 @@ def process_non_pays_and_cancellations(
 
 
 def process_renewals(
-    policy_number: Optional[str] = None,
-    renew_date: Optional[str] = None,
+    policy_number: str | None = None,
+    renew_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Process policy renewals for a given renewal date.

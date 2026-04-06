@@ -7,6 +7,7 @@ Provides:
     async_create_full_quote -- Async create a full quote from a JSON payload.
     async_get_quote         -- Async retrieve a quote by ID (cached by default).
 """
+
 from logging import Logger
 from typing import Any, Unpack
 
@@ -64,7 +65,9 @@ async def aget_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve a quote by ID with short-lived caching enabled by default."""
     quote_json: dict[str, str] = {"id": id}
     LOGGER.debug("Getting quote")
-    request_kwargs = _apply_quote_read_cache(dict(kwargs), cache_key_parts=[f"quote:{id}"])
+    request_kwargs = _apply_quote_read_cache(
+        dict(kwargs), cache_key_parts=[f"quote:{id}"]
+    )
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/quotes/get_quote",
         json=quote_json,

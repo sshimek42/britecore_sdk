@@ -12,7 +12,7 @@ Provides:
 """
 
 from logging import Logger
-from typing import Any, Literal, Optional, Unpack
+from typing import Any, Literal, Unpack
 
 from britecore_libraries import logger
 from britecore_libraries.api.api_calls import (
@@ -50,9 +50,9 @@ def _apply_contact_mutation_cache(kwargs: dict[str, Any]) -> dict[str, Any]:
 async def anew_contact(
     name: str,
     address: list[dict[str, str]],
-    phone: Optional[list[Optional[dict[str, str]]]] = None,
-    email: Optional[list[Optional[dict[str, str]]]] = None,
-    contact_type: Optional[Literal["individual", "organization"]] = "individual",
+    phone: list[dict[str, str] | None] | None = None,
+    email: list[dict[str, str] | None] | None = None,
+    contact_type: Literal["individual", "organization"] | None = "individual",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[str | None, str | None]:
     """Create a new contact and invalidate cached contact reads on success."""
@@ -94,13 +94,13 @@ async def anew_contact(
 
 async def aadd_contact_to_role(
     contact_id: str,
-    role: Optional[ROLETYPES] = "Named Insured",
+    role: ROLETYPES | None = "Named Insured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a contact to a role and invalidate cached contact reads on success."""
     LOGGER.debug(f"Adding role %f.yellow%{role}%f% to %f.yellow%{contact_id}%f%")
     role_request_json: dict[
-        Literal["contact_id", "role_name"], Optional[str | ROLETYPES]
+        Literal["contact_id", "role_name"], str | ROLETYPES | None
     ] = {"contact_id": contact_id, "role_name": role}
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/contacts/add_contact_to_role",
@@ -142,8 +142,8 @@ async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> 
 
 async def afind_contact_by_params(
     name: str,
-    role_name: Optional[ROLETYPES] = None,
-    dob: Optional[str] = None,
+    role_name: ROLETYPES | None = None,
+    dob: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Search for contacts using cacheable parameterized lookups."""

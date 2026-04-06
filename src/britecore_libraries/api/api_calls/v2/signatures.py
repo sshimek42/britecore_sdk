@@ -8,8 +8,9 @@ Provides:
     update_signatures   -- Update signature records for an envelope.
     void_envelope       -- Void a DocuSign envelope.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -32,12 +33,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a signatures request and normalize the response."""
     LOGGER.debug("Calling signatures endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -46,7 +47,7 @@ def _post(
 
 
 def docusign_auth(
-    action: Optional[Any] = None,
+    action: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Perform a DocuSign authentication action.
@@ -71,7 +72,7 @@ def docusign_auth(
 
 
 def docusign_config(
-    data: Optional[Any] = None,
+    data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve or update the DocuSign integration configuration.
@@ -96,7 +97,7 @@ def docusign_config(
 
 
 def get_signatures(
-    revision_id: Optional[Any] = None,
+    revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve signature records for a policy revision.
@@ -121,7 +122,7 @@ def get_signatures(
 
 
 def recreate_envelope(
-    revision_id: Optional[Any] = None,
+    revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Recreate a DocuSign envelope for a policy revision.
@@ -146,9 +147,9 @@ def recreate_envelope(
 
 
 def update_signatures(
-    envelope_id: Optional[str] = None,
-    signers: Optional[str] = None,
-    status: Optional[str] = None,
+    envelope_id: str | None = None,
+    signers: str | None = None,
+    status: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update signature records for a DocuSign envelope.
@@ -177,9 +178,9 @@ def update_signatures(
 
 
 def void_envelope(
-    envelope_id: Optional[Any] = None,
-    revision_id: Optional[Any] = None,
-    void_reason: Optional[Any] = None,
+    envelope_id: Any | None = None,
+    revision_id: Any | None = None,
+    void_reason: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Void a DocuSign envelope.
