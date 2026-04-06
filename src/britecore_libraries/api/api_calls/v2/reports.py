@@ -5,7 +5,8 @@ Provides:
     retrieve_reports -- Retrieve all available reports.
     retrieve_report  -- Retrieve a single report by ID.
 """
-from typing import Any, Optional, Unpack
+
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -45,7 +46,7 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     list_json: dict[str, str] = {"report_id": report_id}
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/reports/list_files",
         json=list_json,
         **kwargs,
@@ -89,7 +90,7 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
     """
     required_json = None
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/reports/retrieve_reports", json=required_json, **kwargs
     )
 
@@ -121,7 +122,7 @@ def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     report_json: dict[str, str] = {"report_id": report_id}
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/reports/retrieve_report", json=report_json, **kwargs
     )
 

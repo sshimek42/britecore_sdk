@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Optional
+from typing import Any
 
 from urllib3 import BaseHTTPResponse
 from urllib3.util import Retry, Timeout
@@ -17,9 +17,9 @@ class AsyncBritecoreAPIClient:
 
     def __init__(
         self,
-        target_site: Optional[str] = None,
-        client: Optional[BritecoreAPIClient] = None,
-        cache: Optional[RequestCache] = None,
+        target_site: str | None = None,
+        client: BritecoreAPIClient | None = None,
+        cache: RequestCache | None = None,
         default_cache_ttl_seconds: int = 60,
     ) -> None:
         self.target_site = target_site or getattr(client, "target_site", None)
@@ -47,11 +47,15 @@ class AsyncBritecoreAPIClient:
         """Clear all cached responses."""
         self._cache.clear()
 
-    def invalidate_cache_namespaces(self, namespaces: list[str] | tuple[str, ...]) -> int:
+    def invalidate_cache_namespaces(
+        self, namespaces: list[str] | tuple[str, ...]
+    ) -> int:
         """Invalidate cached responses for the given namespaces."""
         return self._cache.invalidate_namespaces(namespaces)
 
-    async def aprocess_result(self, response: BaseHTTPResponse, logs: bool = False) -> Any:
+    async def aprocess_result(
+        self, response: BaseHTTPResponse, logs: bool = False
+    ) -> Any:
         """Process a sync HTTP response in the same way as ``BritecoreAPIClient``."""
         client = await self.aget_client()
         return client.process_result(response, logs=logs)
@@ -60,10 +64,10 @@ class AsyncBritecoreAPIClient:
         self,
         *,
         path: str,
-        json: Optional[dict[str, Any]],
-        request_timeout: Optional[Timeout],
-        request_retries: Optional[Retry],
-        request_headers: Optional[dict[str, Any]],
+        json: dict[str, Any] | None,
+        request_timeout: Timeout | None,
+        request_retries: Retry | None,
+        request_headers: dict[str, Any] | None,
         method: str,
     ) -> BaseHTTPResponse | None:
         """Execute the sync request in a worker thread."""
@@ -82,10 +86,10 @@ class AsyncBritecoreAPIClient:
         self,
         *,
         path: str,
-        json: Optional[dict[str, Any]],
-        request_headers: Optional[dict[str, Any]],
+        json: dict[str, Any] | None,
+        request_headers: dict[str, Any] | None,
         method: str,
-        cache_namespace: Optional[str],
+        cache_namespace: str | None,
         cache_key_parts: list[str] | tuple[str, ...] | None,
     ) -> str:
         """Build a stable cache key for the request."""
@@ -110,14 +114,14 @@ class AsyncBritecoreAPIClient:
     async def ado_request(
         self,
         path: str,
-        json: Optional[dict[str, Any]] = None,
-        request_timeout: Optional[Timeout] = None,
-        request_retries: Optional[Retry] = None,
-        request_headers: Optional[dict[str, Any]] = None,
-        method: Optional[str] = "POST",
+        json: dict[str, Any] | None = None,
+        request_timeout: Timeout | None = None,
+        request_retries: Retry | None = None,
+        request_headers: dict[str, Any] | None = None,
+        method: str | None = "POST",
         cache_enabled: bool = False,
-        cache_ttl_seconds: Optional[int] = None,
-        cache_namespace: Optional[str] = None,
+        cache_ttl_seconds: int | None = None,
+        cache_namespace: str | None = None,
         cache_key_parts: list[str] | tuple[str, ...] | None = None,
         cache_bypass: bool = False,
         cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,

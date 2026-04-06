@@ -1,7 +1,5 @@
 """Unit tests for configuration module."""
 
-import os
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -14,7 +12,7 @@ class TestLoadClientSettings:
     def test_init_with_target_site(self):
         """Test initialization with explicit target_site."""
         from britecore_libraries.config.config import LoadClientSettings
-        
+
         loader = LoadClientSettings("test_site")
         assert loader.target_site == "test_site"
 
@@ -22,7 +20,7 @@ class TestLoadClientSettings:
     def test_init_with_env_variable(self, monkeypatch):
         """Test initialization from environment variable."""
         from britecore_libraries.config.config import LoadClientSettings
-        
+
         monkeypatch.setenv("target_site", "env_site")
         loader = LoadClientSettings(None)
         assert loader.target_site == "env_site"
@@ -52,6 +50,7 @@ class TestConfigInitialization:
     def test_settings_object_created(self):
         """Test that settings object is created on import."""
         from britecore_libraries.config import settings
+
         assert settings is not None
 
     @pytest.mark.unit
@@ -60,5 +59,5 @@ class TestConfigInitialization:
         # This test verifies the fix: environments=True instead of enviroments
         # We verify this indirectly by ensuring the config module loads without error
         from britecore_libraries.config import settings
-        assert settings is not None
 
+        assert settings is not None

@@ -1,7 +1,7 @@
 """BriteCore v2 Commissions API endpoint wrappers."""
 
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -24,12 +24,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a commissions request and normalize the response."""
     LOGGER.debug("Calling commissions endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload or {},
         **kwargs,
@@ -38,7 +38,7 @@ def _post(
 
 
 def delete_batch_payments(
-    payment_ids: Optional[list[str]] = None,
+    payment_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete a batch of commission payments by ID."""
@@ -50,7 +50,7 @@ def delete_batch_payments(
 
 
 def delete_payment(
-    payment_id: Optional[str] = None,
+    payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete a single commission payment."""
@@ -67,7 +67,7 @@ def get_commission_payees(**kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def get_payment(
-    commission_payment_id: Optional[str] = None,
+    commission_payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a commission payment by ID."""
@@ -84,7 +84,7 @@ def get_unexported_commissions(**kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def save_batch_payments(
-    payments: Optional[list[dict[str, Any]]] = None,
+    payments: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Save a batch of commission payments."""
@@ -96,7 +96,7 @@ def save_batch_payments(
 
 
 def save_batch_payments_csv(
-    data: Optional[str] = None,
+    data: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Save batch commission payments from CSV data."""
@@ -108,8 +108,8 @@ def save_batch_payments_csv(
 
 
 def save_payment(
-    amount: Optional[float | int] = None,
-    agency_number: Optional[str] = None,
+    amount: float | int | None = None,
+    agency_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Save a single commission payment."""
@@ -121,7 +121,7 @@ def save_payment(
 
 
 def update_commission_payments_complete(
-    commission_payment_ids: Optional[list[str]] = None,
+    commission_payment_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Mark commission payments as complete."""

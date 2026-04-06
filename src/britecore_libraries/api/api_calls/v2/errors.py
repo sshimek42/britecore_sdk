@@ -3,8 +3,9 @@
 Provides:
     get_internal_error  -- Retrieve details for an internal error by ID.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -27,12 +28,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send an errors request and normalize the response."""
     LOGGER.debug("Calling errors endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -41,7 +42,7 @@ def _post(
 
 
 def get_internal_error(
-    internal_error_id: Optional[str] = None,
+    internal_error_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve details for an internal error record.

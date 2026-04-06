@@ -8,9 +8,10 @@ Key functions:
     line_menu            -- Interactive CLI menu for selecting effective date,
                             state, and line combinations.
 """
+
 from json import loads
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 import pyinputplus as py_menu
 from urllib3 import BaseHTTPResponse, HTTPResponse
@@ -31,7 +32,7 @@ def get_export_line_file(
     line: tuple,
     line_type: str,
     line_name: str,
-    include_custom_sequences: Optional[bool] = False,
+    include_custom_sequences: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -53,7 +54,7 @@ def get_export_line_file(
     Raises:
         Any exceptions raised by the underlying API client or JSON parsing operations.
     """
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = None
+    request_result: BaseHTTPResponse | HTTPResponse | None = None
     LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
 
     if line_type == "Line":
@@ -64,12 +65,10 @@ def get_export_line_file(
             "include_custom_sequences": include_custom_sequences,
         }
 
-        request_result: Optional[BaseHTTPResponse | HTTPResponse] = (
-            API_CLIENT.do_request(
-                path="/api/v2/lines/get_export_line_file",
-                json=web_request_json,
-                **kwargs,
-            )
+        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+            path="/api/v2/lines/get_export_line_file",
+            json=web_request_json,
+            **kwargs,
         )
     elif line_type == "Policy":
         request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
@@ -102,7 +101,7 @@ def line_menu(
     :return: Tuple containing the selected identifiers and names
     :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
     """
-    request_result: Optional[BaseHTTPResponse, HTTPResponse]
+    request_result: BaseHTTPResponse | HTTPResponse | None
 
     def print_menu(
         print_menu_title: str,
@@ -170,7 +169,7 @@ def line_menu(
         menu_options.update({make_menu["description"]: make_menu["id"]})
         menu_default = make_menu["description"]
     eff_date: tuple[list[str], str] = print_menu("Date", menu_options, menu_default)
-    eff_date_json: Optional[dict[str, list[str]]] = {"effective_date_id": eff_date[0]}
+    eff_date_json: dict[str, list[str]] | None = {"effective_date_id": eff_date[0]}
 
     request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states", json=eff_date_json, **kwargs
@@ -240,7 +239,7 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
     and process_result method to handle the response. The path parameter is
     hardcoded to "/api/v2/lines/get_all_effective_dates".
     """
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates", **kwargs
     )
 
@@ -248,7 +247,7 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def get_all_states(
-    effective_date_id: Optional[str] = None, **kwargs: Unpack[RequestParameters]
+    effective_date_id: str | None = None, **kwargs: Unpack[RequestParameters]
 ) -> Any:
     """
     Retrieve all states from the API endpoint.
@@ -271,12 +270,12 @@ def get_all_states(
         mechanisms are propagated as-is.
     """
 
-    effective_date_json: Optional[dict[str, str]] = {}
+    effective_date_json: dict[str, str] | None = {}
 
     if effective_date_id:
         effective_date_json = {"effective_date_id": effective_date_id}
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states", json=effective_date_json, **kwargs
     )
 
@@ -285,7 +284,7 @@ def get_all_states(
 
 def get_all_lines(
     effective_date_id: str,
-    location_id: Optional[str] = None,
+    location_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -315,7 +314,7 @@ def get_all_lines(
     if location_id:
         current_lines_json.update({"location_id": location_id})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_lines", json=current_lines_json, **kwargs
     )
 
@@ -324,8 +323,8 @@ def get_all_lines(
 
 def list_policy_types(
     location_id: str,
-    effective_date_id: Optional[str] = None,
-    effective_date: Optional[str] = None,
+    effective_date_id: str | None = None,
+    effective_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -364,7 +363,7 @@ def list_policy_types(
 
     policy_types_json.update({"location_id": location_id})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/list_policy_types", json=policy_types_json, **kwargs
     )
 

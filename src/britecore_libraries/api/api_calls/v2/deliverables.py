@@ -5,8 +5,9 @@ Provides:
     get_attachment     -- Retrieve a single attachment by file ID.
     get_edeliverables  -- Retrieve e-deliverables within a date range.
 """
+
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -24,14 +25,14 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def list_attachments(
-    policy_id: Optional[str] = None,
-    revision_id: Optional[str] = None,
-    contact_id: Optional[str] = None,
-    print_date_from: Optional[str] = None,
-    print_date_to: Optional[str] = None,
-    print_state_ne: Optional[str] = None,
-    print_state: Optional[str] = None,
-    order_by: Optional[str] = None,
+    policy_id: str | None = None,
+    revision_id: str | None = None,
+    contact_id: str | None = None,
+    print_date_from: str | None = None,
+    print_date_to: str | None = None,
+    print_state_ne: str | None = None,
+    print_state: str | None = None,
+    order_by: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -58,7 +59,7 @@ def list_attachments(
     Raises:
         BritecoreError.MissingParameter: If none of policy_id, contact_id, or revision_id are provided.
     """
-    local_env: dict[str, Optional[str]] = {**locals()}
+    local_env: dict[str, str | None] = {**locals()}
     if not policy_id and not contact_id and not revision_id:
         BritecoreError.MissingParameter("policy_id, contact_id or revision_id required")
 
@@ -81,7 +82,7 @@ def list_attachments(
 
     logger.debug("Getting attachments")
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/deliverables/list_attachments",
         json=attachments_search,
         **kwargs,
@@ -113,7 +114,7 @@ def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     LOGGER.debug(f"Getting attachment %f.yellow%{file_id}%f%")
     file_search: dict[str, str] = {"file_id": file_id}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
     )
 
@@ -123,7 +124,7 @@ def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 def get_edeliverables(
     date_from: str,
     date_to: str,
-    unprocessed_only: Optional[bool] = True,
+    unprocessed_only: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -156,7 +157,7 @@ def get_edeliverables(
 
     LOGGER.debug(f"Getting E-Deliverables\n%f.yellow%{required_json}%f%")
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/deliverables/get_edeliverables",
         json=required_json,
         **kwargs,
