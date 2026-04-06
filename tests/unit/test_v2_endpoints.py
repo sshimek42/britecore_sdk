@@ -5,6 +5,7 @@ wrapper functions, covering happy path and error scenarios.
 """
 import importlib
 from unittest.mock import MagicMock, patch
+
 import pytest
 from urllib3 import BaseHTTPResponse
 
@@ -484,8 +485,8 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_get_quote_success(self, env_api_key, mock_settings):
         """Test successful quote retrieval."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         mock_response = _make_response(b'{"success": true, "data": {"id": "Q123", "amount": 500}}')
         
@@ -506,8 +507,8 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_get_quote_no_response(self, env_api_key, mock_settings):
         """Test quote retrieval when API returns None."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
             mock_loader_instance = MagicMock()
@@ -523,8 +524,8 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_create_full_quote_success(self, env_api_key, mock_settings):
         """Test successful full quote creation."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         quote_json = {"carrier": "ACME", "coverage": "Liability"}
         mock_response = _make_response(b'{"success": true, "data": {"id": "Q456", "carrier": "ACME"}}')
@@ -546,8 +547,8 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_create_full_quote_no_data(self, env_api_key, mock_settings):
         """Test create_full_quote when API returns no data."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         quote_json = {"carrier": "ACME"}
         
@@ -567,8 +568,8 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_create_full_quote_returns_tuple(self, env_api_key, mock_settings):
         """Test create_full_quote returns a tuple of (data, id)."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         quote_json = {"carrier": "ACME"}
         mock_response = _make_response(b'{"success": true, "data": {"id": "Q789"}}')
@@ -593,8 +594,8 @@ class TestPoliciesEndpoints:
     @pytest.mark.unit
     def test_retrieve_policy_by_number(self, env_api_key, mock_settings):
         """Test policy retrieval by policy number."""
-        from britecore_libraries.api.api_calls.v2 import policies
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import policies
         
         mock_response = _make_response(b'{"success": true, "data": {"id": "P123", "policy_number": "POL001"}}')
         
@@ -614,8 +615,8 @@ class TestPoliciesEndpoints:
     @pytest.mark.unit
     def test_retrieve_policy_by_id(self, env_api_key, mock_settings):
         """Test policy retrieval by policy ID."""
-        from britecore_libraries.api.api_calls.v2 import policies
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import policies
         
         mock_response = _make_response(b'{"success": true, "data": {"id": "P456", "policy_number": "POL002"}}')
         
@@ -635,8 +636,8 @@ class TestPoliciesEndpoints:
     @pytest.mark.unit
     def test_add_line_item_success(self, env_api_key, mock_settings):
         """Test successful line item addition."""
-        from britecore_libraries.api.api_calls.v2 import policies
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import policies
         
         mock_response = _make_response(b'{"success": true, "data": {"added_items": ["item1"]}}')
         
@@ -659,8 +660,8 @@ class TestContactsEndpoints:
     @pytest.mark.unit
     def test_get_contact_success(self, env_api_key, mock_settings):
         """Test successful contact retrieval."""
-        from britecore_libraries.api.api_calls.v2 import contacts
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import contacts
         
         mock_response = _make_response(b'{"success": true, "data": {"id": "C123", "name": "John Doe"}}')
         
@@ -685,8 +686,8 @@ class TestContactsEndpoints:
         then extracts contact_json.get("contact_id") as the ID.
         It returns (contact_json, contact_id).
         """
-        from britecore_libraries.api.api_calls.v2 import contacts
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import contacts
 
         contact_data = {"contact_id": "C456", "name": "Jane Smith"}
         mock_response = _make_response(
@@ -858,8 +859,8 @@ class TestEndpointErrorHandling:
     @pytest.mark.unit
     def test_endpoint_handles_api_error_response(self, env_api_key, mock_settings):
         """Test that endpoints handle API error responses correctly."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         mock_response = _make_response(
             b'{"success": false, "message": "API Error"}',
@@ -880,8 +881,8 @@ class TestEndpointErrorHandling:
     @pytest.mark.unit
     def test_endpoint_handles_http_500(self, env_api_key, mock_settings):
         """Test that endpoints handle HTTP 500 errors."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         mock_response = _make_response(
             b'{"success": false, "message": "Internal Server Error"}',
@@ -902,8 +903,8 @@ class TestEndpointErrorHandling:
     @pytest.mark.unit
     def test_endpoint_handles_connection_error(self, env_api_key, mock_settings):
         """Test that endpoints handle connection errors."""
-        from britecore_libraries.api.api_calls.v2 import quotes
         from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls.v2 import quotes
         
         with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
             mock_loader_instance = MagicMock()

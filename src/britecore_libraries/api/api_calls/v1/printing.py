@@ -1,6 +1,6 @@
 from json import loads
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse, Retry, Timeout
 
@@ -18,7 +18,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 def get_to_be_printed(
     from_date: str,
     to_date: str,
-    ignore_state: Optional[bool] = True,
+    ignore_state: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -61,13 +61,13 @@ def get_to_be_printed(
 
     LOGGER.debug("Getting files to be printed")
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v1/printing/getToBePrinted",
         json=required_json,
         **kwargs,
     )
 
-    return_data: Optional[Any] = None
+    return_data: Any | None = None
     if result_request:
         return_data = loads(result_request.data.decode("utf-8"))
 
@@ -97,9 +97,9 @@ def mark_as_printed(file_ids: list[str], **kwargs: Unpack[RequestParameters]) ->
 
     required_json: dict[str, list] = {"file_ids": file_ids}
 
-    LOGGER.debug(f"Marking IDs\n%f.yellow%{file_ids}%f%")
+    LOGGER.debug(f"Marking IDs\n{file_ids}")
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v1/printing/markAsPrinted",
         json=required_json,
         **kwargs,

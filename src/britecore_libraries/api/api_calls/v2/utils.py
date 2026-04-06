@@ -4,7 +4,7 @@ Provides administrative and system-utility helpers that don't belong to a
 specific business domain.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -51,7 +51,7 @@ def get_available_function_names(**kwargs: Unpack[RequestParameters]) -> Any:
     endpoint.
     """
     LOGGER.debug("Retrieving functions")
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/utils/get_available_function_names",
         **kwargs,
     )
@@ -78,7 +78,7 @@ def rebuild_search_index(only_build: list, **kwargs) -> bool:
     """
     LOGGER.debug("Rebuilding index")
     rebuild_index: dict[str, Any] = {"only_build": only_build}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/utils/rebuild_search_index",
         json=rebuild_index,
         **kwargs,

@@ -6,17 +6,19 @@ new specific exception types added in Tier 2.
 """
 
 from unittest.mock import MagicMock, patch
+
 import pytest
 from urllib3 import BaseHTTPResponse
 from urllib3.exceptions import (
     ProtocolError,
     ResponseError,
+)
+from urllib3.exceptions import (
     TimeoutError as urlTimeoutError,
 )
 from urllib3.util import Timeout
 
 from britecore_libraries.exceptions import BritecoreError
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -400,8 +402,9 @@ class TestInitClientConfigErrors:
 
     @pytest.mark.unit
     def test_missing_base_url_raises_britecore_key_error(self, env_api_key):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
         from types import SimpleNamespace
+
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
         bad_settings = SimpleNamespace(
             base_url="",
             client_id="",
@@ -428,8 +431,9 @@ class TestInitClientConfigErrors:
 
     @pytest.mark.unit
     def test_defaults_applied_when_timeout_missing(self, env_api_key, mock_settings):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
         from types import SimpleNamespace
+
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
         settings_no_timeout = SimpleNamespace(
             base_url="example.com",
             client_id="",

@@ -1,4 +1,4 @@
-# noqa: E402
+# ruff: noqa: E402
 
 """
 BriteCore Libraries - Core utilities for BriteCore API integration.
@@ -12,12 +12,11 @@ This package provides:
 
 from importlib.metadata import PackageNotFoundError, version
 
-from britecore_libraries.base_logger import SCLogger
+from britecore_libraries.base_logger import get_logger
 
-logger_class = SCLogger(
+logger = get_logger(
     __package__, level="INFO", log_to_file=True, log_file_level="INFO"
 )
-logger = logger_class.get_logger()
 
 try:
     __version__ = version("britecore_libraries")
@@ -25,6 +24,11 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "0.0.0"
 
 # Constants
+# API client helpers — exposed at package root for convenience
+from britecore_libraries.api.api_calls import (
+    get_api_client,
+    get_async_api_client,
+)
 from britecore_libraries.constants import (
     COMMON_CITY_REPLACEMENT,
     DEFAULT_ADDRESS_TYPE,
@@ -51,12 +55,6 @@ from britecore_libraries.validators import (
     fix_apostrophe_capitalization,
     fix_suffix_capitalization,
     normalize_business_name,
-)
-
-# API client helpers — exposed at package root for convenience
-from britecore_libraries.api.api_calls import (
-    get_api_client,
-    get_async_api_client,
 )
 
 __all__ = [

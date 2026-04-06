@@ -8,7 +8,7 @@ Provides:
     post_return_premiums                    -- Post return premiums to Intacct.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -31,12 +31,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send an intacct request and normalize the response."""
     LOGGER.debug("Calling intacct endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -99,7 +99,7 @@ def get_unexported_return_premiums_xml(
 
 
 def post_claim_transactions(
-    payload: Optional[dict] = None,
+    payload: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Post claim transactions to Intacct.
@@ -124,7 +124,7 @@ def post_claim_transactions(
 
 
 def post_return_premiums(
-    payload: Optional[dict] = None,
+    payload: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Post return premiums to Intacct.

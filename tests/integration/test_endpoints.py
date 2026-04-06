@@ -11,13 +11,12 @@ Run only live sandbox tests (requires env vars — see conftest.py):
     BRITECORE_INTEGRATION_TESTS=true BRITECORE_SANDBOX_URL=... pytest tests/integration/ -m sandbox -v
 """
 
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
-from typing import Any, cast
 
 from tests.integration.conftest import requires_sandbox
-
 
 # ===========================================================================
 # Quotes
@@ -160,7 +159,9 @@ class TestPoliciesEndpoints:
                 }
             }
 
-            from britecore_libraries.api.api_calls.v2.policies import retrieve_policy_ids
+            from britecore_libraries.api.api_calls.v2.policies import (
+                retrieve_policy_ids,
+            )
 
             rev_id, prop_id = retrieve_policy_ids("POL-99")
 
@@ -279,7 +280,9 @@ class TestDeliverablesEndpoints:
             mock.process_result.return_value = [{"file_id": "f-1"}, {"file_id": "f-2"}]
             mock_module.multiple_parameter_verification.return_value = {"policy_id": "pol-5"}
 
-            from britecore_libraries.api.api_calls.v2.deliverables import list_attachments
+            from britecore_libraries.api.api_calls.v2.deliverables import (
+                list_attachments,
+            )
 
             result = list_attachments(policy_id="pol-5")
 
@@ -307,7 +310,9 @@ class TestDeliverablesEndpoints:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = [{"deliverable_id": "ed-1"}]
 
-            from britecore_libraries.api.api_calls.v2.deliverables import get_edeliverables
+            from britecore_libraries.api.api_calls.v2.deliverables import (
+                get_edeliverables,
+            )
 
             result = get_edeliverables("2026-01-01", "2026-03-31")
 
@@ -333,7 +338,9 @@ class TestInspectionsEndpoints:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"updated": True}
 
-            from britecore_libraries.api.api_calls.v2.inspections import update_inspection_dates
+            from britecore_libraries.api.api_calls.v2.inspections import (
+                update_inspection_dates,
+            )
 
             result = update_inspection_dates(
                 policy_number="POL-INS",
@@ -496,7 +503,9 @@ class TestContactsV1Endpoints:
             mock_resp.data = raw
             mock.do_request.return_value = mock_resp
 
-            from britecore_libraries.api.api_calls.v1.contacts import retrieve_contact_list
+            from britecore_libraries.api.api_calls.v1.contacts import (
+                retrieve_contact_list,
+            )
 
             result = retrieve_contact_list("John")
 

@@ -184,6 +184,10 @@ venv1/
 # Configuration and secrets
 src/britecore_libraries/config/.secrets.toml
 src/britecore_libraries/config/settings.toml
+
+# Sensitive mapping data (do not commit real map payloads)
+src/britecore_libraries/maps/*_map.py
+!src/britecore_libraries/maps/__init__.py
 # Auto-generated diagrams
 *.svg
 # Temporary/generated files

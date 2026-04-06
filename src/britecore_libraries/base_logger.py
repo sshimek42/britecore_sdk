@@ -1,32 +1,58 @@
-from logging import Logger
+"""Logger configuration using Python's built-in logging module."""
 
-from sclogging import sclogging_main as scl
-
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(
-                Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+import logging
+from pathlib import Path
 
 
-class SCLogger(metaclass=Singleton):
-    _logger = None
+def get_logger(
+    name: str,
+    level: str = "INFO",
+    log_to_file: bool = True,
+    log_file_level: str = "INFO",
+) -> logging.Logger:
+    """
+    Create and configure a logger instance with both console and optional file output.
 
-    def __init__(self, *args, **kwargs):
-        if not self._logger:
-            self._logger = scl.get_logger(*args, **kwargs)
+    This function provides a simple way to set up a logger with sensible defaults,
+    supporting both console output and file output. It replaces the previous SCLogging
+    wrapper with Python's built-in logging module.
 
-    def get_logger(self) -> Logger:
-        """
+    Args:
+        name: The logger name (typically __package__ or module name)
+        level: Console output log level (default: "INFO")
+        log_to_file: Whether to enable file logging (default: True)
+        log_file_level: File output log level (default: "INFO")
 
-        Retrieves the logger instance associated with this object.
+    Returns:
+        logging.Logger: A configured logger instance
+    """
+    logger = logging.getLogger(name)
 
-        Returns:
-            Logger: The logger instance used for logging messages.
-        """
+    # Only configure if not already configured (prevent duplicate handlers)
+    if not logger.handlers:
+        logger.setLevel(getattr(logging, level))
 
-        return self._logger
+        # Console handler
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(getattr(logging, level))
+        console_formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+        )
+        console_handler.setFormatter(console_formatter)
+        logger.addHandler(console_handler)
+
+        # File handler (optional)
+        if log_to_file:
+            log_dir = Path.home() / ".britecore_logs"
+            log_dir.mkdir(exist_ok=True)
+            log_file = log_dir / f"{name}.log"
+
+            file_handler = logging.FileHandler(log_file)
+            file_handler.setLevel(getattr(logging, log_file_level))
+            file_formatter = logging.Formatter(
+                "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+            )
+            file_handler.setFormatter(file_formatter)
+            logger.addHandler(file_handler)
+
+    return logger

@@ -5,7 +5,7 @@ Provides:
                                policy or property.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -23,10 +23,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def update_inspection_dates(
-    policy_number: Optional[str] = None,
-    property_id: Optional[str] = None,
-    next_inspection_date: Optional[str] = None,
-    inspection_date_request: Optional[str] = None,
+    policy_number: str | None = None,
+    property_id: str | None = None,
+    next_inspection_date: str | None = None,
+    inspection_date_request: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -49,7 +49,7 @@ def update_inspection_dates(
     Raises:
         BritecoreError.MissingParameter: If neither policy_number nor property_id is provided.
     """
-    local_env: dict[str, Optional[str]] = {**locals()}
+    local_env: dict[str, str | None] = {**locals()}
 
     if not policy_number and not property_id:
         BritecoreError.MissingParameter("policy_number or property_id is required")
@@ -70,7 +70,7 @@ def update_inspection_dates(
         if v and k not in parameter_priority:
             inspection_json.update({k: v})
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/inspections/update_inspection_dates",
         json=inspection_json,
         **kwargs,

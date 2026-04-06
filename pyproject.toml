@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_libraries"
-version = "1.0.0"
+version = "1.1.0"
 description = "BriteCore Libraries - Core utilities for BriteCore API integration."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -13,7 +13,6 @@ requires-python = ">=3.11"
 dependencies = [
     "dynaconf~=3.2.13",
     "pandas~=3.0.1",
-    "sclogging==1.3.1",
     "setuptools~=82.0.1",
     "typing_extensions>=4.6.0",
     "urllib3~=2.6.3",

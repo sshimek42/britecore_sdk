@@ -7,7 +7,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [Unreleased]
+## [1.1.0] — 2026-04-06
 
 ### Added
 
@@ -28,8 +28,19 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   now covered**.
 - `tests/unit/test_v2_new_endpoints.py` — parametrized unit tests for all
   newly implemented domain modules.
+- `tests/unit/test_logging_tokens.py` — regression tests that assert no
+  legacy SCLogging color-format tokens remain in the source tree and that
+  runtime log output is plain text.
 - CI workflow (`.github/workflows/ci.yml`) now covers Python 3.11–3.14,
   runs ruff, black, mypy, and pytest with a 60% coverage gate.
+- `docs/MAP_FILES.md` — policy and sample structures for sensitive
+  `*_map.py` files that must not be committed to version control.
+- `maps/__init__.py` runtime fallback pattern: `britecore_libraries.maps`
+  now re-exports `agency`, `policy_map`, `britecore_policy_type_map`,
+  `field_map_to_britecore`, `field_map_to_named_insured`, and
+  `field_map_to_risk_location` with graceful `ImportError` fallbacks to
+  empty dicts, and `load_regexes` falls back to a built-in implementation
+  when the private `britecore_policy_name_map.py` is absent.
 
 ### Changed
 
@@ -37,9 +48,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   optional extras (`[database]`, `[browser]`, `[interactive]`). Existing
   consumers who use these utilities should add the relevant extra:
   `pip install "britecore_libraries[database]"`.
-- `sclogging` upgraded from `1.2.1` to `1.3.1`, the first upstream release
-  that declares Python `>=3.11` support, so dependency resolution now matches
-  the project CI matrix and package metadata.
+- **`sclogging` dependency removed.** `base_logger.py` has been rewritten
+  to use Python's built-in `logging` module. The `SCLogger` singleton class
+  is gone; `get_logger()` now returns a standard `logging.Logger` directly.
+  `britecore_odbc` and `britecore_selenium` have been updated to use the
+  package-level logger instead.
+- SCLogging color-format escape tokens (e.g. `%f.yellow%…%f%`) removed from
+  all log-message strings across `contacts`, `async_contacts`, `deliverables`,
+  `insured`, `lines`, `policies`, `async_policies`, `v1/printing`, and
+  `address_validator`. Log output is now plain text and compatible with any
+  standard Python logging handler.
+- Private map files (`britecore_agency_map.py`, `britecore_field_map.py`,
+  `britecore_policy_map.py`, `britecore_policy_name_map.py`) removed from
+  git tracking. `.gitignore` pattern `maps/*_map.py` prevents accidental
+  re-addition. The runtime fallback in `maps/__init__.py` ensures the
+  package still imports cleanly in environments without these files.
 - Documentation dependencies now constrain `sphinx` to `>=8.2.3,<9.1` so the
   `docs` extra remains resolvable on Python 3.11, matching the supported
   project floor and CI verification range.

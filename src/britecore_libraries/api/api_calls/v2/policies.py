@@ -14,7 +14,7 @@ Key functions:
     get_policies            -- List all policies (paginated).
 """
 from logging import Logger
-from typing import Any, Literal, Optional, Unpack
+from typing import Any, Literal, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
@@ -32,10 +32,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def retrieve_policy(
-    policy_number: Optional[str] = None,
-    policy_id: Optional[str] = None,
-    revision_state: Optional[str] = None,
-    revision_id: Optional[str] = None,
+    policy_number: str | None = None,
+    policy_id: str | None = None,
+    revision_state: str | None = None,
+    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -82,11 +82,11 @@ def retrieve_policy(
     if revision_state:
         policy_request_json.update({"revision_state": revision_state})
 
-    provided_timeout: Optional[Timeout] = kwargs.get("request_timeout")
+    provided_timeout: Timeout | None = kwargs.get("request_timeout")
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_policy",
         json=policy_request_json,
         **kwargs,
@@ -98,10 +98,10 @@ def retrieve_policy(
 def add_line_item(
     revision_id: str,
     item_id: str,
-    property_id: Optional[str] = "",
-    sub_line_id: Optional[str] = "",
-    link_id: Optional[str] = "",
-    check_for_subline: Optional[bool] = False,
+    property_id: str | None = "",
+    sub_line_id: str | None = "",
+    link_id: str | None = "",
+    check_for_subline: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
     """
@@ -129,7 +129,7 @@ def add_line_item(
     local_env: dict[str, Any] = locals()
     LOGGER.debug("Adding line")
     line_add_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/add_line_item",
         json=line_add_json,
         **kwargs,
@@ -198,14 +198,14 @@ def retrieve_policy_list_from_user(
     Raises:
         Any exceptions raised by the underlying API client or JSON processing functions are propagated as-is.
     """
-    LOGGER.debug(f"Searching for %f.yellow%{contact_name}%f%")
+    LOGGER.debug(f"Searching for '{contact_name}'")
     user_request_json: dict[str, Any] = {
         "sort_obj": {"field": "policy_number", "order": "asc"},
         "current_page": 1,
         "page_size": 100,
         "search_string": contact_name,
     }
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/search",
         json=user_request_json,
         **kwargs,
@@ -269,33 +269,20 @@ def retrieve_policy_contact_info(
 
 
 def create_policy(
-    policy_number: Optional[str] = "",
-    policy_type_id: Optional[str] = "",
-    inception_date: Optional[str] = "",
-    term_type: Optional[
-        Literal[
-            "Custom",
-            "3 Years",
-            "18 Months",
-            "1 Year",
-            "9 Months",
-            "6 Months",
-            "3 Months",
-        ]
-    ] = "1 Year",
-    expiration_date: Optional[str] = "",  # Required if term_type is "Custom"
-    renewal_term_type: Optional[
-        Literal["3 Years", "18 Months", "1 Year",
-                "9 Months", "6 Months", "3 Months"]
-    ] = "1 Year",
-    is_renewal: Optional[bool] = False,
-    as_agent: Optional[bool] = False,
-    manual_policy_number: Optional[bool] = True,
-    effective_date: Optional[str] = "",
-    property_zip: Optional[str] = "",
-    underwriting_questions: Optional[list] = None,
-    underwriting_options: Optional[list] = None,
-    external_system_reference: Optional[str] = "",
+    policy_number: str | None = "",
+    policy_type_id: str | None = "",
+    inception_date: str | None = "",
+    term_type: Literal["Custom", "3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"] | None = "1 Year",
+    expiration_date: str | None = "",  # Required if term_type is "Custom"
+    renewal_term_type: Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"] | None = "1 Year",
+    is_renewal: bool | None = False,
+    as_agent: bool | None = False,
+    manual_policy_number: bool | None = True,
+    effective_date: str | None = "",
+    property_zip: str | None = "",
+    underwriting_questions: list | None = None,
+    underwriting_options: list | None = None,
+    external_system_reference: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str]:
     """
@@ -334,11 +321,11 @@ def create_policy(
         BritecoreError.MissingParameter(
             "expiation_date needed with 'Custom' term_type")
 
-    LOGGER.debug(f"Creating policy %f.yellow%{policy_number}%f%")
+    LOGGER.debug(f"Creating policy '{policy_number}'")
     local_env: dict[str, Any] = locals()
     policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({
                                                                        **local_env})
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/create_policy",
         json=policy_request_json,
         **kwargs,
@@ -350,8 +337,8 @@ def create_policy(
 
 
 def retrieve_policy_terms(
-    policy_id: Optional[str] = "",
-    policy_number: Optional[str] = "",
+    policy_id: str | None = "",
+    policy_number: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -386,7 +373,7 @@ def retrieve_policy_terms(
     policy_retrieve_json: dict[str, str] = API_CLIENT.multiple_parameter_verification(
         parameter_list, parameter_priority
     )
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_policy_terms",
         json=policy_retrieve_json,
         **kwargs,
@@ -413,9 +400,9 @@ def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     Returns:
         Any: The processed result from the API client's response handling.
     """
-    LOGGER.debug(f"Re-rating revision %f.yellow%{revision_id}%f%")
+    LOGGER.debug(f"Re-rating revision '{revision_id}'")
     policy_retrieve_json = {"revision_id": revision_id}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/rate_revision",
         json=policy_retrieve_json,
         **kwargs,
@@ -426,7 +413,7 @@ def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
 def retrieve_revision_details(
     revision_id: str,
-    include_contact_details: Optional[bool] = True,
+    include_contact_details: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -461,7 +448,7 @@ def retrieve_revision_details(
         "revision_id": revision_id,
         "include_contact_details": include_contact_details,
     }
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_revision_details",
         json=revision_retrieve_json,
         **kwargs,
@@ -472,11 +459,11 @@ def retrieve_revision_details(
 
 def retrieve_risks(
     revision_id: str,
-    page: Optional[int] = 0,
-    page_size: Optional[int] = 10,
-    retrieve_remaining: Optional[bool] = True,
-    order_by: Optional[str] = "name",
-    risk_types: Optional[list[str]] = None,
+    page: int | None = 0,
+    page_size: int | None = 10,
+    retrieve_remaining: bool | None = True,
+    order_by: str | None = "name",
+    risk_types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -504,7 +491,7 @@ def retrieve_risks(
     local_env = locals()
     LOGGER.debug("Getting risks")
     revision_retrieve_json = API_CLIENT.json_dict_builder({**local_env})
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_risks",
         json=revision_retrieve_json,
         **kwargs,
@@ -542,7 +529,7 @@ def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> 
     """
     LOGGER.debug("Getting risk details")
     revision_retrieve_json = {"risk_id": risk_id}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_risk_details",
         json=revision_retrieve_json,
         **kwargs,
@@ -552,10 +539,10 @@ def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> 
 
 
 def update_rating_information(
-    property_id: Optional[str] = "",
-    revision_id: Optional[str] = "",
+    property_id: str | None = "",
+    revision_id: str | None = "",
     items: list[dict[str, Any]] = None,
-    reset_premium: Optional[bool] = True,
+    reset_premium: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -585,7 +572,7 @@ def update_rating_information(
     local_env = locals()
     LOGGER.debug("Updating line item")
     revision_retrieve_json = API_CLIENT.json_dict_builder({**local_env})
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/update_rating_information",
         json=revision_retrieve_json,
         **kwargs,
@@ -618,7 +605,7 @@ def rate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """
     LOGGER.debug("Re-rating policy")
     revision_retrieve_json = {"risk_id": risk_id}
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/rate_risk",
         json=revision_retrieve_json,
         **kwargs,
@@ -628,9 +615,9 @@ def rate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def retrieve_billing_schedule_options(
-    policy_number: Optional[str] = "",
-    policy_term_id: Optional[str] = "",
-    ignore_billing_schedule_roles: Optional[bool] = False,
+    policy_number: str | None = "",
+    policy_term_id: str | None = "",
+    ignore_billing_schedule_roles: bool | None = False,
     **kwargs,
 ) -> dict:
     """
@@ -665,7 +652,7 @@ def retrieve_billing_schedule_options(
     LOGGER.debug("Getting billing schedule")
     billing_search_json: dict[str, Any] = API_CLIENT.json_dict_builder({
                                                                        **local_env})
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_billing_schedule_options",
         json=billing_search_json,
         **kwargs,
@@ -676,12 +663,8 @@ def retrieve_billing_schedule_options(
 def new_revision_contact(
     revision_id: str,
     contact_id: str,
-    x_id: Optional[str] = None,
-    contact_role: Optional[
-        Literal[
-            "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
-        ]
-    ] = "namedInsured",
+    x_id: str | None = None,
+    contact_role: Literal["namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"] | None = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -724,7 +707,7 @@ def new_revision_contact(
     }
 
     if not x_id:
-        request_result: Optional[BaseHTTPResponse | HTTPResponse] = (
+        request_result: BaseHTTPResponse | HTTPResponse | None = (
             API_CLIENT.do_request(
                 path="/api/v2/policies/new_revision_contact",
                 json=contact_add_json,
@@ -743,7 +726,7 @@ def new_revision_contact(
             "contact_id": contact_id,
         }
 
-        request_result: Optional[BaseHTTPResponse | HTTPResponse] = (
+        request_result: BaseHTTPResponse | HTTPResponse | None = (
             API_CLIENT.do_request(
                 path="/api/v2/policies/update_revision_contact",
                 json=update_revision_json,
@@ -756,9 +739,9 @@ def new_revision_contact(
 
 def create_risk(
     revision_id: str,
-    property_group_number: Optional[int] = None,
-    building_number: Optional[int] = None,
-    force_categories: Optional[bool] = None,
+    property_group_number: int | None = None,
+    building_number: int | None = None,
+    force_categories: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -787,7 +770,7 @@ def create_risk(
 
     risk_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/create_risk", json=risk_json, **kwargs
     )
 
@@ -796,9 +779,9 @@ def create_risk(
 
 def update_property_location(
     location: dict[str, Any],
-    soft_geoservice_bypass: Optional[bool] = None,
-    hard_geoservice_bypass: Optional[bool] = None,
-    reset_premiums: Optional[bool] = None,
+    soft_geoservice_bypass: bool | None = None,
+    hard_geoservice_bypass: bool | None = None,
+    reset_premiums: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -853,7 +836,7 @@ def update_property_location(
         "location": API_CLIENT.json_dict_builder({**local_env})
     }
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/update_property_location", json=prop_json, **kwargs
     )
 
@@ -884,7 +867,7 @@ def new_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         ValueError: If the property_id is empty or invalid
     """
     new_mort_json: dict[str, str] = {"property_id": property_id}
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/policies/new_mortgagee", json=new_mort_json, **kwargs
     )
 
@@ -926,7 +909,7 @@ def store_mortgagee(
         "x_properties_contact_id": property_contact_id,
         "mortgagee_contact_id": mortgagee_contact_id,
     }
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/policies/store_mortgagee", json=store_mort_json, **kwargs
     )
 
@@ -959,7 +942,7 @@ def retrieve_policy_snapshot(
         "snapshot_date": snapshot_date,
     }
 
-    result_request: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/policies/retrieve_policy_snapshot", json=retrieve_json, **kwargs
     )
 

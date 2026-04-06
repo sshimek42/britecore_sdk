@@ -5,7 +5,7 @@ Provides:
     get_available_dashboards  -- Retrieve the list of available dashboards.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -28,12 +28,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a data request and normalize the response."""
     LOGGER.debug("Calling data endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -42,11 +42,11 @@ def _post(
 
 
 def export_data_as_csv(
-    as_of_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    nonprep_dfs: Optional[str] = None,
-    prep_dfs: Optional[str] = None,
-    start_date: Optional[str] = None,
+    as_of_date: str | None = None,
+    end_date: str | None = None,
+    nonprep_dfs: str | None = None,
+    prep_dfs: str | None = None,
+    start_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Export data as a CSV file.
@@ -85,7 +85,7 @@ def export_data_as_csv(
 
 
 def get_available_dashboards(
-    module: Optional[str] = None,
+    module: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve the list of dashboards available for a module.

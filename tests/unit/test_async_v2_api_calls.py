@@ -42,7 +42,9 @@ class TestAsyncQuotesEndpoints:
                 return_value={"id": "quote_123", "number": "Q001"}
             )
 
-            from britecore_libraries.api.api_calls.v2.async_quotes import acreate_full_quote
+            from britecore_libraries.api.api_calls.v2.async_quotes import (
+                acreate_full_quote,
+            )
 
             quote_json, quote_id = asyncio.run(
                 acreate_full_quote({"number": "Q001", "policy_type_id": "type_1"})
@@ -123,7 +125,9 @@ class TestAsyncPoliciesEndpoints:
             mock_client.ado_request = AsyncMock(return_value=response)
             mock_client.aprocess_result = AsyncMock(return_value={"id": "policy_123"})
 
-            from britecore_libraries.api.api_calls.v2.async_policies import aretrieve_policy
+            from britecore_libraries.api.api_calls.v2.async_policies import (
+                aretrieve_policy,
+            )
 
             result = asyncio.run(aretrieve_policy(policy_id="policy_123"))
 
@@ -146,7 +150,9 @@ class TestAsyncPoliciesEndpoints:
                 return_value={"revision_id": "rev_123", "policy_id": "policy_123"}
             )
 
-            from britecore_libraries.api.api_calls.v2.async_policies import acreate_policy
+            from britecore_libraries.api.api_calls.v2.async_policies import (
+                acreate_policy,
+            )
 
             policy_json, revision_id = asyncio.run(
                 acreate_policy(policy_number="POL001", policy_type_id="type_1")

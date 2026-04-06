@@ -5,7 +5,7 @@ Provides:
                                            details and associated photos.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -43,10 +43,8 @@ def get_property_information_and_photos(
         The function uses a global API client instance to make the request and processes the
         result before returning it to the caller
     """
-    LOGGER.debug(
-        f"Getting property information for property_id %f.yellow%{property_id}%f%"
-    )
-    property_json: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    LOGGER.debug(f"Getting property information for property_id '{property_id}'")
+    property_json: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},
         **kwargs,

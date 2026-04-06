@@ -1,7 +1,7 @@
 """Phone number validation and normalization."""
 
 import re
-from typing import Optional, Pattern
+from re import Pattern
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
 from britecore_libraries.exceptions import BritecoreError
@@ -109,7 +109,7 @@ class PhoneValidator:
         return False
 
     @staticmethod
-    def normalize_phone(phone: str) -> Optional[str]:
+    def normalize_phone(phone: str) -> str | None:
         """
         Normalize phone number to standard format: 1-###-###-####.
 

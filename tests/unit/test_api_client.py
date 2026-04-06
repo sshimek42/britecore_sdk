@@ -49,6 +49,7 @@ class TestLazyAPIClientInitialization:
             
             # Reset the module to test fresh
             import importlib
+
             import britecore_libraries.api.api_calls
             importlib.reload(britecore_libraries.api.api_calls)
             

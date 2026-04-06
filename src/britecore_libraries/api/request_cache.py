@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from json import dumps
 from threading import RLock
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 _EXCLUDED_HEADER_KEYS = {"authorization"}
 
