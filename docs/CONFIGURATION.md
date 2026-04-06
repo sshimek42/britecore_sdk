@@ -1,4 +1,4 @@
-# Configuration Guide
+﻿# Configuration Guide
 
 This guide explains how to configure `britecore_libraries` for your environment.
 
@@ -15,9 +15,9 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 ### Location
 ```
 src/britecore_libraries/config/
-├── settings.toml      # Public settings (tracked in git)
-├── .secrets.toml      # Secrets (gitignored)
-└── config.py          # Dynaconf loader
+|-- settings.toml      # Public settings (tracked in git)
+|-- .secrets.toml      # Secrets (gitignored)
+`-- config.py          # Dynaconf loader
 ```
 
 ### `settings.toml` (Public)
@@ -33,13 +33,13 @@ client_secret = ""
 api_key = ""
 
 # Example: Site-specific configuration
-[wausau]
-base_url = "wausau.britecore.com"
+[example_site]
+base_url = "api.example.com"
 client_id = "your_oauth_client_id_here"
 client_secret = "your_oauth_client_secret_here"
 
-[wausau_test]
-base_url = "wausau-client-test.britecorepro.com"
+[example_site_test]
+base_url = "api-test.example.com"
 api_key = "your_api_key_here"
 ```
 
@@ -63,11 +63,11 @@ client_secret = ""
 api_key = ""
 
 # Example: Site-specific secrets
-[wausau]
+[example_site]
 client_id = "your_real_client_id"
 client_secret = "your_real_client_secret"
 
-[wausau_test]
+[example_site_test]
 api_key = "your_real_api_key"
 ```
 
@@ -89,12 +89,12 @@ api_key = "your_real_api_key"
 from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
 
 # Loads from settings.toml + .secrets.toml automatically
-client = BritecoreAPIClient(target_site="wausau")
+client = BritecoreAPIClient(target_site="example_site")
 client.init_client()
 ```
 
 **What happens:**
-1. `target_site` argument specifies which config section to load (e.g., `[wausau]`)
+1. `target_site` argument specifies which config section to load (e.g., `[example_site]`)
 2. Dynaconf merges `settings.toml` + `.secrets.toml` + environment variables
 3. Secrets override public settings
 
@@ -103,7 +103,7 @@ client.init_client()
 ```python
 from britecore_libraries import get_api_client
 
-# Lazy initialization — config is loaded on first use
+# Lazy initialization -- config is loaded on first use
 client = get_api_client()
 ```
 
@@ -115,13 +115,13 @@ You can override config values with environment variables:
 
 ```powershell
 # Set the active site
-$env:target_site = "wausau"
+$env:target_site = "example_site"
 
 # Override a specific setting
 $env:BRITECORE_LIBRARIES_BASE_URL = "custom.britecore.com"
 
 # System selection (for regex maps, if applicable)
-$env:system = "wausau"
+$env:system = "example_site"
 ```
 
 **Priority order (highest to lowest):**
@@ -134,8 +134,8 @@ $env:system = "wausau"
 
 ### API Key Auth
 Required keys:
-- `base_url` — API base URL
-- `api_key` — API key value
+- `base_url` -- API base URL
+- `api_key` -- API key value
 
 Optional:
 - `client_id` (leave blank to skip OAuth)
@@ -143,9 +143,9 @@ Optional:
 
 ### OAuth Auth
 Required keys:
-- `base_url` — API base URL
-- `client_id` — OAuth client ID
-- `client_secret` — OAuth client secret
+- `base_url` -- API base URL
+- `client_id` -- OAuth client ID
+- `client_secret` -- OAuth client secret
 
 Optional:
 - `api_key` (will be ignored if `client_id` + `client_secret` are set)
@@ -163,7 +163,7 @@ else:
 When you call `client.init_client()`, Dynaconf validates required keys:
 
 ```python
-client = BritecoreAPIClient("wausau")
+client = BritecoreAPIClient("example_site")
 client.init_client()
 # Raises BritecoreError if base_url or auth credentials are missing
 ```
@@ -172,7 +172,7 @@ client.init_client()
 
 | Error | Cause | Fix |
 |-------|-------|-----|
-| `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `settings.toml` or `[wausau]` section |
+| `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `settings.toml` or `[example_site]` section |
 | `BritecoreKeyError` | Missing `client_id`/`client_secret` | Add both for OAuth, or add `api_key` for API key auth |
 | `BritecoreKeyError` | Missing `api_key` | Add `api_key` to `.secrets.toml` |
 | Config not loading | `target_site` not set | Set `$env:target_site` or pass to `BritecoreAPIClient("site_name")` |
@@ -183,10 +183,10 @@ client.init_client()
 
 ```powershell
 # Set environment for local testing
-$env:target_site = "wausau_test"
+$env:target_site = "example_site_test"
 
 # Create .secrets.toml with test credentials
-# [wausau_test]
+# [example_site_test]
 # api_key = "your_test_key"
 ```
 
@@ -194,7 +194,7 @@ $env:target_site = "wausau_test"
 
 Store credentials as **GitHub repository secrets**:
 
-1. Go to **Settings → Secrets and variables → Actions**
+1. Go to **Settings -> Secrets and variables -> Actions**
 2. Create secrets:
    - `BRITECORE_CLIENT_ID`
    - `BRITECORE_CLIENT_SECRET`
@@ -208,7 +208,7 @@ Store credentials as **GitHub repository secrets**:
 env:
   BRITECORE_LIBRARIES_BASE_URL: ${{ secrets.BRITECORE_BASE_URL }}
   BRITECORE_LIBRARIES_API_KEY: ${{ secrets.BRITECORE_API_KEY }}
-  target_site: wausau_test
+  target_site: example_site_test
 ```
 
 ### Production
@@ -220,7 +220,7 @@ Use environment variables or a secrets management system (e.g., AWS Secrets Mana
 $env:BRITECORE_LIBRARIES_BASE_URL = "prod.britecore.com"
 $env:BRITECORE_LIBRARIES_CLIENT_ID = "prod_client_id"
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET = "prod_client_secret"
-$env:target_site = "wausau"
+$env:target_site = "example_site"
 
 # Then start your application
 python app.py
@@ -234,11 +234,11 @@ python app.py
    ```powershell
    $env:target_site
    ```
-   Should output your site name (e.g., `wausau`)
+   Should output your site name (e.g., `example_site`)
 
 2. Check `settings.toml` has the section:
    ```powershell
-   grep -A 3 "\[wausau\]" src/britecore_libraries/config/settings.toml
+   grep -A 3 "\[example_site\]" src/britecore_libraries/config/settings.toml
    ```
 
 3. Check `.secrets.toml` exists and has values:
@@ -250,7 +250,7 @@ python app.py
    ```python
    from britecore_libraries.config.config import LoadClientSettings
    
-   settings = LoadClientSettings("wausau")
+   settings = LoadClientSettings("example_site")
    print(settings)  # Should show loaded config
    ```
 
@@ -279,7 +279,7 @@ python app.py
    ```toml
    [mysite]
    base_url = "mysite.britecore.com"
-   # Leave client_id/secret/api_key blank — they go in .secrets.toml
+   # Leave client_id/secret/api_key blank -- they go in .secrets.toml
    ```
 
 2. Edit `.secrets.toml`:
@@ -299,7 +299,8 @@ python app.py
 
 ## See Also
 
-- [GETTING_STARTED.md](../GETTING_STARTED.md) — Quick setup guide
-- [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) — Common errors
-- [src/britecore_libraries/config/config.py](../src/britecore_libraries/config/config.py) — Config loader implementation
+- [GETTING_STARTED.md](../GETTING_STARTED.md) -- Quick setup guide
+- [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) -- Common errors
+- [src/britecore_libraries/config/config.py](../src/britecore_libraries/config/config.py) -- Config loader implementation
+
 
