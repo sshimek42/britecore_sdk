@@ -3,8 +3,6 @@
 *Last updated: March 31, 2026*
 *Document type: Living guide*
 
-[![Documentation Status](https://readthedocs.org/projects/britecore-libraries/badge/?version=latest)](https://britecore-libraries.readthedocs.io/en/latest/)
-
 Python utilities and API wrappers for working with BriteCore services.
 
 ## Start here
@@ -14,7 +12,7 @@ Python utilities and API wrappers for working with BriteCore services.
 
 Key docs:
 
-- [Hosted docs (Read the Docs)](https://britecore-libraries.readthedocs.io/en/latest/)
+- [docs/index.md](docs/index.md) for the Sphinx docs entry point in-repo
 - [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
 - [API.md](API.md) for endpoint reference and coverage details
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
