@@ -14,7 +14,7 @@ class TestLoadRegexes:
         """Test load_regexes with mips system."""
         monkeypatch.setenv("system", "mips")
 
-        from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+        from britecore_libraries.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes()
 
@@ -29,7 +29,7 @@ class TestLoadRegexes:
         """Test load_regexes with spectrum_v1 system."""
         monkeypatch.setenv("system", "spectrum_v1")
 
-        from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+        from britecore_libraries.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes()
 
@@ -42,7 +42,7 @@ class TestLoadRegexes:
         """Test load_regexes with spectrum_v2 system."""
         monkeypatch.setenv("system", "spectrum_v2")
 
-        from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+        from britecore_libraries.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes()
 
@@ -54,7 +54,7 @@ class TestLoadRegexes:
         """Test load_regexes defaults to mips when system is empty."""
         monkeypatch.delenv("system", raising=False)
 
-        from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+        from britecore_libraries.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes()
 
@@ -67,7 +67,7 @@ class TestLoadRegexes:
         """Test load_regexes defaults to mips when system is invalid."""
         monkeypatch.setenv("system", "invalid_system")
 
-        from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+        from britecore_libraries.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes()
 
@@ -80,7 +80,7 @@ class TestLoadRegexes:
         """Test that compiled regexes contain expected common patterns."""
         monkeypatch.setenv("system", "mips")
 
-        from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+        from britecore_libraries.maps import load_regexes
 
         compiled_regexes, _ = load_regexes()
 

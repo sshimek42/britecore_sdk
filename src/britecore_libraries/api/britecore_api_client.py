@@ -13,7 +13,9 @@ from urllib3.exceptions import (
     RequestError,
     ResponseError,
 )
-from urllib3.exceptions import TimeoutError as urlTimeoutError
+from urllib3.exceptions import (
+    TimeoutError as urlTimeoutError,
+)
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_libraries import logger
@@ -262,9 +264,7 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned("Error - No response")
 
         if response.status == 401 or response.status == 403:
-            LOGGER.error(
-                f"Authentication error - {response.status} - {response.reason}"
-            )
+            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
             )
@@ -347,6 +347,13 @@ class BritecoreAPIClient:
         request_retries: Retry | int | None = None,
         request_headers: dict[str, Any] | None = None,
         method: str = "POST",
+        cache_enabled: bool = False,
+        cache_ttl_seconds: int | None = None,
+        cache_namespace: str | None = None,
+        cache_key_parts: list[str] | tuple[str, ...] | None = None,
+        cache_bypass: bool = False,
+        cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
+        dedupe_in_flight: bool = True,
     ) -> urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
