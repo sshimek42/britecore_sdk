@@ -77,4 +77,3 @@ class LoadClientSettings:
             except Exception:
                 pass
         return settings
-

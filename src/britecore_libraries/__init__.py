@@ -14,9 +14,7 @@ from importlib.metadata import PackageNotFoundError, version
 
 from britecore_libraries.base_logger import get_logger
 
-logger = get_logger(
-    __package__, level="INFO", log_to_file=True, log_file_level="INFO"
-)
+logger = get_logger(__package__, level="INFO", log_to_file=True, log_file_level="INFO")
 
 try:
     __version__ = version("britecore_libraries")

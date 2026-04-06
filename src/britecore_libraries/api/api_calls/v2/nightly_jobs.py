@@ -6,6 +6,7 @@ Provides:
     process_non_pays_and_cancellations              -- Process non-pay and cancellation events.
     process_renewals                                -- Process policy renewals for a date.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

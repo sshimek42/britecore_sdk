@@ -8,6 +8,7 @@ Provides:
     update_signatures   -- Update signature records for an envelope.
     void_envelope       -- Void a DocuSign envelope.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

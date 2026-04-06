@@ -19,42 +19,49 @@ class TestLazyAPIClientInitialization:
             get_api_client,
             init_api_client,
         )
-        
+
         assert api_client is not None
         assert get_api_client is not None
         assert init_api_client is not None
 
     @pytest.mark.unit
-    def test_get_api_client_returns_client(self, env_api_key, mock_settings, monkeypatch):
+    def test_get_api_client_returns_client(
+        self, env_api_key, mock_settings, monkeypatch
+    ):
         """Test that get_api_client returns initialized client."""
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             from britecore_libraries.api.api_calls import get_api_client
-            
+
             client = get_api_client()
-            
+
             assert client is not None
             assert hasattr(client, "base_url")
 
     @pytest.mark.unit
     def test_lazy_proxy_delegates_to_client(self, env_api_key, mock_settings):
         """Test that lazy proxy delegates attribute access to initialized client."""
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             # Reset the module to test fresh
             import importlib
 
             import britecore_libraries.api.api_calls
+
             importlib.reload(britecore_libraries.api.api_calls)
-            
+
             from britecore_libraries.api.api_calls import api_client
-            
+
             # Access an attribute on the proxy (should trigger init)
             assert hasattr(api_client, "base_url")
 
@@ -66,15 +73,17 @@ class TestBritecoreAPIClientInit:
     def test_init_with_api_key_auth(self, env_api_key, mock_settings):
         """Test API client initialization with API key authentication."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = BritecoreAPIClient("test_site")
             client.init_client()
-            
+
             assert client.use_api_key is True
             assert client.api_key == "test_api_key_12345"
             assert client.token_class is None
@@ -83,15 +92,17 @@ class TestBritecoreAPIClientInit:
     def test_init_with_oauth_auth(self, env_oauth, mock_settings_oauth):
         """Test API client initialization with OAuth authentication."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings_oauth
             mock_loader.return_value = mock_loader_instance
-            
+
             client = BritecoreAPIClient("test_site")
             client.init_client()
-            
+
             assert client.use_api_key is False
             assert client.token_class is not None
 
@@ -99,9 +110,9 @@ class TestBritecoreAPIClientInit:
     def test_init_raises_error_without_site(self):
         """Test that init_client raises error without target_site."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         client = BritecoreAPIClient(None)
-        
+
         with pytest.raises(BritecoreError.NoSiteError):
             client.init_client()
 
@@ -109,15 +120,17 @@ class TestBritecoreAPIClientInit:
     def test_init_sets_timeouts(self, env_api_key, mock_settings):
         """Test that init_client configures timeouts."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = BritecoreAPIClient("test_site")
             client.init_client()
-            
+
             assert client.web_timeout == 5
             assert client.web_timeout_long == 50
 
@@ -129,9 +142,9 @@ class TestBritecoreAPIClientProcessResult:
     def test_process_result_success(self, mock_http_response):
         """Test successful result processing."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         result = BritecoreAPIClient.process_result(mock_http_response)
-        
+
         assert result is not None
         assert result["id"] == "test_id"
 
@@ -139,7 +152,7 @@ class TestBritecoreAPIClientProcessResult:
     def test_process_result_error_response_none(self):
         """Test process_result raises error when response is None."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         with pytest.raises(BritecoreError.NoDataReturned):
             BritecoreAPIClient.process_result(None)
 
@@ -147,7 +160,7 @@ class TestBritecoreAPIClientProcessResult:
     def test_process_result_error_non_200_status(self, mock_http_response_error):
         """Test process_result raises error for non-200 status."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         with pytest.raises(BritecoreError.NoDataReturned):
             BritecoreAPIClient.process_result(mock_http_response_error)
 
@@ -155,11 +168,11 @@ class TestBritecoreAPIClientProcessResult:
     def test_process_result_error_success_false(self):
         """Test process_result raises error when success is false."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         response = MagicMock()
         response.status = 200
         response.data = b'{"success": false, "message": "API Error"}'
-        
+
         with pytest.raises(BritecoreError.NoDataReturned):
             BritecoreAPIClient.process_result(response)
 
@@ -171,12 +184,14 @@ class TestMultipleParameterVerification:
     def test_multiple_parameter_verification_single_param(self):
         """Test parameter verification with single parameter."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         parameters = [{"policy_number": "POL123"}]
         priority = ["policy_number"]
-        
-        result = BritecoreAPIClient.multiple_parameter_verification(parameters, priority)
-        
+
+        result = BritecoreAPIClient.multiple_parameter_verification(
+            parameters, priority
+        )
+
         assert "policy_number" in result
         assert result["policy_number"] == "POL123"
 
@@ -184,16 +199,18 @@ class TestMultipleParameterVerification:
     def test_multiple_parameter_verification_multiple_params(self):
         """Test parameter verification with multiple parameters."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         parameters = [
             {"policy_number": "POL123"},
             {"policy_id": "12345"},
             {"revision_id": "REV999"},
         ]
         priority = ["revision_id", "policy_id", "policy_number"]
-        
-        result = BritecoreAPIClient.multiple_parameter_verification(parameters, priority)
-        
+
+        result = BritecoreAPIClient.multiple_parameter_verification(
+            parameters, priority
+        )
+
         # Should select highest priority (revision_id)
         assert "revision_id" in result
         assert result["revision_id"] == "REV999"
@@ -202,14 +219,15 @@ class TestMultipleParameterVerification:
     def test_multiple_parameter_verification_empty_params(self):
         """Test parameter verification with no parameters provided."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        
+
         parameters = [
             {"policy_number": None},
             {"policy_id": None},
         ]
         priority = ["policy_id", "policy_number"]
-        
-        result = BritecoreAPIClient.multiple_parameter_verification(parameters, priority)
-        
-        assert result is not None
 
+        result = BritecoreAPIClient.multiple_parameter_verification(
+            parameters, priority
+        )
+
+        assert result is not None

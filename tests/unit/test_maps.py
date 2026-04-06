@@ -295,4 +295,3 @@ class TestImportErrorFallbacks:
         assert isinstance(regexes, dict)
         assert "reg_name" in regexes
         assert "multi" in groups
-

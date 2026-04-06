@@ -80,11 +80,11 @@ class EmailValidator:
                 continue
 
             email_list.append(
-                    {
-                        "email": normalized,
-                        "type": email_type,
-                    }
-                )
+                {
+                    "email": normalized,
+                    "type": email_type,
+                }
+            )
 
         return email_list
 

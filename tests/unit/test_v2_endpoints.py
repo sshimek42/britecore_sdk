@@ -3,6 +3,7 @@
 This module provides comprehensive test coverage for BriteCore API v2 endpoint
 wrapper functions, covering happy path and error scenarios.
 """
+
 import importlib
 from unittest.mock import MagicMock, patch
 
@@ -30,7 +31,9 @@ def _get_initialized_client(mock_settings):
 
     api_calls._api_client = None
 
-    with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+    with patch(
+        "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+    ) as mock_loader:
         mock_loader_instance = MagicMock()
         mock_loader_instance.load_config.return_value = mock_settings
         mock_loader.return_value = mock_loader_instance
@@ -487,19 +490,25 @@ class TestQuotesEndpoints:
         """Test successful quote retrieval."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
-        mock_response = _make_response(b'{"success": true, "data": {"id": "Q123", "amount": 500}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        mock_response = _make_response(
+            b'{"success": true, "data": {"id": "Q123", "amount": 500}}'
+        )
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"id": "Q123", "amount": 500}):
+                with patch.object(
+                    client, "process_result", return_value={"id": "Q123", "amount": 500}
+                ):
                     result = quotes.get_quote("Q123")
-        
+
         assert result is not None
         assert result["id"] == "Q123"
         assert result["amount"] == 500
@@ -509,15 +518,21 @@ class TestQuotesEndpoints:
         """Test quote retrieval when API returns None."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=None):
-                with patch.object(client, "process_result", side_effect=BritecoreError.NoDataReturned("No response")):
+                with patch.object(
+                    client,
+                    "process_result",
+                    side_effect=BritecoreError.NoDataReturned("No response"),
+                ):
                     with pytest.raises(BritecoreError.NoDataReturned):
                         quotes.get_quote("Q123")
 
@@ -526,20 +541,28 @@ class TestQuotesEndpoints:
         """Test successful full quote creation."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
+
         quote_json = {"carrier": "ACME", "coverage": "Liability"}
-        mock_response = _make_response(b'{"success": true, "data": {"id": "Q456", "carrier": "ACME"}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+        mock_response = _make_response(
+            b'{"success": true, "data": {"id": "Q456", "carrier": "ACME"}}'
+        )
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"id": "Q456", "carrier": "ACME"}):
+                with patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "Q456", "carrier": "ACME"},
+                ):
                     result, quote_id = quotes.create_full_quote(quote_json)
-        
+
         assert result is not None
         assert quote_id == "Q456"
         assert result["carrier"] == "ACME"
@@ -549,19 +572,21 @@ class TestQuotesEndpoints:
         """Test create_full_quote when API returns no data."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
+
         quote_json = {"carrier": "ACME"}
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=None):
                 with patch.object(client, "process_result", return_value=None):
                     result, quote_id = quotes.create_full_quote(quote_json)
-        
+
         assert result is None
         assert quote_id is None
 
@@ -570,20 +595,24 @@ class TestQuotesEndpoints:
         """Test create_full_quote returns a tuple of (data, id)."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
+
         quote_json = {"carrier": "ACME"}
         mock_response = _make_response(b'{"success": true, "data": {"id": "Q789"}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"id": "Q789"}):
+                with patch.object(
+                    client, "process_result", return_value={"id": "Q789"}
+                ):
                     result = quotes.create_full_quote(quote_json)
-        
+
         assert isinstance(result, tuple)
         assert len(result) == 2
 
@@ -596,19 +625,27 @@ class TestPoliciesEndpoints:
         """Test policy retrieval by policy number."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import policies
-        
-        mock_response = _make_response(b'{"success": true, "data": {"id": "P123", "policy_number": "POL001"}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        mock_response = _make_response(
+            b'{"success": true, "data": {"id": "P123", "policy_number": "POL001"}}'
+        )
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"id": "P123", "policy_number": "POL001"}):
+                with patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "P123", "policy_number": "POL001"},
+                ):
                     result = policies.retrieve_policy(policy_number="POL001")
-        
+
         assert result is not None
         assert result["policy_number"] == "POL001"
 
@@ -617,19 +654,27 @@ class TestPoliciesEndpoints:
         """Test policy retrieval by policy ID."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import policies
-        
-        mock_response = _make_response(b'{"success": true, "data": {"id": "P456", "policy_number": "POL002"}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        mock_response = _make_response(
+            b'{"success": true, "data": {"id": "P456", "policy_number": "POL002"}}'
+        )
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"id": "P456", "policy_number": "POL002"}):
+                with patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "P456", "policy_number": "POL002"},
+                ):
                     result = policies.retrieve_policy(policy_id="P456")
-        
+
         assert result is not None
         assert result["id"] == "P456"
 
@@ -638,19 +683,27 @@ class TestPoliciesEndpoints:
         """Test successful line item addition."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import policies
-        
-        mock_response = _make_response(b'{"success": true, "data": {"added_items": ["item1"]}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        mock_response = _make_response(
+            b'{"success": true, "data": {"added_items": ["item1"]}}'
+        )
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"added_items": ["item1"]}):
-                    result = policies.add_line_item(revision_id="REV123", item_id="ITEM456")
-        
+                with patch.object(
+                    client, "process_result", return_value={"added_items": ["item1"]}
+                ):
+                    result = policies.add_line_item(
+                        revision_id="REV123", item_id="ITEM456"
+                    )
+
         assert result is True
 
 
@@ -662,19 +715,27 @@ class TestContactsEndpoints:
         """Test successful contact retrieval."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import contacts
-        
-        mock_response = _make_response(b'{"success": true, "data": {"id": "C123", "name": "John Doe"}}')
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        mock_response = _make_response(
+            b'{"success": true, "data": {"id": "C123", "name": "John Doe"}}'
+        )
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", return_value={"id": "C123", "name": "John Doe"}):
+                with patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "C123", "name": "John Doe"},
+                ):
                     result = contacts.get_contact("C123")
-        
+
         assert result is not None
         assert result["name"] == "John Doe"
 
@@ -694,7 +755,9 @@ class TestContactsEndpoints:
             b'{"success": true, "data": {"contact_id": "C456", "name": "Jane Smith"}}'
         )
 
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
@@ -704,7 +767,14 @@ class TestContactsEndpoints:
                 with patch.object(client, "process_result", return_value=contact_data):
                     result, contact_id = contacts.new_contact(
                         name="Jane Smith",
-                        address=[{"street": "123 Main", "city": "Anytown", "state": "CA", "zip": "12345"}],
+                        address=[
+                            {
+                                "street": "123 Main",
+                                "city": "Anytown",
+                                "state": "CA",
+                                "zip": "12345",
+                            }
+                        ],
                     )
 
         assert result is not None
@@ -734,8 +804,12 @@ class TestBillingEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(client, "do_request", return_value=mock_response) as mock_do_request:
-            with patch.object(client, "process_result", return_value={"ok": True}) as mock_process_result:
+        with patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request:
+            with patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result:
                 result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -760,12 +834,18 @@ class TestAccountingEndpoints:
         expected_json,
         expected_path,
     ):
-        module = importlib.import_module("britecore_libraries.api.api_calls.v2.accounting")
+        module = importlib.import_module(
+            "britecore_libraries.api.api_calls.v2.accounting"
+        )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(client, "do_request", return_value=mock_response) as mock_do_request:
-            with patch.object(client, "process_result", return_value={"ok": True}) as mock_process_result:
+        with patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request:
+            with patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result:
                 result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -790,12 +870,18 @@ class TestCommissionsEndpoints:
         expected_json,
         expected_path,
     ):
-        module = importlib.import_module("britecore_libraries.api.api_calls.v2.commissions")
+        module = importlib.import_module(
+            "britecore_libraries.api.api_calls.v2.commissions"
+        )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(client, "do_request", return_value=mock_response) as mock_do_request:
-            with patch.object(client, "process_result", return_value={"ok": True}) as mock_process_result:
+        with patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request:
+            with patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result:
                 result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -820,12 +906,18 @@ class TestPaymentsEndpoints:
         expected_json,
         expected_path,
     ):
-        module = importlib.import_module("britecore_libraries.api.api_calls.v2.payments")
+        module = importlib.import_module(
+            "britecore_libraries.api.api_calls.v2.payments"
+        )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(client, "do_request", return_value=mock_response) as mock_do_request:
-            with patch.object(client, "process_result", return_value={"ok": True}) as mock_process_result:
+        with patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request:
+            with patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result:
                 result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -840,7 +932,9 @@ class TestPaymentsEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(client, "do_request", return_value=mock_response) as mock_do_request:
+        with patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request:
             with patch.object(client, "process_result", return_value={"ok": True}):
                 result = payments.make_manual_policy_payment(
                     json_dict={"policy_number": "POL-ALIAS", "amount": 12.34}
@@ -861,20 +955,25 @@ class TestEndpointErrorHandling:
         """Test that endpoints handle API error responses correctly."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
+
         mock_response = _make_response(
-            b'{"success": false, "message": "API Error"}',
-            status=200
+            b'{"success": false, "message": "API Error"}', status=200
         )
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", side_effect=BritecoreError.NoDataReturned("API Error")):
+                with patch.object(
+                    client,
+                    "process_result",
+                    side_effect=BritecoreError.NoDataReturned("API Error"),
+                ):
                     with pytest.raises(BritecoreError.NoDataReturned):
                         quotes.get_quote("Q123")
 
@@ -883,20 +982,25 @@ class TestEndpointErrorHandling:
         """Test that endpoints handle HTTP 500 errors."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
+
         mock_response = _make_response(
-            b'{"success": false, "message": "Internal Server Error"}',
-            status=500
+            b'{"success": false, "message": "Internal Server Error"}', status=500
         )
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
             with patch.object(client, "do_request", return_value=mock_response):
-                with patch.object(client, "process_result", side_effect=BritecoreError.NoDataReturned("Error - 500")):
+                with patch.object(
+                    client,
+                    "process_result",
+                    side_effect=BritecoreError.NoDataReturned("Error - 500"),
+                ):
                     with pytest.raises(BritecoreError.NoDataReturned):
                         quotes.get_quote("Q123")
 
@@ -905,14 +1009,20 @@ class TestEndpointErrorHandling:
         """Test that endpoints handle connection errors."""
         from britecore_libraries.api.api_calls import get_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
-        
-        with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as mock_loader:
+
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
-            
+
             client = get_api_client()
-            with patch.object(client, "do_request", side_effect=BritecoreError.NoDataReturned("Connection error")):
+            with patch.object(
+                client,
+                "do_request",
+                side_effect=BritecoreError.NoDataReturned("Connection error"),
+            ):
                 with pytest.raises(BritecoreError.NoDataReturned):
                     quotes.get_quote("Q123")
 
@@ -927,4 +1037,3 @@ __all__ = [
     "TestPaymentsEndpoints",
     "TestEndpointErrorHandling",
 ]
-

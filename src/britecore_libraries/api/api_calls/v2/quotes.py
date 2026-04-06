@@ -4,6 +4,7 @@ Provides:
     create_full_quote  -- Create a new full quote from a JSON payload.
     get_quote          -- Retrieve an existing quote by ID.
 """
+
 from logging import Logger
 from typing import Any, Unpack
 

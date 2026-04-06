@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 #  is absent from the local environment)
 # ---------------------------------------------------------------------------
 
+
 def _builtin_load_regexes() -> (
     tuple[dict[str | Any, re.Pattern[str] | Any], dict[str, dict[str, int]]]
 ):
@@ -47,7 +48,9 @@ def _builtin_load_regexes() -> (
         "reg_city_state": re.compile(r"[^0-9a-zA-Z\s]+"),
         "reg_zip": re.compile(r"[^0-9a-zA-Z]+"),
         "reg_phone": re.compile(r"-|\(|\)|\s"),
-        "reg_email": re.compile(r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"),
+        "reg_email": re.compile(
+            r"\b([A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b"
+        ),
         "reg_name": re.compile(r"[^0-9a-zA-Z\s#+&'/-]+"),
         "reg_small_name": re.compile(r"\s(Du|Des)\s"),
         "reg_business_name": re.compile(r"\s(llc|llp|dba|inc)(?:\s|$)", re.IGNORECASE),
@@ -81,18 +84,14 @@ def _builtin_load_regexes() -> (
     system_overrides: dict[str, dict[str, re.Pattern[str] | None]] = {
         "mips": {},
         "spectrum_v1": {
-            "search_name_single": re.compile(
-                r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"
-            ),
+            "search_name_single": re.compile(r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"),
             "search_name_mult": re.compile(
                 r"(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)?\s(&)\s"
                 r"(\w*\W\w?\W|\w*\W?\w{0})?(\W*\w*)?(\W*\w*)?"
             ),
         },
         "spectrum_v2": {
-            "search_name_single": re.compile(
-                r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"
-            ),
+            "search_name_single": re.compile(r"(\w*\W\w?\W|\w*\W)(\w*\s?\w{0})?(\w*)?"),
             "search_name_mult": re.compile(
                 r"(\w*\W\w|\w*\W*)(\W\w*|\w*\W\w*)?\s(&)\s"
                 r"(\w*\W\w?\W|\w*\W?\w{0})?(\W*\w*)?(\W*\w*)?"
@@ -144,7 +143,9 @@ try:
     logger.debug("maps: loaded load_regexes from local britecore_policy_name_map.py")
 except ImportError:
     load_regexes = _builtin_load_regexes  # type: ignore[assignment]
-    logger.debug("maps: britecore_policy_name_map.py absent – using built-in load_regexes")
+    logger.debug(
+        "maps: britecore_policy_name_map.py absent – using built-in load_regexes"
+    )
 
 # ---------------------------------------------------------------------------
 # Agency map

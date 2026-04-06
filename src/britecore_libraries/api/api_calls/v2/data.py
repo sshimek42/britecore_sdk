@@ -4,6 +4,7 @@ Provides:
     export_data_as_csv        -- Export data as a CSV file.
     get_available_dashboards  -- Retrieve the list of available dashboards.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

@@ -5,6 +5,7 @@ Provides:
     retrieve_reports -- Retrieve all available reports.
     retrieve_report  -- Retrieve a single report by ID.
 """
+
 from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse

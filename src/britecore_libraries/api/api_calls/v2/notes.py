@@ -3,6 +3,7 @@
 Provides:
     retrieve_notes -- Retrieve paginated, filterable notes for any entity ID.
 """
+
 from json import loads
 from logging import Logger
 from typing import Any, Unpack

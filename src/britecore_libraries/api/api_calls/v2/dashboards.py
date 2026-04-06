@@ -10,6 +10,7 @@ Provides:
     get_transaction_report      -- Retrieve a paginated transaction report.
     validate_loss_run           -- Validate a loss run for a policy/contact.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

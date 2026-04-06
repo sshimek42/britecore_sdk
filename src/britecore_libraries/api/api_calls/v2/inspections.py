@@ -4,6 +4,7 @@ Provides:
     update_inspection_dates -- Update next-inspection and request dates for a
                                policy or property.
 """
+
 from logging import Logger
 from typing import Any, Unpack
 

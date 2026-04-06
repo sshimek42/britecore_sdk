@@ -47,11 +47,15 @@ class AsyncBritecoreAPIClient:
         """Clear all cached responses."""
         self._cache.clear()
 
-    def invalidate_cache_namespaces(self, namespaces: list[str] | tuple[str, ...]) -> int:
+    def invalidate_cache_namespaces(
+        self, namespaces: list[str] | tuple[str, ...]
+    ) -> int:
         """Invalidate cached responses for the given namespaces."""
         return self._cache.invalidate_namespaces(namespaces)
 
-    async def aprocess_result(self, response: BaseHTTPResponse, logs: bool = False) -> Any:
+    async def aprocess_result(
+        self, response: BaseHTTPResponse, logs: bool = False
+    ) -> Any:
         """Process a sync HTTP response in the same way as ``BritecoreAPIClient``."""
         client = await self.aget_client()
         return client.process_result(response, logs=logs)

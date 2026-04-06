@@ -19,6 +19,7 @@ site_settings += settings.__getattr__(run_on)
 db_conn_string = site_settings.db_conn_string
 db_conn_options = site_settings.db_conn_options
 
+
 def get_cursor(
     conn_string: str = db_conn_string, conn_options: dict = db_conn_options
 ) -> pyodbc.Cursor:

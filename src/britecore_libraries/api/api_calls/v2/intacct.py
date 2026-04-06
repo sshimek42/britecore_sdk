@@ -7,6 +7,7 @@ Provides:
     post_claim_transactions                 -- Post claim transactions to Intacct.
     post_return_premiums                    -- Post return premiums to Intacct.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

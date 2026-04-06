@@ -7,6 +7,7 @@ Provides:
     get_contact            -- Retrieve a contact by its unique ID.
     find_contact_by_params -- Search for contacts by name, role, or date of birth.
 """
+
 from logging import Logger
 from typing import Any, Literal, Unpack
 

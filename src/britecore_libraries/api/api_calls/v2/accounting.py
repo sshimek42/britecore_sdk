@@ -5,6 +5,7 @@ Provides:
     get_invoices                                          -- Retrieve a paginated list of invoices, optionally filtered by policy and date range.
     run_rescind_underwriting_cancellation_pending_logic   -- Run the rescind underwriting cancellation-pending logic for a revision.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 
@@ -46,7 +47,9 @@ def get_accounting_deliverable(
         Processed API response.  On success the ``data`` key contains the
         queried values for the deliverable.
     """
-    LOGGER.debug("Getting accounting deliverable for account_history_id=%s", account_history_id)
+    LOGGER.debug(
+        "Getting accounting deliverable for account_history_id=%s", account_history_id
+    )
 
     request_json: dict[str, str] = {
         "account_history_id": account_history_id,

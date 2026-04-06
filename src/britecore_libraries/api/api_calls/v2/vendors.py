@@ -18,6 +18,7 @@ Provides:
     munichre_indepth_eligibility                          -- Check MunichRe in-depth eligibility for a property.
     update_value360_replacement_cost_value                -- Update the Value360 replacement cost value.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

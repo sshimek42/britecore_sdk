@@ -7,6 +7,7 @@ Provides:
     sendprinthawk       -- Send a document to PrintHawk.
     sendprinthawkemail  -- Send a PrintHawk email notification.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 
