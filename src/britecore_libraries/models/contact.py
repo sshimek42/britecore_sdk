@@ -1,6 +1,6 @@
 """BriteCore contact model."""
 
-from typing import Dict, Literal, Optional
+from typing import Literal
 
 from britecore_libraries import logger
 from britecore_libraries.validators.address_validator import AddressValidator
@@ -49,12 +49,12 @@ class BritecoreContact:
     def __init__(
         self,
         name: str,
-        address: Dict[str, str],
-        policy_number: Optional[str] = None,
-        phone_number: Optional[list[Dict[str, str]]] = None,
-        email: Optional[list[Dict[str, str]]] = None,
-        contact_id: Optional[str] = None,
-        contact_type: Optional[Literal["individual", "organization"]] = "individual",
+        address: dict[str, str],
+        policy_number: str | None = None,
+        phone_number: list[dict[str, str]] | None = None,
+        email: list[dict[str, str]] | None = None,
+        contact_id: str | None = None,
+        contact_type: Literal["individual", "organization"] | None = "individual",
     ):
         """
         Initialize a BriteCore contact.
@@ -77,7 +77,7 @@ class BritecoreContact:
         self.contact_id = contact_id
         self.contact_type = contact_type
 
-    def process_contact(self) -> Dict:
+    def process_contact(self) -> dict:
         """
         Process and validate contact data.
 

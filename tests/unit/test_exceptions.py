@@ -116,12 +116,14 @@ class TestDeprecationWarnings:
         """Test that importing from classes raises DeprecationWarning."""
         # Reset the module to catch the warning
         import sys
+
         if "britecore_libraries.classes" in sys.modules:
             del sys.modules["britecore_libraries.classes"]
-        
+
         with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter("always")
             from britecore_libraries.classes import BritecoreContact  # noqa: F401
+
             assert w is not None
 
             # Check that a deprecation warning was raised
@@ -133,12 +135,13 @@ class TestDeprecationWarnings:
     def test_classes_backward_compatibility(self):
         """Test that deprecated classes are still functional."""
         import sys
+
         if "britecore_libraries.classes" in sys.modules:
             del sys.modules["britecore_libraries.classes"]
-        
+
         with warnings.catch_warnings(record=True):
             warnings.simplefilter("ignore")
-            
+
             from britecore_libraries.classes import (
                 BritecoreAddress,
                 BritecoreContact,
@@ -147,7 +150,7 @@ class TestDeprecationWarnings:
                 BritecorePhone,
                 BritecorePolicy,
             )
-            
+
             # Verify the classes are accessible
             assert BritecoreContact is not None
             assert BritecorePolicy is not None
@@ -155,4 +158,3 @@ class TestDeprecationWarnings:
             assert BritecoreEmail is not None
             assert BritecorePhone is not None
             assert BritecoreError is not None
-

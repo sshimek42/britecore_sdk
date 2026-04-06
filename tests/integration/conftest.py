@@ -16,10 +16,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Sandbox availability helpers
 # ---------------------------------------------------------------------------
+
 
 def _sandbox_available() -> bool:
     """Return True when all required env vars for live tests are present."""
@@ -49,6 +49,7 @@ requires_sandbox = pytest.mark.skipif(
 # Mock response factories
 # ---------------------------------------------------------------------------
 
+
 def _mock_response(data: dict, status: int = 200) -> MagicMock:
     """Build a mock HTTP response wrapping *data* in the standard envelope."""
     import json
@@ -75,6 +76,7 @@ def _mock_error_response(message: str = "Not found", status: int = 400) -> Magic
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def ok_response():
@@ -107,4 +109,3 @@ def rate_limit_response():
     resp.headers = {"Retry-After": "30"}
     resp.data = b'{"success": false, "message": "Too Many Requests"}'
     return resp
-
