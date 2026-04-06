@@ -14,6 +14,7 @@ Send an email to: **[security@example.com](mailto:security@example.com)**
 (Contact: Repository owner via GitHub)
 
 Include:
+
 - **Vulnerability description** — Clear explanation of the issue
 - **Affected version(s)** — Which version(s) of the package are vulnerable
 - **Proof of concept** — Minimal example that demonstrates the issue
@@ -35,21 +36,25 @@ Include:
 ## Patching Timeline
 
 ### Critical severity (e.g., authentication bypass, data leak)
+
 - **Target patch release** — Within 7 days
 - **Severity level** — Immediate action
 - **Minimum notice** — All supported versions patched; advisory issued
 
 ### High severity (e.g., denial of service, privilege escalation)
+
 - **Target patch release** — Within 14 days
 - **Severity level** — High priority
 - **Minimum notice** — Patched in next release
 
 ### Medium severity (e.g., API key exposure in logs, unvalidated input)
+
 - **Target patch release** — Within 30 days
 - **Severity level** — Regular priority
 - **Minimum notice** — Next minor release
 
 ### Low severity (e.g., deprecated crypto, missing deprecation warnings)
+
 - **Target patch release** — Next scheduled release
 - **Severity level** — Normal priority
 - **Minimum notice** — Included in next release notes
@@ -71,8 +76,11 @@ Security patches are provided for:
 ### For Users
 
 1. **Keep dependencies up to date**
+
    ```powershell
+
    pip install --upgrade britecore_libraries
+
    ```
 
 2. **Never commit `.secrets.toml`**
@@ -80,8 +88,11 @@ Security patches are provided for:
    - Regenerate credentials if accidentally exposed
 
 3. **Use environment variables for secrets**
+
    ```powershell
+
    $env:BRITECORE_LIBRARIES_API_KEY = "your_key_here"
+
    ```
 
 4. **Report suspected vulnerabilities privately**
@@ -142,6 +153,5 @@ For security concerns or questions about this policy:
 
 ---
 
-**Last reviewed:** April 6, 2026  
+**Last reviewed:** April 6, 2026
 **Next review:** October 2026 (after first public release)
-
