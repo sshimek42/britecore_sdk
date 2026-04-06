@@ -9,7 +9,8 @@
 
 ## High-Level Architecture
 
-```
+```text
+
 ┌─────────────────────────────────────────────────────────┐
 │                  Application Layer                       │
 │  (Your code using BriteCore Libraries)                  │
@@ -35,6 +36,7 @@
 │  • Utilities (ODBC, Selenium, Logging)                 │
 │  • External Services (OAuth, HTTP)                     │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ---
@@ -47,7 +49,8 @@
 
 **Components:**
 
-```
+```text
+
 src/britecore_libraries/
 ├── models/
 │   ├── contact.py     # BritecoreContact class
@@ -65,10 +68,13 @@ src/britecore_libraries/
 │   ├── britecore_field_map.py          # Field mappings
 │   └── __init__.py                     # Exports
 └── constants.py         # Shared constants
+
 ```
 
 **Flow:**
+
 ```python
+
 # Raw data
 data = {"name": "john doe", "email": "JOHN@EXAMPLE.COM"}
 
@@ -78,6 +84,7 @@ validated = contact.process_contact()
 
 # Output ready for API
 {"name": "John Doe", "email": "john@example.com", ...}
+
 ```
 
 ---
@@ -88,7 +95,8 @@ validated = contact.process_contact()
 
 **Components:**
 
-```
+```text
+
 src/britecore_libraries/api/
 ├── britecore_api_client.py              # Main API client
 ├── britecore_oauth_token_manager.py     # OAuth2 token handling
@@ -107,11 +115,13 @@ src/britecore_libraries/api/
 │       ├── claims.py, insured.py, lines.py, etc.
 │       └── __init__.py
 └── __init__.py
+
 ```
 
 **Request/Response Flow:**
 
 ```python
+
 # 1. Build request
 request = {"policy_number": "POL001"}
 
@@ -126,6 +136,7 @@ response = API_CLIENT.do_request(
 # 3. Process response
 data = API_CLIENT.process_result(response)
 # Returns normalized payload from `data` (not the full envelope)
+
 ```
 
 `do_request(...)` defaults:
@@ -143,7 +154,8 @@ data = API_CLIENT.process_result(response)
 
 **Components:**
 
-```
+```text
+
 src/britecore_libraries/
 ├── config/
 │   ├── config.py            # Dynaconf settings loader
@@ -157,11 +169,13 @@ src/britecore_libraries/
 │   └── __init__.py
 ├── base_logger.py           # Singleton logger
 └── exceptions.py            # Custom exceptions
+
 ```
 
 **Configuration Loading:**
 
 ```python
+
 # Dynaconf loads from multiple sources
 from britecore_libraries.config import settings
 
@@ -174,6 +188,7 @@ from britecore_libraries.config import settings
 settings.base_url           # From environment or config file
 settings.web_timeout        # From config
 settings.web_retry          # From config
+
 ```
 
 ---
@@ -182,16 +197,19 @@ settings.web_retry          # From config
 
 ### API Key Authentication
 
-```
+```text
+
 1. Check environment/config for api_key
 2. Set header: "Authorization: ApiKey <api_key>"
 3. Send request to endpoint
 4. Receive response
+
 ```
 
 ### OAuth2 Authentication
 
-```
+```text
+
 1. Check for client_id and client_secret
 2. Request token from /api/auth/oauth2/token
    {
@@ -206,14 +224,18 @@ settings.web_retry          # From config
    - If expired, request new token
    - Set header: "Authorization: Bearer <token>"
 5. Send request to endpoint
+
 ```
 
 **Auto-Selection:**
+
 ```python
+
 if client_id and client_secret:
     use_oauth2()
 else:
     use_api_key()
+
 ```
 
 ---
@@ -225,6 +247,7 @@ else:
 **Solution:** Lazy proxy pattern
 
 ```python
+
 # Old approach (BROKEN)
 api_client = init_api_client()  # Fails if no config
 
@@ -236,6 +259,7 @@ class _LazyAPIClient:
 api_client = _LazyAPIClient()
 # Now safe to import without config
 # Initializes on first method call
+
 ```
 
 ---
@@ -244,7 +268,8 @@ api_client = _LazyAPIClient()
 
 ### Exception Hierarchy
 
-```
+```text
+
 Exception
 ├── BritecoreError (our custom exceptions)
 │   ├── NoDataReturned       # API returned success=false
@@ -256,11 +281,13 @@ Exception
 │   ├── MissingParameter     # Required param missing
 │   └── ConflictingParameters # Multiple exclusive params
 └── ... (urllib3, pyodbc, etc.)
+
 ```
 
 ### Error Response Handling
 
 ```python
+
 # API returns:
 {
     "success": false,
@@ -276,13 +303,15 @@ try:
     policy = get_policy("POL001")
 except BritecoreError.NoDataReturned as e:
     logger.error(f"Failed: {e}")
+
 ```
 
 ---
 
 ## Data Validation Pipeline
 
-```
+```text
+
 Raw Input
     │
     ├─► NameValidator.normalize_business_name()
@@ -304,6 +333,7 @@ Raw Input
             "emails": [{...}],
             "addresses": [{...}]
         }
+
 ```
 
 ---
@@ -313,6 +343,7 @@ Raw Input
 ### Implemented Endpoint Example
 
 ```python
+
 # In api/api_calls/v2/policies.py
 
 def retrieve_policy(
@@ -354,13 +385,15 @@ def retrieve_policy(
     
     # 3. Process and return
     return API_CLIENT.process_result(response)
+
 ```
 
 ---
 
 ## Test Architecture
 
-```
+```text
+
 tests/
 ├── conftest.py              # Shared fixtures
 ├── unit/                    # Unit tests (fast, isolated)
@@ -373,11 +406,13 @@ tests/
 │   └── test_exceptions.py   # Error handling
 └── integration/             # Integration tests
     └── test_endpoints.py    # Endpoint wrappers
+
 ```
 
 **Fixture Pattern:**
 
 ```python
+
 # conftest.py
 @pytest.fixture
 def mock_http_response():
@@ -391,6 +426,7 @@ def mock_http_response():
 def test_process_result(mock_http_response):
     result = API_CLIENT.process_result(mock_http_response)
     assert result is not None
+
 ```
 
 ---
@@ -399,7 +435,8 @@ def test_process_result(mock_http_response):
 
 ### Internal Dependencies
 
-```
+```text
+
 api/api_calls/          # Uses
     ├─→ britecore_api_client.py
     ├─→ config/settings
@@ -413,17 +450,20 @@ validators/             # Uses
     ├─→ maps/regex_patterns
     ├─→ exceptions.py
     └─→ logger
+
 ```
 
 ### External Dependencies
 
-```
+```text
+
 urllib3          # HTTP requests
 pyodbc          # Database access
 selenium        # Browser automation
 dynaconf        # Configuration
 pandas          # Data processing
 sclogging       # Logging
+
 ```
 
 ---
@@ -455,6 +495,7 @@ sclogging       # Logging
 ### Configuration in Production
 
 ```bash
+
 # Never commit secrets
 .gitignore:
     src/britecore_libraries/config/.secrets.toml
@@ -463,16 +504,19 @@ sclogging       # Logging
 export target_site=your_site
 export BRITECORE_BASE_URL=...
 export BRITECORE_API_KEY=...
+
 ```
 
 ### Logging
 
 ```python
+
 from britecore_libraries import logger
 
 logger.debug("Detailed info")
 logger.info("Important events")
 logger.error("Errors with context")
+
 ```
 
 ### Monitoring
@@ -501,4 +545,3 @@ logger.error("Errors with context")
 ---
 
 See [AGENTS.md](AGENTS.md) for developer patterns and best practices.
-

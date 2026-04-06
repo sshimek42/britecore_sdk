@@ -7,7 +7,7 @@
 > **March 26, 2026**. Several items originally listed as future work have since
 > been completed. For current status, see [`PYTHON_COMPATIBILITY.md`](PYTHON_COMPATIBILITY.md)
 > and [`TIER3_COMPLETION.md`](TIER3_COMPLETION.md).
-
+>
 > **TL;DR:** This client is 70–75% of the way to production-grade quality for a
 > team-internal SDK, but has several blocking issues and architectural concerns
 > that would prevent recommending it for public consumption or high-SLA critical
@@ -125,7 +125,8 @@
 
 **The problem:**
 
-```
+```text
+
 API endpoint modules:         0% coverage
   - v2/quotes.py:             0%  (18 statements)
   - v2/policies.py:           0%  (152 statements)
@@ -134,6 +135,7 @@ API endpoint modules:         0% coverage
   - v2/async_policies.py:     0%  (136 statements)
   - v2/async_contacts.py:     0%  (67 statements)
   - Many others (claims, deliverables, inspections, insured, notes, reports, utils)
+
 ```
 
 **What this means:**
@@ -161,10 +163,12 @@ API endpoint modules:         0% coverage
 **The problem:**
 
 ```python
+
 # src/britecore_libraries/api/britecore_api_client.py:173-174
 else:
     logger.critical(self.bad_url_error)
     sys.exit(self.bad_url_error)  # ❌ TERMINATES THE INTERPRETER
+
 ```
 
 **What this means:**
@@ -180,7 +184,9 @@ else:
 **Standard practice:** Generic SDKs raise exceptions:
 
 ```python
+
 raise ValueError("base_url not configured")  # Consumer can catch this
+
 ```
 
 > **Grade: 🔴 CRITICAL FLAW** *(Fixed in Tier 1)*
@@ -192,11 +198,13 @@ raise ValueError("base_url not configured")  # Consumer can catch this
 **The problem:**
 
 ```python
+
 # src/britecore_libraries/api/britecore_api_client.py:423
 print(f"Sending {parameter_used}")  # ❌ POLLUTES STDOUT
 
 # src/britecore_libraries/api/api_calls/v2/lines.py:123, 143, 147
 print(...)  # More debug prints in production code
+
 ```
 
 **What this means:**
@@ -209,7 +217,9 @@ print(...)  # More debug prints in production code
 **Standard practice:** Use the logger:
 
 ```python
+
 logger.debug(f"Sending {parameter_used}")  # Conditional, respects log level
+
 ```
 
 > **Grade: 🔴 UNPROFESSIONAL** *(Fixed in Tier 1)*
@@ -221,6 +231,7 @@ logger.debug(f"Sending {parameter_used}")  # Conditional, respects log level
 **The problem:**
 
 ```python
+
 class BritecoreAPIClient:
     # CLASS-LEVEL SHARED STATE (shared across all instances)
     site_settings: Any = None
@@ -230,6 +241,7 @@ class BritecoreAPIClient:
     base_url: str = None
     web_timeout: int = None
     # ... more shared state
+
 ```
 
 **Consequences:**
@@ -245,6 +257,7 @@ class BritecoreAPIClient:
 **Example failure:**
 
 ```python
+
 # Thread A: Configure for site "alpha"
 client_a = BritecoreAPIClient("alpha")
 client_a.init_client()
@@ -255,6 +268,7 @@ client_b.init_client()
 
 # Thread A now uses beta's base_url by accident
 result = client_a.do_request("/api/...")  # ❌ Hit beta's server
+
 ```
 
 **Production impact:**
@@ -272,11 +286,13 @@ result = client_a.do_request("/api/...")  # ❌ Hit beta's server
 
 **The problem:**
 
-```
+```text
+
 Client core (britecore_api_client.py):        21%  coverage
 Async client (britecore_async_api_client.py): 23%  coverage
 OAuth token manager:                          36%  coverage
 Config loader:                                92%  coverage  ✓
+
 ```
 
 **What this means:**
@@ -301,8 +317,10 @@ Config loader:                                92%  coverage  ✓
 **The problem:**
 
 ```toml
+
 version = "0.1.0"         # ❌ Still in 0.x; signals "experimental"
 requires-python = ">=3.14" # ⚠️ Requires Python 3.14 (very new, released Dec 2024)
+
 ```
 
 **What this means:**
@@ -345,8 +363,10 @@ versions back.
 **The problem:**
 
 ```python
+
 # process_result() maps everything to a single exception type
 raise BritecoreError.NoDataReturned(f"Error - {message}")
+
 ```
 
 **Missing:**
@@ -422,7 +442,7 @@ raise BritecoreError.NoDataReturned(f"Error - {message}")
 
 ## Verdict: Can You Use This in Production?
 
-### ✅ YES, IF:
+### ✅ YES, IF
 
 - You own/maintain this code (internal team, not shared with others),
 - You only use tested subsystems (lazy init, OAuth, caching, models/validators),
@@ -433,7 +453,7 @@ raise BritecoreError.NoDataReturned(f"Error - {message}")
 - You have low SLA requirements (e.g., dev/test, non-critical workflows),
 - You're willing to maintain this library as it's not widely used.
 
-### ❌ NO, IF:
+### ❌ NO, IF
 
 - You need 100+ endpoint functions to be reliable,
 - You have multi-tenant or concurrent scenarios (class-level state is risky),
@@ -491,4 +511,3 @@ to your platform.
 ---
 
 *Assessment date: March 26, 2026*
-

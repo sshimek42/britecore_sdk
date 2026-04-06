@@ -22,28 +22,36 @@ Related docs:
 ## Development setup
 
 ```powershell
+
 python -m pip install -e ".[dev]"
+
 ```
 
 Optional virtual environment:
 
 ```powershell
+
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
+
 ```
 
 Set local environment variables:
 
 ```powershell
+
 $env:target_site = "your_site"
 $env:system = "your_system"
+
 ```
 
 ## Branch and commit workflow
 
 ```powershell
+
 git checkout -b feature/short-description
+
 ```
 
 - Keep changes focused and small.
@@ -55,23 +63,29 @@ git checkout -b feature/short-description
 Minimum validation command set for API-client or exception changes:
 
 ```powershell
+
 python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 python -m pytest tests/unit/test_api_client.py -v
 python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
+
 ```
 
 Run targeted tests first:
 
 ```powershell
+
 python -m pytest tests/unit/test_api_client.py -v
+
 ```
 
 Run standard suites before opening a PR:
 
 ```powershell
+
 python -m pytest tests/ -v
 python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v
+
 ```
 
 Coverage output is configured in `pyproject.toml` via pytest addopts.
@@ -102,5 +116,3 @@ Quality gates run in CI:
 ## Need help?
 
 If behavior is unclear, compare your change against existing endpoint modules in `src/britecore_libraries/api/api_calls/v2/` and check `AGENTS.md` for current guidance.
-
-```

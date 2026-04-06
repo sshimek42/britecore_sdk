@@ -64,14 +64,18 @@ Current package status:
 Install:
 
 ```powershell
+
 python -m pip install -e .
+
 ```
 
 Configure runtime environment variables:
 
 ```powershell
+
 $env:target_site = "your_site"
 $env:system = "your_system"
+
 ```
 
 Set site values in `src/britecore_libraries/config/settings.toml` and `src/britecore_libraries/config/.secrets.toml`.
@@ -80,16 +84,20 @@ Required site keys: `base_url`, `client_id`, `client_secret`, `api_key`.
 Quick smoke check:
 
 ```powershell
+
 python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
+
 ```
 
 Minimal API call example:
 
 ```python
+
 from britecore_libraries.api.api_calls.v2 import policies
 
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
+
 ```
 
 ## Use async cached wrappers
@@ -99,29 +107,33 @@ The `v2` package now exports async wrappers directly (for example `aget_quote`,
 Use [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for exact defaults, kwargs,
 and invalidation behavior.
 
-
-
 ## Contribute to the library
 
 Install with development dependencies:
 
 ```powershell
+
 python -m pip install -e ".[dev]"
+
 ```
 
 Run tests:
 
 ```powershell
+
 python -m pytest tests/ -v
 python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v
+
 ```
 
 Minimum validation for core client/exception changes:
 
 ```powershell
+
 python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 python -m pytest tests/unit/test_api_client.py -v
+
 ```
 
 CI additionally enforces `ruff`, `black --check`, and targeted `mypy` checks.
@@ -135,4 +147,3 @@ Follow repository conventions in `AGENTS.md`, especially around endpoint wrapper
 - Auth mode is automatic: API key when `client_id`/`client_secret` are blank; OAuth when both are provided
 - Config is Dynaconf-based in `src/britecore_libraries/config/config.py`
 - API client access in wrapper modules is lazy through `src/britecore_libraries/api/api_calls/__init__.py`
-

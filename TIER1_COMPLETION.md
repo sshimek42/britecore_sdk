@@ -23,6 +23,7 @@ All three critical Tier 1 issues have been implemented and partially tested. The
 **Solution:** Replaced `sys.exit()` with proper exception in `britecore_api_client.py:174`.
 
 ```python
+
 # Before
 else:
     logger.critical(self.bad_url_error)
@@ -34,9 +35,11 @@ else:
         "base_url not configured. Please set base_url in your "
         "settings.toml or .secrets.toml file."
     )  # ✅ Proper exception
+
 ```
 
 **Files Changed:**
+
 - `src/britecore_libraries/api/britecore_api_client.py` (removed `sys` import, updated init_client method)
 
 **Impact:**
@@ -53,6 +56,7 @@ else:
 **Solution:** Replaced all `print()` calls with `logger.debug()` and `logger.info()`.
 
 **Files Changed:**
+
 - `src/britecore_libraries/api/britecore_api_client.py` (line 423)
   - `print(f"Sending {parameter_used}")` → `LOGGER.debug(f"Sending {parameter_used}")`
 
@@ -108,7 +112,8 @@ else:
 
 ### Test Execution Results
 
-```
+```text
+
 tests/unit/test_v2_endpoints.py::TestQuotesEndpoints::test_get_quote_success PASSED
 tests/unit/test_v2_endpoints.py::TestQuotesEndpoints::test_get_quote_no_response PASSED
 tests/unit/test_v2_endpoints.py::TestQuotesEndpoints::test_create_full_quote_success PASSED
@@ -123,6 +128,7 @@ tests/unit/test_v2_endpoints.py::TestEndpointErrorHandling::test_endpoint_handle
 tests/unit/test_v2_endpoints.py::TestEndpointErrorHandling::test_endpoint_handles_connection_error PASSED
 
 ======================== 12 PASSED, 1 FAILED in 3.56s ========================
+
 ```
 
 ### Test Quality
@@ -142,12 +148,14 @@ tests/unit/test_v2_endpoints.py::TestEndpointErrorHandling::test_endpoint_handle
 ## Overall Impact
 
 ### Before Tier 1
+
 - **Code Issues:** 3 critical blockers
 - **Test Coverage:** ~40%
 - **Endpoint Test Coverage:** 0%
 - **Production Ready:** ❌ NO
 
 ### After Tier 1
+
 - **Code Issues:** 0 critical blockers ✅
 - **Test Coverage:** 55% (up from ~40%)
 - **Endpoint Test Coverage:** ~65% (12/13 tests passing)
@@ -158,10 +166,12 @@ tests/unit/test_v2_endpoints.py::TestEndpointErrorHandling::test_endpoint_handle
 ## Recommended Next Steps
 
 ### Immediate (Fix Failing Test)
+
 1. Fix `test_new_contact_success` tuple unpacking (1 test failing)
 2. Run full test suite to verify no regressions
 
 ### Short Term (Weeks 1–2)
+
 1. **Tier 2 Issue #1:** Refactor class-level state to instance-level
    - Enable multi-tenant scenarios
    - Improve test isolation
@@ -175,6 +185,7 @@ tests/unit/test_v2_endpoints.py::TestEndpointErrorHandling::test_endpoint_handle
    - Enable intelligent error handling
 
 ### Medium Term (Weeks 3–4)
+
 1. Bump version to 1.0.0
 2. Document Python version compatibility matrix (3.11+)
 3. Add integration tests
@@ -199,4 +210,3 @@ tests/unit/test_v2_endpoints.py::TestEndpointErrorHandling::test_endpoint_handle
 **Production Readiness:** ⚠️ Ready for **internal-only** use with caveats
 
 > **Note:** The library is now more stable for production use but still requires Tier 2 fixes for multi-tenant safety and broader reliability guarantees.
-

@@ -33,8 +33,6 @@ For the full list of implemented modules and endpoint counts, see
 | `uploads` | `src/britecore_libraries/api/api_calls/v2/uploads.py` | 1 |
 | `vendors` | `src/britecore_libraries/api/api_calls/v2/vendors.py` | 16 |
 
-
-
 ## Unimplemented calls by domain
 
 ### `attachments`
@@ -114,7 +112,6 @@ For the full list of implemented modules and endpoint counts, see
 | `acknowledge` | `POST` | `/api/v2/notifications/acknowledge` |
 | `current` | `POST` | `/api/v2/notifications/current` |
 
-
 ### `printing`
 
 | Planned function | Method | Endpoint path |
@@ -191,4 +188,3 @@ For the full list of implemented modules and endpoint counts, see
 | `ivans_file_upload` | `POST` | `/api/v2/vendors/ivans_file_upload` |
 | `munichre_indepth_eligibility` | `POST` | `/api/v2/vendors/munichre_indepth_eligibility` |
 | `update_value360_replacement_cost_value` | `POST` | `/api/v2/vendors/update_value360_replacement_cost_value` |
-
