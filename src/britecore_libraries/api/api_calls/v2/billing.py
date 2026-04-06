@@ -1,7 +1,7 @@
 """BriteCore v2 Billing API endpoint wrappers."""
 
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -24,12 +24,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a billing request and normalize the response."""
     LOGGER.debug("Calling billing endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload or {},
         **kwargs,
@@ -38,10 +38,10 @@ def _post(
 
 
 def get_installments_preview(
-    billing_schedule_ids: Optional[list[str]] = None,
-    effective_date: Optional[str] = None,
-    premium: Optional[float | int] = None,
-    payment_method: Optional[str] = None,
+    billing_schedule_ids: list[str] | None = None,
+    effective_date: str | None = None,
+    premium: float | int | None = None,
+    payment_method: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a billing installments preview for a new or updated premium."""
@@ -58,11 +58,11 @@ def get_installments_preview(
 
 
 def get_installments_preview_mid_term(
-    billing_schedule_ids: Optional[list[str]] = None,
-    payment_method: Optional[str] = None,
-    revision_effective_date: Optional[str] = None,
-    prorated_premium: Optional[float | int] = None,
-    policy_id: Optional[str] = None,
+    billing_schedule_ids: list[str] | None = None,
+    payment_method: str | None = None,
+    revision_effective_date: str | None = None,
+    prorated_premium: float | int | None = None,
+    policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a mid-term billing installments preview."""
@@ -80,10 +80,10 @@ def get_installments_preview_mid_term(
 
 
 def get_renewal_installments_preview(
-    billing_schedule_ids: Optional[list[str]] = None,
-    effective_date: Optional[str] = None,
-    premium: Optional[float | int] = None,
-    payment_method: Optional[str] = None,
+    billing_schedule_ids: list[str] | None = None,
+    effective_date: str | None = None,
+    premium: float | int | None = None,
+    payment_method: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a renewal billing installments preview."""
@@ -100,7 +100,7 @@ def get_renewal_installments_preview(
 
 
 def rating_factors(
-    policy_id: Optional[str] = None,
+    policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve billing-related rating factors for a policy."""

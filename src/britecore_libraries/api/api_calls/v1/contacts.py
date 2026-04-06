@@ -1,6 +1,6 @@
 from json import loads
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -18,9 +18,9 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def retrieve_contact_list(
     search_str: str,
-    search_filter: Optional[ROLETYPES] = "Named Insured",
-    current_page: Optional[str] = "1",
-    page_size: Optional[str] = "10",
+    search_filter: ROLETYPES | None = "Named Insured",
+    current_page: str | None = "1",
+    page_size: str | None = "10",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -53,7 +53,7 @@ def retrieve_contact_list(
 
     LOGGER.debug("Getting search results")
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v1/contacts/retrieveContactList",
         json=contact_request_json,
         **kwargs,

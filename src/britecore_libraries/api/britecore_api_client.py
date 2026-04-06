@@ -5,7 +5,7 @@ import time
 import uuid
 from json import JSONDecodeError, dumps, loads
 from logging import Logger
-from typing import Any, NotRequired, Optional, TypedDict  # added typing
+from typing import Any, NotRequired, TypedDict  # added typing
 
 import urllib3
 from urllib3.exceptions import (
@@ -119,17 +119,17 @@ class BritecoreAPIClient:
     process without interfering with each other.
     """
 
-    def __init__(self, target_site: Optional[str]) -> None:
-        self.api_key: Optional[str] = None
-        self.token_class: Optional[OAuthToken] = None
-        self.use_api_key: Optional[bool] = None
-        self.http: Optional[urllib3.PoolManager] = None
-        self.web_retry: Optional[int] = None
-        self.web_timeout_long: Optional[int] = None
-        self.web_timeout: Optional[int] = None
-        self.base_url: Optional[str] = None
-        self.bad_url_error: Optional[str] = None
-        self.enable_timers: Optional[bool] = None
+    def __init__(self, target_site: str | None) -> None:
+        self.api_key: str | None = None
+        self.token_class: OAuthToken | None = None
+        self.use_api_key: bool | None = None
+        self.http: urllib3.PoolManager | None = None
+        self.web_retry: int | None = None
+        self.web_timeout_long: int | None = None
+        self.web_timeout: int | None = None
+        self.base_url: str | None = None
+        self.bad_url_error: str | None = None
+        self.enable_timers: bool | None = None
         self.site_settings: Any = None
         self.target_site = target_site
 
@@ -198,11 +198,11 @@ class BritecoreAPIClient:
             LOGGER.info("client_id and/or client_secret not found. Using api_key.")
             try:
                 self.api_key = self.site_settings.api_key
-            except AttributeError:
+            except AttributeError as exc:
                 raise BritecoreError.BritecoreKeyError(
                     "api_key not found. Please set the api_key in your "
                     ".secrets.toml file."
-                )
+                ) from exc
             self.token_class = None
         else:
             self.token_class = OAuthToken(
@@ -264,7 +264,9 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned("Error - No response")
 
         if response.status == 401 or response.status == 403:
-            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
+            LOGGER.error(
+                f"Authentication error - {response.status} - {response.reason}"
+            )
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
             )
@@ -317,7 +319,9 @@ class BritecoreAPIClient:
             json_result: Any = loads(response.data.decode("utf-8"))
         except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
             LOGGER.error("Error parsing API response: %s", parse_error)
-            raise BritecoreError.NoDataReturned(f"Error parsing API response: {parse_error}")
+            raise BritecoreError.NoDataReturned(
+                f"Error parsing API response: {parse_error}"
+            ) from parse_error
 
         result = json_result.get("success")
         message = cls._extract_error_message(
@@ -340,12 +344,19 @@ class BritecoreAPIClient:
     def do_request(
         self,
         path: str,
-        json: Optional[dict[str, Any]] = None,
-        request_timeout: Optional[Timeout | int | float] = None,
-        request_retries: Optional[Retry | int] = None,
-        request_headers: Optional[dict[str, Any]] = None,
+        json: dict[str, Any] | None = None,
+        request_timeout: Timeout | int | float | None = None,
+        request_retries: Retry | int | None = None,
+        request_headers: dict[str, Any] | None = None,
         method: str = "POST",
-    ) -> Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]:
+        cache_enabled: bool = False,
+        cache_ttl_seconds: int | None = None,
+        cache_namespace: str | None = None,
+        cache_key_parts: list[str] | tuple[str, ...] | None = None,
+        cache_bypass: bool = False,
+        cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
+        dedupe_in_flight: bool = True,
+    ) -> urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
 
@@ -373,10 +384,27 @@ class BritecoreAPIClient:
 
         request_headers = dict(request_headers or {})
         if not self.use_api_key and "Authorization" not in request_headers:
+            if self.token_class is None:
+                raise BritecoreError.ConfigurationError(
+                    "OAuth token manager not initialized"
+                )
             request_headers.update(self.token_class.get_authorization_headers())
 
         if not self.base_url:
             raise BritecoreError.ConfigurationError("base_url not configured")
+        if self.http is None:
+            raise BritecoreError.ConfigurationError("HTTP client not initialized")
+
+        _ = (
+            cache_enabled,
+            cache_ttl_seconds,
+            cache_namespace,
+            cache_key_parts,
+            cache_bypass,
+            cache_invalidate_on_success,
+            dedupe_in_flight,
+        )
+
         request_url: str = _full_url(self.base_url, path)
 
         # --- structured tracing -------------------------------------------------
@@ -418,7 +446,7 @@ class BritecoreAPIClient:
             raise BritecoreError.RequestTimeoutError(
                 str(timeout_error),
                 timeout_seconds=self._timeout_seconds(request_timeout),
-            )
+            ) from timeout_error
         except (
             ProtocolError,
             ResponseError,
@@ -431,7 +459,7 @@ class BritecoreAPIClient:
                 _elapsed_ms,
                 request_error,
             )
-            raise BritecoreError.NoDataReturned(str(request_error))
+            raise BritecoreError.NoDataReturned(str(request_error)) from request_error
 
         if not request_result:
             LOGGER.error("[%s] ✗ no result object returned", request_id)
@@ -484,7 +512,7 @@ class BritecoreAPIClient:
             correct_parameter = {parameter_used: None}
         else:
             parameter_used = list(non_empty_dict.keys())[0]
-            correct_parameter = non_empty_dict
+            correct_parameter = {parameter_used: non_empty_dict[parameter_used]}
 
         if multiple_found:
             for each_priority in parameter_priority:

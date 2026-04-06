@@ -1,7 +1,7 @@
 """Name validation and normalization utilities."""
 
 import re
-from typing import Pattern
+from re import Pattern
 
 from britecore_libraries.maps.britecore_policy_name_map import load_regexes
 

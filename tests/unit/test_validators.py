@@ -19,7 +19,7 @@ class TestNameValidator:
         """Test normalizing LLC suffix."""
         name = "ABC Company llc"
         result = NameValidator.normalize_business_name(name)
-        
+
         assert "LLC" in result
 
     @pytest.mark.unit
@@ -27,7 +27,7 @@ class TestNameValidator:
         """Test normalizing Inc suffix."""
         name = "Tech Corp inc"
         result = NameValidator.normalize_business_name(name)
-        
+
         assert "INC" in result
 
     @pytest.mark.unit
@@ -35,7 +35,7 @@ class TestNameValidator:
         """Test normalizing DBA suffix."""
         name = "Trading as dba Partners"
         result = NameValidator.normalize_business_name(name)
-        
+
         assert "DBA" in result
 
     @pytest.mark.unit
@@ -43,7 +43,7 @@ class TestNameValidator:
         """Test apostrophe normalization."""
         name = "Karen'S Store"
         result = NameValidator.normalize_apostrophe(name)
-        
+
         # Should lowercase the letter after apostrophe
         assert "'" in result
 
@@ -52,7 +52,7 @@ class TestNameValidator:
         """Test suffix normalization for IV."""
         suffix = "iv"
         result = NameValidator.normalize_suffix(suffix)
-        
+
         assert result == "IV"
 
     @pytest.mark.unit
@@ -60,7 +60,7 @@ class TestNameValidator:
         """Test suffix normalization for III."""
         suffix = "iii"
         result = NameValidator.normalize_suffix(suffix)
-        
+
         assert result == "III"
 
 
@@ -73,7 +73,7 @@ class TestEmailValidator:
         email = [{"email": "test@example.com", "type": "Home"}]
         validator = EmailValidator(email)
         result = validator.process()
-        
+
         assert result is not None
         assert len(result) > 0
 
@@ -82,7 +82,7 @@ class TestEmailValidator:
         """Test invalid email address."""
         email = [{"email": "not_an_email", "type": "Home"}]
         validator = EmailValidator(email)
-        
+
         with pytest.raises(BritecoreError.InvalidEmailAddress):
             validator.process()
 
@@ -92,7 +92,7 @@ class TestEmailValidator:
         email = []
         validator = EmailValidator(email)
         result = validator.process()
-        
+
         assert result is not None
 
 
@@ -105,7 +105,7 @@ class TestPhoneValidator:
         phone = [{"phone": "5551234567", "type": "Home"}]
         validator = PhoneValidator(phone)
         result = validator.process()
-        
+
         assert result is not None
 
     @pytest.mark.unit
@@ -114,7 +114,7 @@ class TestPhoneValidator:
         phone = [{"phone": "(555) 123-4567", "type": "Home"}]
         validator = PhoneValidator(phone)
         result = validator.process()
-        
+
         assert result is not None
 
     @pytest.mark.unit
@@ -122,7 +122,7 @@ class TestPhoneValidator:
         """Test invalid phone number."""
         phone = [{"phone": "123", "type": "Home"}]
         validator = PhoneValidator(phone)
-        
+
         with pytest.raises(BritecoreError.InvalidPhoneNumber):
             validator.process()
 
@@ -132,7 +132,7 @@ class TestPhoneValidator:
         phone = []
         validator = PhoneValidator(phone)
         result = validator.process()
-        
+
         assert result is not None
 
 
@@ -151,7 +151,7 @@ class TestAddressValidator:
         }
         validator = AddressValidator(address)
         result = validator.process()
-        
+
         assert result is not None
 
     @pytest.mark.unit
@@ -165,7 +165,7 @@ class TestAddressValidator:
         }
         validator = AddressValidator(address)
         result = validator.process()
-        
+
         assert result is not None
 
     @pytest.mark.unit
@@ -178,7 +178,7 @@ class TestAddressValidator:
             "zip": "62701",
         }
         validator = AddressValidator(address)
-        
+
         with pytest.raises(BritecoreError.InvalidAddress):
             validator.process()
 
@@ -192,7 +192,6 @@ class TestAddressValidator:
             "zip": "invalid",
         }
         validator = AddressValidator(address)
-        
+
         with pytest.raises(BritecoreError.InvalidAddress):
             validator.process()
-
