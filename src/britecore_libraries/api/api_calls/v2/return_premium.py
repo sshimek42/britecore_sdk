@@ -4,7 +4,7 @@ Provides:
     exportreturnpremium  -- Export a return premium record by ID.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -27,12 +27,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a return_premium request and normalize the response."""
     LOGGER.debug("Calling return_premium endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -41,7 +41,7 @@ def _post(
 
 
 def exportreturnpremium(
-    return_premium_id: Optional[str] = None,
+    return_premium_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Export a return premium record.

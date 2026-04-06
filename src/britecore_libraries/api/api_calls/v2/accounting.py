@@ -6,7 +6,7 @@ Provides:
     run_rescind_underwriting_cancellation_pending_logic   -- Run the rescind underwriting cancellation-pending logic for a revision.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -53,7 +53,7 @@ def get_accounting_deliverable(
         "deliverable_date": deliverable_date,
     }
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/accounting/get_accounting_deliverable",
         json=request_json,
         **kwargs,
@@ -63,14 +63,14 @@ def get_accounting_deliverable(
 
 
 def get_invoices(
-    policy_id: Optional[str] = None,
-    bill_from_date: Optional[str] = None,
-    bill_to_date: Optional[str] = None,
-    due_from_date: Optional[str] = None,
-    due_to_date: Optional[str] = None,
-    sorting_order: Optional[str] = None,
-    page_number: Optional[int] = None,
-    page_size: Optional[int] = None,
+    policy_id: str | None = None,
+    bill_from_date: str | None = None,
+    bill_to_date: str | None = None,
+    due_from_date: str | None = None,
+    due_to_date: str | None = None,
+    sorting_order: str | None = None,
+    page_number: int | None = None,
+    page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a paginated list of invoices related to a policy.
@@ -124,7 +124,7 @@ def get_invoices(
     if page_size is not None:
         request_json["page_size"] = page_size
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/accounting/get_invoices",
         json=request_json,
         **kwargs,
@@ -136,7 +136,7 @@ def get_invoices(
 def run_rescind_underwriting_cancellation_pending_logic(
     revision_id: str,
     old_status: str,
-    date_cursor: Optional[str] = None,
+    date_cursor: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Run the rescind-underwriting cancellation-pending logic for a revision.
@@ -172,7 +172,7 @@ def run_rescind_underwriting_cancellation_pending_logic(
     if date_cursor is not None:
         request_json["date_cursor"] = date_cursor
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic",
         json=request_json,
         **kwargs,

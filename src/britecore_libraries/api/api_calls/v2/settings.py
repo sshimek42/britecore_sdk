@@ -14,7 +14,7 @@ Provides:
     set_setting_value                   -- Set a specific system setting value.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -37,12 +37,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a settings request and normalize the response."""
     LOGGER.debug("Calling settings endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -51,10 +51,10 @@ def _post(
 
 
 def add_city_to_zip_override(
-    city: Optional[str] = None,
-    county: Optional[str] = None,
-    state_abbreviation: Optional[str] = None,
-    zip_code: Optional[str] = None,
+    city: str | None = None,
+    county: str | None = None,
+    state_abbreviation: str | None = None,
+    zip_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a city-level override for a specific ZIP code.
@@ -90,9 +90,9 @@ def add_city_to_zip_override(
 
 
 def add_counties_to_state(
-    counties: Optional[list] = None,
-    country: Optional[str] = None,
-    state: Optional[dict] = None,
+    counties: list | None = None,
+    country: str | None = None,
+    state: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add one or more counties to a state.
@@ -121,9 +121,9 @@ def add_counties_to_state(
 
 
 def add_county_to_zip_override(
-    county: Optional[str] = None,
-    state_abbreviation: Optional[str] = None,
-    zip_code: Optional[str] = None,
+    county: str | None = None,
+    state_abbreviation: str | None = None,
+    zip_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a county-level override for a specific ZIP code.
@@ -172,8 +172,8 @@ def get_pdf_engine(**kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def get_setting_value(
-    option: Optional[str] = None,
-    section: Optional[str] = None,
+    option: str | None = None,
+    section: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve the value of a specific system setting.
@@ -232,9 +232,9 @@ def retrieve_credit_permission_prompt(**kwargs: Unpack[RequestParameters]) -> An
 
 
 def retrieve_property_valuation_availability(
-    chosen_role: Optional[str] = None,
-    is_app: Optional[bool] = None,
-    revision_id: Optional[str] = None,
+    chosen_role: str | None = None,
+    is_app: bool | None = None,
+    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve availability of property valuation for a revision and role.
@@ -267,7 +267,7 @@ def retrieve_property_valuation_availability(
 
 
 def retrieve_system_tags(
-    level: Optional[str] = None,
+    level: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve system tags, optionally filtered by level.
@@ -292,7 +292,7 @@ def retrieve_system_tags(
 
 
 def set_pdf_engine(
-    engine: Optional[str] = None,
+    engine: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Set the PDF engine used for document generation.
@@ -317,9 +317,9 @@ def set_pdf_engine(
 
 
 def set_setting_value(
-    option: Optional[str] = None,
-    section: Optional[str] = None,
-    value: Optional[str] = None,
+    option: str | None = None,
+    section: str | None = None,
+    value: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Set the value of a specific system setting.

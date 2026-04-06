@@ -7,7 +7,7 @@ Provides:
     updateurloverride    -- Update an existing URL override entry.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -30,12 +30,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a custom_ui request and normalize the response."""
     LOGGER.debug("Calling custom_ui endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
         **kwargs,
@@ -44,7 +44,7 @@ def _post(
 
 
 def createurloverride(
-    json_obj: Optional[dict] = None,
+    json_obj: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a new URL override entry.
@@ -69,7 +69,7 @@ def createurloverride(
 
 
 def deleteurloverride(
-    json_obj: Optional[dict] = None,
+    json_obj: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete an existing URL override entry.
@@ -112,7 +112,7 @@ def retrieveurloverrides(
 
 
 def updateurloverride(
-    json_obj: Optional[dict] = None,
+    json_obj: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update an existing URL override entry.

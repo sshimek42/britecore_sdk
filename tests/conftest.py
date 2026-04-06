@@ -1,9 +1,8 @@
 """Shared pytest fixtures and configuration."""
 
-import os
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 

@@ -49,9 +49,23 @@ python -c "import britecore_libraries; from britecore_libraries.api.britecore_ap
 
 ```
 
+## Logging
+
+- Logger is exposed as `britecore_libraries.logger` (standard Python `logging.Logger`).
+- Use `logger.info()`, `logger.debug()`, `logger.error()`, etc. for logging.
+- Logs are written to console and (by default) to `~/.britecore_logs/{package_name}.log`.
+- Library users can configure logging via standard Python logging mechanisms:
+
+```python
+import logging
+logging.getLogger("britecore_libraries").setLevel(logging.DEBUG)  # Module-level control
+logging.basicConfig(level=logging.INFO)  # Global config
+```
+
+- Don't create new logger instances in modules; use the package logger or `logging.getLogger(__name__)`.
+
 ## Gotchas that affect agent changes
 
 - API client initialization is now lazy: `api_client` is a proxy that initializes on first use, avoiding failures in contexts without config/env. Call `get_api_client()` for explicit control.
 - `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; wrappers that bypass it (some v1 modules) handle raw payloads differently.
-- Logger is a singleton (`src/britecore_libraries/base_logger.py`) and exposed as `britecore_libraries.logger`; follow existing logging style instead of creating new logger systems.
 - Keep public exports updated via `__all__` in package `__init__.py` files when adding new top-level functionality.

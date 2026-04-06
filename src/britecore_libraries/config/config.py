@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from dynaconf import Dynaconf, Validator
 
@@ -43,12 +43,12 @@ class LoadClientSettings:
     overrides.
     """
 
-    def __init__(self, target_site: Optional[str] = None) -> None:
+    def __init__(self, target_site: str | None = None) -> None:
         """
         Initialize with a target site, falling back to the ``target_site``
         environment variable when *target_site* is ``None`` or empty.
         """
-        self.target_site: Optional[str] = target_site or os.environ.get("target_site")
+        self.target_site: str | None = target_site or os.environ.get("target_site")
 
     def load_config(self) -> Any:
         """
@@ -59,7 +59,7 @@ class LoadClientSettings:
         """
         from types import SimpleNamespace
 
-        target_site: Optional[str] = self.target_site
+        target_site: str | None = self.target_site
 
         if target_site:
             try:

@@ -34,6 +34,19 @@ python -m pip install -e .
 
 ```
 
+API-only profile (recommended):
+
+- If you are only calling BriteCore APIs, stop at the base install above.
+- You do **not** need database/browser utilities for API wrappers.
+
+Optional extras (only if your app explicitly uses those helpers):
+
+```powershell
+python -m pip install -e ".[database]"   # pyodbc utilities
+python -m pip install -e ".[browser]"    # selenium utilities
+python -m pip install -e ".[all]"        # all optional extras
+```
+
 Install development tooling when you plan to run tests:
 
 ```powershell

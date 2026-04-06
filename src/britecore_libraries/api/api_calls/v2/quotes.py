@@ -5,7 +5,7 @@ Provides:
     get_quote          -- Retrieve an existing quote by ID.
 """
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -46,7 +46,7 @@ def create_full_quote(
           processing fails
         - The quote ID as a string, or None if no ID is available
     """
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
     )
 
@@ -84,7 +84,7 @@ def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
     LOGGER.debug("Getting quote")
 
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
     )
 

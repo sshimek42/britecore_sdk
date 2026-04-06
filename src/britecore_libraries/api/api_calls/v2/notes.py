@@ -5,7 +5,7 @@ Provides:
 """
 from json import loads
 from logging import Logger
-from typing import Any, Optional, Unpack
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
@@ -24,18 +24,18 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def retrieve_notes(
     id: str,
-    pageSize: Optional[int] = 1000,
-    searchString: Optional[str] = None,
-    aggregateAll: Optional[bool] = False,
-    advSearch: Optional[bool] = False,
-    filterAlerts: Optional[bool] = False,
-    filterUserGen: Optional[bool] = False,
-    orderBy: Optional[str] = "",
-    page: Optional[int] = 0,
-    ascending: Optional[bool] = False,
-    type: Optional[str] = "",
-    filterExcludeAlerts: Optional[bool] = False,
-    filterSystemNotesOnly: Optional[bool] = False,
+    pageSize: int | None = 1000,
+    searchString: str | None = None,
+    aggregateAll: bool | None = False,
+    advSearch: bool | None = False,
+    filterAlerts: bool | None = False,
+    filterUserGen: bool | None = False,
+    orderBy: str | None = "",
+    page: int | None = 0,
+    ascending: bool | None = False,
+    type: str | None = "",
+    filterExcludeAlerts: bool | None = False,
+    filterSystemNotesOnly: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -67,7 +67,7 @@ def retrieve_notes(
     LOGGER.debug("Getting notes")
 
     notes_json: dict[str, Any] = {}
-    local_env: dict[str, Optional[str]] = {**locals()}
+    local_env: dict[str, str | None] = {**locals()}
 
     for _, (k, v) in enumerate(
         local_env.items()
@@ -75,11 +75,11 @@ def retrieve_notes(
         if v:
             notes_json.update({k: v})
 
-    provided_timeout: Optional[Timeout] = kwargs.get("request_timeout")
+    provided_timeout: Timeout | None = kwargs.get("request_timeout")
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
-    request_result: Optional[BaseHTTPResponse, HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/notes/retrieveNotes", json=notes_json, **kwargs
     )
     if not request_result:

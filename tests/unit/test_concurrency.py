@@ -9,11 +9,14 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
-from britecore_libraries.api.britecore_api_client import BritecoreAPIClient, LoadClientSettings
+from britecore_libraries.api.britecore_api_client import (
+    BritecoreAPIClient,
+    LoadClientSettings,
+)
 
 
 class TestInstanceIsolation:
@@ -194,7 +197,7 @@ class TestLoadClientSettingsThreadSafety:
 
         def load_settings(site: str):
             try:
-                loader = LoadClientSettings(site)
+                LoadClientSettings(site)
                 # Note: actual config loading may fail in test, but isolation should work
                 results[site] = {"site": site, "loader_created": True}
             except Exception as e:

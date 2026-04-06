@@ -15,7 +15,6 @@ from unittest.mock import MagicMock, patch
 import pytest
 from urllib3 import BaseHTTPResponse
 
-
 # ---------------------------------------------------------------------------
 # Helpers (mirrors test_v2_endpoints.py)
 # ---------------------------------------------------------------------------

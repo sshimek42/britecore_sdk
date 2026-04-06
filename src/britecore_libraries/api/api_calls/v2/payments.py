@@ -5,7 +5,7 @@ policy and invoice payments, sweep processing, and billing lookups.
 """
 
 from logging import Logger
-from typing import Any, Optional, Unpack, cast
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -28,12 +28,12 @@ def _build_payload(**fields: Any) -> dict[str, Any]:
 
 def _post(
     path: str,
-    payload: Optional[dict[str, Any]] = None,
+    payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Send a payment request and normalize the response."""
     LOGGER.debug("Calling payments endpoint %s", path)
-    request_result: Optional[BaseHTTPResponse | HTTPResponse] = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload or {},
         **kwargs,
@@ -62,24 +62,24 @@ def make_manual_policy_payment(
 
 
 def add_payment_method(
-    card_expires_mm: Optional[str] = None,
-    ach_bank: Optional[str] = None,
-    customer_profile_id: Optional[str] = None,
-    card_cvv2: Optional[str] = None,
-    card_name_on: Optional[str] = None,
-    account_description: Optional[str] = None,
-    contact_id: Optional[str] = None,
-    ach_account: Optional[str] = None,
-    card_type: Optional[str] = None,
-    card_expires_yy: Optional[str] = None,
-    ach_type: Optional[str] = None,
-    ach_routing: Optional[str] = None,
-    ach_name_on: Optional[str] = None,
-    metadata: Optional[dict[str, Any]] = None,
-    type: Optional[str] = None,
-    card_number: Optional[str] = None,
-    address: Optional[dict[str, Any]] = None,
-    vendor_payment_method_id: Optional[str] = None,
+    card_expires_mm: str | None = None,
+    ach_bank: str | None = None,
+    customer_profile_id: str | None = None,
+    card_cvv2: str | None = None,
+    card_name_on: str | None = None,
+    account_description: str | None = None,
+    contact_id: str | None = None,
+    ach_account: str | None = None,
+    card_type: str | None = None,
+    card_expires_yy: str | None = None,
+    ach_type: str | None = None,
+    ach_routing: str | None = None,
+    ach_name_on: str | None = None,
+    metadata: dict[str, Any] | None = None,
+    type: str | None = None,
+    card_number: str | None = None,
+    address: dict[str, Any] | None = None,
+    vendor_payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a stored payment method for a contact."""
@@ -110,8 +110,8 @@ def add_payment_method(
 
 
 def apply_selected_payments(
-    payment_ids: Optional[list[str]] = None,
-    print_deposit_receipt: Optional[bool] = None,
+    payment_ids: list[str] | None = None,
+    print_deposit_receipt: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Apply one or more queued payment records."""
@@ -126,10 +126,10 @@ def apply_selected_payments(
 
 
 def change_payment_method(
-    auto_payment_method_id: Optional[str] = None,
-    auto_pay_days_before: Optional[int] = None,
-    contact_id: Optional[str] = None,
-    policy_list: Optional[list[str]] = None,
+    auto_payment_method_id: str | None = None,
+    auto_pay_days_before: int | None = None,
+    contact_id: str | None = None,
+    policy_list: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Change the autopay method across multiple policies."""
@@ -146,12 +146,12 @@ def change_payment_method(
 
 
 def change_payment_method_single(
-    auto_pay_days_before: Optional[int] = None,
-    contact_id: Optional[str] = None,
-    policy_term_id: Optional[str] = None,
-    auto_payment_method_id: Optional[str] = None,
-    override_propagation: Optional[bool] = None,
-    policy_id: Optional[str] = None,
+    auto_pay_days_before: int | None = None,
+    contact_id: str | None = None,
+    policy_term_id: str | None = None,
+    auto_payment_method_id: str | None = None,
+    override_propagation: bool | None = None,
+    policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Change the autopay method for a single policy or policy term."""
@@ -170,7 +170,7 @@ def change_payment_method_single(
 
 
 def create_payment_batch(
-    data: Optional[dict[str, Any] | list[dict[str, Any]]] = None,
+    data: dict[str, Any] | list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a payment batch container."""
@@ -182,7 +182,7 @@ def create_payment_batch(
 
 
 def create_payment_entries(
-    entries: Optional[list[dict[str, Any]]] = None,
+    entries: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create payment entries for later import or application."""
@@ -194,7 +194,7 @@ def create_payment_entries(
 
 
 def delete_payment_batch(
-    batch_id: Optional[str] = None,
+    batch_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete a payment batch by ID."""
@@ -206,7 +206,7 @@ def delete_payment_batch(
 
 
 def delete_payment_entries(
-    entry_ids: Optional[list[str]] = None,
+    entry_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete one or more payment entries."""
@@ -218,7 +218,7 @@ def delete_payment_entries(
 
 
 def get_payment_method_info(
-    payment_method_id: Optional[str] = None,
+    payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a stored payment method record."""
@@ -230,8 +230,8 @@ def get_payment_method_info(
 
 
 def get_unpaid_invoices_by_date(
-    due_date: Optional[str] = None,
-    bill_date: Optional[str] = None,
+    due_date: str | None = None,
+    bill_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve unpaid invoices filtered by due and bill date."""
@@ -243,8 +243,8 @@ def get_unpaid_invoices_by_date(
 
 
 def import_payment_entries(
-    entry_ids: Optional[list[str]] = None,
-    bypass_duplicates_check: Optional[bool] = None,
+    entry_ids: list[str] | None = None,
+    bypass_duplicates_check: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Import staged payment entries into payment processing."""
@@ -259,10 +259,10 @@ def import_payment_entries(
 
 
 def make_payment_by_contact_and_payment_method(
-    policy_id: Optional[str] = None,
-    payment_amount: Optional[float | int] = None,
-    contact_id: Optional[str] = None,
-    payment_method_id: Optional[str] = None,
+    policy_id: str | None = None,
+    payment_amount: float | int | None = None,
+    contact_id: str | None = None,
+    payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Submit a payment using a stored contact payment method."""
@@ -279,13 +279,13 @@ def make_payment_by_contact_and_payment_method(
 
 
 def make_payment_by_invoice_or_policy(
-    payment_date: Optional[str] = None,
-    policy_number: Optional[str] = None,
-    amount: Optional[float | int] = None,
-    meta: Optional[dict[str, Any]] = None,
-    payment_transaction_id: Optional[str] = None,
-    source_id: Optional[str] = None,
-    invoice_number: Optional[str] = None,
+    payment_date: str | None = None,
+    policy_number: str | None = None,
+    amount: float | int | None = None,
+    meta: dict[str, Any] | None = None,
+    payment_transaction_id: str | None = None,
+    source_id: str | None = None,
+    invoice_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Submit a payment by invoice number or policy number."""
@@ -305,12 +305,12 @@ def make_payment_by_invoice_or_policy(
 
 
 def mark_payment_nsf(
-    payment_date: Optional[str] = None,
-    confirmation_number: Optional[str] = None,
-    policy_number: Optional[str] = None,
-    amount: Optional[float | int] = None,
-    disable_auto_pay: Optional[bool] = None,
-    invoice_number: Optional[str] = None,
+    payment_date: str | None = None,
+    confirmation_number: str | None = None,
+    policy_number: str | None = None,
+    amount: float | int | None = None,
+    disable_auto_pay: bool | None = None,
+    invoice_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Mark a payment as non-sufficient funds."""
@@ -329,7 +329,7 @@ def mark_payment_nsf(
 
 
 def remove_payment_method(
-    payment_method_id: Optional[str] = None,
+    payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Remove a stored payment method."""
@@ -341,7 +341,7 @@ def remove_payment_method(
 
 
 def retrieve_account_payoff_amount(
-    policy_number: Optional[str] = None,
+    policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve the payoff amount for a policy account."""
@@ -353,8 +353,8 @@ def retrieve_account_payoff_amount(
 
 
 def retrieve_convenience_fee(
-    payment_amount: Optional[float | int] = None,
-    account_type: Optional[str] = None,
+    payment_amount: float | int | None = None,
+    account_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve the calculated convenience fee for a payment."""
@@ -366,7 +366,7 @@ def retrieve_convenience_fee(
 
 
 def retrieve_payment(
-    payment_id: Optional[str] = None,
+    payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve a payment record by ID."""
@@ -378,7 +378,7 @@ def retrieve_payment(
 
 
 def retrieve_payment_batch_entries(
-    batch_id: Optional[str] = None,
+    batch_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve all entries associated with a payment batch."""
@@ -390,7 +390,7 @@ def retrieve_payment_batch_entries(
 
 
 def retrieve_payment_batches(
-    load_entries: Optional[bool] = None,
+    load_entries: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """List payment batches, optionally including entry details."""
@@ -402,7 +402,7 @@ def retrieve_payment_batches(
 
 
 def retrieve_payment_entries(
-    entry_ids: Optional[list[str]] = None,
+    entry_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve one or more payment entries by ID."""
@@ -414,8 +414,8 @@ def retrieve_payment_entries(
 
 
 def retrieve_payment_methods(
-    contact_ids: Optional[list[str]] = None,
-    exp_less_than: Optional[str] = None,
+    contact_ids: list[str] | None = None,
+    exp_less_than: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve stored payment methods for one or more contacts."""
@@ -427,9 +427,9 @@ def retrieve_payment_methods(
 
 
 def retrieve_policy_billing_information(
-    policy_term_id: Optional[str] = None,
-    billing_only: Optional[bool] = None,
-    policy_id: Optional[str] = None,
+    policy_term_id: str | None = None,
+    billing_only: bool | None = None,
+    policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve billing information for a policy or policy term."""
@@ -445,7 +445,7 @@ def retrieve_policy_billing_information(
 
 
 def retrieve_sweep_payment_list(
-    procdate: Optional[str] = None,
+    procdate: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve sweep payments scheduled for a processing date."""
@@ -457,7 +457,7 @@ def retrieve_sweep_payment_list(
 
 
 def retrieve_updated_invoice_balance(
-    invoice_id: Optional[str] = None,
+    invoice_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve the latest invoice balance for an invoice ID."""
@@ -469,8 +469,8 @@ def retrieve_updated_invoice_balance(
 
 
 def update_payment_batch(
-    batch_id: Optional[str] = None,
-    data: Optional[dict[str, Any] | list[dict[str, Any]]] = None,
+    batch_id: str | None = None,
+    data: dict[str, Any] | list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update an existing payment batch."""
@@ -482,7 +482,7 @@ def update_payment_batch(
 
 
 def update_payment_entries(
-    entries: Optional[list[dict[str, Any]]] = None,
+    entries: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update one or more payment entries."""
@@ -494,8 +494,8 @@ def update_payment_entries(
 
 
 def update_sweep_payments_complete(
-    procdate: Optional[str] = None,
-    payment_ids: Optional[list[str]] = None,
+    procdate: str | None = None,
+    payment_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Mark sweep payments as fully processed for a given date."""

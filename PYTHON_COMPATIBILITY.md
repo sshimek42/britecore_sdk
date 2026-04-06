@@ -12,10 +12,10 @@
 | Python Version | Status        | Notes                                      |
 |----------------|---------------|--------------------------------------------|
 | 3.11           | ✅ Supported  | Minimum supported version                  |
-| 3.12           | ✅ Supported  | Recommended for most production deployments|
+| 3.12           | ✅ Supported  | Recommended for most production deployments |
 | 3.13           | ✅ Supported  | —                                          |
 | 3.14           | ✅ Supported  | Original development target; fully tested  |
-| 3.10 and below | ❌ Unsupported| Uses `X | Y` union types (PEP 604); will not parse |
+| 3.10 and below | ❌ Unsupported | Uses `X \| Y` union types (PEP 604); will not parse |
 
 ### Why ≥3.11?
 
