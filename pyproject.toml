@@ -7,7 +7,7 @@ name = "britecore_libraries"
 version = "1.0.0"
 description = "BriteCore Libraries - Core utilities for BriteCore API integration."
 readme = "README.md"
-license = { text = "Proprietary" }
+license = { text = "Apache-2.0" }
 authors = [{ name = "sshimek" }]
 requires-python = ">=3.11"
 dependencies = [
