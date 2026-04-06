@@ -49,7 +49,9 @@ See `LICENSE` file for complete legal text.
 
 ## Trademark & Attribution
 
-"BriteCore" is a trademark of Mutual of Wausau. This SDK is an independent project for API integration and is not endorsed by or affiliated with Mutual of Wausau.
+"BriteCore" is a trademark of BriteCore. This SDK is an independent project 
+for API 
+integration and is not endorsed by or affiliated with BriteCore.
 
 ## Questions?
 
