@@ -107,7 +107,6 @@ web_timeout_long: int = 50
 web_timeout: int = 5
 
 
-
 __all__ = [
     "RequestParameters",
     "api_client",
@@ -132,4 +131,3 @@ def __getattr__(name: str):
     timeout state.
     """
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-

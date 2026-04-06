@@ -4,6 +4,7 @@ Provides:
     acknowledge  -- Acknowledge one or more notifications.
     current      -- Retrieve current (unacknowledged) notifications.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

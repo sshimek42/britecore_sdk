@@ -78,11 +78,11 @@ class PhoneValidator:
                 )
 
             phone_number_list.append(
-                    {
-                        "phone": normalized,
-                        "type": phone_type,
-                    }
-                )
+                {
+                    "phone": normalized,
+                    "type": phone_type,
+                }
+            )
 
         return phone_number_list
 

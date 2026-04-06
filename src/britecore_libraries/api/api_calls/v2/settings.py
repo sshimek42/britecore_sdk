@@ -13,6 +13,7 @@ Provides:
     set_pdf_engine                      -- Set the PDF engine for document generation.
     set_setting_value                   -- Set a specific system setting value.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

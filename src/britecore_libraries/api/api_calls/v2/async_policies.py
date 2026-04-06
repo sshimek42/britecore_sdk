@@ -151,9 +151,23 @@ async def acreate_policy(
     policy_number: str | None = "",
     policy_type_id: str | None = "",
     inception_date: str | None = "",
-    term_type: Literal["Custom", "3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"] | None = "1 Year",
+    term_type: (
+        Literal[
+            "Custom",
+            "3 Years",
+            "18 Months",
+            "1 Year",
+            "9 Months",
+            "6 Months",
+            "3 Months",
+        ]
+        | None
+    ) = "1 Year",
     expiration_date: str | None = "",
-    renewal_term_type: Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"] | None = "1 Year",
+    renewal_term_type: (
+        Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"]
+        | None
+    ) = "1 Year",
     is_renewal: bool | None = False,
     as_agent: bool | None = False,
     manual_policy_number: bool | None = True,
@@ -229,7 +243,9 @@ async def aretrieve_policy_terms(
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_policy_terms",
         json=policy_retrieve_json,
-        **_apply_policy_read_cache(dict(kwargs), cache_key_parts=[p for p in cache_parts if p]),
+        **_apply_policy_read_cache(
+            dict(kwargs), cache_key_parts=[p for p in cache_parts if p]
+        ),
     )
     return await API_CLIENT.aprocess_result(request_result)
 
@@ -318,7 +334,9 @@ async def aretrieve_risk_details(
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_risk_details",
         json={"risk_id": risk_id},
-        **_apply_policy_read_cache(dict(kwargs), cache_key_parts=[f"risk_id:{risk_id}"]),
+        **_apply_policy_read_cache(
+            dict(kwargs), cache_key_parts=[f"risk_id:{risk_id}"]
+        ),
     )
     return await API_CLIENT.aprocess_result(request_result)
 
@@ -365,7 +383,12 @@ async def anew_revision_contact(
     revision_id: str,
     contact_id: str,
     x_id: str | None = None,
-    contact_role: Literal["namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"] | None = "namedInsured",
+    contact_role: (
+        Literal[
+            "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
+        ]
+        | None
+    ) = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a contact to a revision and invalidate cached policy reads on success."""
@@ -454,9 +477,7 @@ async def aupdate_property_location(
     return await API_CLIENT.aprocess_result(request_result)
 
 
-async def anew_mortgagee(
-    property_id: str, **kwargs: Unpack[RequestParameters]
-) -> Any:
+async def anew_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Create a new mortgagee and invalidate cached policy reads on success."""
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/new_mortgagee",

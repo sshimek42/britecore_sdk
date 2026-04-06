@@ -4,6 +4,7 @@ Provides:
     get_property_information_and_photos -- Retrieve comprehensive property
                                            details and associated photos.
 """
+
 from logging import Logger
 from typing import Any, Unpack
 

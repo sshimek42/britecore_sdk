@@ -8,6 +8,7 @@ Key functions:
     line_menu            -- Interactive CLI menu for selecting effective date,
                             state, and line combinations.
 """
+
 from json import loads
 from logging import Logger
 from typing import Any, Unpack
@@ -64,12 +65,10 @@ def get_export_line_file(
             "include_custom_sequences": include_custom_sequences,
         }
 
-        request_result: BaseHTTPResponse | HTTPResponse | None = (
-            API_CLIENT.do_request(
-                path="/api/v2/lines/get_export_line_file",
-                json=web_request_json,
-                **kwargs,
-            )
+        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+            path="/api/v2/lines/get_export_line_file",
+            json=web_request_json,
+            **kwargs,
         )
     elif line_type == "Policy":
         request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")

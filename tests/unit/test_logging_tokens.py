@@ -61,7 +61,9 @@ def test_runtime_logs_do_not_emit_legacy_tokens(caplog) -> None:
         with caplog.at_level(logging.DEBUG, logger="britecore_libraries"):
             contacts.new_contact(name="Jane Doe", address=[{"line1": "x"}])
             deliverables.get_attachment("file-1")
-            asyncio.run(async_contacts.anew_contact(name="Alex Roe", address=[{"line1": "y"}]))
+            asyncio.run(
+                async_contacts.anew_contact(name="Alex Roe", address=[{"line1": "y"}])
+            )
 
         messages = [record.getMessage() for record in caplog.records]
         assert messages, "Expected captured log messages but got none"
@@ -70,5 +72,3 @@ def test_runtime_logs_do_not_emit_legacy_tokens(caplog) -> None:
         contacts.API_CLIENT = sync_client_original
         async_contacts.API_CLIENT = async_client_original
         deliverables.API_CLIENT = deliverables_client_original
-
-

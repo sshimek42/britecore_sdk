@@ -4,6 +4,7 @@ Provides:
     add_to_index       -- Add a document to a search index.
     remove_from_index  -- Remove a document from a search index.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 

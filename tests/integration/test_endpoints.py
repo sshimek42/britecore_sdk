@@ -22,6 +22,7 @@ from tests.integration.conftest import requires_sandbox
 # Quotes
 # ===========================================================================
 
+
 class TestQuotesEndpoints:
     """Tests for v2/quotes.py endpoint wrappers."""
 
@@ -34,7 +35,9 @@ class TestQuotesEndpoints:
 
             from britecore_libraries.api.api_calls.v2.quotes import create_full_quote
 
-            result, quote_id = create_full_quote({"number": "Q001", "policy_type_id": "pt-1"})
+            result, quote_id = create_full_quote(
+                {"number": "Q001", "policy_type_id": "pt-1"}
+            )
 
             assert result == {"id": "q-123", "number": "Q001"}
             assert quote_id == "q-123"
@@ -104,6 +107,7 @@ class TestQuotesEndpoints:
 # Policies
 # ===========================================================================
 
+
 class TestPoliciesEndpoints:
     """Tests for v2/policies.py endpoint wrappers."""
 
@@ -111,9 +115,14 @@ class TestPoliciesEndpoints:
     def test_retrieve_policy_by_number(self):
         """retrieve_policy resolves the policy_number parameter."""
         with patch("britecore_libraries.api.api_calls.v2.policies.API_CLIENT") as mock:
-            mock.multiple_parameter_verification.return_value = {"policy_number": "POL001"}
+            mock.multiple_parameter_verification.return_value = {
+                "policy_number": "POL001"
+            }
             mock.do_request.return_value = MagicMock()
-            mock.process_result.return_value = {"id": "pol-1", "policy_number": "POL001"}
+            mock.process_result.return_value = {
+                "id": "pol-1",
+                "policy_number": "POL001",
+            }
 
             from britecore_libraries.api.api_calls.v2.policies import retrieve_policy
 
@@ -139,7 +148,10 @@ class TestPoliciesEndpoints:
     def test_add_line_item_success(self):
         """add_line_item returns True on success."""
         with patch("britecore_libraries.api.api_calls.v2.policies.API_CLIENT") as mock:
-            mock.json_dict_builder.return_value = {"revision_id": "rev-1", "item_id": "itm-1"}
+            mock.json_dict_builder.return_value = {
+                "revision_id": "rev-1",
+                "item_id": "itm-1",
+            }
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"added_items": ["itm-1"]}
 
@@ -151,7 +163,9 @@ class TestPoliciesEndpoints:
     @pytest.mark.integration
     def test_retrieve_policy_ids_extracts_revision_and_property(self):
         """retrieve_policy_ids returns (revision_id, primary_property_id)."""
-        with patch("britecore_libraries.api.api_calls.v2.policies.retrieve_policy") as mock:
+        with patch(
+            "britecore_libraries.api.api_calls.v2.policies.retrieve_policy"
+        ) as mock:
             mock.return_value = {
                 "active_revision": {
                     "id": "rev-99",
@@ -172,6 +186,7 @@ class TestPoliciesEndpoints:
 # ===========================================================================
 # Contacts (v2)
 # ===========================================================================
+
 
 class TestContactsV2Endpoints:
     """Tests for v2/contacts.py endpoint wrappers."""
@@ -204,7 +219,14 @@ class TestContactsV2Endpoints:
 
             contact_data, contact_id = new_contact(
                 name="John Smith",
-                address=[{"street": "123 Main St", "city": "Springfield", "state": "IL", "zip": "62701"}],
+                address=[
+                    {
+                        "street": "123 Main St",
+                        "city": "Springfield",
+                        "state": "IL",
+                        "zip": "62701",
+                    }
+                ],
             )
 
             contact_data = cast(dict[str, Any], contact_data)
@@ -229,6 +251,7 @@ class TestContactsV2Endpoints:
 # ===========================================================================
 # Claims
 # ===========================================================================
+
 
 class TestClaimsEndpoints:
     """Tests for v2/claims.py endpoint wrappers."""
@@ -256,7 +279,9 @@ class TestClaimsEndpoints:
 
         with patch("britecore_libraries.api.api_calls.v2.claims.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
-            mock.process_result.side_effect = BritecoreError.NoDataReturned("Claim not found")
+            mock.process_result.side_effect = BritecoreError.NoDataReturned(
+                "Claim not found"
+            )
 
             from britecore_libraries.api.api_calls.v2.claims import get_claim
 
@@ -268,17 +293,26 @@ class TestClaimsEndpoints:
 # Deliverables
 # ===========================================================================
 
+
 class TestDeliverablesEndpoints:
     """Tests for v2/deliverables.py endpoint wrappers."""
 
     @pytest.mark.integration
     def test_list_attachments_by_policy(self):
         """list_attachments sends correct path and returns attachment list."""
-        with patch("britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT") as mock, \
-             patch("britecore_libraries.api.api_calls.v2.deliverables.api_client") as mock_module:
+        with (
+            patch(
+                "britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT"
+            ) as mock,
+            patch(
+                "britecore_libraries.api.api_calls.v2.deliverables.api_client"
+            ) as mock_module,
+        ):
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = [{"file_id": "f-1"}, {"file_id": "f-2"}]
-            mock_module.multiple_parameter_verification.return_value = {"policy_id": "pol-5"}
+            mock_module.multiple_parameter_verification.return_value = {
+                "policy_id": "pol-5"
+            }
 
             from britecore_libraries.api.api_calls.v2.deliverables import (
                 list_attachments,
@@ -287,14 +321,22 @@ class TestDeliverablesEndpoints:
             result = list_attachments(policy_id="pol-5")
 
             assert isinstance(result, list)
-            assert mock.do_request.call_args.kwargs["path"] == "/api/v2/deliverables/list_attachments"
+            assert (
+                mock.do_request.call_args.kwargs["path"]
+                == "/api/v2/deliverables/list_attachments"
+            )
 
     @pytest.mark.integration
     def test_get_attachment_success(self):
         """get_attachment sends file_id and returns attachment data."""
-        with patch("britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT") as mock:
+        with patch(
+            "britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT"
+        ) as mock:
             mock.do_request.return_value = MagicMock()
-            mock.process_result.return_value = {"file_id": "f-99", "url": "https://cdn.example.com/f-99.pdf"}
+            mock.process_result.return_value = {
+                "file_id": "f-99",
+                "url": "https://cdn.example.com/f-99.pdf",
+            }
 
             from britecore_libraries.api.api_calls.v2.deliverables import get_attachment
 
@@ -306,7 +348,9 @@ class TestDeliverablesEndpoints:
     @pytest.mark.integration
     def test_get_edeliverables_sends_date_range(self):
         """get_edeliverables sends correct date range payload."""
-        with patch("britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT") as mock:
+        with patch(
+            "britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT"
+        ) as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = [{"deliverable_id": "ed-1"}]
 
@@ -326,15 +370,24 @@ class TestDeliverablesEndpoints:
 # Inspections
 # ===========================================================================
 
+
 class TestInspectionsEndpoints:
     """Tests for v2/inspections.py endpoint wrappers."""
 
     @pytest.mark.integration
     def test_update_inspection_dates_by_policy_number(self):
         """update_inspection_dates resolves policy_number and sends dates."""
-        with patch("britecore_libraries.api.api_calls.v2.inspections.API_CLIENT") as mock, \
-             patch("britecore_libraries.api.api_calls.v2.inspections.api_client") as mock_module:
-            mock_module.multiple_parameter_verification.return_value = {"policy_number": "POL-INS"}
+        with (
+            patch(
+                "britecore_libraries.api.api_calls.v2.inspections.API_CLIENT"
+            ) as mock,
+            patch(
+                "britecore_libraries.api.api_calls.v2.inspections.api_client"
+            ) as mock_module,
+        ):
+            mock_module.multiple_parameter_verification.return_value = {
+                "policy_number": "POL-INS"
+            }
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"updated": True}
 
@@ -348,12 +401,16 @@ class TestInspectionsEndpoints:
             )
 
             assert result == {"updated": True}
-            assert mock.do_request.call_args.kwargs["path"] == "/api/v2/inspections/update_inspection_dates"
+            assert (
+                mock.do_request.call_args.kwargs["path"]
+                == "/api/v2/inspections/update_inspection_dates"
+            )
 
 
 # ===========================================================================
 # Insured
 # ===========================================================================
+
 
 class TestInsuredEndpoints:
     """Tests for v2/insured.py endpoint wrappers."""
@@ -387,7 +444,9 @@ class TestInsuredEndpoints:
 
         with patch("britecore_libraries.api.api_calls.v2.insured.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
-            mock.process_result.side_effect = BritecoreError.NoDataReturned("Property not found")
+            mock.process_result.side_effect = BritecoreError.NoDataReturned(
+                "Property not found"
+            )
 
             from britecore_libraries.api.api_calls.v2.insured import (
                 get_property_information_and_photos,
@@ -400,6 +459,7 @@ class TestInsuredEndpoints:
 # ===========================================================================
 # Notes
 # ===========================================================================
+
 
 class TestNotesEndpoints:
     """Tests for v2/notes.py endpoint wrappers."""
@@ -441,6 +501,7 @@ class TestNotesEndpoints:
 # Reports
 # ===========================================================================
 
+
 class TestReportsEndpoints:
     """Tests for v2/reports.py endpoint wrappers."""
 
@@ -459,9 +520,7 @@ class TestReportsEndpoints:
             call_args = mock.do_request.call_args
             # path may be passed as positional or keyword argument
             path_used = (
-                call_args.args[0]
-                if call_args.args
-                else call_args.kwargs.get("path")
+                call_args.args[0] if call_args.args else call_args.kwargs.get("path")
             )
             sent_json = call_args.kwargs.get("json") or (
                 call_args.args[1] if len(call_args.args) > 1 else None
@@ -476,7 +535,9 @@ class TestReportsEndpoints:
 
         with patch("britecore_libraries.api.api_calls.v2.reports.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
-            mock.process_result.side_effect = BritecoreError.NoDataReturned("Report not found")
+            mock.process_result.side_effect = BritecoreError.NoDataReturned(
+                "Report not found"
+            )
 
             from britecore_libraries.api.api_calls.v2.reports import list_files
 
@@ -487,6 +548,7 @@ class TestReportsEndpoints:
 # ===========================================================================
 # Contacts (v1 legacy)
 # ===========================================================================
+
 
 class TestContactsV1Endpoints:
     """Tests for v1/contacts.py endpoint wrappers."""
@@ -516,6 +578,7 @@ class TestContactsV1Endpoints:
 # ===========================================================================
 # Cross-cutting: HTTP error handling in process_result
 # ===========================================================================
+
 
 class TestHTTPErrorHandling:
     """Verify process_result raises the correct exception type for each HTTP status."""
@@ -594,7 +657,9 @@ class TestHTTPErrorHandling:
 
         resp = MagicMock()
         resp.status = 200
-        resp.data = json_mod.dumps({"success": False, "message": "Policy not found"}).encode()
+        resp.data = json_mod.dumps(
+            {"success": False, "message": "Policy not found"}
+        ).encode()
 
         with pytest.raises(BritecoreError.NoDataReturned, match="Policy not found"):
             BritecoreAPIClient.process_result(resp)
@@ -603,6 +668,7 @@ class TestHTTPErrorHandling:
 # ===========================================================================
 # Structured tracing (request_id + latency logging)
 # ===========================================================================
+
 
 class TestStructuredTracing:
     """Verify that do_request emits structured DEBUG log lines."""
@@ -625,7 +691,9 @@ class TestStructuredTracing:
         client.http = MagicMock()
         client.http.request.return_value = ok_resp
 
-        with patch("britecore_libraries.api.britecore_api_client.LOGGER") as mock_logger:
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LOGGER"
+        ) as mock_logger:
             client.do_request(path="/api/v2/test/endpoint", json={"x": 1})
 
         debug_calls = [str(call) for call in mock_logger.debug.call_args_list]
@@ -651,18 +719,23 @@ class TestStructuredTracing:
         client.http = MagicMock()
         client.http.request.side_effect = Urllib3Timeout("timed out")
 
-        with patch("britecore_libraries.api.britecore_api_client.LOGGER") as mock_logger:
+        with patch(
+            "britecore_libraries.api.britecore_api_client.LOGGER"
+        ) as mock_logger:
             with pytest.raises(BritecoreError.RequestTimeoutError):
                 client.do_request(path="/api/v2/test/slow", json={"x": 1})
 
         error_calls = [str(call) for call in list(mock_logger.error.call_args_list)]
         log_text = " ".join(error_calls)
-        assert "timeout" in log_text.lower(), f"Expected 'timeout' in error calls: {error_calls}"
+        assert (
+            "timeout" in log_text.lower()
+        ), f"Expected 'timeout' in error calls: {error_calls}"
 
 
 # ===========================================================================
 # Live sandbox tests (skipped unless BRITECORE_INTEGRATION_TESTS=true)
 # ===========================================================================
+
 
 @requires_sandbox
 class TestLiveSandboxQuotes:
@@ -681,4 +754,6 @@ class TestLiveSandboxQuotes:
     @pytest.mark.sandbox
     def test_live_create_quote_round_trip(self):
         """Create a minimal quote and retrieve it back (requires sandbox data)."""
-        pytest.skip("Requires known sandbox policy type ID — configure before enabling.")
+        pytest.skip(
+            "Requires known sandbox policy type ID — configure before enabling."
+        )

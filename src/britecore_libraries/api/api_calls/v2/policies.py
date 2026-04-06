@@ -13,6 +13,7 @@ Key functions:
     renew_policy            -- Create a renewal for a policy term.
     get_policies            -- List all policies (paginated).
 """
+
 from logging import Logger
 from typing import Any, Literal, Unpack
 
@@ -75,8 +76,7 @@ def retrieve_policy(
     priority_list: list[str] = ["revision_id", "policy_id", "policy_number"]
 
     policy_request_json: dict[str, str | None] = (
-        API_CLIENT.multiple_parameter_verification(
-            verification_list, priority_list)
+        API_CLIENT.multiple_parameter_verification(verification_list, priority_list)
     )
 
     if revision_state:
@@ -272,9 +272,23 @@ def create_policy(
     policy_number: str | None = "",
     policy_type_id: str | None = "",
     inception_date: str | None = "",
-    term_type: Literal["Custom", "3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"] | None = "1 Year",
+    term_type: (
+        Literal[
+            "Custom",
+            "3 Years",
+            "18 Months",
+            "1 Year",
+            "9 Months",
+            "6 Months",
+            "3 Months",
+        ]
+        | None
+    ) = "1 Year",
     expiration_date: str | None = "",  # Required if term_type is "Custom"
-    renewal_term_type: Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"] | None = "1 Year",
+    renewal_term_type: (
+        Literal["3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months"]
+        | None
+    ) = "1 Year",
     is_renewal: bool | None = False,
     as_agent: bool | None = False,
     manual_policy_number: bool | None = True,
@@ -318,13 +332,11 @@ def create_policy(
     """
 
     if term_type == "Custom" and not expiration_date:
-        BritecoreError.MissingParameter(
-            "expiation_date needed with 'Custom' term_type")
+        BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
 
     LOGGER.debug(f"Creating policy '{policy_number}'")
     local_env: dict[str, Any] = locals()
-    policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({
-                                                                       **local_env})
+    policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/create_policy",
         json=policy_request_json,
@@ -361,8 +373,7 @@ def retrieve_policy_terms(
     """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
-        BritecoreError.MissingParameter(
-            "Either policy_id or policy_number is required")
+        BritecoreError.MissingParameter("Either policy_id or policy_number is required")
 
     parameter_list: list[dict[str, str]] = [
         {"policy_id": policy_id},
@@ -650,8 +661,7 @@ def retrieve_billing_schedule_options(
     local_env = locals()
 
     LOGGER.debug("Getting billing schedule")
-    billing_search_json: dict[str, Any] = API_CLIENT.json_dict_builder({
-                                                                       **local_env})
+    billing_search_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_billing_schedule_options",
         json=billing_search_json,
@@ -664,7 +674,12 @@ def new_revision_contact(
     revision_id: str,
     contact_id: str,
     x_id: str | None = None,
-    contact_role: Literal["namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"] | None = "namedInsured",
+    contact_role: (
+        Literal[
+            "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
+        ]
+        | None
+    ) = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """
@@ -707,12 +722,10 @@ def new_revision_contact(
     }
 
     if not x_id:
-        request_result: BaseHTTPResponse | HTTPResponse | None = (
-            API_CLIENT.do_request(
-                path="/api/v2/policies/new_revision_contact",
-                json=contact_add_json,
-                **kwargs,
-            )
+        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+            path="/api/v2/policies/new_revision_contact",
+            json=contact_add_json,
+            **kwargs,
         )
 
         contact_add_result = API_CLIENT.process_result(request_result)
@@ -726,12 +739,10 @@ def new_revision_contact(
             "contact_id": contact_id,
         }
 
-        request_result: BaseHTTPResponse | HTTPResponse | None = (
-            API_CLIENT.do_request(
-                path="/api/v2/policies/update_revision_contact",
-                json=update_revision_json,
-                **kwargs,
-            )
+        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+            path="/api/v2/policies/update_revision_contact",
+            json=update_revision_json,
+            **kwargs,
         )
 
     return API_CLIENT.process_result(request_result)

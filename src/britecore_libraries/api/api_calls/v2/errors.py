@@ -3,6 +3,7 @@
 Provides:
     get_internal_error  -- Retrieve details for an internal error by ID.
 """
+
 from logging import Logger
 from typing import Any, Unpack, cast
 
