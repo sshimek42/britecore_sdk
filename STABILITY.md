@@ -21,10 +21,13 @@ This document outlines the stability commitments, support expectations, and vers
 - **Older versions** — No support
 
 Example:
-```
+
+```text
+
 1.x.y (Active)          ← Bug fixes, minor features, security patches
 0.x.y (Deprecated)      ← Critical security patches for 12 months from 1.0.0 release
 older                   ← No support
+
 ```
 
 ### Release Schedule
@@ -54,6 +57,7 @@ older                   ← No support
 ### Example
 
 ```python
+
 # ✅ OK in minor release (e.g., 1.0.0 → 1.1.0)
 def get_policy(policy_id, include_details=False):  # New optional param
     ...
@@ -61,6 +65,7 @@ def get_policy(policy_id, include_details=False):  # New optional param
 # ❌ NOT OK in minor release (breaking change)
 def get_policy(policy_id: str) -> dict:  # Changed return type
     ...  # Must wait for 2.0.0
+
 ```
 
 ## Deprecation Policy
@@ -68,13 +73,16 @@ def get_policy(policy_id: str) -> dict:  # Changed return type
 When breaking changes are necessary:
 
 1. **Deprecation warning** — Issue added in minor release with `DeprecationWarning`
+
    ```python
+
    import warnings
    warnings.warn(
        "old_function() is deprecated; use new_function() instead",
        DeprecationWarning,
        stacklevel=2
    )
+
    ```
 
 2. **Documentation** — Add to `CHANGELOG.md` under **Deprecations** section
@@ -83,7 +91,8 @@ When breaking changes are necessary:
 
 ### Example Timeline
 
-```
+```text
+
 1.0.0  → Introduce new API, start deprecating old API
          (Release notes: "old_api() deprecated; use new_api() instead")
 
@@ -94,6 +103,7 @@ When breaking changes are necessary:
 
 2.0.0  → Remove old API
          (Release notes: "Breaking: removed old_api(); use new_api() instead")
+
 ```
 
 ## Python Version Support
@@ -129,12 +139,15 @@ Dependencies are pinned to compatible ranges:
 - Dev deps: Looser pinning for flexibility
 
 Example:
+
 ```toml
+
 [project]
 dependencies = [
     "urllib3~=2.6.3",    # Allow 2.6.x, not 2.7.x
     "dynaconf~=3.2.13",  # Allow 3.2.x, not 3.3.x
 ]
+
 ```
 
 ### Major Dep Upgrades
@@ -175,4 +188,3 @@ When a major dependency upgrades:
 - [CHANGELOG.md](CHANGELOG.md) — All version history and changes
 - [SECURITY.md](SECURITY.md) — Security reporting and patch timeline
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) — Detailed version matrix
-

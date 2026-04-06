@@ -73,9 +73,11 @@ Starting from `1.0.0` the library follows **semantic versioning**:
 Runtime dependencies are pinned with `~=` (compatible-release) constraints:
 
 ```toml
+
 urllib3~=2.6          # HTTP transport
 dynaconf~=3.2         # Configuration management
 pandas~=3.0           # Data utilities
+
 ```
 
 This means patch-level updates are picked up automatically; minor upgrades
@@ -118,4 +120,3 @@ The CI pipeline validates the following matrix:
 ---
 
 *Last updated: 2026-03-31*
-

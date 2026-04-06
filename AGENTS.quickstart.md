@@ -1,4 +1,5 @@
 # AGENTS Quickstart
+
 For full guidance, see `AGENTS.md`.
 
 - Work in `src/britecore_libraries/`; ignore `build/`, `dist/`, `env/`, and `*.egg-info/` unless packaging is the task.
@@ -13,4 +14,3 @@ For full guidance, see `AGENTS.md`.
 - Important env vars in code paths: `target_site` (client init) and `system` (regex selection in maps, with sensible defaults if unset).
 - Prefer imports from `models`/`validators`; `classes` is a deprecated compatibility shim.
 - Tests are under `tests/` (not `src/`); run targeted pytest for changed modules, then focused import/smoke checks when config-sensitive paths are involved.
-

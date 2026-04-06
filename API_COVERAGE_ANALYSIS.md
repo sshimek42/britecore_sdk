@@ -65,28 +65,31 @@ They describe the phased implementation strategy that was followed to reach
 full coverage.
 
 ### Phase 1 — Core Financial APIs ✅
+
 - [x] `payments.py` (29 endpoints)
 - [x] `billing.py` (4 endpoints)
 - [x] `commissions.py` (9 endpoints)
 - [x] `accounting.py` (3 endpoints)
 
 ### Phase 2 — System Management APIs ✅
+
 - [x] `settings.py` (11 endpoints)
 - [x] `vendors.py` (16 endpoints)
 - [x] `nightly_jobs.py` (4 endpoints)
 
 ### Phase 3 — Document & Integration APIs ✅
+
 - [x] `attachments.py` (11 endpoints)
 - [x] `signatures.py` (6 endpoints)
 - [x] `notifications.py` (2 endpoints)
 
 ### Phase 4 — Remaining Specialized APIs ✅
+
 - [x] `custom_ui.py` (4 endpoints)
 - [x] `dashboards.py` (8 endpoints)
 - [x] `intacct.py` (5 endpoints)
 - [x] `data.py`, `errors.py`, `printing.py`, `return_premium.py`,
       `search.py`, `uploads.py` (remaining 12 endpoints)
-
 
 ---
 
@@ -94,8 +97,10 @@ full coverage.
 
 ### Total Endpoints in britecore_api.json: **374**
 
-### Currently Implemented Modules:
-```
+### Currently Implemented Modules
+
+```text
+
 api/api_calls/v2/
 ├── accounting.py      → accounting: 3 endpoints
 ├── billing.py         → billing: 4 endpoints
@@ -112,6 +117,7 @@ api/api_calls/v2/
 ├── quotes.py          → quote: 15 endpoints
 ├── reports.py         → reports: 14 endpoints
 └── utils.py           → utils: 24 endpoints
+
 ```
 
 **Currently Implemented:** 295 endpoints (78.9%)  
@@ -170,26 +176,33 @@ api/api_calls/v2/
 ### 🔴 **CRITICAL: Add Remaining High-Value Modules**
 
 **Priority 1 (Most Used APIs):**
+
 1. **settings.py** (11 endpoints)
-   - System configuration
-   - User preferences
-   - Application settings
+
+  - System configuration
+  - User preferences
+  - Application settings
 
 **Priority 2 (Medium Priority):**
+
 2. **attachments.py** (11 endpoints)
-   - Document management
-   - File storage integration
+
+  - Document management
+  - File storage integration
 
 3. **vendors.py** (16 endpoints)
-   - Third-party integrations (NxTech, etc.)
-   - Already partially referenced in code
+
+  - Third-party integrations (NxTech, etc.)
+  - Already partially referenced in code
 
 4. **nightly_jobs.py** (4 endpoints)
-   - Batch processing
-   - Scheduled tasks
-   - Already referenced in britecore_api.json
+
+  - Batch processing
+  - Scheduled tasks
+  - Already referenced in britecore_api.json
 
 **Priority 3 (Specialized):**
+
 5. **signatures.py** (6 endpoints)
 6. **notifications.py** (2 endpoints)
 7. **custom_ui.py** (4 endpoints)
@@ -203,6 +216,7 @@ api/api_calls/v2/
 ## 🛠️ Implementation Strategy
 
 ### Phase 1: Complete Core Financial APIs (Completed)
+
 - [x] `api/api_calls/v2/payments.py` (29 endpoints)
 - [x] `api/api_calls/v2/billing.py` (4 endpoints)
 - [x] `api/api_calls/v2/commissions.py` (9 endpoints)
@@ -210,18 +224,21 @@ api/api_calls/v2/
 - [x] Add targeted tests for each module
 
 ### Phase 2: Add System Management APIs (2-3 weeks)
+
 - [ ] `api/api_calls/v2/settings.py` (11 endpoints)
 - [ ] `api/api_calls/v2/vendors.py` (16 endpoints)
 - [ ] `api/api_calls/v2/nightly_jobs.py` (4 endpoints)
 - [ ] Add tests for each module
 
 ### Phase 3: Add Document & Integration APIs (2-3 weeks)
+
 - [ ] `api/api_calls/v2/attachments.py` (11 endpoints)
 - [ ] `api/api_calls/v2/signatures.py` (6 endpoints)
 - [ ] `api/api_calls/v2/notifications.py` (2 endpoints)
 - [ ] Add tests for each module
 
 ### Phase 4: Add Remaining Specialized APIs (1-2 weeks)
+
 - [ ] `api/api_calls/v2/custom_ui.py` (4 endpoints)
 - [ ] `api/api_calls/v2/dashboards.py` (8 endpoints)
 - [ ] `api/api_calls/v2/intacct.py` (5 endpoints)
@@ -232,28 +249,36 @@ api/api_calls/v2/
 ## 🎯 Immediate Action Items
 
 ### 1. Create Missing Module Stubs
+
 Add empty module files with docstrings to organize unimplemented v2 API domains:
 
 ```python
+
 # Example: api/api_calls/v2/settings.py
+
 """Settings-related API endpoints."""
 # endpoints to implement from britecore_api.json
+
 ```
 
 ### 2. Update v2/__init__.py
+
 Expose all modules (implemented and stubs) in the __init__.py for consistency
 
 ### 3. Prioritize Remaining Operational Gaps
+
 - Focus next on `settings.py`, `attachments.py`, and `vendors.py`
 - These domains are still broad gaps after the finance wrapper work
 - Add targeted unit coverage as each wrapper set lands
 
 ### 4. Update Documentation
+
 - Add mapping in AGENTS.md showing which endpoints are implemented
 - Note in tests/README.md about API coverage
 - Create MODULE_COVERAGE.md to track progress
 
 ### 5. Enhance Test Suite
+
 - Add integration tests for new endpoints as they're implemented
 - Reference britecore_api.json schemas for response validation
 - Use fixtures for payment/billing test data
@@ -263,6 +288,7 @@ Expose all modules (implemented and stubs) in the __init__.py for consistency
 ## 📌 Other Observations
 
 ### Already Partially Covered
+
 - **printing.py in v1** - Has 2 endpoints (getToBePrinted, markAsPrinted)
   - Consider migrating/enhancing these in v2
   - britecore_api.json lists 5 endpoints
@@ -271,6 +297,7 @@ Expose all modules (implemented and stubs) in the __init__.py for consistency
   - Not yet wrapped, should be added
 
 ### Structure Quality
+
 ✅ Current module organization is clean and follows best practices  
 ✅ Pattern of one file per API domain is scalable  
 ✅ v1 and v2 separation is good  
@@ -282,14 +309,17 @@ Expose all modules (implemented and stubs) in the __init__.py for consistency
 Create this template for tracking:
 
 ```markdown
+
 # API Implementation Coverage
 
 ## Phase 1: Core Financial (42/42)
+
 - [x] payments.py (29/29)
 - [x] billing.py (4/4)
 - [x] commissions.py (9/9)
 
 ## Phase 2: System (31/31)
+
 - [ ] settings.py (11/11)
 - [ ] vendors.py (16/16)
 - [ ] nightly_jobs.py (4/4)
@@ -297,6 +327,7 @@ Create this template for tracking:
 [... etc ...]
 
 ## Total: 250/374 (66.8%) → Goal: 374/374 (100%)
+
 ```
 
 ---
@@ -317,4 +348,3 @@ Create this template for tracking:
 **Recommendation: Start with Phase 1 (payments, billing, commissions) to address critical business functionality gaps.**
 
 All other recommendations can be phased in based on business priorities and resource availability.
-
