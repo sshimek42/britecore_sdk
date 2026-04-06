@@ -9,6 +9,7 @@ This site hosts generated API docs and key project guides.
 api_reference
 ASYNC_CACHING
 Configuration <CONFIGURATION>
+Sensitive map files <MAP_FILES>
 CI/CD and Coverage <CI_AND_COVERAGE>
 Python compatibility <python_compatibility>
 Unimplemented API stubs <unimplemented_api_stubs>
@@ -20,5 +21,3 @@ Unimplemented API stubs <unimplemented_api_stubs>
 
 history
 ```
-
-

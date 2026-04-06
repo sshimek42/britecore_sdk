@@ -7,7 +7,7 @@ from typing import Any
 from britecore_libraries import logger
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+from britecore_libraries.maps import load_regexes
 
 LOGGER = logger
 

@@ -55,7 +55,7 @@ def get_export_line_file(
         Any exceptions raised by the underlying API client or JSON parsing operations.
     """
     request_result: BaseHTTPResponse | HTTPResponse | None = None
-    LOGGER.info(f"Retrieving %f.yellow%{line_name}%f% lines")
+    LOGGER.info(f"Retrieving '{line_name}' lines")
 
     if line_type == "Line":
         web_request_json: dict[str, str | bool] = {
@@ -73,7 +73,7 @@ def get_export_line_file(
     elif line_type == "Policy":
         request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
 
-    LOGGER.info(f"Finished retrieving %f.yellow%{line_name}%f% lines")
+    LOGGER.info(f"Finished retrieving '{line_name}' lines")
 
     API_CLIENT.process_results = API_CLIENT.process_result(request_result)
     if API_CLIENT.process_results is not None:

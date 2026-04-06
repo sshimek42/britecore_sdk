@@ -184,7 +184,7 @@ async def acreate_policy(
             "expiration_date needed with 'Custom' term_type"
         )
 
-    LOGGER.debug(f"Creating policy %f.yellow%{policy_number}%f%")
+    LOGGER.debug(f"Creating policy '{policy_number}'")
     policy_request_json = {
         key: value
         for key, value in {
@@ -252,7 +252,7 @@ async def aretrieve_policy_terms(
 
 async def arate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Rate a revision and invalidate cached policy reads on success."""
-    LOGGER.debug(f"Re-rating revision %f.yellow%{revision_id}%f%")
+    LOGGER.debug(f"Re-rating revision '{revision_id}'")
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/rate_revision",
         json={"revision_id": revision_id},

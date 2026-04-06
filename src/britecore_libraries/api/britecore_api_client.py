@@ -13,7 +13,9 @@ from urllib3.exceptions import (
     RequestError,
     ResponseError,
 )
-from urllib3.exceptions import TimeoutError as urlTimeoutError
+from urllib3.exceptions import (
+    TimeoutError as urlTimeoutError,
+)
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_libraries import logger
@@ -196,11 +198,11 @@ class BritecoreAPIClient:
             LOGGER.info("client_id and/or client_secret not found. Using api_key.")
             try:
                 self.api_key = self.site_settings.api_key
-            except AttributeError as exc:
+            except AttributeError as attribute_error:
                 raise BritecoreError.BritecoreKeyError(
                     "api_key not found. Please set the api_key in your "
                     ".secrets.toml file."
-                ) from exc
+                ) from attribute_error
             self.token_class = None
         else:
             self.token_class = OAuthToken(
@@ -262,9 +264,7 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned("Error - No response")
 
         if response.status == 401 or response.status == 403:
-            LOGGER.error(
-                f"Authentication error - {response.status} - {response.reason}"
-            )
+            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
             )
@@ -382,27 +382,10 @@ class BritecoreAPIClient:
 
         request_headers = dict(request_headers or {})
         if not self.use_api_key and "Authorization" not in request_headers:
-            if self.token_class is None:
-                raise BritecoreError.ConfigurationError(
-                    "OAuth token manager not initialized"
-                )
             request_headers.update(self.token_class.get_authorization_headers())
 
         if not self.base_url:
             raise BritecoreError.ConfigurationError("base_url not configured")
-        if self.http is None:
-            raise BritecoreError.ConfigurationError("HTTP client not initialized")
-
-        _ = (
-            cache_enabled,
-            cache_ttl_seconds,
-            cache_namespace,
-            cache_key_parts,
-            cache_bypass,
-            cache_invalidate_on_success,
-            dedupe_in_flight,
-        )
-
         request_url: str = _full_url(self.base_url, path)
 
         # --- structured tracing -------------------------------------------------
@@ -510,7 +493,7 @@ class BritecoreAPIClient:
             correct_parameter = {parameter_used: None}
         else:
             parameter_used = list(non_empty_dict.keys())[0]
-            correct_parameter = {parameter_used: non_empty_dict[parameter_used]}
+            correct_parameter = non_empty_dict
 
         if multiple_found:
             for each_priority in parameter_priority:

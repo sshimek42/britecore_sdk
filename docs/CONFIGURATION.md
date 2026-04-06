@@ -5,6 +5,7 @@ This guide explains how to configure `britecore_libraries` for your environment.
 ## Overview
 
 Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
+
 - TOML files (primary)
 - Environment variables
 - Fallback defaults
@@ -13,7 +14,8 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 ## Config Files
 
 ### Location
-```
+
+```text
 src/britecore_libraries/config/
 |-- settings.toml      # Public settings (tracked in git)
 |-- .secrets.toml      # Secrets (gitignored)
@@ -133,6 +135,7 @@ $env:system = "example_site"
 ## Required Keys by Auth Mode
 
 ### API Key Auth
+
 Required keys:
 - `base_url` -- API base URL
 - `api_key` -- API key value
@@ -142,6 +145,7 @@ Optional:
 - `client_secret` (leave blank to skip OAuth)
 
 ### OAuth Auth
+
 Required keys:
 - `base_url` -- API base URL
 - `client_id` -- OAuth client ID
@@ -151,6 +155,7 @@ Optional:
 - `api_key` (will be ignored if `client_id` + `client_secret` are set)
 
 **Auth mode selection:**
+
 ```python
 if client_id and client_secret:
     # Use OAuth
@@ -226,30 +231,44 @@ $env:target_site = "example_site"
 python app.py
 ```
 
+#### API-only deployment checklist
+
+- Install base package only (`pip install -e .`); do not install optional browser/database extras unless needed.
+- Set `target_site` to a configured site section in `settings.toml`/`.secrets.toml`.
+- Set `BRITECORE_LIBRARIES_BASE_URL` for the target BriteCore instance.
+- Choose one auth mode: either set `BRITECORE_LIBRARIES_API_KEY`, or set both `BRITECORE_LIBRARIES_CLIENT_ID` and `BRITECORE_LIBRARIES_CLIENT_SECRET`.
+- Store production secrets in a secrets manager (Vault, AWS Secrets Manager, etc.), not in committed files.
+- Verify startup with a minimal init check (`get_api_client()` or `BritecoreAPIClient(...).init_client()`) before serving traffic.
+
 ## Troubleshooting
 
 ### "Config not loading" or "Key not found"
 
 1. Verify `target_site` is set:
+
    ```powershell
    $env:target_site
    ```
+
    Should output your site name (e.g., `example_site`)
 
 2. Check `settings.toml` has the section:
+
    ```powershell
    grep -A 3 "\[example_site\]" src/britecore_libraries/config/settings.toml
    ```
 
 3. Check `.secrets.toml` exists and has values:
+
    ```powershell
    cat src/britecore_libraries/config/.secrets.toml
    ```
 
 4. Test config loading directly:
+
    ```python
    from britecore_libraries.config.config import LoadClientSettings
-   
+
    settings = LoadClientSettings("example_site")
    print(settings)  # Should show loaded config
    ```
@@ -261,6 +280,7 @@ python app.py
    - For OAuth: both `client_id` and `client_secret` are set
 
 2. Verify `base_url` matches the BriteCore instance:
+
    ```python
    from britecore_libraries import get_api_client
    client = get_api_client()
@@ -268,6 +288,7 @@ python app.py
    ```
 
 3. For OAuth failures, check token endpoint is accessible:
+
    ```powershell
    # Verify endpoint format
    # Should be: https://{base_url}/api/auth/oauth2/token
@@ -276,6 +297,7 @@ python app.py
 ## Adding New Sites
 
 1. Edit `settings.toml`:
+
    ```toml
    [mysite]
    base_url = "mysite.britecore.com"
@@ -283,6 +305,7 @@ python app.py
    ```
 
 2. Edit `.secrets.toml`:
+
    ```toml
    [mysite]
    client_id = "..."
@@ -292,6 +315,7 @@ python app.py
    ```
 
 3. Use:
+
    ```python
    client = BritecoreAPIClient("mysite")
    client.init_client()
@@ -302,5 +326,3 @@ python app.py
 - [GETTING_STARTED.md](../GETTING_STARTED.md) -- Quick setup guide
 - [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) -- Common errors
 - [src/britecore_libraries/config/config.py](../src/britecore_libraries/config/config.py) -- Config loader implementation
-
-

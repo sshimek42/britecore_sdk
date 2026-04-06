@@ -65,7 +65,7 @@ Security patches are provided for:
 
 | Version | Status | Support Ends |
 |---------|--------|--------------|
-| 1.x | Active | October 2025 (12 months from 1.0.0) |
+| 1.x | Active | March 2027 (12 months from 1.0.0 release) |
 | 0.x | Deprecated | No new patches |
 
 - **Active versions** — All security patches

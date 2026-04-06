@@ -8,7 +8,7 @@ from typing import Any
 from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+from britecore_libraries.maps import load_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
 
 LOGGER = logger
@@ -201,8 +201,8 @@ class AddressValidator:
                     f"Zip code missing - using {zip_code} for city of {city} "
                     f"and state of {state}"
                 )
-            except IndexError as exc:
-                raise BritecoreError.InvalidAddress("Missing Zip Code") from exc
+            except IndexError as index_error:
+                raise BritecoreError.InvalidAddress("Missing Zip Code") from index_error
 
         # Validate and normalize zip code
         zip_code = self.normalize_zipcode(zip_code)
@@ -260,13 +260,16 @@ class AddressValidator:
             county = county_lookup_value
 
         if county_lookup_value.lower() != county.lower() and county != "":
-            log_string = f"County %f.yellow%'{county}'%f% not found in zip code %f.yellow%'{zipcode}'%f% -zip code matches %f.yellow%'{county_lookup_value}'%f%"
+            log_string = (
+                f"County '{county}' not found in zip code '{zipcode}' "
+                f"- zip code matches '{county_lookup_value}'"
+            )
 
             if FIX_ADDRESS:
                 county = county_lookup_value
-                LOGGER.info(f"{log_string} - %f.green%{ADDRESS_CHANGE}%f%")
+                LOGGER.info(f"{log_string} - {ADDRESS_CHANGE}")
             else:
-                LOGGER.debug(f"{log_string} - %f.red%{NO_ADDRESS_CHANGE}%f%")
+                LOGGER.debug(f"{log_string} - {NO_ADDRESS_CHANGE}")
 
         return county
 
@@ -314,13 +317,16 @@ class AddressValidator:
             city = city_lookup_value
 
         if city_lookup_value.lower() != city.lower() and city != "":
-            log_string = f"City %f.yellow%'{city}%f%' not found in zip code %f.yellow%'{zipcode}'%f% - zip code matches %f.yellow%'{city_lookup_value}'%f%"
+            log_string = (
+                f"City '{city}' not found in zip code '{zipcode}' "
+                f"- zip code matches '{city_lookup_value}'"
+            )
 
             if FIX_ADDRESS:
                 city = city_lookup_value
-                LOGGER.info(f"{log_string} - %f.green%{ADDRESS_CHANGE}%f%")
+                LOGGER.info(f"{log_string} - {ADDRESS_CHANGE}")
             else:
-                LOGGER.debug(f"{log_string} - %f.red%{NO_ADDRESS_CHANGE}%f%")
+                LOGGER.debug(f"{log_string} - {NO_ADDRESS_CHANGE}")
         return city
 
     @staticmethod
@@ -404,13 +410,16 @@ class AddressValidator:
             state = state_lookup_value
 
         if state_lookup_value.lower() != state.lower() and state != "":
-            log_string = f"State %f.yellow%'{state}'%f% not found in zip code %f.yellow%'{zipcode}'%f% - zip code matches %f.yellow%'{state_lookup_value}'%f%"
+            log_string = (
+                f"State '{state}' not found in zip code '{zipcode}' "
+                f"- zip code matches '{state_lookup_value}'"
+            )
 
             if FIX_ADDRESS:
                 state = state_lookup_value
-                LOGGER.info(f"{log_string} - %f.green%{ADDRESS_CHANGE}%f%")
+                LOGGER.info(f"{log_string} - {ADDRESS_CHANGE}")
             else:
-                LOGGER.debug(f"{log_string} - %f.red%{NO_ADDRESS_CHANGE}%f%")
+                LOGGER.debug(f"{log_string} - {NO_ADDRESS_CHANGE}")
                 state = "WI"  # Default fallback
 
         return state
