@@ -3,7 +3,7 @@
 import re
 from re import Pattern
 
-from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+from britecore_libraries.maps import load_regexes
 
 # Lazy-loaded from maps if needed
 _BUSINESS_NAME_REGEX: Pattern | None = None

@@ -1,4 +1,5 @@
 import os
+from typing import cast
 
 from britecore_libraries.api.britecore_api_client import (
     BritecoreAPIClient,
@@ -55,6 +56,7 @@ def get_api_client() -> BritecoreAPIClient:
     global _api_client
     if _api_client is None:
         _api_client = init_api_client()
+    assert _api_client is not None
     return _api_client
 
 
@@ -63,6 +65,7 @@ def get_async_api_client() -> AsyncBritecoreAPIClient:
     global _async_api_client
     if _async_api_client is None:
         _async_api_client = init_async_api_client()
+    assert _async_api_client is not None
     return _async_api_client
 
 
@@ -80,7 +83,9 @@ class _LazyAPIClient:
         return getattr(get_api_client(), name)
 
 
-api_client = _LazyAPIClient()
+api_client: BritecoreAPIClient = cast(
+    BritecoreAPIClient, cast(object, _LazyAPIClient())
+)
 
 
 class _LazyAsyncAPIClient:
@@ -96,7 +101,9 @@ class _LazyAsyncAPIClient:
         return getattr(get_async_api_client(), name)
 
 
-async_api_client = _LazyAsyncAPIClient()
+async_api_client: AsyncBritecoreAPIClient = cast(
+    AsyncBritecoreAPIClient, cast(object, _LazyAsyncAPIClient())
+)
 
 
 # Safe fallback timeout values used by modules that import these names at

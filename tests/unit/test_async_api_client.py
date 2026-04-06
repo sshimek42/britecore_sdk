@@ -18,7 +18,9 @@ from britecore_libraries.api.britecore_api_client import (
 )
 
 
-def _make_response(payload: bytes = b'{"success": true, "data": {"id": "1"}}') -> MagicMock:
+def _make_response(
+    payload: bytes = b'{"success": true, "data": {"id": "1"}}',
+) -> MagicMock:
     response = MagicMock()
     response.status = 200
     response.reason = "OK"
@@ -94,7 +96,9 @@ class TestAsyncBritecoreAPIClient:
     @pytest.mark.unit
     def test_aget_client_initializes_sync_client_lazily(self):
         """aget_client should create and initialize the sync client on first use."""
-        with patch.object(BritecoreAPIClient, "init_client", autospec=True) as mock_init:
+        with patch.object(
+            BritecoreAPIClient, "init_client", autospec=True
+        ) as mock_init:
             adapter = AsyncBritecoreAPIClient(target_site="test_site")
             client = asyncio.run(adapter.aget_client())
 
@@ -108,7 +112,9 @@ class TestAsyncBritecoreAPIClient:
         response = _make_response()
         adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
 
-        with patch.object(BritecoreAPIClient, "do_request", return_value=response) as mock_request:
+        with patch.object(
+            BritecoreAPIClient, "do_request", return_value=response
+        ) as mock_request:
             first = asyncio.run(
                 adapter.ado_request(
                     "/api/v2/policies/retrieve",
@@ -176,9 +182,15 @@ class TestAsyncBritecoreAPIClient:
     @pytest.mark.unit
     def test_ado_request_invalidates_namespace_after_successful_mutation(self):
         """Successful mutation requests should invalidate targeted cache namespaces."""
-        initial_response = _make_response(b'{"success": true, "data": {"id": "cached"}}')
-        mutation_response = _make_response(b'{"success": true, "data": {"id": "updated"}}')
-        refreshed_response = _make_response(b'{"success": true, "data": {"id": "fresh"}}')
+        initial_response = _make_response(
+            b'{"success": true, "data": {"id": "cached"}}'
+        )
+        mutation_response = _make_response(
+            b'{"success": true, "data": {"id": "updated"}}'
+        )
+        refreshed_response = _make_response(
+            b'{"success": true, "data": {"id": "fresh"}}'
+        )
         adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
 
         with patch.object(

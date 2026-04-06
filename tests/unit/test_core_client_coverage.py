@@ -176,14 +176,14 @@ class TestProcessResultStatusCodes:
         assert result == {"id": "ABC"}
 
     @pytest.mark.unit
-    def test_200_empty_data_returns_none_with_warning(self, caplog):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+    def test_200_empty_data_returns_none_with_warning(self):
+        from britecore_libraries.api import britecore_api_client as client_mod
 
         resp = _make_response(b'{"success": true, "data": null}', status=200)
-        with caplog.at_level("WARNING"):
-            result = BritecoreAPIClient.process_result(resp)
+        with patch.object(client_mod.LOGGER, "warning") as mock_warning:
+            result = client_mod.BritecoreAPIClient.process_result(resp)
         assert result is None
-        assert any("No data" in r.message for r in caplog.records)
+        mock_warning.assert_called_once_with("No data returned")
 
     @pytest.mark.unit
     def test_messages_key_used_as_fallback_error(self):

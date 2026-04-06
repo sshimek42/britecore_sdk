@@ -5,7 +5,7 @@ from re import Pattern
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps.britecore_policy_name_map import load_regexes
+from britecore_libraries.maps import load_regexes
 
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: dict[str, Pattern[str]] = {}
