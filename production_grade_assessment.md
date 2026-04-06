@@ -85,7 +85,7 @@
   - `TROUBLESHOOTING.md` (common failures),
   - `AGENTS.md` (contributor patterns),
   - `CONTRIBUTING.md` (workflow).
-- Read the Docs integration.
+- Sphinx documentation build integration.
 - Inline docstrings on public methods.
 
 > **Quality:** Documentation is above-average for team-internal SDKs. Coverage

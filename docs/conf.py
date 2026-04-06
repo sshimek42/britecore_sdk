@@ -41,7 +41,7 @@ autosummary_generate = True
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 
-# Keep docs build stable in isolated environments such as RTD.
+# Keep docs build stable in isolated CI environments.
 autodoc_mock_imports = [
     "dynaconf",
     "pandas",
@@ -54,6 +54,6 @@ autodoc_mock_imports = [
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "alabaster"
 html_static_path = []
 
