@@ -4,7 +4,8 @@ This directory contains comprehensive tests for the britecore_libraries package.
 
 ## Structure
 
-```
+```text
+
 tests/
 ├── conftest.py                    # Shared pytest fixtures
 ├── unit/                          # Unit tests
@@ -18,54 +19,82 @@ tests/
 │   └── test_exceptions.py         # Exception and deprecation tests
 └── integration/                   # Integration tests
     └── test_endpoints.py          # API endpoint wrapper tests
+
 ```
 
 ## Running Tests
 
 ### All Tests
+
 ```powershell
+
 pytest tests/
+
 ```
 
 ### Unit Tests Only
+
 ```powershell
+
 pytest tests/unit -m unit
+
 ```
 
 ### Integration Tests Only
+
 ```powershell
+
 pytest tests/integration -m integration
+
 ```
 
 ### With Coverage Report
+
 ```powershell
+
 pytest tests/ --cov=src/britecore_libraries --cov-report=html
+
 ```
 
 ### Verbose Output
+
 ```powershell
+
 pytest tests/ -v
+
 ```
 
 ### Specific Test File
+
 ```powershell
+
 pytest tests/unit/test_api_client.py -v
+
 ```
 
 ### Minimum Validation Set (core SDK changes)
+
 ```powershell
+
 pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 pytest tests/unit/test_api_client.py -v
+
 ```
 
 ### Specific Test Class
+
 ```powershell
+
 pytest tests/unit/test_api_client.py::TestLazyAPIClientInitialization -v
+
 ```
 
 ### Specific Test
+
 ```powershell
+
 pytest tests/unit/test_api_client.py::TestLazyAPIClientInitialization::test_api_calls_module_imports_without_init -v
+
 ```
 
 ## Test Coverage
@@ -99,7 +128,9 @@ Common fixtures available in `conftest.py`:
 ## Installing Test Dependencies
 
 ```powershell
+
 pip install -e ".[dev]"
+
 ```
 
 ## CI Integration
@@ -122,13 +153,19 @@ Tests can be marked for specific test runs:
 - `@pytest.mark.slow` - Slow tests (skipped by default)
 
 Run slow tests:
+
 ```powershell
+
 pytest tests/ -m slow
+
 ```
 
 Skip slow tests:
+
 ```powershell
+
 pytest tests/ -m "not slow"
+
 ```
 
 ## Notes
@@ -137,4 +174,3 @@ pytest tests/ -m "not slow"
 - No real API calls or database connections required
 - All tests run in isolation without state sharing
 - Temporary files and directories are cleaned up automatically
-

@@ -15,6 +15,7 @@ All 374 endpoints in `britecore_api.json` are now fully implemented across
 30 domain modules in `src/britecore_libraries/api/api_calls/v2/`.
 
 See also:
+
 - [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for per-module endpoint counts
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
 - [CHANGELOG.md](CHANGELOG.md) for what changed in each release
@@ -24,10 +25,12 @@ See also:
 ## Quick import pattern
 
 ```python
+
 # Import the domain module (recommended)
 from britecore_libraries.api.api_calls.v2 import policies, contacts, quotes
 
 result = policies.retrieve_policy(policy_number="POL-001")
+
 ```
 
 All 30 domain modules are importable from `britecore_libraries.api.api_calls.v2`.
@@ -39,11 +42,13 @@ All 30 domain modules are importable from `britecore_libraries.api.api_calls.v2`
 All API calls require authentication (automatic):
 
 ```python
+
 # API Key Authentication (if client_id/client_secret blank)
 headers = {"Authorization": "ApiKey <api_key>"}
 
 # OAuth2 Authentication (if client_id/client_secret provided)
 headers = {"Authorization": "Bearer <access_token>"}
+
 ```
 
 ---
@@ -53,6 +58,7 @@ headers = {"Authorization": "Bearer <access_token>"}
 ### Standard Request
 
 ```python
+
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries.api.api_calls import RequestParameters
 
@@ -62,11 +68,13 @@ response = policies.retrieve_policy(
     request_retries=3,        # number of retries
     # ... endpoint-specific params ...
 )
+
 ```
 
 ### Standard Response
 
 ```python
+
 {
     "success": True,
     "data": {
@@ -76,6 +84,7 @@ response = policies.retrieve_policy(
     },
     "message": "Success"  # or "messages": ["msg1", "msg2"]
 }
+
 ```
 
 ---
@@ -103,6 +112,7 @@ from `src/britecore_libraries/api/request_cache.py`.
 #### Policy Retrieval
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.policies import (
     retrieve_policy,
     retrieve_policies_by_contact_id,
@@ -118,11 +128,13 @@ policies = retrieve_policies_by_contact_id(contact_id="uuid")
 
 # Get revision status
 status = retrieve_revision_status(revision_id="uuid")
+
 ```
 
 #### Policy Management
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.policies import (
     create_full_policy,
     new_revision_contact,
@@ -141,6 +153,7 @@ risk = create_risk(revision_id="uuid", ...)
 
 # Add line item
 item = add_line_item(revision_id="uuid", item_id="uuid")
+
 ```
 
 ---
@@ -150,6 +163,7 @@ item = add_line_item(revision_id="uuid", item_id="uuid")
 **File:** `api/api_calls/v2/contacts.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.contacts import (
     retrieve_contact,
     create_contact,
@@ -168,6 +182,7 @@ updated = update_contact(contact_id="uuid", ...)
 
 # Remove role
 remove_contact_from_role(contact_id="uuid", role_name="Named Insured")
+
 ```
 
 ---
@@ -177,6 +192,7 @@ remove_contact_from_role(contact_id="uuid", role_name="Named Insured")
 **File:** `api/api_calls/v2/quotes.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.quotes import (
     create_full_quote,
     get_quote,
@@ -191,6 +207,7 @@ quote = get_quote(quote_id="uuid")
 
 # Update quote
 updated = update_quote(quote_id="uuid", ...)
+
 ```
 
 ---
@@ -200,6 +217,7 @@ updated = update_quote(quote_id="uuid", ...)
 **File:** `api/api_calls/v2/reports.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.reports import (
     retrieve_reports,
     retrieve_report,
@@ -214,6 +232,7 @@ report = retrieve_report(report_id="uuid")
 
 # Create new report
 report = create_report(report_json={...})
+
 ```
 
 ---
@@ -223,6 +242,7 @@ report = create_report(report_json={...})
 **File:** `api/api_calls/v2/deliverables.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.deliverables import (
     get_deliverables,
     create_deliverable,
@@ -233,6 +253,7 @@ deliverables = get_deliverables(policy_id="uuid")
 
 # Create deliverable
 deliverable = create_deliverable(deliverable_json={...})
+
 ```
 
 ---
@@ -242,6 +263,7 @@ deliverable = create_deliverable(deliverable_json={...})
 **File:** `api/api_calls/v2/utils.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.utils import (
     get_available_function_names,
     rebuild_search_index,
@@ -256,6 +278,7 @@ rebuild_search_index()
 
 # Get metadata
 meta_info = meta()
+
 ```
 
 ---
@@ -265,6 +288,7 @@ meta_info = meta()
 **File:** `api/api_calls/v2/lines.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.lines import (
     get_lines,
     create_line,
@@ -279,6 +303,7 @@ line = create_line(revision_id="uuid", ...)
 
 # Update line
 updated = update_line(line_id="uuid", ...)
+
 ```
 
 ---
@@ -288,6 +313,7 @@ updated = update_line(line_id="uuid", ...)
 **File:** `api/api_calls/v2/claims.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.claims import (
     get_claims,
     retrieve_claim,
@@ -302,6 +328,7 @@ claim = retrieve_claim(claim_id="uuid")
 
 # Create claim
 claim = create_claim(claim_json={...})
+
 ```
 
 ---
@@ -311,6 +338,7 @@ claim = create_claim(claim_json={...})
 **File:** `api/api_calls/v2/insured.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.insured import (
     get_insureds,
     add_insured,
@@ -321,6 +349,7 @@ insureds = get_insureds(policy_id="uuid")
 
 # Add insured
 insured = add_insured(policy_id="uuid", ...)
+
 ```
 
 ---
@@ -330,6 +359,7 @@ insured = add_insured(policy_id="uuid", ...)
 **File:** `api/api_calls/v2/notes.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.notes import (
     get_notes,
     create_note,
@@ -340,6 +370,7 @@ notes = get_notes(policy_id="uuid")
 
 # Create note
 note = create_note(policy_id="uuid", ...)
+
 ```
 
 ---
@@ -349,12 +380,14 @@ note = create_note(policy_id="uuid", ...)
 **File:** `api/api_calls/v2/inspections.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.inspections import (
     get_inspections,
 )
 
 # Get inspections
 inspections = get_inspections(policy_id="uuid")
+
 ```
 
 ---
@@ -364,6 +397,7 @@ inspections = get_inspections(policy_id="uuid")
 **File:** `api/api_calls/v2/accounting.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.accounting import (
     get_accounting_deliverable,
     get_invoices,
@@ -381,6 +415,7 @@ result = run_rescind_underwriting_cancellation_pending_logic(
     revision_id="uuid",
     old_status="cancellation_pending",
 )
+
 ```
 
 ---
@@ -390,6 +425,7 @@ result = run_rescind_underwriting_cancellation_pending_logic(
 **File:** `api/api_calls/v2/billing.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.billing import (
     get_installments_preview,
     get_installments_preview_mid_term,
@@ -411,6 +447,7 @@ mid_term = get_installments_preview_mid_term(
 )
 
 factors = rating_factors(policy_id="policy_uuid")
+
 ```
 
 ---
@@ -420,6 +457,7 @@ factors = rating_factors(policy_id="policy_uuid")
 **File:** `api/api_calls/v2/payments.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.payments import (
     add_payment_method,
     make_payment_by_invoice_or_policy,
@@ -442,6 +480,7 @@ payment = make_payment_by_invoice_or_policy(
 )
 
 methods = retrieve_payment_methods(contact_ids=["contact_uuid"])
+
 ```
 
 ---
@@ -451,6 +490,7 @@ methods = retrieve_payment_methods(contact_ids=["contact_uuid"])
 **File:** `api/api_calls/v2/commissions.py`
 
 ```python
+
 from britecore_libraries.api.api_calls.v2.commissions import (
     get_commission_payees,
     save_payment,
@@ -464,6 +504,7 @@ payment = save_payment(amount=1250.00, agency_number="AGENCY-001")
 complete = update_commission_payments_complete(
     commission_payment_ids=["commission_payment_uuid"],
 )
+
 ```
 
 ---
@@ -500,6 +541,7 @@ See [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for implementation road
 All endpoints support these optional parameters:
 
 ```python
+
 from urllib3 import Timeout, Retry
 
 endpoint(
@@ -507,6 +549,7 @@ endpoint(
     request_timeout=Timeout(total=5),      # Custom timeout (seconds)
     request_retries=Retry(total=3),        # Custom retries
 )
+
 ```
 
 Retry defaults from `BritecoreAPIClient.init_client()` are:
@@ -522,6 +565,7 @@ Retry defaults from `BritecoreAPIClient.init_client()` are:
 ## Error Handling
 
 ```python
+
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
@@ -537,6 +581,7 @@ except BritecoreError.Base as e:
     print(f"API Error: {e}")
 except Exception as e:
     print(f"Unexpected error: {e}")
+
 ```
 
 ---
@@ -546,6 +591,7 @@ except Exception as e:
 The API implements rate limiting. If you receive 429 status:
 
 ```python
+
 import time
 from britecore_libraries.api.api_calls.v2 import policies
 
@@ -561,6 +607,7 @@ for attempt in range(max_retries):
             time.sleep(e.retry_after or retry_delay)
         else:
             raise
+
 ```
 
 ---
@@ -570,6 +617,7 @@ for attempt in range(max_retries):
 Some endpoints support pagination:
 
 ```python
+
 from britecore_libraries.api.api_calls.v2 import reports
 
 # Get first page
@@ -585,6 +633,7 @@ reports = get_reports(
     page=2,
     page_size=25
 )
+
 ```
 
 ---
@@ -594,6 +643,7 @@ reports = get_reports(
 Many endpoints support filters:
 
 ```python
+
 from britecore_libraries.api.api_calls.v2 import claims
 
 # Filter claims
@@ -603,6 +653,7 @@ claims = get_claims(
     sort="date_created",
     sort_direction="desc"
 )
+
 ```
 
 ---
@@ -612,6 +663,7 @@ claims = get_claims(
 For bulk operations, use loops rather than batch endpoints (most don't exist):
 
 ```python
+
 from britecore_libraries.api.api_calls.v2 import policies
 
 policy_numbers = ["POL001", "POL002", "POL003"]
@@ -622,6 +674,7 @@ for policy_number in policy_numbers:
         process_policy(policy)
     except Exception as e:
         logger.error(f"Failed for {policy_number}: {e}")
+
 ```
 
 ---
@@ -629,6 +682,7 @@ for policy_number in policy_numbers:
 ## Using with Models
 
 ```python
+
 from britecore_libraries.models import BritecorePolicy
 from britecore_libraries.api.api_calls.v2 import policies
 
@@ -645,6 +699,7 @@ api_payload = policy_model.to_dict()
 
 # Submit to API
 response = policies.create_full_policy(policy_json=api_payload)
+
 ```
 
 ---
@@ -652,6 +707,7 @@ response = policies.create_full_policy(policy_json=api_payload)
 ## Using with Validators
 
 ```python
+
 from britecore_libraries.validators import EmailValidator, PhoneValidator
 from britecore_libraries.api.api_calls.v2 import contacts
 
@@ -670,6 +726,7 @@ contact = contacts.create_contact(
         "phones": phones
     }
 )
+
 ```
 
 ---
@@ -679,6 +736,7 @@ contact = contacts.create_contact(
 For long-running operations, poll for completion:
 
 ```python
+
 import time
 from britecore_libraries.api.api_calls.v2 import reports
 
@@ -698,6 +756,7 @@ while time.time() - start < max_wait:
     time.sleep(poll_interval)
 
 raise TimeoutError(f"Report {report_id} did not complete")
+
 ```
 
 ---
@@ -707,6 +766,7 @@ raise TimeoutError(f"Report {report_id} did not complete")
 ### Get a Policy and All Related Data
 
 ```python
+
 from britecore_libraries.api.api_calls.v2 import policies, contacts, lines, claims
 
 # Get policy
@@ -728,6 +788,7 @@ complete_policy = {
     "lines": policy_lines,
     "claims": policy_claims
 }
+
 ```
 
 ---
@@ -735,6 +796,7 @@ complete_policy = {
 ### Create New Policy with Validation
 
 ```python
+
 from britecore_libraries.models import BritecoreContact, BritecorePolicy
 from britecore_libraries.validators import EmailValidator
 from britecore_libraries.api.api_calls.v2 import policies
@@ -756,6 +818,7 @@ policy = BritecorePolicy(
 # Validate and submit
 policy_data = policy.to_dict()
 response = policies.create_full_policy(policy_json=policy_data)
+
 ```
 
 ---
@@ -769,4 +832,3 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 - Last verified: `2026-03-26`
 - Verified against: `britecore_api.json` and `src/britecore_libraries/api/api_calls/v2/`
 - For current implementation progress, see [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md)
-

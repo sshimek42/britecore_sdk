@@ -10,6 +10,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+
 - `src/britecore_libraries/py.typed` marker (PEP 561) — downstream mypy users
   now get inline type information automatically.
 - `src/britecore_libraries/api/types.py` — shared `TypedDict` response shapes
@@ -31,6 +32,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   runs ruff, black, mypy, and pytest with a 60% coverage gate.
 
 ### Changed
+
 - `pyodbc`, `selenium`, and `pyinputplus` moved from hard dependencies to
   optional extras (`[database]`, `[browser]`, `[interactive]`). Existing
   consumers who use these utilities should add the relevant extra:
@@ -49,6 +51,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - CI coverage threshold raised from 25 % to 60 %.
 
 ### Fixed
+
 - `UNIMPLEMENTED_API_STUBS.md` and `API_COVERAGE_ANALYSIS.md` updated to
   reflect 100 % endpoint coverage.
 
@@ -57,6 +60,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 ## [1.0.0] — 2026-03-26
 
 ### Added
+
 - Initial public release.
 - Complete v2 wrappers for: `accounting`, `billing`, `claims`,
   `commissions`, `contacts`, `deliverables`, `inspections`, `insured`,
@@ -72,4 +76,3 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Singleton logger via `sclogging`.
 - `BritecoreError` exception hierarchy.
 - Comprehensive unit test suite (236 tests).
-
