@@ -16,6 +16,7 @@ Key docs:
 - [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
 - [API.md](API.md) for endpoint reference and coverage details
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
+- [docs/MAP_FILES.md](docs/MAP_FILES.md) for sensitive map-file policy and sample structures
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
 - [UNIMPLEMENTED_API_STUBS.md](UNIMPLEMENTED_API_STUBS.md) for the current stub backlog of unimplemented API domains/calls
 - [ARCHITECTURE.md](ARCHITECTURE.md) for component-level design
@@ -47,7 +48,7 @@ Historical and status snapshots:
 - Data validators in `src/britecore_libraries/validators/` for names, email, phone, and addresses
 - Versioned endpoint wrappers in `src/britecore_libraries/api/api_calls/v1` and `src/britecore_libraries/api/api_calls/v2`
 - Shared API transport in `src/britecore_libraries/api/britecore_api_client.py`
-- Utilities in `src/britecore_libraries/utils/` for ODBC, Selenium helpers, and ZIP lookup
+- API-first utilities, plus optional helpers in `src/britecore_libraries/utils/` (ODBC/Selenium are opt-in extras)
 
 ## Use the library
 
@@ -57,7 +58,7 @@ Requirements:
 
 Current package status:
 
-- Version: `1.0.0`
+- Version: `1.1.0`
 - Stability commitment: semantic versioning from `1.0.0` onward
 - Recommended starting point for compatibility details: `PYTHON_COMPATIBILITY.md`
 
@@ -67,6 +68,19 @@ Install:
 
 python -m pip install -e .
 
+```
+
+API-only profile (recommended for pure BriteCore API usage):
+
+- You do **not** need ODBC or Selenium utilities.
+- The base install is sufficient for all API client and endpoint wrapper functionality.
+
+Optional extras (install only when needed):
+
+```powershell
+python -m pip install -e ".[database]"   # enables pyodbc helpers
+python -m pip install -e ".[browser]"    # enables selenium helpers
+python -m pip install -e ".[all]"        # installs all optional extras
 ```
 
 Configure runtime environment variables:

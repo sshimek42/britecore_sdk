@@ -97,7 +97,7 @@ def mark_as_printed(file_ids: list[str], **kwargs: Unpack[RequestParameters]) ->
 
     required_json: dict[str, list] = {"file_ids": file_ids}
 
-    LOGGER.debug(f"Marking IDs\n%f.yellow%{file_ids}%f%")
+    LOGGER.debug(f"Marking IDs\n{file_ids}")
 
     result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v1/printing/markAsPrinted",

@@ -2,7 +2,6 @@
 
 import sys
 
-import sclogging.sclogging_main as scl
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,9 +9,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
+from britecore_libraries import logger
 from britecore_libraries.config import settings
-
-logger = scl.get_logger(__file__)
 
 retry = settings.web.retry
 if not retry:
@@ -57,10 +55,6 @@ def get_driver(
     :rtype: Union[None, selenium.webdriver.edge.webdriver.WebDriver,
     selenium.webdriver.firefox.webdriver.WebDriver]
     """
-    global logger  # skipcq: PYL-W0603
-    plogger = scl.get_parent_logger()
-    if plogger:
-        logger = plogger
     logger.info(f"Launching {browser}")
     driver_info = getattr(webdriver, browser)
     try:

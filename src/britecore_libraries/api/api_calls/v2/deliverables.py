@@ -112,7 +112,7 @@ def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         The function logs the attachment retrieval operation at debug level
         The function uses the global API_CLIENT instance for making requests
     """
-    LOGGER.debug(f"Getting attachment %f.yellow%{file_id}%f%")
+    LOGGER.debug(f"Getting attachment '{file_id}'")
     file_search: dict[str, str] = {"file_id": file_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
@@ -155,7 +155,7 @@ def get_edeliverables(
         "unprocessed_only": unprocessed_only,
     }
 
-    LOGGER.debug(f"Getting E-Deliverables\n%f.yellow%{required_json}%f%")
+    LOGGER.debug(f"Getting E-Deliverables\n{required_json}")
 
     result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/deliverables/get_edeliverables",

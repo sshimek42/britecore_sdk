@@ -1,6 +1,5 @@
 from logging import Logger
 from pathlib import Path
-from typing import cast
 
 import pandas as pd
 
@@ -31,10 +30,10 @@ def load_zip_codes() -> pd.DataFrame:
     """
 
     try:
-        loaded_zip_codes = cast(pd.DataFrame, pd.read_csv(import_file, dtype=str))
-    except FileNotFoundError as exc:
+        loaded_zip_codes = pd.read_csv(import_file, dtype=str)
+    except FileNotFoundError:
         LOGGER.error("Zip Code lookup file is missing")
-        raise FileNotFoundError from exc
+        raise
 
     return loaded_zip_codes
 

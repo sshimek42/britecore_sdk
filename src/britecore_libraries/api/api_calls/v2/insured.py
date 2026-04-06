@@ -44,9 +44,7 @@ def get_property_information_and_photos(
         The function uses a global API client instance to make the request and processes the
         result before returning it to the caller
     """
-    LOGGER.debug(
-        f"Getting property information for property_id %f.yellow%{property_id}%f%"
-    )
+    LOGGER.debug(f"Getting property information for property_id '{property_id}'")
     property_json: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},

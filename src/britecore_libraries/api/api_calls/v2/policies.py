@@ -198,7 +198,7 @@ def retrieve_policy_list_from_user(
     Raises:
         Any exceptions raised by the underlying API client or JSON processing functions are propagated as-is.
     """
-    LOGGER.debug(f"Searching for %f.yellow%{contact_name}%f%")
+    LOGGER.debug(f"Searching for '{contact_name}'")
     user_request_json: dict[str, Any] = {
         "sort_obj": {"field": "policy_number", "order": "asc"},
         "current_page": 1,
@@ -334,7 +334,7 @@ def create_policy(
     if term_type == "Custom" and not expiration_date:
         BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
 
-    LOGGER.debug(f"Creating policy %f.yellow%{policy_number}%f%")
+    LOGGER.debug(f"Creating policy '{policy_number}'")
     local_env: dict[str, Any] = locals()
     policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -411,7 +411,7 @@ def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     Returns:
         Any: The processed result from the API client's response handling.
     """
-    LOGGER.debug(f"Re-rating revision %f.yellow%{revision_id}%f%")
+    LOGGER.debug(f"Re-rating revision '{revision_id}'")
     policy_retrieve_json = {"revision_id": revision_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/rate_revision",
