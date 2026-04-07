@@ -97,6 +97,6 @@ class BritecoreContact:
             "policy_number": self.policy_number,
         }
 
-        LOGGER.debug(f"Created contact {final_contact}")
+        LOGGER.debug("Created contact %s", final_contact)
 
         return final_contact

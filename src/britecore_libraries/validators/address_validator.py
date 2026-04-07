@@ -133,6 +133,103 @@ class AddressValidator:
         self.full_address = full_address
         _get_regexes()
 
+    @staticmethod
+    def _parse_full_address(full_address: dict[str, str] | str | None) -> dict[str, str]:
+        """Coerce the incoming address payload into a dictionary."""
+        if not full_address:
+            raise BritecoreError.InvalidAddress("Missing Address")
+
+        if isinstance(full_address, dict):
+            return full_address
+
+        try:
+            try:
+                parsed_address = literal_eval(full_address)
+            except (ValueError, SyntaxError):
+                parsed_address = literal_eval(str(full_address)[1:-2])
+
+            if not isinstance(parsed_address, dict):
+                raise BritecoreError.InvalidAddress("Address must be a dictionary")
+        except (ValueError, SyntaxError) as error:
+            raise BritecoreError.InvalidAddress(
+                f"Invalid address format: {error}"
+            ) from error
+
+        return parsed_address
+
+    @staticmethod
+    def _extract_address_components(
+        full_address: dict[str, str],
+    ) -> tuple[str, str, str, str, str, str, str]:
+        """Extract canonical address fields and aliases from an address mapping."""
+        zip_code = (full_address.get("address_zip") or full_address.get("zip", "")).strip()
+        address1 = (
+            full_address.get("address_line1") or full_address.get("street", "")
+        ).strip()
+        address2 = full_address.get("address_line2", "").strip()
+        state = (full_address.get("address_state") or full_address.get("state", "")).upper()
+        county = (
+            (full_address.get("address_county") or full_address.get("county", ""))
+            .strip()
+            .title()
+        )
+        city = (full_address.get("address_city") or full_address.get("city", "")).title().strip()
+        property_name = full_address.get("property", "").title().strip()
+        return zip_code, address1, address2, state, county, city, property_name
+
+    @staticmethod
+    def _validate_address_lines(address1: str, address2: str) -> tuple[str, str]:
+        """Ensure address line 1 is populated, promoting line 2 if needed."""
+        if address1 == "" and address2 != "":
+            return address2, ""
+        if address1 == "":
+            raise BritecoreError.InvalidAddress("Missing Address")
+        return address1, address2
+
+    @staticmethod
+    def _resolve_zip_code(zip_code: str, state: str, city: str) -> str:
+        """Resolve a missing ZIP code from state/city lookup when possible."""
+        if zip_code != "":
+            return zip_code
+
+        resolved_zip = ZIP_CODE_LOOKUP.get_zip_by_state_city(state, city)
+        if resolved_zip:
+            LOGGER.warning(
+                "Zip code missing - using %s for city of %s and state of %s",
+                resolved_zip,
+                city,
+                state,
+            )
+            return resolved_zip
+
+        raise BritecoreError.InvalidAddress("Missing Zip Code")
+
+    def _build_fixed_address(
+        self,
+        full_address: dict[str, str],
+        address1: str,
+        address2: str,
+        state: str,
+        zip_code: str,
+        county: str,
+        city: str,
+        property_name: str,
+    ) -> list[dict[str, str]]:
+        """Build the normalized address payload returned by process."""
+        return [
+            {
+                "address_line1": self.normalize_address_line(address1),
+                "address_line2": self.normalize_address_line(address2),
+                "address_state": self.validate_state(state, zip_code),
+                "address_country": "USA",
+                "address_zip": zip_code,
+                "type": full_address.get("type", DEFAULT_ADDRESS_TYPE),
+                "address_county": self.validate_county(county, zip_code[:5]),
+                "address_city": self.validate_city(city, zip_code),
+                "property": property_name,
+            }
+        ]
+
     def process(self) -> list[dict[str, str]]:
         """
         Processes and validates address components from a full address dictionary.
@@ -152,87 +249,25 @@ class AddressValidator:
             address components including address_line1, address_line2, address_state,
             address_country, address_zip, type, address_county, address_city, and property.
         """
-        full_address = self.full_address
-
-        if not full_address:
-            raise BritecoreError.InvalidAddress("Missing Address")
-
-        if isinstance(self.full_address, str):
-            try:
-                # Handle various string representations of dicts
-                # Try: direct evaluation first (standard dict string repr)
-                try:
-                    full_address = literal_eval(self.full_address)
-                except (ValueError, SyntaxError):
-                    # Fallback: Try with slicing (for edge cases like "({'key': 'value'})")
-                    full_address = literal_eval(str(self.full_address)[1:-2])
-
-                if not isinstance(full_address, dict):
-                    raise BritecoreError.InvalidAddress("Address must be a dictionary")
-            except (ValueError, SyntaxError) as e:
-                raise BritecoreError.InvalidAddress(
-                    f"Invalid address format: {str(e)}"
-                ) from e
-
-        # Extract components, supporting both canonical keys and short aliases
-        zip_code = (
-            full_address.get("address_zip") or full_address.get("zip", "")
-        ).strip()
-        address1 = (
-            full_address.get("address_line1") or full_address.get("street", "")
-        ).strip()
-        address2 = (full_address.get("address_line2", "")).strip()
-        state = (
-            full_address.get("address_state") or full_address.get("state", "")
-        ).upper()
-        county = (
-            (full_address.get("address_county") or full_address.get("county", ""))
-            .strip()
-            .title()
+        full_address = self._parse_full_address(self.full_address)
+        zip_code, address1, address2, state, county, city, property_name = (
+            self._extract_address_components(full_address)
         )
-        city = (
-            (full_address.get("address_city") or full_address.get("city", ""))
-            .title()
-            .strip()
+        address1, address2 = self._validate_address_lines(address1, address2)
+        zip_code = self.normalize_zipcode(self._resolve_zip_code(zip_code, state, city))
+
+        fixed_address = self._build_fixed_address(
+            full_address,
+            address1,
+            address2,
+            state,
+            zip_code,
+            county,
+            city,
+            property_name,
         )
-        property_name = full_address.get("property", "").title().strip()
 
-        # Validate address lines
-        if address1 == "" and address2 != "":
-            address1 = address2
-            address2 = ""
-        elif address1 == "":
-            raise BritecoreError.InvalidAddress("Missing Address")
-
-        # Lookup missing zip code
-        if zip_code == "":
-            zip_code = ZIP_CODE_LOOKUP.get_zip_by_state_city(state, city)
-            if zip_code:
-                LOGGER.warning(
-                    f"Zip code missing - using {zip_code} for city of {city} "
-                    f"and state of {state}"
-                )
-            else:
-                raise BritecoreError.InvalidAddress("Missing Zip Code")
-
-        # Validate and normalize zip code
-        zip_code = self.normalize_zipcode(zip_code)
-
-        fixed_address = [
-            {
-                "address_line1": self.normalize_address_line(address1),
-                "address_line2": self.normalize_address_line(address2),
-                "address_state": self.validate_state(state, zip_code),
-                "address_country": "USA",
-                "address_zip": zip_code,
-                "type": full_address.get("type", DEFAULT_ADDRESS_TYPE),
-                "address_county": self.validate_county(county, zip_code[:5]),
-                "address_city": self.validate_city(city, zip_code),
-                "property": property_name,
-            }
-        ]
-
-        LOGGER.debug(f"Created address {fixed_address}")
+        LOGGER.debug("Created address %s", fixed_address)
         return fixed_address
 
     @classmethod
@@ -270,9 +305,9 @@ class AddressValidator:
 
             if FIX_ADDRESS:
                 county = county_lookup_value
-                LOGGER.info(f"{log_string} - {ADDRESS_CHANGE}")
+                LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
             else:
-                LOGGER.debug(f"{log_string} - {NO_ADDRESS_CHANGE}")
+                LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
 
         return county
 
@@ -318,9 +353,9 @@ class AddressValidator:
 
             if FIX_ADDRESS:
                 city = city_lookup_value
-                LOGGER.info(f"{log_string} - {ADDRESS_CHANGE}")
+                LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
             else:
-                LOGGER.debug(f"{log_string} - {NO_ADDRESS_CHANGE}")
+                LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
         return city
 
     @staticmethod
@@ -402,9 +437,9 @@ class AddressValidator:
 
             if FIX_ADDRESS:
                 state = state_lookup_value
-                LOGGER.info(f"{log_string} - {ADDRESS_CHANGE}")
+                LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
             else:
-                LOGGER.debug(f"{log_string} - {NO_ADDRESS_CHANGE}")
+                LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
                 state = "WI"  # Default fallback
 
         return state
