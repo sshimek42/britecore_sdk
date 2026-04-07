@@ -1,6 +1,6 @@
 # Stability and Support Policy
 
-*Last updated: April 6, 2026*
+*Last updated: April 7, 2026*
 
 This document outlines the stability commitments, support expectations, and versioning practices for `britecore_libraries`.
 
@@ -85,7 +85,7 @@ When breaking changes are necessary:
 
    ```
 
-2. **Documentation** — Add to `CHANGELOG.md` under **Deprecations** section
+2. **Documentation** — Add to release notes and update relevant guide pages
 3. **Minimum notice** — At least **2 minor releases** before removal (usually 2–3 months)
 4. **Removal** — Only in next major version
 
@@ -121,7 +121,7 @@ From `pyproject.toml`: `requires-python = ">=3.11"`
 When Python versions reach end-of-life, we may:
 
 1. **Drop support** — In a new major release (e.g., when 3.11 reaches EOL in October 2027, drop in `2.0.0`)
-2. **Announce** — In CHANGELOG and release notes at least 2 releases ahead
+2. **Announce** — In release notes at least 2 releases ahead
 
 Current EOL dates (Python):
 - 3.11: October 2027
@@ -185,6 +185,6 @@ When a major dependency upgrades:
 
 ## See Also
 
-- [CHANGELOG.md](CHANGELOG.md) — All version history and changes
+- GitHub Releases — Versioned release notes and change details
 - [SECURITY.md](SECURITY.md) — Security reporting and patch timeline
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) — Detailed version matrix

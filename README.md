@@ -1,6 +1,6 @@
 # britecore_libraries
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living guide*
 
 Python utilities and API wrappers for working with BriteCore services.
@@ -36,11 +36,6 @@ Current guidance (living docs):
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-Historical and status snapshots:
-
-- [production_grade_assessment.md](production_grade_assessment.md) for the dated production-readiness assessment and tier roadmap snapshot
-- [TIER1_COMPLETION.md](TIER1_COMPLETION.md) for the critical-fixes completion snapshot
-- [TIER3_COMPLETION.md](TIER3_COMPLETION.md) for the production-polish completion snapshot
 
 ## What this package provides
 

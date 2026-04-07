@@ -1,6 +1,6 @@
 # Security Policy
 
-*Last updated: April 6, 2026*
+*Last updated: April 7, 2026*
 
 This document describes how `britecore_libraries` handles security vulnerabilities and the expectations for reporting and patching.
 
@@ -121,7 +121,7 @@ Security patches are provided for:
 
 As of April 6, 2026: **None known**
 
-See `CHANGELOG.md` for list of resolved security issues.
+Security fixes and advisories are communicated through repository release notes.
 
 ## Security Features
 

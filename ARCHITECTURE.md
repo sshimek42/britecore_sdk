@@ -1,6 +1,6 @@
 # System Architecture
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living design reference*
 
 **BriteCore Libraries** - Technical design and component overview
@@ -145,6 +145,16 @@ data = API_CLIENT.process_result(response)
 - retries: `web_retry` (default 5 with urllib3 backoff)
 - authentication: API key injected into request payload for API-key mode,
   bearer token header for OAuth mode
+
+### HTTP Transport Choice
+
+This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `requests`.
+
+- SDK-level control: direct access to retries, pooling, and timeout behavior.
+- Fewer abstraction layers: `requests` is built on top of `urllib3`.
+- Operational consistency: easier to keep transport behavior explicit in a reusable library.
+
+`requests` remains a good choice for application scripts and one-off integrations where concise syntax is the main priority.
 
 ---
 
@@ -461,7 +471,7 @@ urllib3          # HTTP requests
 pyodbc          # Database access
 selenium        # Browser automation
 dynaconf        # Configuration
-pandas          # Data processing
+csv (stdlib)    # ZIP code CSV parsing
 sclogging       # Logging
 
 ```
@@ -540,7 +550,7 @@ logger.error("Errors with context")
 ## Documentation Freshness
 
 - Last verified: `2026-03-26`
-- Verified against: `src/britecore_libraries/api/api_calls/` and `API_COVERAGE_ANALYSIS.md`
+- Verified against: `src/britecore_libraries/api/api_calls/` and `API.md`
 
 ---
 
