@@ -264,7 +264,9 @@ class BritecoreAPIClient:
             raise BritecoreError.NoDataReturned("Error - No response")
 
         if response.status == 401 or response.status == 403:
-            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
+            LOGGER.error(
+                f"Authentication error - {response.status} - {response.reason}"
+            )
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
             )
