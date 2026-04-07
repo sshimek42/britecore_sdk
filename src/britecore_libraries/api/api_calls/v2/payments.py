@@ -72,8 +72,9 @@ def add_payment_method(
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     # Backward compatibility: allow legacy callers to pass type=... in kwargs.
-    if "type" in kwargs and not payment_method_type:
-        payment_method_type = kwargs.pop("type")
+    kwargs_any = cast(dict[str, Any], kwargs)
+    if "type" in kwargs_any and not payment_method_type:
+        payment_method_type = kwargs_any.pop("type")
 
     return _post(
         "/api/v2/payments/add_payment_method",
