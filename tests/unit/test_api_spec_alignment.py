@@ -85,4 +85,3 @@ def test_wrapper_paths_exist_in_api_spec() -> None:
         + "\n".join(f"- {path}" for path in missing)
         + "\n\nIf intentional, add path(s) to KNOWN_SPEC_GAPS in tests/unit/test_api_spec_alignment.py."
     )
-
