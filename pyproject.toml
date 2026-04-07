@@ -12,8 +12,6 @@ authors = [{ name = "sshimek" }]
 requires-python = ">=3.11"
 dependencies = [
     "dynaconf~=3.2.13",
-    "pandas~=3.0.1",
-    "setuptools~=82.0.1",
     "typing_extensions>=4.6.0",
     "urllib3~=2.6.3",
 ]

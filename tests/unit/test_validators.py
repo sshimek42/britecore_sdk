@@ -3,12 +3,14 @@
 import pytest
 
 from britecore_libraries.exceptions import BritecoreError
+from britecore_libraries.utils.zip_code_lookup import ZipCodeLookup
 from britecore_libraries.validators import (
     AddressValidator,
     EmailValidator,
     NameValidator,
     PhoneValidator,
 )
+from britecore_libraries.validators import address_validator
 
 
 class TestNameValidator:
@@ -195,3 +197,31 @@ class TestAddressValidator:
 
         with pytest.raises(BritecoreError.InvalidAddress):
             validator.process()
+
+    @pytest.mark.unit
+    def test_validate_address_missing_zip_uses_lookup(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ):
+        """Test missing ZIP is resolved from state/city lookup."""
+        lookup = ZipCodeLookup(
+            [
+                {
+                    "postal code": "62701",
+                    "place name": "Springfield",
+                    "admin code1": "IL",
+                    "admin name2": "Sangamon",
+                }
+            ]
+        )
+        monkeypatch.setattr(address_validator, "ZIP_CODE_LOOKUP", lookup)
+
+        address = {
+            "street": "123 Main St",
+            "city": "Springfield",
+            "state": "IL",
+        }
+        result = AddressValidator(address).process()
+
+        assert result[0]["address_zip"] == "62701"
+

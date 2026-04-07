@@ -17,7 +17,9 @@ NO_ADDRESS_CHANGE = "NO CHANGES MADE"
 ADDRESS_CHANGE = "ADDRESS UPDATED"
 
 # Reference to zip code data
-ZIP_CODE_DF = zip_codes
+ZIP_CODE_LOOKUP = zip_codes
+# Backward-compatible alias retained for external imports.
+ZIP_CODE_DF = ZIP_CODE_LOOKUP
 
 # Valid US state/territory abbreviations
 VALID_US_STATES: frozenset[str] = frozenset(
@@ -138,7 +140,7 @@ class AddressValidator:
         This method extracts individual address components such as zip code, street lines,
         state, county, city, and property name from the full address. It performs validation
         on the address lines and ensures that missing zip codes are looked up using a
-        reference DataFrame. The method also normalizes and validates the extracted values
+        ZIP lookup index. The method also normalizes and validates the extracted values
         before returning a standardized address dictionary.
 
         The method raises BritecoreError.InvalidAddress if the address is missing or
@@ -156,7 +158,23 @@ class AddressValidator:
             raise BritecoreError.InvalidAddress("Missing Address")
 
         if isinstance(self.full_address, str):
-            full_address = literal_eval(str(self.full_address)[1:-2])
+            try:
+                # Handle various string representations of dicts
+                # Try: direct evaluation first (standard dict string repr)
+                try:
+                    full_address = literal_eval(self.full_address)
+                except (ValueError, SyntaxError):
+                    # Fallback: Try with slicing (for edge cases like "({'key': 'value'})")
+                    full_address = literal_eval(str(self.full_address)[1:-2])
+
+                if not isinstance(full_address, dict):
+                    raise BritecoreError.InvalidAddress(
+                        "Address must be a dictionary"
+                    )
+            except (ValueError, SyntaxError) as e:
+                raise BritecoreError.InvalidAddress(
+                    f"Invalid address format: {str(e)}"
+                ) from e
 
         # Extract components, supporting both canonical keys and short aliases
         zip_code = (
@@ -190,19 +208,14 @@ class AddressValidator:
 
         # Lookup missing zip code
         if zip_code == "":
-            try:
-                zip_code = ZIP_CODE_DF.loc[
-                    (
-                        (state == ZIP_CODE_DF["admin code1"])
-                        & (city == ZIP_CODE_DF["place name"])
-                    )
-                ]["postal code"].values[0]
+            zip_code = ZIP_CODE_LOOKUP.get_zip_by_state_city(state, city)
+            if zip_code:
                 LOGGER.warning(
                     f"Zip code missing - using {zip_code} for city of {city} "
                     f"and state of {state}"
                 )
-            except IndexError as index_error:
-                raise BritecoreError.InvalidAddress("Missing Zip Code") from index_error
+            else:
+                raise BritecoreError.InvalidAddress("Missing Zip Code")
 
         # Validate and normalize zip code
         zip_code = self.normalize_zipcode(zip_code)
@@ -243,16 +256,8 @@ class AddressValidator:
                  a replacement from common city replacements, or the county name from
                  the zip code lookup table
         """
-        tmp_zipcode = zipcode[:5]
-        county_lookup = ZIP_CODE_DF
-        county_lookup = county_lookup.loc[county_lookup["postal code"] == tmp_zipcode]
-
-        county_lookup_value: str
-
-        try:
-            county_lookup_value = county_lookup["admin name2"].values[0]
-        except IndexError:
-            county_lookup_value = ""
+        county_lookup = ZIP_CODE_LOOKUP.get_record_by_zip(zipcode)
+        county_lookup_value = county_lookup.admin_name2 if county_lookup else ""
 
         county = COMMON_CITY_REPLACEMENT.get(county, county)
 
@@ -293,17 +298,8 @@ class AddressValidator:
         """
         city = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", city)
 
-        tmp_zipcode = zipcode[:5]
-
-        city_lookup = ZIP_CODE_DF
-        city_lookup = city_lookup.loc[city_lookup["postal code"] == tmp_zipcode]
-
-        city_lookup_value: str
-
-        try:
-            city_lookup_value = city_lookup["place name"].values[0]
-        except IndexError:
-            city_lookup_value = ""
+        city_lookup = ZIP_CODE_LOOKUP.get_record_by_zip(zipcode)
+        city_lookup_value = city_lookup.place_name if city_lookup else ""
 
         city = COMMON_CITY_REPLACEMENT.get(city, city)
 
@@ -383,7 +379,7 @@ class AddressValidator:
                 based on postal code database or default fallback
 
         Notes:
-            This method uses a global ZIP_CODE_DF dataframe for lookups and
+            This method uses a global ZIP code lookup index for lookups and
             a global LOGGER for debug output. The method applies regex
             normalization to the state string before lookup.
         """
@@ -394,17 +390,8 @@ class AddressValidator:
         if state and state not in VALID_US_STATES:
             raise BritecoreError.InvalidAddress(f"Invalid State - {state}")
 
-        tmp_zipcode = zipcode[:5]
-
-        state_lookup = ZIP_CODE_DF
-        state_lookup = state_lookup.loc[state_lookup["postal code"] == tmp_zipcode]
-
-        state_lookup_value: str
-
-        try:
-            state_lookup_value = state_lookup["admin code1"].values[0]
-        except IndexError:
-            state_lookup_value = ""
+        state_lookup = ZIP_CODE_LOOKUP.get_record_by_zip(zipcode)
+        state_lookup_value = state_lookup.admin_code1 if state_lookup else ""
 
         if state == "" and state_lookup_value != "":
             state = state_lookup_value
@@ -425,7 +412,7 @@ class AddressValidator:
         return state
 
     @staticmethod
-    def _normalize_street_name(address: str) -> str | bytes:
+    def _normalize_street_name(address: str) -> str:
         """
         Normalizes street names in addresses by applying regex replacements.
 
@@ -438,7 +425,7 @@ class AddressValidator:
             address (str): The input address string to normalize
 
         Returns:
-            str | bytes: The normalized address string, or empty string if input is empty
+            str: The normalized address string, or empty string if input is empty
         """
         street_replacements = _COMPILED_REGEXES.get("street_name_replacement", {})
 
@@ -451,7 +438,7 @@ class AddressValidator:
         if address != "" and not address[-1].isalnum():
             address = address[:-1]
 
-        return address
+        return str(address)
 
     @staticmethod
     def _normalize_street_casing(address: str) -> str:
@@ -547,7 +534,7 @@ class AddressValidator:
         address = re.sub(_COMPILED_REGEXES.get("reg_address", r""), "", address)
 
         # Normalize street names
-        address = cls._normalize_street_name(address)
+        address = str(cls._normalize_street_name(address))
         address = cls._normalize_street_casing(address)
 
         # Remove business tokens from address lines

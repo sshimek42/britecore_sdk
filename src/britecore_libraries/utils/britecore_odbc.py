@@ -35,8 +35,8 @@ def get_cursor(
     try:
         conn1 = pyodbc.connect(conn_string, **conn_options)
     except pyodbc.DatabaseError as err:
-        logger.error(err)
-        sys.exit(str(err))
+        logger.error(str(err))
+        raise BritecoreError.DatabaseConnectionError(str(err)) from err
     logger.debug("Database connection succeeded")
 
     with conn1.cursor() as cursor:
