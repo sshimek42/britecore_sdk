@@ -1,5 +1,6 @@
 """Unit tests for canonical v1 endpoint module routing."""
 
+import inspect
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -89,3 +90,14 @@ def test_v1_payments_endpoint_path(env_api_key, mock_settings):
         path="/api/v1/payments/makeManualPolicyPayment",
         json={"json_dict": {"policy_number": "POL-1", "amount": 10.0}},
     )
+
+
+@pytest.mark.unit
+def test_v1_wrapper_docstrings_are_spec_aligned():
+    from britecore_libraries.api.api_calls.v1 import custom_ui, payments, printing
+
+    assert "external URL override" in inspect.getdoc(custom_ui.createurloverride)
+    assert "already been collected" in inspect.getdoc(payments.makemanualpolicypayment)
+    assert "deliverables and associated files" in inspect.getdoc(printing.gettobeprinted)
+    assert "PrintHawk data" in inspect.getdoc(printing.sendprinthawk)
+
