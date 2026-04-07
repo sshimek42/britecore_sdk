@@ -164,12 +164,29 @@ client_secret = "your_staging_client_secret"
 
 **Environment variables** (override file config):
 
+API key authentication:
+
+**Linux/macOS (bash):**
+```bash
+export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
+export BRITECORE_LIBRARIES_API_KEY="your_api_key"
+export target_site="production"
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
+$env:BRITECORE_LIBRARIES_API_KEY="your_api_key"
+$env:target_site="production"
+```
+
+Or OAuth authentication:
+
 **Linux/macOS (bash):**
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
-export BRITECORE_LIBRARIES_API_KEY="your_api_key"
 export target_site="production"
 ```
 
@@ -178,7 +195,6 @@ export target_site="production"
 $env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 $env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
-$env:BRITECORE_LIBRARIES_API_KEY="your_api_key"
 $env:target_site="production"
 ```
 
