@@ -139,7 +139,7 @@ def retrieve_policy_list_from_user(
     ``policyNumber`` values. When ``check_name`` is ``True``, it filters results
     against ``namedInsured`` entries before returning values.
     """
-    LOGGER.debug(f"Searching for '{contact_name}'")
+    LOGGER.debug("Searching for '%s'", contact_name)
     user_request_json: dict[str, Any] = {
         "sort_obj": {"field": "policy_number", "order": "asc"},
         "current_page": 1,
@@ -229,7 +229,7 @@ def create_policy(
     if term_type == "Custom" and not expiration_date:
         BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
 
-    LOGGER.debug(f"Creating policy '{policy_number}'")
+    LOGGER.debug("Creating policy '%s'", policy_number)
     local_env: dict[str, Any] = locals()
     policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -284,7 +284,7 @@ def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     and returns the normalized ``process_result(...)`` payload for the rating
     request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    LOGGER.debug(f"Re-rating revision '{revision_id}'")
+    LOGGER.debug("Re-rating revision '%s'", revision_id)
     policy_retrieve_json = {"revision_id": revision_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/rate_revision",

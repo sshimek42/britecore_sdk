@@ -79,7 +79,7 @@ def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     and returns the normalized ``process_result(...)`` payload for the matching
     attachment record. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    LOGGER.debug(f"Getting attachment '{file_id}'")
+    LOGGER.debug("Getting attachment '%s'", file_id)
     file_search: dict[str, str] = {"file_id": file_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
@@ -107,7 +107,7 @@ def get_edeliverables(
         "unprocessed_only": unprocessed_only,
     }
 
-    LOGGER.debug(f"Getting E-Deliverables\n{required_json}")
+    LOGGER.debug("Getting E-Deliverables\n%s", required_json)
 
     result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         "/api/v2/deliverables/get_edeliverables",

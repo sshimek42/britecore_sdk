@@ -112,11 +112,13 @@ class EmailValidator:
 
         # Validate format
         email_pattern = regexes.get("reg_email")
+        if not isinstance(email_pattern, (str, Pattern)):
+            return ""
         email_match = re.match(email_pattern, email)
 
         if not email_match:
             if email:
-                LOGGER.debug(f"Invalid email address: {email}")
+                LOGGER.debug("Invalid email address: %s", email)
             return ""
 
         return email_match.group(0)

@@ -27,8 +27,8 @@ web_browser = settings.web_browser
 if not web_browser:
     web_browser = "Edge"
 
-if web_browser.lower() not in ("edge", "firefox", "chrome", "opera", "safari"):
-    logger.error(f"Invalid browser specified - {web_browser}")
+    if web_browser.lower() not in ("edge", "firefox", "chrome", "opera", "safari"):
+        logger.error("Invalid browser specified - %s", web_browser)
 
 ignored_exceptions = (
     selenium.common.exceptions.ElementClickInterceptedException,
@@ -54,12 +54,12 @@ def get_driver(
     :rtype: Union[None, selenium.webdriver.edge.webdriver.WebDriver,
     selenium.webdriver.firefox.webdriver.WebDriver]
     """
-    logger.info(f"Launching {browser}")
+    logger.info("Launching %s", browser)
     driver_info = getattr(webdriver, browser)
     try:
         driver = driver_info()
     except Exception as err:  # skipcq PYL-W0703
-        logger.error(f"Cannot launch browser - {err}")
+        logger.error("Cannot launch browser - %s", err)
         raise BritecoreError.Base(f"Cannot launch browser - {err}") from err
 
     driver.maximize_window()
@@ -98,7 +98,7 @@ def bc_login(
 
     login_box = driver.find_elements(By.CLASS_NAME, "el-input__inner")
 
-    logger.debug(f"Logging into BriteCore as {settings.web_user}")
+    logger.debug("Logging into BriteCore as %s", settings.web_user)
     user_box = login_box[0]
     pass_box = login_box[1]
     user_box.send_keys(user)
