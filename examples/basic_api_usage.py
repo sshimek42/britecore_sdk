@@ -66,17 +66,24 @@ def run_live_policy_lookup(policy_number: str) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build CLI arguments for local demo and optional live lookup."""
     parser = argparse.ArgumentParser(
-        description="Run local and optional live usage samples for britecore_libraries.",
+        description=(
+            "Run local and optional live usage samples for " "britecore_libraries."
+        ),
     )
     parser.add_argument(
         "--live-policy-number",
-        help="Optional policy number to trigger a live, read-only retrieve_policy API call.",
+        help=(
+            "Optional policy number to trigger a live, read-only "
+            "retrieve_policy API call."
+        ),
     )
     return parser
 
 
 def main() -> int:
+    """Run the sample workflow and return a process exit code."""
     parser = build_parser()
     args = parser.parse_args()
 
