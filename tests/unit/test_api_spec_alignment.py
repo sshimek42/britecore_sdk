@@ -39,17 +39,23 @@ def _extract_path_literals(py_file: Path) -> set[str]:
 
         # Positional string literals, e.g. _post("/api/v2/...", ...)
         for arg in node.args:
-            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
-                if arg.value.startswith("/api/"):
-                    paths.add(arg.value)
+            if (
+                isinstance(arg, ast.Constant)
+                and isinstance(arg.value, str)
+                and arg.value.startswith("/api/")
+            ):
+                paths.add(arg.value)
 
         # Keyword literal for path=..., e.g. do_request(path="/api/v2/...", ...)
         for kw in node.keywords:
             if kw.arg != "path":
                 continue
-            if isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
-                if kw.value.value.startswith("/api/"):
-                    paths.add(kw.value.value)
+            if (
+                isinstance(kw.value, ast.Constant)
+                and isinstance(kw.value.value, str)
+                and kw.value.value.startswith("/api/")
+            ):
+                paths.add(kw.value.value)
 
     return paths
 
@@ -80,6 +86,7 @@ def _format_path_list(paths: list[str]) -> str:
 
 @pytest.mark.unit
 def test_wrapper_paths_exist_in_api_spec() -> None:
+    """Ensure wrapper endpoint paths are present in the checked-in API specification."""
     wrapper_paths = _all_wrapper_paths()
     spec_paths = _spec_paths()
 

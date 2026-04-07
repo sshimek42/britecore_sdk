@@ -21,7 +21,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def line_menu(
     **kwargs: Unpack[RequestParameters],
-) -> tuple[list, list, list, str, str, str]:
+) -> tuple[Any, Any, Any, Any, Any, Any]:
     """
     Creates menus for each different line option.
 
@@ -53,7 +53,7 @@ def line_menu(
         print_menu_title: str,
         print_menu_options: dict,
         print_menu_default: str,
-    ) -> tuple[list, str]:
+    ) -> tuple[Any, Any]:
         """
         Display a menu with given title and options, and return the selected option's ID and name.
 
@@ -72,13 +72,15 @@ def line_menu(
                 - line_id: The ID of the selected option, which can be a string or a list of strings.
                 - name: The name of the selected option, which can be a string or a list of strings.
         """
-        line_id: str | list[str]
-        name: str | list[str]
+        line_id: Any
+        name: Any
 
         import pyinputplus as py_menu
 
         LOGGER.info(
-            f"\nChoose {print_menu_title.lower()}\n{'=' * (len(print_menu_title) + 7)}"
+            "\nChoose %s\n%s",
+            print_menu_title.lower(),
+            "=" * (len(print_menu_title) + 7),
         )
         if len(print_menu_options) > 1:
             menu_options_list: list = list(print_menu_options.keys())
@@ -99,9 +101,9 @@ def line_menu(
         else:
             LOGGER.info("1. " + print_menu_default)
             tmp_line = print_menu_default
-            line_id = print_menu_options[menu_default]
-            name = menu_default
-        LOGGER.info(f"{tmp_line} selected")
+            line_id = print_menu_options[print_menu_default]
+            name = print_menu_default
+        LOGGER.info("%s selected", tmp_line)
         return line_id, name
 
     LOGGER.debug("Getting dates")
@@ -116,8 +118,8 @@ def line_menu(
     for make_menu in get_dates:
         menu_options.update({make_menu["description"]: make_menu["id"]})
         menu_default = make_menu["description"]
-    eff_date: tuple[list[str], str] = print_menu("Date", menu_options, menu_default)
-    eff_date_json: dict[str, list[str]] | None = {"effective_date_id": eff_date[0]}
+    eff_date = print_menu("Date", menu_options, menu_default)
+    eff_date_json: dict[str, str | list[str]] | None = {"effective_date_id": eff_date[0]}
 
     request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states", json=eff_date_json, **kwargs
@@ -129,7 +131,7 @@ def line_menu(
         menu_options.update({make_menu["name"]: make_menu["id"]})
         menu_default = make_menu["name"]
     eff_state = print_menu("State", menu_options, menu_default)
-    eff_state_json: dict[str, list[str]] = {
+    eff_state_json: dict[str, str | list[str]] = {
         "effective_date_id": eff_date[0],
         "location_id": eff_state[0],
     }
