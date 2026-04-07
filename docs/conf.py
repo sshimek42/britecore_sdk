@@ -17,7 +17,9 @@ author = "britecore_libraries contributors"
 try:
     import tomllib
 
-    pyproject_data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    pyproject_data = tomllib.loads(
+        (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    )
     release = pyproject_data["project"]["version"]
 except Exception:
     release = "0.0.0"
@@ -55,4 +57,3 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "alabaster"
 html_static_path = []
-

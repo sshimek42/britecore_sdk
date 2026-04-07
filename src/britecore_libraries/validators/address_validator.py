@@ -168,9 +168,7 @@ class AddressValidator:
                     full_address = literal_eval(str(self.full_address)[1:-2])
 
                 if not isinstance(full_address, dict):
-                    raise BritecoreError.InvalidAddress(
-                        "Address must be a dictionary"
-                    )
+                    raise BritecoreError.InvalidAddress("Address must be a dictionary")
             except (ValueError, SyntaxError) as e:
                 raise BritecoreError.InvalidAddress(
                     f"Invalid address format: {str(e)}"

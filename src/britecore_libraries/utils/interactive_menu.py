@@ -9,7 +9,11 @@ from logging import Logger
 from typing import Any, Unpack
 
 from britecore_libraries import logger
-from britecore_libraries.api.api_calls import BritecoreAPIClient, RequestParameters, api_client
+from britecore_libraries.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 
 LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
@@ -149,4 +153,3 @@ def line_menu(
         eff_state[1],
         eff_line[1],
     )
-

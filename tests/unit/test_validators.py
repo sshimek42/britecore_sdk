@@ -9,8 +9,8 @@ from britecore_libraries.validators import (
     EmailValidator,
     NameValidator,
     PhoneValidator,
+    address_validator,
 )
-from britecore_libraries.validators import address_validator
 
 
 class TestNameValidator:
@@ -224,4 +224,3 @@ class TestAddressValidator:
         result = AddressValidator(address).process()
 
         assert result[0]["address_zip"] == "62701"
-

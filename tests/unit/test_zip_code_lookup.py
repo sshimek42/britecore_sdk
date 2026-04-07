@@ -9,7 +9,9 @@ from britecore_libraries.utils.zip_code_lookup import ZipCodeLookup, load_zip_co
 
 
 @pytest.mark.unit
-def test_load_zip_codes_from_csv(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_load_zip_codes_from_csv(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Load a small CSV fixture and verify state/city and ZIP lookups."""
     csv_file = tmp_path / "zip_codes.csv"
     csv_file.write_text(
@@ -42,4 +44,3 @@ def test_load_zip_codes_missing_file_logs_and_raises(
         load_zip_codes()
 
     assert "Zip Code lookup file is missing" in caplog.text
-
