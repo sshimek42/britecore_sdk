@@ -4,7 +4,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 
 > No existing BriteCore client library? Look no further. This SDK provides everything you need: 374+ endpoints, domain models, validators, and clean async wrappers.
 
-**Status:** Stable (v1.1.0) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v1.1.0) | **License:** Apache-2.0 | **Python:** 3.11+ | **Coverage:** 77%
 
 ---
 
