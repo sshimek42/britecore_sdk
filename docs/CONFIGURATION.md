@@ -46,11 +46,13 @@ api_key = "your_api_key_here"
 ```
 
 **When to edit:**
+
 - Add new site configurations
 - Update public endpoints or defaults
 - Document API version mappings
 
 **Never commit:**
+
 - Real API keys, client secrets, or credentials
 
 ### `.secrets.toml` (Private)
@@ -74,11 +76,13 @@ api_key = "your_real_api_key"
 ```
 
 **How to create:**
+
 1. Copy `settings.toml` to `.secrets.toml`
 2. Fill in real credentials for your environment
 3. **Never commit** `.secrets.toml` (it's already gitignored)
 
 **File format:**
+
 - Same TOML structure as `settings.toml`
 - Values in `.secrets.toml` override `settings.toml`
 - All sections are optional
@@ -96,6 +100,7 @@ client.init_client()
 ```
 
 **What happens:**
+
 1. `target_site` argument specifies which config section to load (e.g., `[example_site]`)
 2. Dynaconf merges `settings.toml` + `.secrets.toml` + environment variables
 3. Secrets override public settings
@@ -127,6 +132,7 @@ $env:system = "example_site"
 ```
 
 **Priority order (highest to lowest):**
+
 1. Environment variables (e.g., `BRITECORE_LIBRARIES_*`)
 2. `.secrets.toml` values
 3. `settings.toml` values
@@ -137,21 +143,25 @@ $env:system = "example_site"
 ### API Key Auth
 
 Required keys:
+
 - `base_url` -- API base URL
 - `api_key` -- API key value
 
 Optional:
+
 - `client_id` (leave blank to skip OAuth)
 - `client_secret` (leave blank to skip OAuth)
 
 ### OAuth Auth
 
 Required keys:
+
 - `base_url` -- API base URL
 - `client_id` -- OAuth client ID
 - `client_secret` -- OAuth client secret
 
 Optional:
+
 - `api_key` (will be ignored if `client_id` + `client_secret` are set)
 
 **Auth mode selection:**
@@ -176,7 +186,7 @@ client.init_client()
 **Common errors:**
 
 | Error | Cause | Fix |
-|-------|-------|-----|
+| ----- | ----- | --- |
 | `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `settings.toml` or `[example_site]` section |
 | `BritecoreKeyError` | Missing `client_id`/`client_secret` | Add both for OAuth, or add `api_key` for API key auth |
 | `BritecoreKeyError` | Missing `api_key` | Add `api_key` to `.secrets.toml` |

@@ -64,7 +64,7 @@ Include:
 Security patches are provided for:
 
 | Version | Status | Support Ends |
-|---------|--------|--------------|
+| --- | --- | --- |
 | 1.x | Active | March 2027 (12 months from 1.0.0 release) |
 | 0.x | Deprecated | No new patches |
 
@@ -147,6 +147,7 @@ Security vulnerabilities follow [CVE](https://www.cve.org/) guidelines:
 ## Questions?
 
 For security concerns or questions about this policy:
+
 - Email security contact (see above)
 - Do not open public issues for suspected vulnerabilities
 - See [STABILITY.md](STABILITY.md) for other support channels

@@ -14,4 +14,3 @@ CI/CD and Coverage <CI_AND_COVERAGE>
 Python compatibility <python_compatibility>
 Unimplemented API stubs <unimplemented_api_stubs>
 ```
-

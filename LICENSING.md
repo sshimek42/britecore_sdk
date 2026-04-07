@@ -9,7 +9,7 @@
 We chose Apache 2.0 over other licenses because:
 
 | Aspect | Apache 2.0 | MIT | GPL | Proprietary |
-|--------|-----------|-----|-----|-------------|
+| ------ | ---------- | --- | --- | ----------- |
 | **Permissive** | ✅ Yes | ✅ Yes | ❌ No | ❌ No |
 | **Patent grants** | ✅ Explicit | ❌ Implied | ✅ Explicit | N/A |
 | **Commercial use** | ✅ Allowed | ✅ Allowed | ⚠️ Restricted | N/A |
@@ -37,6 +37,7 @@ You **must:**
 ### Liability & Warranty
 
 The software is provided **"AS IS"** without warranties. The authors/contributors are not liable for:
+
 - Damages from use or misuse
 - Loss of data or revenue
 - Security breaches
@@ -57,6 +58,7 @@ for API integration and is not endorsed by or affiliated with BriteCore.
 ## Questions?
 
 If you have questions about licensing or legal usage, please:
+
 1. Review the [Apache License 2.0 FAQ](https://www.apache.org/foundation/license-faq.html)
 2. Consult your legal team
 3. Open a discussion on GitHub
