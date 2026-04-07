@@ -11,6 +11,9 @@
 
 This document provides reference for all implemented API endpoints.
 
+External API docs are available at [https://api.britecore.com/](https://api.britecore.com/), but
+`britecore_api.json` in this repository remains the canonical contract for this SDK.
+
 All 374 endpoints in `britecore_api.json` are now fully implemented across
 30 domain modules in `src/britecore_libraries/api/api_calls/v2/`.
 
