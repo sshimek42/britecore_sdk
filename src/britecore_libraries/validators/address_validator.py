@@ -134,7 +134,9 @@ class AddressValidator:
         _get_regexes()
 
     @staticmethod
-    def _parse_full_address(full_address: dict[str, str] | str | None) -> dict[str, str]:
+    def _parse_full_address(
+        full_address: dict[str, str] | str | None,
+    ) -> dict[str, str]:
         """Coerce the incoming address payload into a dictionary."""
         if not full_address:
             raise BritecoreError.InvalidAddress("Missing Address")
@@ -162,18 +164,26 @@ class AddressValidator:
         full_address: dict[str, str],
     ) -> tuple[str, str, str, str, str, str, str]:
         """Extract canonical address fields and aliases from an address mapping."""
-        zip_code = (full_address.get("address_zip") or full_address.get("zip", "")).strip()
+        zip_code = (
+            full_address.get("address_zip") or full_address.get("zip", "")
+        ).strip()
         address1 = (
             full_address.get("address_line1") or full_address.get("street", "")
         ).strip()
         address2 = full_address.get("address_line2", "").strip()
-        state = (full_address.get("address_state") or full_address.get("state", "")).upper()
+        state = (
+            full_address.get("address_state") or full_address.get("state", "")
+        ).upper()
         county = (
             (full_address.get("address_county") or full_address.get("county", ""))
             .strip()
             .title()
         )
-        city = (full_address.get("address_city") or full_address.get("city", "")).title().strip()
+        city = (
+            (full_address.get("address_city") or full_address.get("city", ""))
+            .title()
+            .strip()
+        )
         property_name = full_address.get("property", "").title().strip()
         return zip_code, address1, address2, state, county, city, property_name
 

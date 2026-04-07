@@ -119,7 +119,9 @@ def line_menu(
         menu_options.update({make_menu["description"]: make_menu["id"]})
         menu_default = make_menu["description"]
     eff_date = print_menu("Date", menu_options, menu_default)
-    eff_date_json: dict[str, str | list[str]] | None = {"effective_date_id": eff_date[0]}
+    eff_date_json: dict[str, str | list[str]] | None = {
+        "effective_date_id": eff_date[0]
+    }
 
     request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_states", json=eff_date_json, **kwargs

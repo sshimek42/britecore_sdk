@@ -38,8 +38,11 @@ def test_v1_custom_ui_endpoint_path(env_api_key, mock_settings):
     client = _get_initialized_client(mock_settings)
     mock_response = _make_response()
 
-    with patch.object(client, "do_request", return_value=mock_response) as mock_do_request, patch.object(
-        client, "process_result", return_value={"ok": True}
+    with (
+        patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request,
+        patch.object(client, "process_result", return_value={"ok": True}),
     ):
         result = custom_ui.createurloverride(json_obj={"url": "/demo"})
 
@@ -58,8 +61,11 @@ def test_v1_printing_endpoint_path(env_api_key, mock_settings):
     client = _get_initialized_client(mock_settings)
     mock_response = _make_response()
 
-    with patch.object(client, "do_request", return_value=mock_response) as mock_do_request, patch.object(
-        client, "process_result", return_value={"ok": True}
+    with (
+        patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request,
+        patch.object(client, "process_result", return_value={"ok": True}),
     ):
         result = printing.getattachment(json_dict={"attachment_id": "A-1"})
 
@@ -78,8 +84,11 @@ def test_v1_payments_endpoint_path(env_api_key, mock_settings):
     client = _get_initialized_client(mock_settings)
     mock_response = _make_response()
 
-    with patch.object(client, "do_request", return_value=mock_response) as mock_do_request, patch.object(
-        client, "process_result", return_value={"ok": True}
+    with (
+        patch.object(
+            client, "do_request", return_value=mock_response
+        ) as mock_do_request,
+        patch.object(client, "process_result", return_value={"ok": True}),
     ):
         result = payments.makemanualpolicypayment(
             json_dict={"policy_number": "POL-1", "amount": 10.0}
