@@ -74,6 +74,7 @@ class RequestCache:
     """Thread-safe in-memory TTL cache for API responses."""
 
     def __init__(self) -> None:
+        """Initialize an empty in-memory cache guarded by a re-entrant lock."""
         self._entries: dict[str, CacheEntry] = {}
         self._lock = RLock()
 

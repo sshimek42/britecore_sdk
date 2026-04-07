@@ -118,6 +118,7 @@ class BritecoreAPIClient:
     """
 
     def __init__(self, target_site: str | None) -> None:
+        """Initialize client state; call ``init_client`` before making requests."""
         self.api_key: str | None = None
         self.token_class: OAuthToken | None = None
         self.use_api_key: bool | None = None
