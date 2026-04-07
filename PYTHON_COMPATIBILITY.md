@@ -1,6 +1,8 @@
 # Python Compatibility Matrix
 
-*Last updated: March 31, 2026*
+Canonical source: this file. `docs/python_compatibility.md` includes this content.
+
+*Last updated: April 7, 2026*
 *Document type: Living compatibility policy*
 
 **BriteCore Libraries** — supported Python versions and compatibility commitments.
@@ -9,12 +11,12 @@
 
 ## Supported Python Versions
 
-| Python Version | Status        | Notes                                      |
-|----------------|---------------|--------------------------------------------|
-| 3.11           | ✅ Supported  | Minimum supported version                  |
-| 3.12           | ✅ Supported  | Recommended for most production deployments |
-| 3.13           | ✅ Supported  | —                                          |
-| 3.14           | ✅ Supported  | Original development target; fully tested  |
+| Python Version | Status | Notes |
+| --- | --- | --- |
+| 3.11 | ✅ Supported | Minimum supported version |
+| 3.12 | ✅ Supported | Recommended for most production deployments |
+| 3.13 | ✅ Supported | — |
+| 3.14 | ✅ Supported | Original development target; fully tested |
 | 3.10 and below | ❌ Unsupported | Uses `X \| Y` union types (PEP 604); will not parse |
 
 ### Why ≥3.11?
@@ -33,11 +35,11 @@ Syntax compatibility with 3.10 is marginal; 3.11 is the safe floor because
 
 ## BriteCore API Version Compatibility
 
-| Library Version | BriteCore API | Notes                              |
-|-----------------|---------------|------------------------------------|
-| 1.0.0           | v2 (current)  | All v2 endpoints supported         |
-| 1.0.0           | v1 (legacy)   | contacts, printing — legacy only   |
-| 0.x             | v1 + v2       | Pre-release; no stability guarantee|
+| Library Version | BriteCore API | Notes |
+| --- | --- | --- |
+| 1.0.0 | v2 (current) | All v2 endpoints supported |
+| 1.0.0 | v1 | Supported where v1 endpoints are used |
+| 0.x | v1 + v2 | Pre-release; no stability guarantee |
 
 ---
 
@@ -45,11 +47,11 @@ Syntax compatibility with 3.10 is marginal; 3.11 is the safe floor because
 
 Starting from `1.0.0` the library follows **semantic versioning**:
 
-| Change Type              | Version Bump | Example                                  |
-|--------------------------|--------------|------------------------------------------|
-| Bug fixes, doc updates   | Patch (x.x.**Z**) | 1.0.0 → 1.0.1                      |
-| New backwards-compatible features | Minor (x.**Y**.0) | 1.0.0 → 1.1.0          |
-| Breaking public API changes | Major (**X**.0.0) | 1.0.0 → 2.0.0             |
+| Change Type | Version Bump | Example |
+| --- | --- | --- |
+| Bug fixes, doc updates | Patch (x.x.**Z**) | 1.0.0 → 1.0.1 |
+| New backwards-compatible features | Minor (x.**Y**.0) | 1.0.0 → 1.1.0 |
+| Breaking public API changes | Major (**X**.0.0) | 1.0.0 → 2.0.0 |
 
 ### What counts as "public API"?
 
@@ -76,7 +78,6 @@ Runtime dependencies are pinned with `~=` (compatible-release) constraints:
 
 urllib3~=2.6          # HTTP transport
 dynaconf~=3.2         # Configuration management
-pandas~=3.0           # Data utilities
 
 ```
 
@@ -89,12 +90,12 @@ require an explicit update to `pyproject.toml`.
 
 The CI pipeline validates the following matrix:
 
-| Python | OS           | Auth mode  |
-|--------|--------------|------------|
-| 3.11   | Ubuntu latest | API key    |
-| 3.12   | Ubuntu latest | API key    |
-| 3.13   | Ubuntu latest | API key    |
-| 3.14   | Ubuntu latest | API key    |
+| Python | OS | Auth mode |
+| --- | --- | --- |
+| 3.11 | Ubuntu latest | API key |
+| 3.12 | Ubuntu latest | API key |
+| 3.13 | Ubuntu latest | API key |
+| 3.14 | Ubuntu latest | API key |
 
 ---
 
@@ -118,5 +119,3 @@ The CI pipeline validates the following matrix:
 - `annotationlib` changes do not affect runtime behaviour of this library.
 
 ---
-
-*Last updated: 2026-03-31*

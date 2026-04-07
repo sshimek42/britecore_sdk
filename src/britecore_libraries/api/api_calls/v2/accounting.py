@@ -1,9 +1,7 @@
 """BriteCore v2 Accounting API endpoint wrappers.
 
-Provides:
-    get_accounting_deliverable                            -- Retrieve values needed to generate account-history deliverables.
-    get_invoices                                          -- Retrieve a paginated list of invoices, optionally filtered by policy and date range.
-    run_rescind_underwriting_cancellation_pending_logic   -- Run the rescind underwriting cancellation-pending logic for a revision.
+This module provides wrappers for accounting deliverables, invoice retrieval,
+and rescind-cancellation workflow helpers in the BriteCore v2 accounting API.
 """
 
 from logging import Logger
@@ -28,24 +26,12 @@ def get_accounting_deliverable(
     deliverable_date: str,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all values necessary to generate deliverables related to
-    the account history in a policy term.
+    """Retrieve accounting deliverable values for an account history entry.
 
-    Parameters
-    ----------
-    account_history_id : str
-        Account history ID from which values are to be filtered.
-    deliverable_date : str
-        Process date of the deliverable in the format ``YYYY-MM-DD``.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides forwarded to the
-        underlying HTTP request.
-
-    Returns
-    -------
-    Any
-        Processed API response.  On success the ``data`` key contains the
-        queried values for the deliverable.
+    This wrapper sends ``account_history_id`` and ``deliverable_date`` to
+    ``/api/v2/accounting/get_accounting_deliverable`` and returns the
+    normalized ``process_result(...)`` payload for the requested deliverable
+    data. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug(
         "Getting accounting deliverable for account_history_id=%s", account_history_id
@@ -76,35 +62,12 @@ def get_invoices(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a paginated list of invoices related to a policy.
+    """Retrieve invoices with optional policy and date filters.
 
-    Parameters
-    ----------
-    policy_id : str, optional
-        Filter invoices by policy UUID.
-    bill_from_date : str, optional
-        Filter invoices with bill date > ``bill_from_date`` (``YYYY-MM-DD``).
-    bill_to_date : str, optional
-        Filter invoices with bill date < ``bill_to_date`` (``YYYY-MM-DD``).
-    due_from_date : str, optional
-        Filter invoices with due date > ``due_from_date`` (``YYYY-MM-DD``).
-    due_to_date : str, optional
-        Filter invoices with due date < ``due_to_date`` (``YYYY-MM-DD``).
-    sorting_order : str, optional
-        Ascending/descending order.  Choices: ``{'asc', 'desc'}``.
-    page_number : int, optional
-        Page number, starting from 1.
-    page_size : int, optional
-        Page size; must be > 0.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides forwarded to the
-        underlying HTTP request.
-
-    Returns
-    -------
-    Any
-        Processed API response.  On success the ``data`` key contains the
-        paginated invoice list along with filter and pagination metadata.
+    This wrapper sends the supplied policy, bill-date, due-date, sorting, and
+    pagination fields to ``/api/v2/accounting/get_invoices`` and returns the
+    normalized ``process_result(...)`` payload for the invoice query.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Getting invoices for policy_id=%s", policy_id)
 
@@ -142,25 +105,13 @@ def run_rescind_underwriting_cancellation_pending_logic(
     date_cursor: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run the rescind-underwriting cancellation-pending logic for a revision.
+    """Run rescind underwriting cancellation-pending logic for a revision.
 
-    Parameters
-    ----------
-    revision_id : str
-        UUID of the revision to process.
-    old_status : str
-        The previous status of the revision before the cancellation-pending
-        state was entered.
-    date_cursor : str, optional
-        Optional date cursor used by the underlying logic (``YYYY-MM-DD``).
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides forwarded to the
-        underlying HTTP request.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating success or failure.
+    This wrapper sends ``revision_id``, ``old_status``, and the optional
+    ``date_cursor`` to
+    ``/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic``
+    and returns the normalized ``process_result(...)`` payload for the job
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug(
         "Running rescind underwriting cancellation pending logic for revision_id=%s",

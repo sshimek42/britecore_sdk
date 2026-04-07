@@ -1,6 +1,6 @@
 # britecore_libraries
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living guide*
 
 Python utilities and API wrappers for working with BriteCore services.
@@ -14,7 +14,9 @@ Key docs:
 
 - [docs/index.md](docs/index.md) for the Sphinx docs entry point in-repo
 - [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
+- [examples/README.md](examples/README.md) for runnable sample scripts
 - [API.md](API.md) for endpoint reference and coverage details
+- [https://api.britecore.com/](https://api.britecore.com/) for supplemental external API reference docs (canonical SDK contract stays in `britecore_api.json`)
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
 - [docs/MAP_FILES.md](docs/MAP_FILES.md) for sensitive map-file policy and sample structures
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
@@ -35,12 +37,6 @@ Current guidance (living docs):
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-
-Historical and status snapshots:
-
-- [production_grade_assessment.md](production_grade_assessment.md) for the dated production-readiness assessment and tier roadmap snapshot
-- [TIER1_COMPLETION.md](TIER1_COMPLETION.md) for the critical-fixes completion snapshot
-- [TIER3_COMPLETION.md](TIER3_COMPLETION.md) for the production-polish completion snapshot
 
 ## What this package provides
 
@@ -112,6 +108,13 @@ from britecore_libraries.api.api_calls.v2 import policies
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
 
+```
+
+Runnable local sample:
+
+```powershell
+python examples/basic_api_usage.py
+python examples/basic_api_usage.py --help
 ```
 
 ## Use async cached wrappers

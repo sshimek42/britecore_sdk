@@ -68,7 +68,6 @@ class BritecoreContact:
             contact_id: Unique contact identifier
             contact_type: Type of contact (individual or organization)
         """
-
         self.name = name
         self.address = address
         self.policy_number = policy_number
@@ -98,6 +97,6 @@ class BritecoreContact:
             "policy_number": self.policy_number,
         }
 
-        LOGGER.debug(f"Created contact {final_contact}")
+        LOGGER.debug("Created contact %s", final_contact)
 
         return final_contact

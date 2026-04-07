@@ -13,9 +13,7 @@ from urllib3.exceptions import (
     RequestError,
     ResponseError,
 )
-from urllib3.exceptions import (
-    TimeoutError as urlTimeoutError,
-)
+from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_libraries import logger
@@ -53,7 +51,6 @@ class LoadClientSettings:
             KeyError: If the 'target_site' environment variable is not set and no
                 target_site is provided during initialization.
         """
-
         if not target_site:
             target_site = os.environ.get("target_site") or ""
             if not target_site:
@@ -103,7 +100,6 @@ def _full_url(host: str, path: str) -> str:
     Returns:
         str: The complete URL formed by combining the host and path.
     """
-
     return Url(host=host, path=path).url
 
 
@@ -120,6 +116,7 @@ class BritecoreAPIClient:
     """
 
     def __init__(self, target_site: str | None) -> None:
+        """Initialize client state; call ``init_client`` before making requests."""
         self.api_key: str | None = None
         self.token_class: OAuthToken | None = None
         self.use_api_key: bool | None = None
@@ -146,7 +143,6 @@ class BritecoreAPIClient:
             BritecoreError.NoSiteError: If no target site has been specified.
             BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
         """
-
         target_site = self.target_site
 
         if not target_site:
@@ -258,13 +254,14 @@ class BritecoreAPIClient:
             BritecoreError.NoDataReturned: When response is None, status code is not 200,
                                            or the API returns a failure status
         """
-
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
 
         if response.status == 401 or response.status == 403:
-            LOGGER.error(f"Authentication error - {response.status} - {response.reason}")
+            LOGGER.error(
+                f"Authentication error - {response.status} - {response.reason}"
+            )
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
             )
@@ -374,7 +371,6 @@ class BritecoreAPIClient:
             BritecoreError.RequestTimeoutError: If the request exceeds the configured timeout.
             BritecoreError.NoDataReturned: If the request fails due to other network issues.
         """
-
         if request_timeout is None:
             request_timeout = self.web_timeout
         if request_retries is None:
@@ -382,7 +378,12 @@ class BritecoreAPIClient:
 
         request_headers = dict(request_headers or {})
         if not self.use_api_key and "Authorization" not in request_headers:
-            request_headers.update(self.token_class.get_authorization_headers())
+            token_manager = self.token_class
+            if token_manager is None:
+                raise BritecoreError.ConfigurationError(
+                    "OAuth token manager not initialized"
+                )
+            request_headers.update(token_manager.get_authorization_headers())
 
         if not self.base_url:
             raise BritecoreError.ConfigurationError("base_url not configured")
@@ -408,7 +409,11 @@ class BritecoreAPIClient:
             if request_body:
                 body_bytes = dumps(request_body).encode("utf-8")
 
-            request_result: urllib3.BaseHTTPResponse = self.http.request(
+            http_client = self.http
+            if http_client is None:
+                raise BritecoreError.ConfigurationError("HTTP client not initialized")
+
+            request_result: urllib3.BaseHTTPResponse = http_client.request(
                 method=method,
                 url=request_url,
                 headers=request_headers,
@@ -475,9 +480,8 @@ class BritecoreAPIClient:
         :return: Dictionary containing the selected parameter
         :rtype: dict[str, str | None]
         """
-
         multiple_found: bool = False
-        non_empty_dict: dict[str, str] = {}
+        non_empty_dict: dict[str, str | None] = {}
         parameter_used: str = ""
         correct_parameter: dict[str, str | None] = {}
 
@@ -493,7 +497,7 @@ class BritecoreAPIClient:
             correct_parameter = {parameter_used: None}
         else:
             parameter_used = list(non_empty_dict.keys())[0]
-            correct_parameter = non_empty_dict
+            correct_parameter = dict(non_empty_dict)
 
         if multiple_found:
             for each_priority in parameter_priority:
@@ -519,7 +523,6 @@ class BritecoreAPIClient:
         :param request_arguments: All arguments passed from a function
         :type request_arguments: dict[str,Any]
         """
-
         request_dict: dict[str, Any] = {}
         for _, (k, v) in enumerate(request_arguments.items()):
             if v:

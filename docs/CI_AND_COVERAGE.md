@@ -5,6 +5,7 @@ This guide explains the continuous integration (CI) pipeline and code coverage r
 ## Overview
 
 The project uses:
+
 - **GitHub Actions** — automated testing, linting, docs building
 - **DeepSource** — static analysis and coverage tracking
 - **Codecov** — coverage artifacts storage
@@ -13,7 +14,8 @@ The project uses:
 ## GitHub Actions Workflows
 
 ### Location
-```
+
+```text
 .github/workflows/
 ├── tests.yml       # Run pytest + coverage on all Python versions
 ├── lint.yml        # Run ruff, black, mypy checks
@@ -26,6 +28,7 @@ The project uses:
 **Trigger:** Push to `master`, `main`, `develop`; pull requests to these branches
 
 **What it does:**
+
 1. Run tests on **Python 3.11, 3.12, 3.13, 3.14** (full matrix)
 2. Collect coverage from all runs
 3. Upload coverage to **Codecov** and **DeepSource** (from Python 3.11 only)
@@ -51,6 +54,7 @@ The project uses:
 ```
 
 **Why Python 3.11 only for uploads?**
+
 - Tests run on all versions for compatibility
 - But uploading the same report 4 times creates noise
 - 3.11 is the minimum supported version, so it's canonical
@@ -60,6 +64,7 @@ The project uses:
 **Trigger:** Same as tests
 
 **What it does:**
+
 1. Run **ruff** (linting: E9, F63, F7, F82)
 2. Run **black** (formatting check)
 3. Run **mypy** (type checking on core modules)
@@ -71,11 +76,13 @@ The project uses:
 **Trigger:** Same as tests
 
 **What it does:**
+
 1. Install Sphinx + dependencies
 2. Build docs using the **dummy builder** (quick validation)
 3. Upload `htmlcov/` artifacts
 
 **Why dummy builder?**
+
 - Fast validation that docs syntax is correct
 - Doesn't generate full HTML (that's optional locally)
 - Ensures docs can be built in any environment
@@ -89,9 +96,10 @@ Simple status check. Can be expanded for complex workflows.
 ### What it does
 
 DeepSource runs on every PR to:
+
 1. **Static analysis** — finds code smell, potential bugs
 2. **Test coverage** — tracks which code paths are tested
-3. **Formatting** — enforces black + isort formatting
+3. **Secret detection** — flags committed credentials and tokens
 
 ### Enabled Analyzers
 
@@ -102,20 +110,17 @@ In `.deepsource.toml`:
 name = "python"      # Static analysis
 enabled = true
 
+  [analyzers.meta]
+  runtime_version = "3.x.x"
+  max_line_length = 120
+  skip_doc_coverage = ["module", "magic", "init", "class", "nonpublic"]
+
 [[analyzers]]
 name = "secrets"     # Credential detection
 enabled = true
 
 [[analyzers]]
 name = "test-coverage"  # Coverage tracking
-enabled = true
-
-[[transformers]]
-name = "black"       # Formatting
-enabled = true
-
-[[transformers]]
-name = "isort"       # Import sorting
 enabled = true
 ```
 
@@ -140,16 +145,19 @@ enabled = true
 ### Understanding DeepSource Results
 
 **PR Check Status:**
+
 - ✅ **All checks passed** — No new issues, coverage acceptable
-- ⚠️ **Formatting issues** — Code doesn't match black/isort
+- ⚠️ **Analysis warnings** — New static-analysis or documentation/style findings were reported
 - 🔴 **Analysis failed** — Issues found (security, type errors, etc.)
 
 **Coverage Interpretation:**
+
 - **Lines covered** — Code paths executed by tests
 - **Uncovered lines** — Code paths not tested
 - **Covered %** — Percentage of total lines with test coverage
 
 **Common findings:**
+
 - `PYL-W0404` — Duplicate import (low severity, often defer)
 - `PTC-W0062` — Mergeable `with` blocks (cosmetic, safe to ignore)
 - `PYL-E0401` — Import errors (fix immediately)
@@ -170,10 +178,12 @@ enabled = true
 **What's uploaded:** `coverage.xml` from pytest-cov
 
 **Access:**
+
 - GitHub PR → Codecov check → "View report on Codecov"
 - Or: `https://app.codecov.io/gh/sshimek42/britecore_libraries`
 
 **Useful for:**
+
 - Tracking coverage over time
 - Comparing coverage across branches
 - Setting coverage gates (e.g., fail if coverage drops below 75%)
@@ -185,10 +195,12 @@ enabled = true
 **What's uploaded:** `coverage.xml` via DeepSource CLI
 
 **Access:**
+
 - GitHub PR → DeepSource check → Link to run
 - Or: `https://app.deepsource.com/gh/sshimek42/britecore_libraries`
 
 **Useful for:**
+
 - Flagging uncovered code paths in PRs
 - Setting baseline coverage requirements
 - Visualizing coverage + issues together
@@ -226,6 +238,7 @@ From `.github/workflows/tests.yml`:
 **Current target:** 75% coverage
 
 **Modules with higher expectations:**
+
 - `src/britecore_libraries/config/` — 90%+
 - `src/britecore_libraries/api/britecore_api_client.py` — 80%+
 - Core validators — 85%+
@@ -289,15 +302,18 @@ mypy src/britecore_libraries
 
 2. **Python analyzer misconfiguration**
    - Check `.deepsource.toml` has:
+
      ```toml
      [[analyzers]]
      name = "python"
      enabled = true
      ```
+
    - Verify `runtime_version = "3.x.x"` in meta section
 
 3. **Test-coverage analyzer not enabled**
    - Check `.deepsource.toml` has:
+
      ```toml
      [[analyzers]]
      name = "test-coverage"
@@ -322,6 +338,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 ### Coverage drop between PRs
 
 1. **Check if coverage gate is enforced:**
+
    ```powershell
    coverage report --fail-under=75
    ```
@@ -333,6 +350,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
    - Add tests for those paths
 
 3. **View coverage per file:**
+
    ```powershell
    coverage report -m  # Shows uncovered lines
    ```
@@ -342,16 +360,19 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 ### Before Pushing
 
 1. **Run tests locally:**
+
    ```powershell
    pytest tests/ --cov=src/britecore_libraries
    ```
 
 2. **Check coverage:**
+
    ```powershell
    coverage report --fail-under=75
    ```
 
 3. **Lint:**
+
    ```powershell
    black --check src/
    ruff check src/
@@ -359,6 +380,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
    ```
 
 4. **Verify no uncommitted secrets:**
+
    ```powershell
    git status  # Should not show .secrets.toml modified
    ```
@@ -383,4 +405,3 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 - [.github/workflows/tests.yml](../.github/workflows/tests.yml) — Workflow definition
 - [.deepsource.toml](../.deepsource.toml) — DeepSource configuration
 - [pyproject.toml](../pyproject.toml) — pytest and coverage settings
-

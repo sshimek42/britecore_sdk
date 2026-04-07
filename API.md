@@ -1,39 +1,42 @@
 # API Reference
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living reference guide*
 
-**BriteCore Libraries** - Complete API endpoint documentation
+**BriteCore Libraries** - API endpoint reference
 
 ---
 
 ## Overview
 
-This document provides reference for all implemented API endpoints.
+This document provides a reference for implemented SDK endpoint wrappers.
 
-All 374 endpoints in `britecore_api.json` are now fully implemented across
-30 domain modules in `src/britecore_libraries/api/api_calls/v2/`.
+External API docs are available at [https://api.britecore.com/](https://api.britecore.com/), but
+`britecore_api.json` in this repository remains the canonical contract for this SDK.
+
+The SDK surfaces wrappers across versioned `v1` and `v2` API modules under
+`src/britecore_libraries/api/api_calls/`.
+
+For known wrapper/spec drift currently tracked in tests, see
+`tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
 
 See also:
 
-- [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for per-module endpoint counts
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
-- [CHANGELOG.md](CHANGELOG.md) for what changed in each release
 
 ---
 
 ## Quick import pattern
 
 ```python
-
 # Import the domain module (recommended)
 from britecore_libraries.api.api_calls.v2 import policies, contacts, quotes
 
 result = policies.retrieve_policy(policy_number="POL-001")
-
 ```
 
-All 30 domain modules are importable from `britecore_libraries.api.api_calls.v2`.
+Domain modules are importable from `britecore_libraries.api.api_calls.v2`.
+The API client initializes lazily on first request; use `get_api_client()` for explicit control when needed.
 
 ---
 
@@ -42,13 +45,11 @@ All 30 domain modules are importable from `britecore_libraries.api.api_calls.v2`
 All API calls require authentication (automatic):
 
 ```python
-
 # API Key Authentication (if client_id/client_secret blank)
 headers = {"Authorization": "ApiKey <api_key>"}
 
 # OAuth2 Authentication (if client_id/client_secret provided)
 headers = {"Authorization": "Bearer <access_token>"}
-
 ```
 
 ---
@@ -58,9 +59,7 @@ headers = {"Authorization": "Bearer <access_token>"}
 ### Standard Request
 
 ```python
-
 from britecore_libraries.api.api_calls.v2 import policies
-from britecore_libraries.api.api_calls import RequestParameters
 
 response = policies.retrieve_policy(
     policy_number="POL001",
@@ -68,13 +67,13 @@ response = policies.retrieve_policy(
     request_retries=3,        # number of retries
     # ... endpoint-specific params ...
 )
-
 ```
 
 ### Standard Response
 
-```python
+For wrappers that call `process_result(...)` (the standard `v2` pattern), responses are normalized to:
 
+```python
 {
     "success": True,
     "data": {
@@ -84,8 +83,9 @@ response = policies.retrieve_policy(
     },
     "message": "Success"  # or "messages": ["msg1", "msg2"]
 }
-
 ```
+
+Some compatibility wrappers may return payloads shaped by legacy `v1` behavior.
 
 ---
 
@@ -105,443 +105,55 @@ from `src/britecore_libraries/api/request_cache.py`.
 
 ## Implemented Endpoints
 
-### 1. Policies ✅
+Use module-level wrappers under `britecore_libraries.api.api_calls.v2`.
+Current domains include:
 
-**File:** `api/api_calls/v2/policies.py`
+- `accounting`, `attachments`, `billing`, `claims`, `commissions`, `contacts`
+- `dashboards`, `data`, `deliverables`, `errors`, `inspections`, `insured`
+- `intacct`, `lines`, `nightly_jobs`, `notes`, `notifications`, `payments`
+- `policies`, `quotes`, `reports`, `return_premium`, `search`, `settings`
+- `signatures`, `uploads`, `utils`, `vendors`
 
-#### Policy Retrieval
+Compatibility wrappers in `v2` also expose canonical `v1` endpoints for:
 
-```python
+- `custom_ui`
+- `printing`
+- `payments.makemanualpolicypayment` / `payments.make_manual_policy_payment`
 
-from britecore_libraries.api.api_calls.v2.policies import (
-    retrieve_policy,
-    retrieve_policies_by_contact_id,
-    retrieve_revision_status,
-)
-
-# Get single policy
-policy = retrieve_policy(policy_number="POL001")
-policy = retrieve_policy(policy_id="uuid")
-
-# Get multiple policies
-policies = retrieve_policies_by_contact_id(contact_id="uuid")
-
-# Get revision status
-status = retrieve_revision_status(revision_id="uuid")
-
-```
-
-#### Policy Management
+### Representative examples
 
 ```python
-
-from britecore_libraries.api.api_calls.v2.policies import (
-    create_full_policy,
-    new_revision_contact,
-    create_risk,
-    add_line_item,
+from britecore_libraries.api.api_calls.v2 import (
+    policies,
+    contacts,
+    quotes,
+    reports,
+    payments,
+    lines,
 )
 
-# Create new policy
-policy = create_full_policy(policy_json={...})
+policy = policies.retrieve_policy(policy_number="POL001")
+policy_terms = policies.retrieve_policy_terms(policy_number="POL001")
 
-# Add revision contact
-contact = new_revision_contact(revision_id="uuid", ...)
+contact_data, contact_id = contacts.new_contact(
+    name="Jane Doe",
+    address=[{"address_line1": "123 Main", "address_city": "Madison", "address_state": "WI", "address_zip": "53703"}],
+)
 
-# Add risk/property
-risk = create_risk(revision_id="uuid", ...)
+quote_data, quote_id = quotes.create_full_quote(quote_json={"policy_number": "POL001"})
+report = reports.retrieve_report(report_id="report_uuid")
 
-# Add line item
-item = add_line_item(revision_id="uuid", item_id="uuid")
-
+payment_methods = payments.retrieve_payment_methods(contact_ids=[contact_id])
+policy_types = lines.list_policy_types(location_id="loc_uuid", effective_date_id="eff_uuid")
 ```
-
----
-
-### 2. Contacts ✅
-
-**File:** `api/api_calls/v2/contacts.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.contacts import (
-    retrieve_contact,
-    create_contact,
-    update_contact,
-    remove_contact_from_role,
-)
-
-# Retrieve contact
-contact = retrieve_contact(contact_id="uuid")
-
-# Create new contact
-contact = create_contact(contact_json={...})
-
-# Update contact
-updated = update_contact(contact_id="uuid", ...)
-
-# Remove role
-remove_contact_from_role(contact_id="uuid", role_name="Named Insured")
-
-```
-
----
-
-### 3. Quotes ✅
-
-**File:** `api/api_calls/v2/quotes.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.quotes import (
-    create_full_quote,
-    get_quote,
-    update_quote,
-)
-
-# Create quote
-quote = create_full_quote(quote_json={...})
-
-# Retrieve quote
-quote = get_quote(quote_id="uuid")
-
-# Update quote
-updated = update_quote(quote_id="uuid", ...)
-
-```
-
----
-
-### 4. Reports ✅
-
-**File:** `api/api_calls/v2/reports.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.reports import (
-    retrieve_reports,
-    retrieve_report,
-    create_report,
-)
-
-# List reports
-reports = retrieve_reports(policy_id="uuid")
-
-# Get single report
-report = retrieve_report(report_id="uuid")
-
-# Create new report
-report = create_report(report_json={...})
-
-```
-
----
-
-### 5. Deliverables ✅
-
-**File:** `api/api_calls/v2/deliverables.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.deliverables import (
-    get_deliverables,
-    create_deliverable,
-)
-
-# List deliverables
-deliverables = get_deliverables(policy_id="uuid")
-
-# Create deliverable
-deliverable = create_deliverable(deliverable_json={...})
-
-```
-
----
-
-### 6. Utilities ✅
-
-**File:** `api/api_calls/v2/utils.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.utils import (
-    get_available_function_names,
-    rebuild_search_index,
-    meta,
-)
-
-# Get available functions
-functions = get_available_function_names()
-
-# Rebuild search
-rebuild_search_index()
-
-# Get metadata
-meta_info = meta()
-
-```
-
----
-
-### 7. Lines ✅
-
-**File:** `api/api_calls/v2/lines.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.lines import (
-    get_lines,
-    create_line,
-    update_line,
-)
-
-# Get lines
-lines = get_lines(revision_id="uuid")
-
-# Create line
-line = create_line(revision_id="uuid", ...)
-
-# Update line
-updated = update_line(line_id="uuid", ...)
-
-```
-
----
-
-### 8. Claims ✅
-
-**File:** `api/api_calls/v2/claims.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.claims import (
-    get_claims,
-    retrieve_claim,
-    create_claim,
-)
-
-# List claims
-claims = get_claims(policy_id="uuid")
-
-# Get claim
-claim = retrieve_claim(claim_id="uuid")
-
-# Create claim
-claim = create_claim(claim_json={...})
-
-```
-
----
-
-### 9. Insured ✅
-
-**File:** `api/api_calls/v2/insured.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.insured import (
-    get_insureds,
-    add_insured,
-)
-
-# List insureds
-insureds = get_insureds(policy_id="uuid")
-
-# Add insured
-insured = add_insured(policy_id="uuid", ...)
-
-```
-
----
-
-### 10. Notes ✅
-
-**File:** `api/api_calls/v2/notes.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.notes import (
-    get_notes,
-    create_note,
-)
-
-# Get notes
-notes = get_notes(policy_id="uuid")
-
-# Create note
-note = create_note(policy_id="uuid", ...)
-
-```
-
----
-
-### 11. Inspections ✅
-
-**File:** `api/api_calls/v2/inspections.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.inspections import (
-    get_inspections,
-)
-
-# Get inspections
-inspections = get_inspections(policy_id="uuid")
-
-```
-
----
-
-### 12. Accounting ✅
-
-**File:** `api/api_calls/v2/accounting.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.accounting import (
-    get_accounting_deliverable,
-    get_invoices,
-    run_rescind_underwriting_cancellation_pending_logic,
-)
-
-deliverable = get_accounting_deliverable(
-    account_history_id="uuid",
-    deliverable_date="2026-03-31",
-)
-
-invoices = get_invoices(policy_id="uuid", page_number=1, page_size=25)
-
-result = run_rescind_underwriting_cancellation_pending_logic(
-    revision_id="uuid",
-    old_status="cancellation_pending",
-)
-
-```
-
----
-
-### 13. Billing ✅
-
-**File:** `api/api_calls/v2/billing.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.billing import (
-    get_installments_preview,
-    get_installments_preview_mid_term,
-    rating_factors,
-)
-
-preview = get_installments_preview(
-    billing_schedule_ids=["schedule_uuid"],
-    effective_date="2026-04-01",
-    premium=125.50,
-    payment_method="credit_card",
-)
-
-mid_term = get_installments_preview_mid_term(
-    billing_schedule_ids=["schedule_uuid"],
-    policy_id="policy_uuid",
-    revision_effective_date="2026-05-01",
-    prorated_premium=42.00,
-)
-
-factors = rating_factors(policy_id="policy_uuid")
-
-```
-
----
-
-### 14. Payments ✅
-
-**File:** `api/api_calls/v2/payments.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.payments import (
-    add_payment_method,
-    make_payment_by_invoice_or_policy,
-    retrieve_payment_methods,
-)
-
-method = add_payment_method(
-    contact_id="contact_uuid",
-    type="card",
-    card_type="visa",
-    card_number="4111111111111111",
-    card_expires_mm="04",
-    card_expires_yy="2030",
-)
-
-payment = make_payment_by_invoice_or_policy(
-    invoice_number="INV-1001",
-    amount=100.00,
-    payment_date="2026-04-01",
-)
-
-methods = retrieve_payment_methods(contact_ids=["contact_uuid"])
-
-```
-
----
-
-### 15. Commissions ✅
-
-**File:** `api/api_calls/v2/commissions.py`
-
-```python
-
-from britecore_libraries.api.api_calls.v2.commissions import (
-    get_commission_payees,
-    save_payment,
-    update_commission_payments_complete,
-)
-
-payees = get_commission_payees()
-
-payment = save_payment(amount=1250.00, agency_number="AGENCY-001")
-
-complete = update_commission_payments_complete(
-    commission_payment_ids=["commission_payment_uuid"],
-)
-
-```
-
----
-
-## Not Yet Implemented
-
-### High Priority
-
-- ❌ **settings.py**
-- ❌ **vendors.py**
-- ❌ **attachments.py**
-- ❌ **dashboards.py**
-- ❌ **nightly_jobs.py**
-- ❌ **printing.py**
-- ❌ **intacct.py**
-- ❌ **signatures.py**
-
-### Medium Priority
-
-- ❌ **custom_ui.py**
-- ❌ **notifications.py**
-- ❌ **search.py**
-- ❌ **data.py**
-- ❌ **errors.py**
-- ❌ **uploads.py**
-- ❌ **return_premium.py**
-
-See [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for implementation roadmap.
 
 ---
 
 ## Common Request Parameters
 
-All endpoints support these optional parameters:
+Most `v2` endpoint wrappers accept optional request override parameters:
 
 ```python
-
 from urllib3 import Timeout, Retry
 
 endpoint(
@@ -549,7 +161,6 @@ endpoint(
     request_timeout=Timeout(total=5),      # Custom timeout (seconds)
     request_retries=Retry(total=3),        # Custom retries
 )
-
 ```
 
 Retry defaults from `BritecoreAPIClient.init_client()` are:
@@ -565,7 +176,6 @@ Retry defaults from `BritecoreAPIClient.init_client()` are:
 ## Error Handling
 
 ```python
-
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
@@ -581,7 +191,6 @@ except BritecoreError.Base as e:
     print(f"API Error: {e}")
 except Exception as e:
     print(f"Unexpected error: {e}")
-
 ```
 
 ---
@@ -591,8 +200,8 @@ except Exception as e:
 The API implements rate limiting. If you receive 429 status:
 
 ```python
-
 import time
+from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
 max_retries = 3
@@ -607,53 +216,38 @@ for attempt in range(max_retries):
             time.sleep(e.retry_after or retry_delay)
         else:
             raise
-
 ```
 
 ---
 
 ## Pagination
 
-Some endpoints support pagination:
+Some endpoints expose explicit pagination fields:
 
 ```python
+from britecore_libraries.api.api_calls.v2 import accounting
 
-from britecore_libraries.api.api_calls.v2 import reports
-
-# Get first page
-reports = get_reports(
-    policy_id="uuid",
-    page=1,
-    page_size=25
-)
-
-# Get next page
-reports = get_reports(
-    policy_id="uuid",
-    page=2,
-    page_size=25
-)
-
+page_1 = accounting.get_invoices(policy_id="uuid", page_number=1, page_size=25)
+page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
 ```
 
 ---
 
 ## Filtering and Sorting
 
-Many endpoints support filters:
+Many wrappers support optional filters and ordering fields:
 
 ```python
+from britecore_libraries.api.api_calls.v2 import policies
+from britecore_libraries import logger
 
-from britecore_libraries.api.api_calls.v2 import claims
-
-# Filter claims
-claims = get_claims(
-    policy_id="uuid",
-    status="open",
-    sort="date_created",
-    sort_direction="desc"
+risks = policies.retrieve_risks(
+    revision_id="revision_uuid",
+    page=0,
+    page_size=25,
+    order_by="name",
+    retrieve_remaining=False,
 )
-
 ```
 
 ---
@@ -663,7 +257,7 @@ claims = get_claims(
 For bulk operations, use loops rather than batch endpoints (most don't exist):
 
 ```python
-
+from britecore_libraries import logger
 from britecore_libraries.api.api_calls.v2 import policies
 
 policy_numbers = ["POL001", "POL002", "POL003"]
@@ -671,7 +265,8 @@ policy_numbers = ["POL001", "POL002", "POL003"]
 for policy_number in policy_numbers:
     try:
         policy = policies.retrieve_policy(policy_number=policy_number)
-        process_policy(policy)
+        # Replace with your workflow handler.
+        print(policy["id"])
     except Exception as e:
         logger.error(f"Failed for {policy_number}: {e}")
 
@@ -682,24 +277,19 @@ for policy_number in policy_numbers:
 ## Using with Models
 
 ```python
+from datetime import datetime
 
 from britecore_libraries.models import BritecorePolicy
 from britecore_libraries.api.api_calls.v2 import policies
 
-# Create policy from model
-policy_model = BritecorePolicy(
-    policy_number="POL001",
-    effective_date=datetime.now(),
-    policy_type_id="type_1",
-    contacts=[]
-)
-
-# Convert to API format
+policy_model = BritecorePolicy(policy_number="POL001", effective_date=datetime.now(), policy_type_id="type_1")
 api_payload = policy_model.to_dict()
 
-# Submit to API
-response = policies.create_full_policy(policy_json=api_payload)
-
+response, revision_id = policies.create_policy(
+    policy_number=api_payload.get("policy_number", "POL001"),
+    policy_type_id=api_payload.get("policy_type_id"),
+    inception_date=api_payload.get("effective_date"),
+)
 ```
 
 ---
@@ -707,119 +297,47 @@ response = policies.create_full_policy(policy_json=api_payload)
 ## Using with Validators
 
 ```python
-
 from britecore_libraries.validators import EmailValidator, PhoneValidator
 from britecore_libraries.api.api_calls.v2 import contacts
 
-# Validate data before submission
-email_data = [{"email": "test@example.com", "type": "Home"}]
-phone_data = [{"phone": "5551234567", "type": "Home"}]
+email = EmailValidator.normalize_email("test@example.com")
+phone = PhoneValidator.normalize_phone("5551234567")
 
-emails = EmailValidator(email_data).process()
-phones = PhoneValidator(phone_data).process()
+if phone is None:
+    raise ValueError("Phone number did not normalize")
 
-# Create contact with validated data
-contact = contacts.create_contact(
-    contact_json={
-        "name": "John Doe",
-        "emails": emails,
-        "phones": phones
-    }
+contact_data, contact_id = contacts.new_contact(
+    name="John Doe",
+    address=[{"address_line1": "123 Main", "address_city": "Madison", "address_state": "WI", "address_zip": "53703"}],
+    email=[{"email": email, "type": "home"}],
+    phone=[{"phone": phone, "type": "mobile"}],
 )
-
 ```
 
 ---
 
-## Webhook/Callback Pattern
+## Long-Running Pattern
 
-For long-running operations, poll for completion:
+For workflows that return progress/status fields, poll retrieval endpoints:
 
 ```python
-
 import time
 from britecore_libraries.api.api_calls.v2 import reports
 
-# Create report
-report = create_report(report_json={...})
-report_id = report["id"]
-
-# Poll for completion
-max_wait = 300  # 5 minutes
-poll_interval = 5
-
-start = time.time()
-while time.time() - start < max_wait:
-    status = retrieve_report(report_id=report_id)
-    if status["status"] == "completed":
-        return status
-    time.sleep(poll_interval)
-
-raise TimeoutError(f"Report {report_id} did not complete")
-
+report_id = "report_uuid"
+for _ in range(60):
+    status = reports.retrieve_report(report_id=report_id)
+    if status.get("status") in {"completed", "failed"}:
+        break
+    time.sleep(5)
 ```
 
 ---
 
 ## Examples by Use Case
 
-### Get a Policy and All Related Data
-
-```python
-
-from britecore_libraries.api.api_calls.v2 import policies, contacts, lines, claims
-
-# Get policy
-policy = policies.retrieve_policy(policy_number="POL001")
-
-# Get contacts
-policy_contacts = contacts.retrieve_contacts(policy_id=policy["id"])
-
-# Get lines
-policy_lines = lines.get_lines(revision_id=policy["active_revision"]["id"])
-
-# Get claims
-policy_claims = claims.get_claims(policy_id=policy["id"])
-
-# Combine
-complete_policy = {
-    **policy,
-    "contacts": policy_contacts,
-    "lines": policy_lines,
-    "claims": policy_claims
-}
-
-```
-
----
-
-### Create New Policy with Validation
-
-```python
-
-from britecore_libraries.models import BritecoreContact, BritecorePolicy
-from britecore_libraries.validators import EmailValidator
-from britecore_libraries.api.api_calls.v2 import policies
-
-# Create contact with validation
-contact = BritecoreContact(
-    name="Jane Doe",
-    email=[{"email": "jane@example.com", "type": "Home"}]
-)
-
-# Create policy
-policy = BritecorePolicy(
-    policy_number="POL002",
-    effective_date=datetime.now(),
-    policy_type_id="type_1",
-    contacts=[contact]
-)
-
-# Validate and submit
-policy_data = policy.to_dict()
-response = policies.create_full_policy(policy_json=policy_data)
-
-```
+For maintained runnable examples, see `examples/README.md` and
+`examples/basic_api_usage.py`.
 
 ---
 
@@ -829,6 +347,7 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 
 ## Documentation Freshness
 
-- Last verified: `2026-03-26`
-- Verified against: `britecore_api.json` and `src/britecore_libraries/api/api_calls/v2/`
-- For current implementation progress, see [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md)
+- Last verified: `2026-04-07`
+- Verified against: `britecore_api.json`, `src/britecore_libraries/api/api_calls/v1/`, and `src/britecore_libraries/api/api_calls/v2/`
+- Known wrapper/spec drift is tracked in `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
+- Use module-level docs in `src/britecore_libraries/api/api_calls/v1/` and `src/britecore_libraries/api/api_calls/v2/` as the source of truth for current wrapper names.

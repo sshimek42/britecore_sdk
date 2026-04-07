@@ -1,7 +1,7 @@
 """BriteCore v2 Errors API endpoint wrappers.
 
-Provides:
-    get_internal_error  -- Retrieve details for an internal error by ID.
+This module exposes the SDK wrapper for retrieving internal error records from
+the BriteCore v2 errors API.
 """
 
 from logging import Logger
@@ -45,19 +45,12 @@ def get_internal_error(
     internal_error_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve details for an internal error record.
+    """Retrieve an internal error record by identifier.
 
-    Parameters
-    ----------
-    internal_error_id : str, optional
-        UUID of the internal error to retrieve.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing internal error details.
+    This wrapper sends ``internal_error_id`` to
+    ``/api/v2/errors/get_internal_error`` and returns the normalized
+    ``process_result(...)`` payload for the matching error record.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/errors/get_internal_error",

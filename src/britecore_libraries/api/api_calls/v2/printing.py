@@ -1,166 +1,72 @@
-"""BriteCore v1 Printing API endpoint wrappers.
+"""Compatibility wrappers for v1 Printing endpoints.
 
-Provides:
-    getattachment       -- Retrieve a print attachment by descriptor.
-    gettobeprinted      -- Retrieve items queued to be printed.
-    markasprinted       -- Mark queued items as printed.
-    sendprinthawk       -- Send a document to PrintHawk.
-    sendprinthawkemail  -- Send a PrintHawk email notification.
+Canonical implementations for ``/api/v1/printing/*`` live in
+``britecore_libraries.api.api_calls.v1.printing``.
 """
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_libraries import logger
-from britecore_libraries.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload, omitting keys whose value is ``None``."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a printing request and normalize the response."""
-    LOGGER.debug("Calling printing endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload if payload is not None else {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_libraries.api.api_calls import RequestParameters
+from britecore_libraries.api.api_calls.v1 import printing as _v1_printing
 
 
 def getattachment(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a print attachment.
+    """Delegate to ``/api/v1/printing/getAttachment``.
 
-    Parameters
-    ----------
-    json_dict : dict, optional
-        Dictionary containing attachment descriptor fields.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the attachment data.
+    This v2 compatibility wrapper delegates to the canonical v1 implementation
+    and returns its normalized ``process_result(...)`` payload.
     """
-    return _post(
-        "/api/v1/printing/getAttachment",
-        _build_payload(json_dict=json_dict),
-        **kwargs,
-    )
+    return _v1_printing.getattachment(json_dict=json_dict, **kwargs)
 
 
 def gettobeprinted(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the list of items queued to be printed.
+    """Delegate to ``/api/v1/printing/getToBePrinted``.
 
-    Parameters
-    ----------
-    json_dict : dict, optional
-        Dictionary containing filter or query fields.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing items pending print.
+    This v2 compatibility wrapper delegates to the canonical v1 implementation
+    and returns its normalized ``process_result(...)`` payload.
     """
-    return _post(
-        "/api/v1/printing/getToBePrinted",
-        _build_payload(json_dict=json_dict),
-        **kwargs,
-    )
+    return _v1_printing.gettobeprinted(json_dict=json_dict, **kwargs)
 
 
 def markasprinted(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark queued print items as printed.
+    """Delegate to ``/api/v1/printing/markAsPrinted``.
 
-    Parameters
-    ----------
-    json_dict : dict, optional
-        Dictionary identifying the items to mark as printed.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the update.
+    This v2 compatibility wrapper delegates to the canonical v1 implementation
+    and returns its normalized ``process_result(...)`` payload.
     """
-    return _post(
-        "/api/v1/printing/markAsPrinted",
-        _build_payload(json_dict=json_dict),
-        **kwargs,
-    )
+    return _v1_printing.markasprinted(json_dict=json_dict, **kwargs)
 
 
 def sendprinthawk(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Send a document to the PrintHawk service.
+    """Delegate to ``/api/v1/printing/sendPrinthawk``.
 
-    Parameters
-    ----------
-    json_dict : dict, optional
-        Dictionary containing the PrintHawk document descriptor.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response from PrintHawk.
+    This v2 compatibility wrapper delegates to the canonical v1 implementation
+    and returns its normalized ``process_result(...)`` payload.
     """
-    return _post(
-        "/api/v1/printing/sendPrintHawk",
-        _build_payload(json_dict=json_dict),
-        **kwargs,
-    )
+    return _v1_printing.sendprinthawk(json_dict=json_dict, **kwargs)
 
 
 def sendprinthawkemail(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Send a PrintHawk email notification.
+    """Delegate to ``/api/v1/printing/sendPrinthawkEmail``.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the email was sent.
+    This v2 compatibility wrapper delegates to the canonical v1 implementation
+    and returns its normalized ``process_result(...)`` payload.
     """
-    return _post("/api/v1/printing/sendPrintHawkEmail", {}, **kwargs)
+    return _v1_printing.sendprinthawkemail(**kwargs)
 
 
 __all__ = [

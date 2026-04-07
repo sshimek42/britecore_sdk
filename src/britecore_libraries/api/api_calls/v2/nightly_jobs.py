@@ -1,10 +1,7 @@
 """BriteCore v2 Nightly Jobs API endpoint wrappers.
 
-Provides:
-    process_auto_pays                               -- Process automatic payments for a date.
-    process_cancellation_pending_or_non_renewals    -- Process cancellation-pending or non-renewal policies.
-    process_non_pays_and_cancellations              -- Process non-pay and cancellation events.
-    process_renewals                                -- Process policy renewals for a date.
+This module provides wrappers for invoking BriteCore nightly processing jobs
+such as autopays, renewals, cancellations, and non-pay workflows.
 """
 
 from logging import Logger
@@ -49,21 +46,12 @@ def process_auto_pays(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Process automatic payments for a given date.
+    """Process automatic payments for a date or policy.
 
-    Parameters
-    ----------
-    on_date : str, optional
-        Date on which to process auto-pays in ``YYYY-MM-DD`` format.
-    policy_number : str, optional
-        Limit processing to a specific policy number.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating the outcome.
+    This wrapper sends ``on_date`` and the optional ``policy_number`` filter to
+    ``/api/v2/nightly_jobs/process_auto_pays`` and returns the normalized
+    ``process_result(...)`` payload for the nightly job run. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/nightly_jobs/process_auto_pays",
@@ -77,21 +65,12 @@ def process_cancellation_pending_or_non_renewals(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Process cancellation-pending or non-renewal policies for a date.
+    """Process cancellation-pending or non-renewal policies.
 
-    Parameters
-    ----------
-    on_date : str, optional
-        Date on which to run the job in ``YYYY-MM-DD`` format.
-    policy_number : str, optional
-        Limit processing to a specific policy number.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating the outcome.
+    This wrapper sends ``on_date`` and the optional ``policy_number`` filter to
+    ``/api/v2/nightly_jobs/process_cancellation_pending_or_non_renewals`` and
+    returns the normalized ``process_result(...)`` payload for the nightly job
+    run. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/nightly_jobs/process_cancellation_pending_or_non_renewals",
@@ -105,21 +84,12 @@ def process_non_pays_and_cancellations(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Process non-pay events and policy cancellations for a date.
+    """Process non-pay and cancellation events.
 
-    Parameters
-    ----------
-    on_date : str, optional
-        Date on which to run the job in ``YYYY-MM-DD`` format.
-    policy_number : str, optional
-        Limit processing to a specific policy number.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating the outcome.
+    This wrapper sends ``on_date`` and the optional ``policy_number`` filter to
+    ``/api/v2/nightly_jobs/process_non_pays_and_cancellations`` and returns the
+    normalized ``process_result(...)`` payload for the nightly job run.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/nightly_jobs/process_non_pays_and_cancellations",
@@ -133,21 +103,12 @@ def process_renewals(
     renew_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Process policy renewals for a given renewal date.
+    """Process policy renewals for a renewal date or policy.
 
-    Parameters
-    ----------
-    policy_number : str, optional
-        Limit processing to a specific policy number.
-    renew_date : str, optional
-        Renewal date to process in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating the outcome.
+    This wrapper sends ``policy_number`` and ``renew_date`` to
+    ``/api/v2/nightly_jobs/process_renewals`` and returns the normalized
+    ``process_result(...)`` payload for the nightly job run. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/nightly_jobs/process_renewals",

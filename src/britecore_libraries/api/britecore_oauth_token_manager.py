@@ -36,6 +36,7 @@ class OAuthToken:
         client_secret: str,
         url: str,
     ) -> None:
+        """Initialize OAuth client credentials and token endpoint URLs."""
         self.client_id: str = client_id
         self.client_secret: str = client_secret
         # Robustly parse incoming URL (with or without scheme) and rebuild endpoints

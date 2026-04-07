@@ -55,7 +55,14 @@ async def anew_contact(
     contact_type: Literal["individual", "organization"] | None = "individual",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[str | None, str | None]:
-    """Create a new contact and invalidate cached contact reads on success."""
+    """Create a new contact record asynchronously.
+
+    The request uses the provided name, addresses, optional phones and emails,
+    and ``contact_type`` to create the contact documented by
+    ``/api/v2/contacts/new_contact``. Returns the async ``aprocess_result(...)``
+    payload together with the extracted contact ID, and invalidates cached contact
+    reads on success; ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """
     LOGGER.debug(f"Creating contact '{name}'")
     if not phone:
         phone = [{}]
@@ -97,7 +104,13 @@ async def aadd_contact_to_role(
     role: ROLETYPES | None = "Named Insured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add a contact to a role and invalidate cached contact reads on success."""
+    """Add a contact to a named role asynchronously.
+
+    Use ``contact_id`` and ``role`` to assign the contact to the requested role
+    through ``/api/v2/contacts/add_contact_to_role``. Returns the async
+    ``aprocess_result(...)`` payload, invalidates cached contact reads on success,
+    and accepts ``RequestParameters`` overrides via ``**kwargs``.
+    """
     LOGGER.debug(f"Adding role '{role}' to '{contact_id}'")
     role_request_json: dict[
         Literal["contact_id", "role_name"], str | ROLETYPES | None
@@ -113,7 +126,13 @@ async def aadd_contact_to_role(
 async def aupdate_contact(
     contact: dict[str, str | list[dict[str, str]]], **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Update contact information and invalidate cached contact reads on success."""
+    """Update an existing contact asynchronously.
+
+    Pass the serialized ``contact`` payload to update stored contact fields via
+    ``/api/v2/contacts/update_contact``. Returns the async
+    ``aprocess_result(...)`` payload, invalidates cached contact reads on success,
+    and accepts ``RequestParameters`` overrides via ``**kwargs``.
+    """
     LOGGER.debug(f"Updating contact information\n{contact}")
     update_request_json: dict[str, dict[str, str | list[dict[str, str]]]] = {
         "contact": contact
@@ -127,7 +146,13 @@ async def aupdate_contact(
 
 
 async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve contact information by contact ID with short-lived caching."""
+    """Retrieve a contact by identifier with short-lived async caching.
+
+    The request uses ``contact_id`` for ``/api/v2/contacts/get_contact`` and
+    enables the default contact read cache unless the caller overrides it.
+    Returns the async ``aprocess_result(...)`` payload, and ``**kwargs`` accepts
+    ``RequestParameters`` plus cache override settings.
+    """
     LOGGER.debug(f"Retrieving contact id '{contact_id}'")
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
     request_result = await API_CLIENT.ado_request(
@@ -146,7 +171,13 @@ async def afind_contact_by_params(
     dob: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Search for contacts using cacheable parameterized lookups."""
+    """Find contacts by the supported search parameters with async caching.
+
+    Use ``name`` together with optional ``role_name`` and ``dob`` to call
+    ``/api/v2/contacts/find_contact_by_params``. Returns the async
+    ``aprocess_result(...)`` payload, enables cacheable read lookups by default,
+    and accepts ``RequestParameters`` plus cache override settings via ``**kwargs``.
+    """
     LOGGER.debug(f"Finding contact '{name}'")
     contact_retrieve_json: dict[str, str | None] = {
         "name": name,

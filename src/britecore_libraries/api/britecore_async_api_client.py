@@ -22,6 +22,7 @@ class AsyncBritecoreAPIClient:
         cache: RequestCache | None = None,
         default_cache_ttl_seconds: int = 60,
     ) -> None:
+        """Create an async client facade with optional injected sync client/cache."""
         self.target_site = target_site or getattr(client, "target_site", None)
         self._client = client
         self._cache = cache or RequestCache()

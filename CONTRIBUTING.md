@@ -1,6 +1,6 @@
 # Contributing
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living contributor guide*
 
 This guide covers the project workflow for contributing changes safely and consistently.
@@ -104,6 +104,12 @@ Quality gates run in CI:
 - Use `RequestParameters` and `**kwargs: Unpack[RequestParameters]` in new endpoint functions where request overrides are supported.
 - Use `API_CLIENT.multiple_parameter_verification(...)` for mutually exclusive identifiers.
 - Prefer models and validators packages over legacy imports from `classes`.
+
+## Repo layout contract
+
+- Edit authored code in `src/britecore_libraries/` and tests in `tests/`; avoid direct edits in generated paths like `build/`, `dist/`, `.venv/`, `htmlcov/`, and `docs/_build/`.
+- Keep root docs as canonical when mirrored by docs includes (currently `PYTHON_COMPATIBILITY.md` and `UNIMPLEMENTED_API_STUBS.md`), and let `docs/*.md` include those files.
+- Keep dependency/version definitions in `pyproject.toml` as the single source of truth.
 
 ## Pull request checklist
 

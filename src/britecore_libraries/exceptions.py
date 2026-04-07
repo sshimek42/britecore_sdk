@@ -159,7 +159,11 @@ class BritecoreError:
             super().__init__(message)
 
         def __str__(self) -> str:
-            timeout_info = (
-                f" (timeout={self.timeout_seconds}s)" if self.timeout_seconds else ""
-            )
-            return f"BriteCore request timed out{timeout_info} - {self.message}"
+            timeout_info = f" ({self.timeout_seconds}s)" if self.timeout_seconds else ""
+            return f"Request timeout{timeout_info} - {self.message}"
+
+    class DatabaseConnectionError(Base):
+        """Raised when a database connection fails."""
+
+        def __str__(self) -> str:
+            return f"Database connection error - {self.message}"

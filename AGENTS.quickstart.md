@@ -14,3 +14,9 @@ For full guidance, see `AGENTS.md`.
 - Important env vars in code paths: `target_site` (client init) and `system` (regex selection in maps, with sensible defaults if unset).
 - Prefer imports from `models`/`validators`; `classes` is a deprecated compatibility shim.
 - Tests are under `tests/` (not `src/`); run targeted pytest for changed modules, then focused import/smoke checks when config-sensitive paths are involved.
+
+## Repo layout contract
+
+- Edit authored code in `src/britecore_libraries/` and tests in `tests/`; avoid direct edits in generated paths like `build/`, `dist/`, `.venv/`, `htmlcov/`, and `docs/_build/`.
+- Keep root docs as canonical when mirrored by docs includes (currently `PYTHON_COMPATIBILITY.md` and `UNIMPLEMENTED_API_STUBS.md`), and let `docs/*.md` include those files.
+- Keep dependency/version definitions in `pyproject.toml` as the single source of truth.
