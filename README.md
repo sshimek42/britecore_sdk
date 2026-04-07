@@ -16,6 +16,7 @@ Key docs:
 - [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
 - [examples/README.md](examples/README.md) for runnable sample scripts
 - [API.md](API.md) for endpoint reference and coverage details
+- [https://api.britecore.com/](https://api.britecore.com/) for supplemental external API reference docs (canonical SDK contract stays in `britecore_api.json`)
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
 - [docs/MAP_FILES.md](docs/MAP_FILES.md) for sensitive map-file policy and sample structures
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
