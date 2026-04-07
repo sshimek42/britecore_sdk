@@ -10,8 +10,7 @@ If you discover a security vulnerability, **please do NOT open a public GitHub i
 
 ### Step 1: Contact the maintainers privately
 
-Send an email to: **[security@example.com](mailto:security@example.com)**  
-(Contact: Repository owner via GitHub)
+Use a private channel with the repository owner on GitHub (do not open a public issue).
 
 Include:
 
@@ -91,7 +90,7 @@ Security patches are provided for:
 
    ```powershell
 
-   $env:BRITECORE_LIBRARIES_API_KEY = "your_key_here"
+   $env:BRITECORE_LIBRARIES_API_KEY = ""
 
    ```
 
@@ -149,6 +148,7 @@ Security vulnerabilities follow [CVE](https://www.cve.org/) guidelines:
 For security concerns or questions about this policy:
 
 - Email security contact (see above)
+- Contact the repository owner via a private GitHub channel (see above)
 - Do not open public issues for suspected vulnerabilities
 - See [STABILITY.md](STABILITY.md) for other support channels
 
