@@ -98,6 +98,7 @@ def test_v1_wrapper_docstrings_are_spec_aligned():
 
     assert "external URL override" in inspect.getdoc(custom_ui.createurloverride)
     assert "already been collected" in inspect.getdoc(payments.makemanualpolicypayment)
-    assert "deliverables and associated files" in inspect.getdoc(printing.gettobeprinted)
+    assert "deliverables and associated files" in inspect.getdoc(
+        printing.gettobeprinted
+    )
     assert "PrintHawk data" in inspect.getdoc(printing.sendprinthawk)
-
