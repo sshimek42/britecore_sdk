@@ -61,7 +61,13 @@ async def aretrieve_policy(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve policy information with cache enabled by default."""
+    """Retrieve top-level policy information asynchronously.
+
+    The request accepts ``revision_id``, ``policy_id``, or ``policy_number`` with
+    optional ``revision_state`` and follows the same identifier-priority rules as
+    the synchronous wrapper. Returns the async ``aprocess_result(...)`` payload,
+    enables cached reads by default, and accepts ``RequestParameters`` plus cache overrides.
+    """
     LOGGER.debug("Retrieving policy")
     client = await API_CLIENT.aget_client()
     verification_list: list[dict[str, str | None]] = [
@@ -102,7 +108,13 @@ async def aadd_line_item(
     check_for_subline: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
-    """Add a line item and invalidate cached policy reads on success."""
+    """Add a line item to a revision or property asynchronously.
+
+    Use ``revision_id`` and ``item_id`` with optional property or sub-line
+    linkage fields to call ``/api/v2/policies/add_line_item``. Returns a boolean
+    derived from the async ``aprocess_result(...)`` payload, invalidates cached
+    policy reads on success, and accepts ``RequestParameters`` overrides.
+    """
     LOGGER.debug("Adding line")
     line_add_json = {
         key: value
@@ -131,7 +143,14 @@ async def aadd_line_item(
 async def aretrieve_policy_ids(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> tuple[str, str]:
-    """Retrieve the active revision and property IDs for a policy number."""
+    """Retrieve the active revision ID and primary property ID for a policy.
+
+    This convenience helper delegates to ``aretrieve_policy``
+    (``/api/v2/policies/retrieve_policy``) and then extracts identifiers from
+    the active revision in the normalized ``aprocess_result(...)`` payload.
+    Returns a ``(revision_id, primary_property_id)`` tuple while preserving any
+    ``RequestParameters`` or cache overrides supplied via ``**kwargs``.
+    """
     LOGGER.debug("Getting policy info")
     policy_json = await aretrieve_policy(policy_number=policy_number, **kwargs)
     active_revision = policy_json["active_revision"]
@@ -141,7 +160,14 @@ async def aretrieve_policy_ids(
 async def aretrieve_policy_contact_info(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> list[Any]:
-    """Retrieve named insured contact information for a policy."""
+    """Retrieve named insured contact information for a policy.
+
+    This convenience helper delegates to ``aretrieve_policy``
+    (``/api/v2/policies/retrieve_policy``) and returns the
+    ``active_revision.named_insureds`` collection from the normalized
+    ``aprocess_result(...)`` payload. It preserves any ``RequestParameters`` or
+    cache overrides passed in ``**kwargs``.
+    """
     LOGGER.debug("Getting contact info")
     contact_json = await aretrieve_policy(policy_number=policy_number, **kwargs)
     return contact_json["active_revision"]["named_insureds"]
@@ -178,7 +204,14 @@ async def acreate_policy(
     external_system_reference: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str]:
-    """Create a policy and invalidate cached policy reads on success."""
+    """Create a new policy asynchronously.
+
+    The payload mirrors ``/api/v2/policies/create_policy`` and accepts policy,
+    term, underwriting, and external reference fields, including the documented
+    custom-term expiration requirement. Returns the async ``aprocess_result(...)``
+    payload together with the new ``revision_id``, invalidates cached policy reads
+    on success, and accepts ``RequestParameters`` overrides.
+    """
     if term_type == "Custom" and not expiration_date:
         raise BritecoreError.MissingParameter(
             "expiration_date needed with 'Custom' term_type"
@@ -219,7 +252,13 @@ async def aretrieve_policy_terms(
     policy_number: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve policy terms with caching enabled by default."""
+    """Retrieve policy terms and revisions asynchronously.
+
+    Use either ``policy_id`` or ``policy_number`` to request the policy terms
+    documented by ``/api/v2/policies/retrieve_policy_terms``. Returns the async
+    ``aprocess_result(...)`` payload, enables cached reads by default, and accepts
+    ``RequestParameters`` plus cache overrides.
+    """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
         raise BritecoreError.MissingParameter(
@@ -251,7 +290,13 @@ async def aretrieve_policy_terms(
 
 
 async def arate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Rate a revision and invalidate cached policy reads on success."""
+    """Calculate a rate for a revision asynchronously.
+
+    The request uses ``revision_id`` for ``/api/v2/policies/rate_revision`` and
+    returns the async ``aprocess_result(...)`` payload for the rating operation.
+    Cached policy reads are invalidated on success, and ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
+    """
     LOGGER.debug(f"Re-rating revision '{revision_id}'")
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/rate_revision",
@@ -266,7 +311,13 @@ async def aretrieve_revision_details(
     include_contact_details: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve revision details with long timeout and caching enabled by default."""
+    """Retrieve detailed revision information asynchronously.
+
+    Use ``revision_id`` and optional ``include_contact_details`` to call
+    ``/api/v2/policies/retrieve_revision_details`` with the long-timeout behavior
+    used by the synchronous wrapper. Returns the async ``aprocess_result(...)``
+    payload, enables cached reads by default, and accepts ``RequestParameters`` plus cache overrides.
+    """
     LOGGER.debug("Getting revision")
     request_kwargs = await _ensure_long_timeout(dict(kwargs))
     request_result = await API_CLIENT.ado_request(
@@ -295,7 +346,13 @@ async def aretrieve_risks(
     risk_types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve risks for a revision with caching enabled by default."""
+    """Retrieve paginated or filtered risks for a revision asynchronously.
+
+    The request uses ``revision_id`` with optional pagination, ordering, and
+    ``risk_types`` filters to call ``/api/v2/policies/retrieve_risks``. Returns
+    the async ``aprocess_result(...)`` payload, enables cached reads by default,
+    and accepts ``RequestParameters`` plus cache overrides.
+    """
     LOGGER.debug("Getting risks")
     revision_retrieve_json = {
         key: value
@@ -329,7 +386,13 @@ async def aretrieve_risks(
 async def aretrieve_risk_details(
     risk_id: str, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Retrieve risk details with caching enabled by default."""
+    """Retrieve risk details asynchronously.
+
+    Use ``risk_id`` to fetch the detailed risk information documented by
+    ``/api/v2/policies/retrieve_risk_details``. Returns the async
+    ``aprocess_result(...)`` payload, enables cached reads by default, and
+    accepts ``RequestParameters`` plus cache overrides.
+    """
     LOGGER.debug("Getting risk details")
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_risk_details",
@@ -348,7 +411,13 @@ async def aupdate_rating_information(
     reset_premium: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update rating information and invalidate cached policy reads on success."""
+    """Update rating information for a revision or property asynchronously.
+
+    The payload uses ``revision_id``, ``property_id``, ``items``, and
+    ``reset_premium`` to call ``/api/v2/policies/update_rating_information``.
+    Returns the async ``aprocess_result(...)`` payload, invalidates cached policy
+    reads on success, and accepts ``RequestParameters`` overrides.
+    """
     LOGGER.debug("Updating line item")
     revision_retrieve_json = {
         key: value
@@ -369,7 +438,12 @@ async def aupdate_rating_information(
 
 
 async def arate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Rate a risk and invalidate cached policy reads on success."""
+    """Calculate a rate for a risk asynchronously.
+
+    Use ``risk_id`` with ``/api/v2/policies/rate_risk`` to recalculate the risk's
+    premium information. Returns the async ``aprocess_result(...)`` payload,
+    invalidates cached policy reads on success, and accepts ``RequestParameters`` overrides.
+    """
     LOGGER.debug("Re-rating policy")
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/rate_risk",
@@ -391,7 +465,13 @@ async def anew_revision_contact(
     ) = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add a contact to a revision and invalidate cached policy reads on success."""
+    """Add or update a contact assignment on a revision asynchronously.
+
+    The workflow uses ``revision_id``, ``contact_id``, and ``contact_role`` to
+    create or reuse an ``x_revisions_contact_id`` before updating the revision
+    contact link. Returns the async ``aprocess_result(...)`` payload, invalidates
+    cached policy reads on success, and accepts ``RequestParameters`` overrides.
+    """
     LOGGER.debug("Adding contact")
     request_kwargs = _apply_policy_mutation_cache(dict(kwargs))
     request_result = None
@@ -430,7 +510,13 @@ async def acreate_risk(
     force_categories: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a risk and invalidate cached policy reads on success."""
+    """Create a risk for a revision asynchronously.
+
+    Use ``revision_id`` together with optional property-group, building, and
+    ``force_categories`` values to call ``/api/v2/policies/create_risk``. Returns
+    the async ``aprocess_result(...)`` payload, invalidates cached policy reads on
+    success, and accepts ``RequestParameters`` overrides.
+    """
     risk_json = {
         key: value
         for key, value in {
@@ -456,7 +542,13 @@ async def aupdate_property_location(
     reset_premiums: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update property location and invalidate cached policy reads on success."""
+    """Update property location details asynchronously.
+
+    The request wraps the ``location`` payload and optional geo-service bypass or
+    ``reset_premiums`` flags for ``/api/v2/policies/update_property_location``.
+    Returns the async ``aprocess_result(...)`` payload, invalidates cached policy
+    reads on success, and accepts ``RequestParameters`` overrides.
+    """
     prop_json = {
         "location": {
             key: value
@@ -478,7 +570,13 @@ async def aupdate_property_location(
 
 
 async def anew_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Create a new mortgagee and invalidate cached policy reads on success."""
+    """Create a new mortgagee for a property asynchronously.
+
+    Use ``property_id`` to create the mortgagee record documented by
+    ``/api/v2/policies/new_mortgagee``. Returns the async
+    ``aprocess_result(...)`` payload, invalidates cached policy reads on success,
+    and accepts ``RequestParameters`` overrides.
+    """
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/new_mortgagee",
         json={"property_id": property_id},
@@ -492,7 +590,13 @@ async def astore_mortgagee(
     mortgagee_contact_id: str,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store a mortgagee and invalidate cached policy reads on success."""
+    """Store mortgagee information for a property contact asynchronously.
+
+    The request uses ``property_contact_id`` and ``mortgagee_contact_id`` to call
+    ``/api/v2/policies/store_mortgagee``. Returns the async
+    ``aprocess_result(...)`` payload, invalidates cached policy reads on success,
+    and accepts ``RequestParameters`` overrides.
+    """
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/store_mortgagee",
         json={
@@ -507,7 +611,13 @@ async def astore_mortgagee(
 async def aretrieve_policy_snapshot(
     policy_number: str, snapshot_date: str, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Retrieve a policy snapshot with caching enabled by default."""
+    """Retrieve a policy snapshot asynchronously.
+
+    Use ``policy_number`` and ``snapshot_date`` to load the policy snapshot
+    documented by ``/api/v2/policies/retrieve_policy_snapshot``. Returns the
+    async ``aprocess_result(...)`` payload, enables cached reads by default, and
+    accepts ``RequestParameters`` plus cache overrides.
+    """
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/retrieve_policy_snapshot",
         json={"policy_number": policy_number, "snapshot_date": snapshot_date},
