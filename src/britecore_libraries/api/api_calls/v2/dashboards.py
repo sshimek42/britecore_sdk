@@ -1,14 +1,7 @@
 """BriteCore v2 Dashboards API endpoint wrappers.
 
-Provides:
-    get_agency_experience_data  -- Retrieve agency experience dashboard data.
-    get_csr_data                -- Retrieve CSR dashboard data.
-    get_loss_ratio_chart        -- Retrieve loss ratio chart data.
-    get_policy_count_data       -- Retrieve policy count dashboard data.
-    get_premium_data            -- Retrieve premium dashboard data.
-    get_report_url              -- Retrieve a dashboard report URL.
-    get_transaction_report      -- Retrieve a paginated transaction report.
-    validate_loss_run           -- Validate a loss run for a policy/contact.
+This module provides wrappers for dashboard metrics, report URLs, transaction
+reports, and loss-run validation in the BriteCore v2 dashboards API.
 """
 
 from logging import Logger
@@ -53,21 +46,12 @@ def get_agency_experience_data(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve agency experience data for the dashboard.
+    """Retrieve agency experience dashboard data.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the agency contact to filter by.
-    to_date : str, optional
-        Upper date boundary in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing agency experience metrics.
+    This wrapper sends ``contact_id`` and ``to_date`` to
+    ``/api/v2/dashboards/get_agency_experience_data`` and returns the
+    normalized ``process_result(...)`` payload for the requested dashboard
+    metrics. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_agency_experience_data",
@@ -80,19 +64,12 @@ def get_csr_data(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve CSR (Customer Service Representative) dashboard data.
+    """Retrieve CSR dashboard data.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the CSR contact to filter by.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing CSR metrics.
+    This wrapper sends the optional ``contact_id`` filter to
+    ``/api/v2/dashboards/get_csr_data`` and returns the normalized
+    ``process_result(...)`` payload for the CSR dashboard metrics.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_csr_data",
@@ -106,21 +83,12 @@ def get_loss_ratio_chart(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve loss ratio chart data for the dashboard.
+    """Retrieve loss ratio chart data.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact to filter by.
-    to_date : str, optional
-        Upper date boundary in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing loss ratio chart data.
+    This wrapper sends ``contact_id`` and ``to_date`` to
+    ``/api/v2/dashboards/get_loss_ratio_chart`` and returns the normalized
+    ``process_result(...)`` payload for the loss ratio visualization.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_loss_ratio_chart",
@@ -134,21 +102,12 @@ def get_policy_count_data(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve policy count data for the dashboard.
+    """Retrieve policy count dashboard data.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact to filter by.
-    to_date : str, optional
-        Upper date boundary in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing policy count metrics.
+    This wrapper sends ``contact_id`` and ``to_date`` to
+    ``/api/v2/dashboards/get_policy_count_data`` and returns the normalized
+    ``process_result(...)`` payload for the requested policy-count metrics.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_policy_count_data",
@@ -162,21 +121,12 @@ def get_premium_data(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve premium data for the dashboard.
+    """Retrieve premium dashboard data.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact to filter by.
-    to_date : str, optional
-        Upper date boundary in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing premium metrics.
+    This wrapper sends ``contact_id`` and ``to_date`` to
+    ``/api/v2/dashboards/get_premium_data`` and returns the normalized
+    ``process_result(...)`` payload for the requested premium metrics.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_premium_data",
@@ -194,23 +144,10 @@ def get_report_url(
 ) -> Any:
     """Retrieve a dashboard report URL.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact to filter by.
-    from_date : str, optional
-        Lower date boundary in ``YYYY-MM-DD`` format.
-    payment_types : str, optional
-        Comma-separated payment types to include.
-    to_date : str, optional
-        Upper date boundary in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the report URL.
+    This wrapper sends the dashboard report filters to
+    ``/api/v2/dashboards/get_report_url`` and returns the normalized
+    ``process_result(...)`` payload containing the generated report URL or
+    related metadata. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_report_url",
@@ -234,31 +171,12 @@ def get_transaction_report(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a paginated transaction report.
+    """Retrieve a paginated dashboard transaction report.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact to filter by.
-    from_date : str, optional
-        Lower date boundary in ``YYYY-MM-DD`` format.
-    page : int, optional
-        Page number (1-based).
-    payment_types : str, optional
-        Comma-separated payment types to include.
-    records_per_page : str, optional
-        Number of records per page.
-    sort_obj : str, optional
-        Sort descriptor string.
-    to_date : str, optional
-        Upper date boundary in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the transaction report.
+    This wrapper sends the report filters, pagination fields, and sort options
+    to ``/api/v2/dashboards/get_transaction_report`` and returns the normalized
+    ``process_result(...)`` payload for the transaction report. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/get_transaction_report",
@@ -280,21 +198,12 @@ def validate_loss_run(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Validate a loss run for a policy or contact.
+    """Validate whether a loss run is available for a policy or contact.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact associated with the loss run.
-    policy_number : str, optional
-        Policy number to validate.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating validation result.
+    This wrapper sends ``contact_id`` and ``policy_number`` to
+    ``/api/v2/dashboards/validate_loss_run`` and returns the normalized
+    ``process_result(...)`` payload for the validation request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/dashboards/validate_loss_run",

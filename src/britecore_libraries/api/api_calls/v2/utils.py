@@ -21,35 +21,11 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def get_available_function_names(**kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve available function names from the API.
+    """Retrieve available utility function names.
 
-    This function makes a request to the API endpoint to fetch the list of
-    available function names that can be used with the system.
-
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to pass to the API request.
-        These parameters are unpacked from a RequestParameters type.
-
-    Returns
-    -------
-    Any
-        The processed result from the API request, typically containing
-        the list of available function names.
-
-    Raises
-    ------
-    Any exceptions raised by the underlying API client or HTTP request
-    mechanism are propagated as-is.
-
-    Notes
-    -----
-    This function uses the global API_CLIENT instance to make the request
-    and processes the result through the API client's process_result method.
-    The request is made to the /api/v2/utils/get_available_function_names
-    endpoint.
+    This wrapper calls ``/api/v2/utils/get_available_function_names`` and
+    returns the normalized ``process_result(...)`` payload containing available
+    function names. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Retrieving functions")
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -60,22 +36,15 @@ def get_available_function_names(**kwargs: Unpack[RequestParameters]) -> Any:
     return API_CLIENT.process_result(request_result)
 
 
-def rebuild_search_index(only_build: list, **kwargs) -> bool:
-    """
-    Rebuilds the search index for specified build components.
+def rebuild_search_index(
+    only_build: list,
+    **kwargs: Unpack[RequestParameters],
+) -> bool:
+    """Rebuild all or part of the search index.
 
-    This function initiates a search index rebuild operation for the specified
-    build components by making an API request to the backend service.
-
-    Parameters:
-        only_build: List of build identifiers to include in the rebuild process
-        **kwargs: Additional keyword arguments to pass to the API client request
-
-    Returns:
-        Boolean indicating whether the rebuild operation was successful
-
-    Raises:
-        Any exceptions raised by the underlying API client or HTTP request handling
+    This wrapper sends ``only_build`` to ``/api/v2/utils/rebuild_search_index``
+    and returns the normalized ``process_result(...)`` payload for the rebuild
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Rebuilding index")
     rebuild_index: dict[str, Any] = {"only_build": only_build}

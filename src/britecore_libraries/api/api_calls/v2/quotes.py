@@ -1,8 +1,9 @@
 """BriteCore v2 Quotes API endpoint wrappers.
 
-Provides:
-    create_full_quote  -- Create a new full quote from a JSON payload.
-    get_quote          -- Retrieve an existing quote by ID.
+These wrappers cover quote creation and retrieval workflows exposed by the SDK's
+current v2 quote surface. The quote paths remain known spec-gap wrappers, so the
+docstrings describe the intended API contract first and call out SDK-specific
+response normalization where needed.
 """
 
 from logging import Logger
@@ -25,27 +26,14 @@ API_CLIENT: BritecoreAPIClient = api_client
 def create_full_quote(
     quote_json: dict[str, Any], **kwargs: Unpack[RequestParameters]
 ) -> tuple[dict[str, Any] | None, str | None]:
-    """
-    Create a full quote from the provided quote JSON data.
+    """Create a quote from the supplied quote payload.
 
-    This function sends a request to create a full quote using the API client
-    and processes the response to extract relevant information including
-    the quote ID.
-
-    Parameters
-    ----------
-    quote_json : dict[str, Any]
-        Dictionary containing the quote data to be processed
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to be passed to the API request
-
-    Returns
-    -------
-    tuple[dict[str, Any] | None, str | None]
-        A tuple containing:
-        - The processed quote information as a dictionary, or None if
-          processing fails
-        - The quote ID as a string, or None if no ID is available
+    This wrapper submits ``quote_json`` to ``/api/v2/quotes/create_full_quote``
+    and normalizes the response through ``process_result(...)``. As an SDK-
+    specific convenience, it returns a tuple of ``(quote_data, quote_id)``,
+    where ``quote_id`` is extracted from the normalized payload when present.
+    ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
+    headers, or retry settings.
     """
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
@@ -60,26 +48,12 @@ def create_full_quote(
 
 
 def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve a quote by its unique identifier.
+    """Retrieve a quote by quote identifier.
 
-    This function fetches a quote from the API using the provided quote ID. It constructs
-    a request with the necessary parameters and processes the response to return the quote data.
-
-    Parameters:
-        id (str): The unique identifier of the quote to retrieve
-        **kwargs (Unpack[RequestParameters]): Additional keyword arguments to pass to the
-            underlying API request, such as headers, timeout settings, or authentication
-            parameters
-
-    Returns:
-        Any: The quote data returned by the API, typically a dictionary or similar
-            data structure containing the quote information
-
-    Note:
-        This function uses a global API client and logger, which must be properly
-        configured before calling this function. The function will log debug information
-        about the quote retrieval process.
+    This wrapper sends ``id`` to ``/api/v2/quotes/get_quote`` and returns the
+    normalized ``process_result(...)`` payload for the requested quote.
+    ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
+    headers, or retry settings.
     """
     quote_json: dict[str, str] = {"id": id}
 
@@ -90,3 +64,7 @@ def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     )
 
     return API_CLIENT.process_result(request_result)
+
+
+__all__ = ["create_full_quote", "get_quote"]
+

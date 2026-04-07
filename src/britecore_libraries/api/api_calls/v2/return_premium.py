@@ -1,7 +1,7 @@
 """BriteCore v2 Return Premium API endpoint wrappers.
 
-Provides:
-    exportreturnpremium  -- Export a return premium record by ID.
+This module provides the SDK wrapper for exporting return premium records from
+the BriteCore v2 return premium API.
 """
 
 from logging import Logger
@@ -45,19 +45,12 @@ def exportreturnpremium(
     return_premium_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export a return premium record.
+    """Export a return premium record by identifier.
 
-    Parameters
-    ----------
-    return_premium_id : str, optional
-        UUID of the return premium record to export.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the exported return premium data.
+    This wrapper sends ``return_premium_id`` as ``returnPremiumId`` to
+    ``/api/v2/return_premium/exportReturnPremium`` and returns the normalized
+    ``process_result(...)`` payload for the export operation. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     payload: dict[str, Any] = {}
     if return_premium_id is not None:

@@ -1,11 +1,7 @@
 """BriteCore v2 Intacct API endpoint wrappers.
 
-Provides:
-    get_intacct_vendor_info                 -- Retrieve Intacct vendor information.
-    get_unexported_claim_transactions_xml   -- Retrieve unexported claim transactions as XML.
-    get_unexported_return_premiums_xml      -- Retrieve unexported return premiums as XML.
-    post_claim_transactions                 -- Post claim transactions to Intacct.
-    post_return_premiums                    -- Post return premiums to Intacct.
+This module provides wrappers for Intacct export and posting workflows in the
+BriteCore v2 integration surface.
 """
 
 from logging import Logger
@@ -50,15 +46,9 @@ def get_intacct_vendor_info(
 ) -> Any:
     """Retrieve Intacct vendor information.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing Intacct vendor details.
+    This wrapper calls ``/api/v2/intacct/get_intacct_vendor_info`` and returns
+    the normalized ``process_result(...)`` payload for the configured Intacct
+    vendor integration. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post("/api/v2/intacct/get_intacct_vendor_info", {}, **kwargs)
 
@@ -66,17 +56,12 @@ def get_intacct_vendor_info(
 def get_unexported_claim_transactions_xml(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve unexported claim transactions formatted as XML.
+    """Retrieve unexported claim transactions in XML form.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the XML claim transactions.
+    This wrapper calls ``/api/v2/intacct/get_unexported_claim_transactions_xml``
+    and returns the normalized ``process_result(...)`` payload for claim
+    transactions awaiting export. ``**kwargs`` accepts ``RequestParameters``
+    overrides.
     """
     return _post("/api/v2/intacct/get_unexported_claim_transactions_xml", {}, **kwargs)
 
@@ -84,17 +69,12 @@ def get_unexported_claim_transactions_xml(
 def get_unexported_return_premiums_xml(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve unexported return premiums formatted as XML.
+    """Retrieve unexported return premiums in XML form.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the XML return premiums.
+    This wrapper calls ``/api/v2/intacct/get_unexported_return_premiums_xml``
+    and returns the normalized ``process_result(...)`` payload for return
+    premiums awaiting export. ``**kwargs`` accepts ``RequestParameters``
+    overrides.
     """
     return _post("/api/v2/intacct/get_unexported_return_premiums_xml", {}, **kwargs)
 
@@ -105,17 +85,9 @@ def post_claim_transactions(
 ) -> Any:
     """Post claim transactions to Intacct.
 
-    Parameters
-    ----------
-    payload : dict, optional
-        Object containing the claim transaction data to post.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the post result.
+    This wrapper sends ``payload`` to ``/api/v2/intacct/post_claim_transactions``
+    and returns the normalized ``process_result(...)`` payload for the posting
+    operation. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/intacct/post_claim_transactions",
@@ -130,17 +102,9 @@ def post_return_premiums(
 ) -> Any:
     """Post return premiums to Intacct.
 
-    Parameters
-    ----------
-    payload : dict, optional
-        Object containing the return premium data to post.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the post result.
+    This wrapper sends ``payload`` to ``/api/v2/intacct/post_return_premiums``
+    and returns the normalized ``process_result(...)`` payload for the posting
+    operation. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/intacct/post_return_premiums",

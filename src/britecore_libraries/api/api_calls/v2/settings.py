@@ -1,17 +1,7 @@
 """BriteCore v2 Settings API endpoint wrappers.
 
-Provides:
-    add_city_to_zip_override            -- Add a city override for a ZIP code.
-    add_counties_to_state               -- Add counties to a state.
-    add_county_to_zip_override          -- Add a county override for a ZIP code.
-    get_pdf_engine                      -- Retrieve the current PDF engine setting.
-    get_setting_value                   -- Retrieve a specific system setting value.
-    get_system_tags_list                -- Retrieve the list of all system tags.
-    retrieve_credit_permission_prompt   -- Retrieve the credit permission prompt.
-    retrieve_property_valuation_availability -- Check property valuation availability.
-    retrieve_system_tags                -- Retrieve system tags, optionally by level.
-    set_pdf_engine                      -- Set the PDF engine for document generation.
-    set_setting_value                   -- Set a specific system setting value.
+This module provides wrappers for settings, ZIP override, PDF engine, and
+system-tag endpoints in the BriteCore v2 settings API.
 """
 
 from logging import Logger
@@ -58,25 +48,12 @@ def add_city_to_zip_override(
     zip_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add a city-level override for a specific ZIP code.
+    """Add a city override for a ZIP code.
 
-    Parameters
-    ----------
-    city : str, optional
-        City name to associate with the ZIP code.
-    county : str, optional
-        County name.
-    state_abbreviation : str, optional
-        Two-letter state abbreviation.
-    zip_code : str, optional
-        ZIP code to override.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends the ZIP override fields to
+    ``/api/v2/settings/add_city_to_zip_override`` and returns the normalized
+    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/add_city_to_zip_override",
@@ -96,23 +73,12 @@ def add_counties_to_state(
     state: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add one or more counties to a state.
+    """Add county records to a state.
 
-    Parameters
-    ----------
-    counties : list, optional
-        List of county objects to add.
-    country : str, optional
-        Country identifier.
-    state : dict, optional
-        State object containing state metadata.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``counties``, ``country``, and ``state`` to
+    ``/api/v2/settings/add_counties_to_state`` and returns the normalized
+    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/add_counties_to_state",
@@ -127,23 +93,12 @@ def add_county_to_zip_override(
     zip_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add a county-level override for a specific ZIP code.
+    """Add a county override for a ZIP code.
 
-    Parameters
-    ----------
-    county : str, optional
-        County name to associate with the ZIP code.
-    state_abbreviation : str, optional
-        Two-letter state abbreviation.
-    zip_code : str, optional
-        ZIP code to override.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends the county override fields to
+    ``/api/v2/settings/add_county_to_zip_override`` and returns the normalized
+    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/add_county_to_zip_override",
@@ -157,17 +112,11 @@ def add_county_to_zip_override(
 
 
 def get_pdf_engine(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve the current PDF engine setting.
+    """Retrieve the active PDF engine setting.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the active PDF engine name.
+    This wrapper calls ``/api/v2/settings/get_pdf_engine`` and returns the
+    normalized ``process_result(...)`` payload for the configured PDF engine.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post("/api/v2/settings/get_pdf_engine", {}, **kwargs)
 
@@ -177,21 +126,12 @@ def get_setting_value(
     section: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the value of a specific system setting.
+    """Retrieve a specific system setting value.
 
-    Parameters
-    ----------
-    option : str, optional
-        The setting option (key) to retrieve.
-    section : str, optional
-        The settings section the option belongs to.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the setting value.
+    This wrapper sends ``option`` and ``section`` to
+    ``/api/v2/settings/get_setting_value`` and returns the normalized
+    ``process_result(...)`` payload for the requested setting. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/get_setting_value",
@@ -201,33 +141,21 @@ def get_setting_value(
 
 
 def get_system_tags_list(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve the complete list of system tags.
+    """Retrieve the complete system tag list.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the system tags list.
+    This wrapper calls ``/api/v2/settings/get_system_tags_list`` and returns
+    the normalized ``process_result(...)`` payload for the available system
+    tags. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post("/api/v2/settings/get_system_tags_list", {}, **kwargs)
 
 
 def retrieve_credit_permission_prompt(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve the credit permission prompt text shown to users.
+    """Retrieve the configured credit permission prompt.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the prompt text.
+    This wrapper calls ``/api/v2/settings/retrieve_credit_permission_prompt``
+    and returns the normalized ``process_result(...)`` payload for the prompt
+    text shown to users. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post("/api/v2/settings/retrieve_credit_permission_prompt", {}, **kwargs)
 
@@ -238,23 +166,12 @@ def retrieve_property_valuation_availability(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve availability of property valuation for a revision and role.
+    """Check property valuation availability for a revision.
 
-    Parameters
-    ----------
-    chosen_role : str, optional
-        The user role for which to check availability.
-    is_app : bool, optional
-        Whether the check is performed in application context.
-    revision_id : str, optional
-        UUID of the policy revision.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating valuation availability.
+    This wrapper sends ``chosen_role``, ``is_app``, and ``revision_id`` to
+    ``/api/v2/settings/retrieve_property_valuation_availability`` and returns
+    the normalized ``process_result(...)`` payload describing valuation
+    availability. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/retrieve_property_valuation_availability",
@@ -273,17 +190,10 @@ def retrieve_system_tags(
 ) -> Any:
     """Retrieve system tags, optionally filtered by level.
 
-    Parameters
-    ----------
-    level : str, optional
-        Tag level to filter by.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the matching system tags.
+    This wrapper sends the optional ``level`` filter to
+    ``/api/v2/settings/retrieve_system_tags`` and returns the normalized
+    ``process_result(...)`` payload for the matching tags. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/retrieve_system_tags",
@@ -298,17 +208,9 @@ def set_pdf_engine(
 ) -> Any:
     """Set the PDF engine used for document generation.
 
-    Parameters
-    ----------
-    engine : str, optional
-        Name of the PDF engine to activate.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the update.
+    This wrapper sends ``engine`` to ``/api/v2/settings/set_pdf_engine`` and
+    returns the normalized ``process_result(...)`` payload for the update
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/set_pdf_engine",
@@ -325,21 +227,10 @@ def set_setting_value(
 ) -> Any:
     """Set the value of a specific system setting.
 
-    Parameters
-    ----------
-    option : str, optional
-        The setting option (key) to update.
-    section : str, optional
-        The settings section the option belongs to.
-    value : str, optional
-        The new value to assign.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the update.
+    This wrapper sends ``option``, ``section``, and ``value`` to
+    ``/api/v2/settings/set_setting_value`` and returns the normalized
+    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/settings/set_setting_value",

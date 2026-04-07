@@ -46,7 +46,13 @@ def _apply_quote_mutation_cache(kwargs: dict[str, Any]) -> dict[str, Any]:
 async def acreate_full_quote(
     quote_json: dict[str, Any], **kwargs: Unpack[RequestParameters]
 ) -> tuple[dict[str, Any] | None, str | None]:
-    """Create a full quote and invalidate cached quote reads on success."""
+    """Create a full quote asynchronously.
+
+    Use ``quote_json`` for the complete quote payload expected by the quote-create
+    workflow exposed by this SDK. Returns the async ``aprocess_result(...)``
+    payload together with the extracted quote ID, invalidates cached quote reads
+    on success, and accepts ``RequestParameters`` overrides via ``**kwargs``.
+    """
     request_kwargs = _apply_quote_mutation_cache(dict(kwargs))
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/quotes/create_full_quote",
@@ -62,7 +68,13 @@ async def acreate_full_quote(
 
 
 async def aget_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve a quote by ID with short-lived caching enabled by default."""
+    """Retrieve a quote by ID with short-lived async caching enabled by default.
+
+    The request uses ``id`` to fetch the quote through the async quote client and
+    enables the default quote read cache unless the caller overrides it. Returns
+    the async ``aprocess_result(...)`` payload, and ``**kwargs`` accepts
+    ``RequestParameters`` plus cache override settings.
+    """
     quote_json: dict[str, str] = {"id": id}
     LOGGER.debug("Getting quote")
     request_kwargs = _apply_quote_read_cache(
