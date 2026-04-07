@@ -55,7 +55,11 @@ def run_live_policy_lookup(policy_number: str) -> None:
     result = policies.retrieve_policy(policy_number=policy_number)
     print("Live API call succeeded. Result preview:")
     if isinstance(result, dict):
-        preview = {key: result.get(key) for key in ("id", "policy_number", "status") if key in result}
+        preview = {
+            key: result.get(key)
+            for key in ("id", "policy_number", "status")
+            if key in result
+        }
         pprint(preview if preview else result)
     else:
         pprint(result)
@@ -83,7 +87,9 @@ def main() -> int:
             run_live_policy_lookup(args.live_policy_number)
         except Exception as exc:  # pragma: no cover - usage helper
             print("\nLive API sample failed.")
-            print("Ensure target_site and credentials are configured before using --live-policy-number.")
+            print(
+                "Ensure target_site and credentials are configured before using --live-policy-number."
+            )
             print(f"Error: {exc}")
             return 1
 
@@ -92,4 +98,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
