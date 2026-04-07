@@ -15,6 +15,10 @@ from britecore_libraries.api.api_calls import (
     RequestParameters,
     api_client,
 )
+from britecore_libraries.api.api_calls.v1.payments import (
+    make_manual_policy_payment,
+    makemanualpolicypayment,
+)
 
 LOGGER: Logger = logger
 
@@ -40,25 +44,6 @@ def _post(
     )
     return API_CLIENT.process_result(cast(Any, request_result))
 
-
-def makemanualpolicypayment(
-    json_dict: dict[str, Any],
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Call the legacy manual policy payment endpoint."""
-    return _post(
-        "/api/v1/payments/makeManualPolicyPayment",
-        _build_payload(json_dict=json_dict),
-        **kwargs,
-    )
-
-
-def make_manual_policy_payment(
-    json_dict: dict[str, Any],
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Alias for :func:`makemanualpolicypayment` with snake_case naming."""
-    return makemanualpolicypayment(json_dict=json_dict, **kwargs)
 
 
 def add_payment_method(
