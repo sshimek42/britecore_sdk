@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.

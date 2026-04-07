@@ -1,6 +1,6 @@
 # Python Compatibility Matrix
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living compatibility policy*
 
 **BriteCore Libraries** — supported Python versions and compatibility commitments.
@@ -76,7 +76,6 @@ Runtime dependencies are pinned with `~=` (compatible-release) constraints:
 
 urllib3~=2.6          # HTTP transport
 dynaconf~=3.2         # Configuration management
-pandas~=3.0           # Data utilities
 
 ```
 
@@ -119,4 +118,3 @@ The CI pipeline validates the following matrix:
 
 ---
 
-*Last updated: 2026-03-31*

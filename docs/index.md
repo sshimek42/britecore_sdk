@@ -15,9 +15,3 @@ Python compatibility <python_compatibility>
 Unimplemented API stubs <unimplemented_api_stubs>
 ```
 
-```{toctree}
-:maxdepth: 1
-:caption: Historical assessments and milestones
-
-history
-```

@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living reference guide*
 
 **BriteCore Libraries** - Complete API endpoint documentation
@@ -16,9 +16,7 @@ All 374 endpoints in `britecore_api.json` are now fully implemented across
 
 See also:
 
-- [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for per-module endpoint counts
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
-- [CHANGELOG.md](CHANGELOG.md) for what changed in each release
 
 ---
 
@@ -509,33 +507,6 @@ complete = update_commission_payments_complete(
 
 ---
 
-## Not Yet Implemented
-
-### High Priority
-
-- ❌ **settings.py**
-- ❌ **vendors.py**
-- ❌ **attachments.py**
-- ❌ **dashboards.py**
-- ❌ **nightly_jobs.py**
-- ❌ **printing.py**
-- ❌ **intacct.py**
-- ❌ **signatures.py**
-
-### Medium Priority
-
-- ❌ **custom_ui.py**
-- ❌ **notifications.py**
-- ❌ **search.py**
-- ❌ **data.py**
-- ❌ **errors.py**
-- ❌ **uploads.py**
-- ❌ **return_premium.py**
-
-See [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md) for implementation roadmap.
-
----
-
 ## Common Request Parameters
 
 All endpoints support these optional parameters:
@@ -831,4 +802,4 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 
 - Last verified: `2026-03-26`
 - Verified against: `britecore_api.json` and `src/britecore_libraries/api/api_calls/v2/`
-- For current implementation progress, see [API_COVERAGE_ANALYSIS.md](API_COVERAGE_ANALYSIS.md)
+- Use module-level docs in `src/britecore_libraries/api/api_calls/v2/` as the source of truth for current endpoint wrappers.

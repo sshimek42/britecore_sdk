@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-*Last updated: March 31, 2026*
+*Last updated: April 7, 2026*
 *Document type: Living troubleshooting guide*
 
 **BriteCore Libraries** - Common issues and solutions
@@ -14,9 +14,7 @@
 **Cause:** Package not installed in current environment
 
 **Solution:**
-
 ```powershell
-
 # Install in editable mode
 pip install -e .
 
@@ -25,7 +23,6 @@ pip install -e ".[dev]"
 
 # Verify installation
 python -c "import britecore_libraries; print(britecore_libraries.__version__)"
-
 ```
 
 ---
@@ -35,9 +32,7 @@ python -c "import britecore_libraries; print(britecore_libraries.__version__)"
 **Cause:** Network issues or large dependency tree
 
 **Solution:**
-
 ```powershell
-
 # Try with timeout
 pip install -e . --default-timeout=100
 
@@ -46,8 +41,8 @@ pip install uv
 uv pip install -e .
 
 # Check Python version
-python --version  # Should be 3.11+
 
+python --version  # Should be 3.11+
 ```
 
 ---
@@ -57,9 +52,7 @@ python --version  # Should be 3.11+
 **Cause:** Insufficient permissions
 
 **Solution:**
-
 ```powershell
-
 # Use --user flag
 pip install --user -e .
 
@@ -67,7 +60,6 @@ pip install --user -e .
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e .
-
 ```
 
 ---
@@ -79,15 +71,12 @@ pip install -e .
 **Cause:** Missing environment variable
 
 **Solution:**
-
 ```powershell
-
 # Set environment variable
 $env:target_site = "your_site"
 
 # Verify
 python -c "import os; print(os.environ.get('target_site'))"
-
 ```
 
 ---
@@ -101,7 +90,6 @@ python -c "import os; print(os.environ.get('target_site'))"
 Check `src/britecore_libraries/config/settings.toml`:
 
 ```toml
-
 [production]
 base_url = "https://..."          # Required
 api_key = "..."                   # Required (if no OAuth)
@@ -109,17 +97,13 @@ client_id = ""                    # Leave blank for API key
 client_secret = ""                # Leave blank for API key
 web_timeout = 5                   # Required
 web_retry = 3                     # Required
-
 ```
 
 **Or use environment variables:**
-
 ```powershell
-
 $env:BRITECORE_BASE_URL="https://..."
 $env:BRITECORE_API_KEY="..."
 $env:BRITECORE_WEB_TIMEOUT="5"
-
 ```
 
 ---
@@ -133,14 +117,12 @@ $env:BRITECORE_WEB_TIMEOUT="5"
 Create `src/britecore_libraries/config/.secrets.toml`:
 
 ```toml
-
 [production]
 api_key = "your_api_key_here"
 client_secret = ""
 
 [staging]
 api_key = "your_test_api_key_here"
-
 ```
 
 Or just use environment variables (they override file settings).
@@ -154,9 +136,7 @@ Or just use environment variables (they override file settings).
 **Cause:** Invalid OAuth credentials or token endpoint unreachable
 
 **Solution:**
-
 ```python
-
 # Check credentials in config
 from britecore_libraries.config import settings
 print(f"Client ID: {settings.client_id}")
@@ -167,14 +147,10 @@ print(f"Token endpoint: {settings.base_url}/api/auth/oauth2/token")
 import urllib3
 http = urllib3.PoolManager()
 try:
-
     response = http.request('GET', settings.base_url)
-
     print(f"Connected: {response.status}")
 except Exception as e:
-
     print(f"Connection error: {e}")
-
 ```
 
 ---
@@ -184,48 +160,33 @@ except Exception as e:
 **Cause:** API returned success=false or HTTP error
 
 **Solution:**
-
 ```python
-
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries.exceptions import BritecoreError
 
 try:
-
     policy = policies.retrieve_policy(policy_number="INVALID")
 except BritecoreError.NotFoundError as e:
-
     print(f"Not found: {e}")
 except BritecoreError.ValidationError as e:
-
     print(f"Validation error: {e}")
 except BritecoreError.NoDataReturned as e:
-
     print(f"API Error: {e}")
-
     # Check if:
-
     # 1. Policy number is correct
-
     # 2. User has permission to access policy
-
     # 3. API endpoint is working
-
 ```
 
 SDK exceptions can be caught via the common base class:
 
 ```python
-
 from britecore_libraries.exceptions import BritecoreError
 
 try:
-
     ...
 except BritecoreError.Base as exc:
-
     print(f"SDK failure: {exc}")
-
 ```
 
 ---
@@ -235,24 +196,18 @@ except BritecoreError.Base as exc:
 **Cause:** Phone number format not recognized
 
 **Solution:**
-
 ```python
-
 from britecore_libraries.validators import PhoneValidator
 
 # Valid formats (will be normalized to 10 digits)
 valid_phones = [
-
     {"phone": "5551234567", "type": "Home"},
-
     {"phone": "(555) 123-4567", "type": "Work"},
-
     {"phone": "555-123-4567", "type": "Mobile"},
 ]
 
 result = PhoneValidator(valid_phones).process()
 print(result)  # Normalized to: 5551234567
-
 ```
 
 ---
@@ -262,22 +217,17 @@ print(result)  # Normalized to: 5551234567
 **Cause:** Email format invalid
 
 **Solution:**
-
 ```python
-
 from britecore_libraries.validators import EmailValidator
 
 # Must be valid email format
 valid_emails = [
-
     {"email": "user@example.com", "type": "Home"},
-
     {"email": "john.doe+tag@company.co.uk", "type": "Work"},
 ]
 
 result = EmailValidator(valid_emails).process()
 print(result)  # Returns normalized emails
-
 ```
 
 ---
@@ -289,9 +239,7 @@ print(result)  # Returns normalized emails
 **Cause:** Module imports create cycle
 
 **Solution:**
-
 ```python
-
 # Don't do this (circular):
 # In models.py: from validators import EmailValidator
 # In validators.py: from models import BritecoreContact
@@ -299,9 +247,7 @@ print(result)  # Returns normalized emails
 # Instead use string forward references:
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-
     from .validators import EmailValidator
-
 ```
 
 ---
@@ -311,9 +257,7 @@ if TYPE_CHECKING:
 **Cause:** Module or function doesn't exist or not exported
 
 **Solution:**
-
 ```python
-
 # Check what's available
 import britecore_libraries
 print(dir(britecore_libraries))
@@ -324,7 +268,6 @@ print(__all__)
 
 # Look at actual exports
 from britecore_libraries.models import *
-
 ```
 
 ---
@@ -336,12 +279,9 @@ from britecore_libraries.models import *
 **Cause:** Test dependencies not installed
 
 **Solution:**
-
 ```powershell
-
 pip install -e ".[dev]"
 python -m pytest tests/ -v
-
 ```
 
 ---
@@ -351,19 +291,14 @@ python -m pytest tests/ -v
 **Cause:** Mock setup incorrect
 
 **Solution:**
-
 ```python
-
 # Check import path matches actual location
 from unittest.mock import patch, MagicMock
 
 # Use correct patch target
 with patch("britecore_libraries.api.api_calls.API_CLIENT") as mock:
-
     # Now use the mock
-
     mock.do_request.return_value = ...
-
 ```
 
 ---
@@ -373,9 +308,7 @@ with patch("britecore_libraries.api.api_calls.API_CLIENT") as mock:
 **Cause:** Coverage tool not configured
 
 **Solution:**
-
 ```powershell
-
 # Make sure pytest-cov installed
 pip install -e ".[dev]"
 
@@ -384,7 +317,6 @@ python -m pytest tests/ --cov=src/britecore_libraries --cov-report=html
 
 # View report
 Invoke-Item htmlcov/index.html
-
 ```
 
 ---
@@ -394,15 +326,12 @@ Invoke-Item htmlcov/index.html
 **Cause:** Running pytest from wrong directory
 
 **Solution:**
-
 ```powershell
-
 # Run from project root
 cd britecore_libraries
 python -m pytest tests/ -v
 
 # NOT from tests/ directory
-
 ```
 
 ---
@@ -414,20 +343,15 @@ python -m pytest tests/ -v
 **Cause:** Default timeout too short
 
 **Solution:**
-
 ```python
-
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Timeout
 
 # Use longer timeout
 policy = policies.retrieve_policy(
-
     policy_number="POL001",
-
     request_timeout=Timeout(total=30)  # 30 seconds
 )
-
 ```
 
 ---
@@ -437,28 +361,19 @@ policy = policies.retrieve_policy(
 **Cause:** Server temporarily unavailable
 
 **Solution:**
-
 ```python
-
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Retry
 
 # Configure retries
 policy = policies.retrieve_policy(
-
     policy_number="POL001",
-
     request_retries=Retry(
-
         total=5,
-
         backoff_factor=1,
-
         status_forcelist=[500, 502, 503, 504]
-
     )
 )
-
 ```
 
 ---
@@ -468,9 +383,7 @@ policy = policies.retrieve_policy(
 **Cause:** HTTPS certificate validation issue
 
 **Solution:**
-
 ```python
-
 # Check certificate validity
 import ssl
 import socket
@@ -478,20 +391,13 @@ import socket
 hostname = "api.britecore.com"
 context = ssl.create_default_context()
 try:
-
     with socket.create_connection((hostname, 443)) as sock:
-
         with context.wrap_socket(sock, server_hostname=hostname) as ssock:
-
             print(f"Certificate valid for: {ssock.getpeercert()}")
 except ssl.SSLError as e:
-
     print(f"SSL Error: {e}")
-
     # May need to update CA certificates or disable verification
-
     # (not recommended for production)
-
 ```
 
 ---
@@ -501,7 +407,6 @@ except ssl.SSLError as e:
 ### Enable Debug Logging
 
 ```python
-
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -509,7 +414,6 @@ logging.basicConfig(level=logging.DEBUG)
 from britecore_libraries.api.api_calls.v2 import policies
 policy = policies.retrieve_policy(policy_number="POL001")
 # Check console for debug output
-
 ```
 
 ---
@@ -517,22 +421,16 @@ policy = policies.retrieve_policy(policy_number="POL001")
 ### Inspect Request/Response
 
 ```python
-
 from britecore_libraries.api.api_calls import API_CLIENT
 from unittest.mock import patch
 
 with patch.object(API_CLIENT, 'do_request', wraps=API_CLIENT.do_request) as mock:
-
     policy = retrieve_policy(policy_number="POL001")
-
+    
     # Check what was sent
-
     call_args = mock.call_args
-
     print(f"Path: {call_args[1]['path']}")
-
     print(f"Payload: {call_args[1]['json']}")
-
 ```
 
 ---
@@ -540,14 +438,11 @@ with patch.object(API_CLIENT, 'do_request', wraps=API_CLIENT.do_request) as mock
 ### Check API Response Format
 
 ```python
-
 import json
 from britecore_libraries.api.api_calls import API_CLIENT
 
 response = API_CLIENT.do_request(
-
     path="/api/v2/policies/retrieve_policy",
-
     json={"policy_number": "POL001"}
 )
 
@@ -558,7 +453,6 @@ print(f"Data: {response.data.decode('utf-8')}")
 # Parsed response
 data = json.loads(response.data)
 print(json.dumps(data, indent=2))
-
 ```
 
 ---
@@ -568,9 +462,7 @@ print(json.dumps(data, indent=2))
 ### Slow API responses
 
 **Solution:**
-
 ```python
-
 import time
 
 start = time.time()
@@ -584,7 +476,6 @@ print(f"Request took {elapsed:.2f}s")
 # 2. Increase timeout
 # 3. Check server status
 # 4. Use connection pooling (automatic with urllib3)
-
 ```
 
 ---
@@ -592,9 +483,7 @@ print(f"Request took {elapsed:.2f}s")
 ### High memory usage
 
 **Solution:**
-
 ```python
-
 # Don't store large result sets
 # Process in batches instead
 
@@ -603,13 +492,9 @@ all_policies = [retrieve_policy(f"POL{i}") for i in range(10000)]
 
 # Good:
 for i in range(10000):
-
     policy = retrieve_policy(f"POL{i}")
-
     process_policy(policy)
-
     # Memory freed after each iteration
-
 ```
 
 ---
@@ -633,3 +518,5 @@ for i in range(10000):
 5. Check [CONTRIBUTING.md](CONTRIBUTING.md) for development
 
 ---
+
+
