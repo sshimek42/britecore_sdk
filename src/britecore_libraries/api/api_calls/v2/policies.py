@@ -39,31 +39,13 @@ def retrieve_policy(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Retrieves policy information based on provided criteria.
+    """Retrieve policy information by revision, policy ID, or policy number.
 
-    This function fetches policy details from the API using either policy number,
-    policy ID, or revision ID. It supports additional parameters and timeout
-    configuration.
-
-    Parameters:
-        policy_number: Optional string representing the policy number.
-        policy_id: Optional string representing the policy ID.
-        revision_state: Optional string representing the revision state.
-        revision_id: Optional string representing the revision ID.
-        **kwargs: Additional keyword arguments passed to the API client.
-
-    Returns:
-        The result of the API request processing, typically containing policy data.
-
-    Raises:
-        Any exceptions raised by the underlying API client or request processing.
-
-    Note:
-        The function uses multiple parameter verification to determine which
-        identifier to use for the request, prioritizing revision_id, then policy_id,
-        then policy_number. If revision_state is provided, it's included in the
-        request payload.
+    This wrapper calls ``/api/v2/policies/retrieve_policy`` with identifier
+    priority of ``revision_id``, then ``policy_id``, then ``policy_number``.
+    It optionally includes ``revision_state`` and returns the normalized
+    ``process_result(...)`` payload. ``**kwargs`` accepts ``RequestParameters``
+    overrides and a long timeout is applied when not provided.
     """
     LOGGER.debug("Retrieving policy")
 
@@ -104,27 +86,12 @@ def add_line_item(
     check_for_subline: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
-    """
-    Add a line item to a revision.
+    """Add a line item to a revision or property context.
 
-    This function adds a line item to a specified revision using the API client.
-    It constructs a JSON payload with the provided parameters and sends a request
-    to the API endpoint for adding line items.
-
-    Args:
-        revision_id: The ID of the revision to add the line item to.
-        item_id: The ID of the item to add.
-        property_id: The ID of the property associated with the item. Defaults to empty string.
-        sub_line_id: The ID of the sub-line item. Defaults to empty string.
-        link_id: The ID of the link associated with the item. Defaults to empty string.
-        check_for_subline: Whether to check for sub-line items. Defaults to False.
-        **kwargs: Additional keyword arguments to pass to the API request.
-
-    Returns:
-        True if the line item was successfully added, False otherwise.
-
-    Raises:
-        Any exceptions raised by the API client during the request or processing.
+    This wrapper sends line item fields to ``/api/v2/policies/add_line_item``.
+    It returns ``True`` when the normalized ``process_result(...)`` payload
+    contains non-empty ``added_items`` and ``False`` otherwise.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     local_env: dict[str, Any] = locals()
     LOGGER.debug("Adding line")
@@ -146,23 +113,12 @@ def add_line_item(
 def retrieve_policy_ids(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> tuple[str, str]:
-    """
-    Retrieve policy IDs from policy information.
+    """Retrieve active revision and primary property identifiers for a policy.
 
-    This function fetches policy details using the provided policy number and
-    extracts the revision ID and primary property ID from the active revision
-    of the policy.
-
-    Args:
-        policy_number: The policy number to retrieve information for
-        **kwargs: Additional request parameters to pass to the retrieval function
-
-    Returns:
-        A tuple containing the revision ID and property ID as strings
-
-    Raises:
-        Any exceptions raised by the underlying retrieve_policy function
-
+    This helper delegates to ``retrieve_policy``
+    (``/api/v2/policies/retrieve_policy``) and extracts
+    ``active_revision.id`` and ``active_revision.primary_property_id`` from the
+    normalized ``process_result(...)`` payload.
     """
     LOGGER.debug("Getting policy info")
     policy_json: Any = retrieve_policy(policy_number, **kwargs)
@@ -176,27 +132,12 @@ def retrieve_policy_ids(
 def retrieve_policy_list_from_user(
     contact_name: str, check_name: bool = True, **kwargs: Unpack[RequestParameters]
 ) -> list:
-    """
-    Retrieves a list of policy numbers associated with a specified contact name.
+    """Search policies by contact name and return matching policy numbers.
 
-    This function searches for policies linked to a given contact name by querying
-    an API endpoint. It supports optional filtering based on the contact name
-    and ensures that duplicate policy numbers are removed from the result.
-
-    Args:
-        contact_name: The name of the contact to search for within policy records.
-        check_name: A flag indicating whether to perform a detailed name matching
-            check. If True, the function will verify that the contact name matches
-            the named insured field in the policy records. Defaults to True.
-        **kwargs: Additional keyword arguments to pass to the API request, such as
-            headers or authentication parameters.
-
-    Returns:
-        A list of unique policy numbers associated with the specified contact name.
-        The list is sorted in ascending order by policy number.
-
-    Raises:
-        Any exceptions raised by the underlying API client or JSON processing functions are propagated as-is.
+    This helper calls ``/api/v2/policies/search`` with the provided
+    ``contact_name`` and returns a de-duplicated list of matching
+    ``policyNumber`` values. When ``check_name`` is ``True``, it filters results
+    against ``namedInsured`` entries before returning values.
     """
     LOGGER.debug(f"Searching for '{contact_name}'")
     user_request_json: dict[str, Any] = {
@@ -233,34 +174,12 @@ def retrieve_policy_list_from_user(
 def retrieve_policy_contact_info(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> list:
-    """
-    Retrieve contact information for policyholders based on policy number.
+    """Retrieve named insured contact info for a policy.
 
-    This function fetches the contact details of named insureds associated with a
-    given policy number by retrieving the policy data and extracting the relevant
-    contact information from the active revision.
-
-    Parameters
-    ----------
-    policy_number : str
-        The unique identifier for the policy
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments for the request parameters
-
-    Returns
-    -------
-    list
-        A list of contact information for the named insureds associated with the policy
-
-    Raises
-    ------
-    Any exceptions raised by the underlying retrieve_policy function
-
-    Notes
-    -----
-    The function logs a debug message before retrieving policy data. The returned
-    contact information is extracted from the "active_revision" section of the
-    policy data under "named_insureds".
+    This helper delegates to ``retrieve_policy``
+    (``/api/v2/policies/retrieve_policy``) and returns
+    ``active_revision.named_insureds`` from the normalized
+    ``process_result(...)`` payload.
     """
     LOGGER.debug("Getting contact info")
     contact_json = retrieve_policy(policy_number, **kwargs)
@@ -299,36 +218,13 @@ def create_policy(
     external_system_reference: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str]:
-    """
-    Creates a policy with the specified parameters and returns the policy JSON and revision ID.
+    """Create a policy.
 
-    This function constructs a policy request using the provided parameters and sends it to the
-    API endpoint for policy creation. It handles validation of required fields based on the
-    term type and processes the API response to extract the policy data and revision ID.
-
-    Parameters:
-        policy_number: The policy number, optional.
-        policy_type_id: The ID of the policy type, optional.
-        inception_date: The inception date of the policy, optional.
-        term_type: The term type of the policy, defaults to "1 Year". Must be one of:
-            "Custom", "3 Years", "18 Months", "1 Year", "9 Months", "6 Months", "3 Months".
-        expiration_date: The expiration date of the policy, required if term_type is "Custom".
-        renewal_term_type: The renewal term type, defaults to "1 Year".
-        is_renewal: Indicates if the policy is a renewal, defaults to False.
-        as_agent: Indicates if the policy is created as an agent, defaults to False.
-        manual_policy_number: Indicates if the policy number is manually entered, defaults to True.
-        effective_date: The effective date of the policy, optional.
-        property_zip: The zip code of the property, optional.
-        underwriting_questions: List of underwriting questions, optional.
-        underwriting_options: List of underwriting options, optional.
-        external_system_reference: Reference to an external system, optional.
-        **kwargs: Additional keyword arguments passed to the API client request.
-
-    Returns:
-        A tuple containing the policy JSON data and the revision ID.
-
-    Raises:
-        BritecoreError.MissingParameter: If term_type is "Custom" and expiration_date is not provided.
+    This wrapper sends policy creation fields to
+    ``/api/v2/policies/create_policy`` and returns a tuple of
+    ``(policy_data, revision_id)`` from the normalized ``process_result(...)``
+    payload. For ``term_type='Custom'``, ``expiration_date`` is required.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
 
     if term_type == "Custom" and not expiration_date:
@@ -353,23 +249,12 @@ def retrieve_policy_terms(
     policy_number: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Retrieve policy terms based on policy ID or policy number.
+    """Retrieve policy terms by policy identifier.
 
-    This function fetches policy terms from the API using either a policy ID or policy number.
-    It validates that at least one of these parameters is provided and constructs the appropriate
-    request payload for the API call.
-
-    Args:
-        policy_id: Optional string representing the policy ID
-        policy_number: Optional string representing the policy number
-        **kwargs: Additional keyword arguments passed to the underlying API client
-
-    Returns:
-        The result of processing the API response, typically containing policy terms data
-
-    Raises:
-        BritecoreError.MissingParameter: When neither policy_id nor policy_number is provided
+    This wrapper calls ``/api/v2/policies/retrieve_policy_terms`` using either
+    ``policy_id`` or ``policy_number`` and returns the normalized
+    ``process_result(...)`` payload for terms and revision context.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
@@ -394,22 +279,11 @@ def retrieve_policy_terms(
 
 
 def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Rate a revision by ID using the API client.
+    """Rate a revision.
 
-    This function sends a request to rate a specific revision identified by its ID.
-    It constructs a policy retrieval JSON object with the revision ID and makes
-    a request to the '/api/v2/policies/rate_revision' endpoint. The function logs
-    the operation using the LOGGER debug level.
-
-    Parameters:
-        revision_id (str): The unique identifier of the revision to be rated.
-        **kwargs (Unpack[RequestParameters]): Additional keyword arguments that
-            are passed to the API client's do_request method for configuring
-            the HTTP request.
-
-    Returns:
-        Any: The processed result from the API client's response handling.
+    This wrapper sends ``revision_id`` to ``/api/v2/policies/rate_revision``
+    and returns the normalized ``process_result(...)`` payload for the rating
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug(f"Re-rating revision '{revision_id}'")
     policy_retrieve_json = {"revision_id": revision_id}
@@ -427,28 +301,13 @@ def retrieve_revision_details(
     include_contact_details: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Retrieve detailed information about a specific revision.
+    """Retrieve detailed revision information.
 
-    This function fetches comprehensive details about a revision identified by its ID.
-    It allows optional inclusion of contact details in the response and supports
-    additional request parameters through keyword arguments.
-
-    Parameters:
-        revision_id (str): Unique identifier of the revision to retrieve.
-        include_contact_details (bool, optional): Flag indicating whether to include
-            contact details in the response. Defaults to True.
-        **kwargs: Additional keyword arguments passed to the underlying request
-            implementation. These may include timeout settings and other request
-            parameters.
-
-    Returns:
-        Any: The processed result from the API request, typically containing
-            revision details and optionally contact information.
-
-    Raises:
-        Any exceptions raised by the underlying API client or request processing
-            mechanisms are propagated as-is.
+    This wrapper sends ``revision_id`` and ``include_contact_details`` to
+    ``/api/v2/policies/retrieve_revision_details`` and returns the normalized
+    ``process_result(...)`` payload for revision details. ``**kwargs`` accepts
+    ``RequestParameters`` overrides and a long timeout is applied when not
+    provided.
     """
 
     if not kwargs.get("request_timeout"):
@@ -477,27 +336,12 @@ def retrieve_risks(
     risk_types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Retrieve risks for a given revision with optional pagination and filtering.
+    """Retrieve risks for a revision with paging and filter controls.
 
-    This function fetches risk information associated with a specific revision ID,
-    allowing for customized retrieval through various parameters such as page size,
-    ordering, and risk type filtering.
-
-    Parameters:
-        revision_id (str): The unique identifier of the revision for which risks are to be retrieved.
-        page (Optional[int]): The page number to retrieve, starting from 0. Defaults to 0.
-        page_size (Optional[int]): The number of risks to retrieve per page. Defaults to 10.
-        retrieve_remaining (Optional[bool]): Whether to retrieve all remaining risks beyond the current page. Defaults to True.
-        order_by (Optional[str]): The field to order results by. Defaults to "name".
-        risk_types (Optional[list[str]]): A list of risk types to filter results by. Defaults to None.
-        **kwargs (Unpack[RequestParameters]): Additional keyword arguments to pass to the underlying request.
-
-    Returns:
-        Any: The processed result from the API request, typically containing risk data.
-
-    Raises:
-        Any exceptions raised by the underlying API client or request processing.
+    This wrapper sends ``revision_id`` plus pagination, ordering, and optional
+    ``risk_types`` filters to ``/api/v2/policies/retrieve_risks`` and returns
+    the normalized ``process_result(...)`` payload for risk data.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     local_env = locals()
     LOGGER.debug("Getting risks")
@@ -512,31 +356,11 @@ def retrieve_risks(
 
 
 def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve detailed information about a specific risk identified by risk_id.
+    """Retrieve detailed risk information by risk identifier.
 
-    This function fetches comprehensive details about a risk from the API by
-    making a request to the /api/v2/policies/retrieve_risk_details endpoint.
-
-    Parameters
-    ----------
-    risk_id : str
-        Unique identifier of the risk to retrieve details for
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to pass to the API request
-
-    Returns
-    -------
-    Any
-        The result of processing the API response, typically containing
-        detailed risk information
-
-    Notes
-    -----
-    - This function uses the global API_CLIENT instance to make requests
-    - The function logs debug information before making the request
-    - The request is made to the /api/v2/policies/retrieve_risk_details endpoint
-    - The risk_id is included in the request payload as "risk_id"
+    This wrapper sends ``risk_id`` to
+    ``/api/v2/policies/retrieve_risk_details`` and returns the normalized
+    ``process_result(...)`` payload for the matching risk.
     """
     LOGGER.debug("Getting risk details")
     revision_retrieve_json = {"risk_id": risk_id}
@@ -556,29 +380,12 @@ def update_rating_information(
     reset_premium: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Update rating information for a property.
+    """Update rating information for a property or revision.
 
-    This function sends a request to update rating information for a specified property
-    using the API client. It constructs a JSON payload with the provided parameters
-    and makes a POST request to the update_rating_information endpoint.
-
-    Args:
-        property_id: The ID of the property for which rating information is being updated.
-                     Defaults to empty string.
-        revision_id: The revision ID associated with the rating information update.
-                     Defaults to empty string.
-        items: List of dictionaries containing rating information items to update.
-               Defaults to empty list.
-        reset_premium: Flag indicating whether to reset premium status during update.
-                       Defaults to True.
-        **kwargs: Additional keyword arguments to be passed to the API client request.
-
-    Returns:
-        The processed result from the API client after updating rating information.
-
-    Raises:
-        Any exceptions raised by the API client during the request or result processing.
+    This wrapper sends rating fields to
+    ``/api/v2/policies/update_rating_information`` and returns the normalized
+    ``process_result(...)`` payload for the update request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     local_env = locals()
     LOGGER.debug("Updating line item")
@@ -593,26 +400,11 @@ def update_rating_information(
 
 
 def rate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Re-rates a risk item by making a request to the policy rating API endpoint.
+    """Rate a risk.
 
-    This function sends a request to re-rate a specific risk identified by its ID.
-    It constructs a JSON payload with the risk ID and forwards additional
-    keyword arguments to the API client for the request.
-
-    Parameters:
-        risk_id (str): The unique identifier of the risk item to be re-rated.
-        **kwargs (Unpack[RequestParameters]): Additional parameters to be passed
-            to the API client's request method, such as headers, timeout settings,
-            or authentication details.
-
-    Returns:
-        Any: The result of processing the API response, typically containing
-            the updated risk rating information or status.
-
-    Raises:
-        Any exceptions that may occur during the API request or result processing
-            are propagated from the underlying API client methods.
+    This wrapper sends ``risk_id`` to ``/api/v2/policies/rate_risk`` and
+    returns the normalized ``process_result(...)`` payload for the risk rating
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Re-rating policy")
     revision_retrieve_json = {"risk_id": risk_id}
@@ -631,26 +423,13 @@ def retrieve_billing_schedule_options(
     ignore_billing_schedule_roles: bool | None = False,
     **kwargs,
 ) -> dict:
-    """
-    Retrieve billing schedule options for a policy.
+    """Retrieve billing schedule options for a policy context.
 
-    This function fetches the available billing schedule options for a given policy
-    either by policy number or policy term ID. It constructs a request with the
-    provided parameters and returns the processed API response.
-
-    Parameters:
-        policy_number: The policy number to retrieve billing schedule options for
-        policy_term_id: The policy term ID to retrieve billing schedule options for
-        ignore_billing_schedule_roles: Flag to ignore billing schedule roles when
-            retrieving options
-        **kwargs: Additional keyword arguments to pass to the API client
-
-    Returns:
-        Dictionary containing the billing schedule options
-
-    Raises:
-        BritecoreError.MissingParameter: When neither policy_number nor policy_term_id
-            is provided
+    This wrapper sends ``policy_number`` or ``policy_term_id`` and
+    ``ignore_billing_schedule_roles`` to
+    ``/api/v2/policies/retrieve_billing_schedule_options`` and returns the
+    normalized ``process_result(...)`` payload for available schedules.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
 
     if not policy_term_id and not policy_term_id:
@@ -682,27 +461,13 @@ def new_revision_contact(
     ) = "namedInsured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Add a contact to a revision and update the revision with the contact information.
+    """Add or update a revision contact assignment.
 
-    This function associates a contact with a specific revision by first creating
-    a contact entry and then updating the revision with the contact details.
-    The contact can be assigned a specific role such as 'namedInsured', 'addtlInterest',
-    'financeCompany', 'underwriter', or 'driver'. If an x_id is provided, the function
-    will skip the initial contact creation step and directly use the provided x_id.
-
-    Args:
-        revision_id (str): The unique identifier of the revision to which the contact will be added.
-        contact_id (str): The unique identifier of the contact to be associated with the revision.
-        x_id (str, optional): The external revision contact ID. If provided, skips the initial
-            contact creation step and uses this ID directly.
-        contact_role (Literal["namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"], optional):
-            The role of the contact within the revision. Defaults to "namedInsured".
-        **kwargs (Unpack[RequestParameters]): Additional parameters to be passed to the API request.
-
-    Returns:
-        Any: The result of processing the API response, typically containing the updated
-            revision contact information or the result of the API call.
+    This wrapper creates a revision contact through
+    ``/api/v2/policies/new_revision_contact`` when ``x_id`` is not provided,
+    then links the contact via ``/api/v2/policies/update_revision_contact``.
+    It returns the normalized ``process_result(...)`` payload for the final
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     contact_add_result: Any
 
@@ -755,27 +520,12 @@ def create_risk(
     force_categories: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Create a risk assessment for a policy.
+    """Create a risk for a revision.
 
-    This function generates a risk assessment by sending a request to the API endpoint
-    for creating risk data. It accepts various parameters related to policy revision
-    and property details, and returns the processed result from the API call.
-
-    Parameters:
-        revision_id (str): The unique identifier for the policy revision.
-        property_group_number (int, optional): The property group number associated
-            with the risk assessment. Defaults to None.
-        building_number (int, optional): The building number related to the risk
-            assessment. Defaults to None.
-        force_categories (bool, optional): Flag to force category assignment for
-            the risk assessment. Defaults to None.
-        **kwargs (Unpack[RequestParameters]): Additional keyword arguments that
-            are passed to the underlying HTTP request.
-
-    Returns:
-        Any: The processed result from the API request, typically containing
-            the created risk assessment data or status information.
+    This wrapper sends ``revision_id`` plus optional property-group,
+    building-number, and ``force_categories`` fields to
+    ``/api/v2/policies/create_risk`` and returns the normalized
+    ``process_result(...)`` payload for the created risk.
     """
     local_env: dict[str, Any] = locals()
 
@@ -795,50 +545,12 @@ def update_property_location(
     reset_premiums: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    The data input having the form:
-    ::
+    """Update property location details.
 
-        {
-            'id': UUID,
-            'name': str,
-            'address_accuracy': str,
-            'address_line1': str,
-            'address_line2': str,
-            'address_city': str,
-            'address_state': str,
-            'address_zip': str,
-            'address_county': UUID,
-            'county_specify': UUID,
-            'latitude': float,
-            'longitude': float,
-            'copy_address': bool,
-            'flood_zone_code': str,
-            'distance_to_coast': str
-            'year_built': str,
-            'primary': bool,
-            'acres': decimal,
-            'legal_description': str
-        }
-
-    Note:
-    Besides the UUID, if any key is empty, we assume you want to clear it.
-    If you do not want to clear a field, leave the key out of your request.
-    In other words, every key/value pair you send will be checked for discrepancies
-    with the current data, and changes will be made.
-
-    :param location: Location information
-    :type location: dict[str,Any]
-    :param soft_geoservice_bypass: If all location fields are present (lat/long, county, city, zip), then trust these values and do not hit the geo-service processes
-    :type soft_geoservice_bypass: Optional[bool]
-    :param hard_geoservice_bypass: Regardless of potentially-lacking address fields, do not hit geo-service processes
-    :type hard_geoservice_bypass: Optional[bool]
-    :param reset_premiums: If True, will reset the premiums for the revision and property
-    :type reset_premiums: Optional[bool]
-    :param kwargs: Keywords to pass to urllib3 request
-    :type kwargs: dict[str,Any]
-    :return: Updated property information
-    :rtype: Any
+    This wrapper sends ``location`` and optional geo-service bypass flags to
+    ``/api/v2/policies/update_property_location`` and returns the normalized
+    ``process_result(...)`` payload for the updated location.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
 
     local_env: dict[str, Any] = locals()
@@ -855,27 +567,11 @@ def update_property_location(
 
 
 def new_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Create a new mortgagee for a specified property.
+    """Create a mortgagee entry for a property.
 
-    This function sends a request to create a new mortgagee associated with the given property ID.
-    It constructs a JSON payload containing the property ID and makes a POST request to the
-    API endpoint for creating new mortgagees. The function handles the response processing
-    and returns the result from the API client.
-
-    Parameters:
-        property_id (str): The unique identifier of the property for which the mortgagee is being created
-        **kwargs (Unpack[RequestParameters]): Additional keyword arguments to be passed to the API client's
-            request method, such as headers, authentication tokens, or other request parameters
-
-    Returns:
-        Any: The processed result from the API client, typically containing the created mortgagee
-            information or confirmation of the operation
-
-    Raises:
-        HTTPException: If the API request fails due to network issues, authentication problems,
-            or server errors
-        ValueError: If the property_id is empty or invalid
+    This wrapper sends ``property_id`` to ``/api/v2/policies/new_mortgagee``
+    and returns the normalized ``process_result(...)`` payload for the
+    mortgagee creation request.
     """
     new_mort_json: dict[str, str] = {"property_id": property_id}
     result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -890,31 +586,11 @@ def store_mortgagee(
     mortgagee_contact_id: str,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Store a mortgagee for a property contact.
+    """Store a mortgagee contact mapping for a property contact.
 
-    This function creates a relationship between a property contact and a mortgagee
-    contact by making a request to the API endpoint for storing mortgagee information.
-
-    Parameters
-    ----------
-    property_contact_id : str
-        The unique identifier of the property contact
-    mortgagee_contact_id : str
-        The unique identifier of the mortgagee contact
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to pass to the API request
-
-    Returns
-    -------
-    Any
-        The processed result from the API response
-
-    Notes
-    -----
-    The function constructs a JSON payload with the property contact ID and mortgagee
-    contact ID, then sends a POST request to the '/api/v2/policies/store_mortgagee'
-    endpoint. The result is processed and returned as-is from the API client.
+    This wrapper sends ``property_contact_id`` and ``mortgagee_contact_id`` to
+    ``/api/v2/policies/store_mortgagee`` and returns the normalized
+    ``process_result(...)`` payload for the mapping request.
     """
     store_mort_json: dict[str, str] = {
         "x_properties_contact_id": property_contact_id,
@@ -930,23 +606,11 @@ def store_mortgagee(
 def retrieve_policy_snapshot(
     policy_number: str, snapshot_date: str, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """
-    Retrieve a policy snapshot for a given policy number and snapshot date.
+    """Retrieve a policy snapshot for a snapshot date.
 
-    This function fetches the policy snapshot data from the API for the specified
-    policy number and snapshot date. It constructs a request with the required
-    parameters and processes the response.
-
-    Parameters:
-        policy_number (str): The unique identifier for the policy
-        snapshot_date (str): The date for which to retrieve the policy snapshot
-        **kwargs (Unpack[RequestParameters]): Additional request parameters
-
-    Returns:
-        Any: The processed result from the API response
-
-    Raises:
-        Any exceptions that may occur during the API request or response processing
+    This wrapper sends ``policy_number`` and ``snapshot_date`` to
+    ``/api/v2/policies/retrieve_policy_snapshot`` and returns the normalized
+    ``process_result(...)`` payload for the snapshot query.
     """
     retrieve_json: dict[str, str] = {
         "policy_number": policy_number,
