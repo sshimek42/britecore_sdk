@@ -24,66 +24,64 @@ src/britecore_libraries/config/
 
 ### `settings.toml` (Public)
 
-Contains non-sensitive site and system configuration:
+Contains **only** default urllib3 configuration (no endpoints, no credentials):
 
 ```toml
-# Default (fallback) site configuration
+# Default urllib3 configuration (applies to all sites unless overridden)
+[default]
+web_timeout = 5
+web_retry = 3
+web_timeout_long = 30
+
+# Site section definitions (no base_url or credentials — those go in .secrets.toml)
+[example_site]
+# Leave empty or add only non-sensitive configuration
+
+[example_site_test]
+# Leave empty or add only non-sensitive configuration
+```
+
+**When to edit:**
+
+- Adjust urllib3 defaults (timeout, retry count)
+- Add new site section headers (credentials go in .secrets.toml)
+
+**Never commit:**
+
+- Any base_url, API keys, client IDs, client secrets, or credentials
+
+### `.secrets.toml` (Private)
+
+Contains **all sensitive credentials and site configuration**. **This file is gitignored.**
+
+```toml
+# Default (fallback) credentials
 [default]
 base_url = ""
 client_id = ""
 client_secret = ""
 api_key = ""
 
-# Example: Site-specific configuration
+# Example: Site-specific credentials
 [example_site]
-base_url = "api.example.com"
-client_id = "your_oauth_client_id_here"
-client_secret = "your_oauth_client_secret_here"
-
-[example_site_test]
-base_url = "api-test.example.com"
-api_key = "your_api_key_here"
-```
-
-**When to edit:**
-
-- Add new site configurations
-- Update public endpoints or defaults
-- Document API version mappings
-
-**Never commit:**
-
-- Real API keys, client secrets, or credentials
-
-### `.secrets.toml` (Private)
-
-Contains sensitive credentials. **This file is gitignored.**
-
-```toml
-# Default (fallback) site credentials
-[default]
-client_id = ""
-client_secret = ""
-api_key = ""
-
-# Example: Site-specific secrets
-[example_site]
+base_url = "https://api.example.com"
 client_id = "your_real_client_id"
 client_secret = "your_real_client_secret"
 
 [example_site_test]
+base_url = "https://api-test.example.com"
 api_key = "your_real_api_key"
 ```
 
 **How to create:**
 
-1. Copy `settings.toml` to `.secrets.toml`
-2. Fill in real credentials for your environment
+1. Create `.secrets.toml` in `src/britecore_libraries/config/`
+2. Add base_url and credentials for each site
 3. **Never commit** `.secrets.toml` (it's already gitignored)
 
 **File format:**
 
-- Same TOML structure as `settings.toml`
+- All site credentials and base URLs go here
 - Values in `.secrets.toml` override `settings.toml`
 - All sections are optional
 
@@ -134,8 +132,8 @@ $env:system = "example_site"
 **Priority order (highest to lowest):**
 
 1. Environment variables (e.g., `BRITECORE_LIBRARIES_*`)
-2. `.secrets.toml` values
-3. `settings.toml` values
+2. `.secrets.toml` values (all base_url and credentials)
+3. `settings.toml` values (urllib3 defaults and site definitions)
 4. Built-in defaults
 
 ## Required Keys by Auth Mode
@@ -306,30 +304,30 @@ python app.py
 
 ## Adding New Sites
 
-1. Edit `settings.toml`:
+1. Edit `settings.toml` to add a site section (if needed):
 
-   ```toml
-   [mysite]
-   base_url = "mysite.britecore.com"
-   # Leave client_id/secret/api_key blank -- they go in .secrets.toml
-   ```
+    ```toml
+    [mysite]
+    # Optional: add non-sensitive configuration here
+    ```
 
-2. Edit `.secrets.toml`:
+2. Edit `.secrets.toml` to add credentials and base_url:
 
-   ```toml
-   [mysite]
-   client_id = "..."
-   client_secret = "..."
-   # or
-   api_key = "..."
-   ```
+    ```toml
+    [mysite]
+    base_url = "https://mysite.britecore.com"
+    client_id = "..."
+    client_secret = "..."
+    # or
+    api_key = "..."
+    ```
 
 3. Use:
 
-   ```python
-   client = BritecoreAPIClient("mysite")
-   client.init_client()
-   ```
+    ```python
+    client = BritecoreAPIClient("mysite")
+    client.init_client()
+    ```
 
 ## See Also
 
