@@ -7,6 +7,52 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- `tests/unit/test_api_spec_alignment.py` — validates wrapper paths against
+  the canonical `britecore_api.json` specification.
+- `tests/unit/test_v1_endpoint_routing.py` — unit tests for v1 custom_ui,
+  payments, and printing endpoints.
+- `tests/unit/test_zip_code_lookup.py` — tests for US zip code lookup utility.
+- `examples/basic_api_usage.py` — runnable example demonstrating OAuth and
+  API key initialization flows.
+
+### Changed
+
+- **Code quality improvements:**
+  - Reduced cyclomatic complexity in `BritecoreAPIClient.process_result` by
+    extracting helper methods (`_raise_for_http_status`, `_load_json_payload`,
+    `_extract_success_data`).
+  - Converted logging f-strings to lazy `%s` formatting in API modules,
+    validators, and utilities (DeepSource PYL-W1203).
+  - Collapsed nested `with` statements in tests (PTC-W0062).
+  - Removed Python built-in shadowing (`type` → `note_type`, `type` →
+    `payment_method_type`) with backward-compatible kwargs extraction.
+- **Documentation polish:**
+  - Removed placeholder credential examples from `SECURITY.md` and
+    `TROUBLESHOOTING.md` to avoid false positives from secrets scanners.
+  - Unified private security contact wording in `SECURITY.md`.
+  - Expanded `AGENTS.md` and `CONTRIBUTING.md` with repo layout contract
+    guidance.
+  - Repository About section configured with comprehensive topic tags and
+    professional description.
+- **Configuration:**
+  - `.deepsource.toml` expanded to exclude test directories and increased
+    `max_line_length` to 120 for practical line-length requirements.
+
+### Fixed
+
+- MyPy `TypedDict` compatibility in `payments.py` via explicit casting for
+  backward-compatible kwargs extraction.
+- DeepSource findings (D202, W1203, PTC-W0048, PTC-W0062, PY-R1000,
+  PY-D0003, E1121) addressed via targeted refactoring and configuration.
+- Markdown lint formatting (MD012, MD031, MD032, MD040, MD060) across all
+  docs.
+
+---
+
 ## [1.1.0] — 2026-04-06
 
 ### Added
