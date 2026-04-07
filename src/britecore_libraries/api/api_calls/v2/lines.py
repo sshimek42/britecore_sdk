@@ -90,6 +90,7 @@ def line_menu(**kwargs: Unpack[RequestParameters]):
     This function is retained for backward compatibility.
     """
     from britecore_libraries.utils.interactive_menu import line_menu as _line_menu
+
     return _line_menu(**kwargs)
 
 
