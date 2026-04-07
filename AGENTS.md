@@ -22,6 +22,12 @@ For a compact version, see `AGENTS.quickstart.md`.
 - For mutually exclusive identifiers, reuse `API_CLIENT.multiple_parameter_verification(...)` (example: `retrieve_policy` in `v2/policies.py`).
 - Keep endpoints versioned under `api/api_calls/v1` and `api/api_calls/v2`; v2 is the primary surface.
 
+## Docstring source policy
+
+- For endpoint wrapper functions, use `britecore_api.json` as the primary source for summary, parameter intent, and response semantics.
+- Add SDK-specific context only where needed (for example: snake_case aliases, `RequestParameters`, or `process_result(...)` normalization behavior).
+- If the spec and current wrapper behavior differ, prefer describing the documented API contract and call out SDK-specific differences explicitly and briefly.
+
 ## Configuration and integration points
 
 - Runtime config is Dynaconf-based in `src/britecore_libraries/config/config.py`, loading `config/.secrets.toml` + `config/settings.toml`.
