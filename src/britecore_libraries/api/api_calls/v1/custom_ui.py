@@ -17,6 +17,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a payload while removing keys with ``None`` values."""
     return {key: value for key, value in fields.items() if value is not None}
 
 
@@ -25,6 +26,7 @@ def _post(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """POST to a v1 custom UI endpoint and normalize the API response."""
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path=path,
         json=payload if payload is not None else {},
