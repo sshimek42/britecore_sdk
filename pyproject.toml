@@ -5,11 +5,29 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "britecore_libraries"
 version = "1.1.0"
-description = "BriteCore Libraries - Core utilities for BriteCore API integration."
+description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = { text = "Apache-2.0" }
 authors = [{ name = "sshimek" }]
 requires-python = ">=3.11"
+keywords = ["britecore", "api", "sdk", "insurance", "async", "oauth2", "rest-api"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP",
+    "Typing :: Typed",
+]
 dependencies = [
     "dynaconf~=3.2.13",
     "typing_extensions>=4.6.0",
