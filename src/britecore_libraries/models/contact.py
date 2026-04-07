@@ -68,7 +68,6 @@ class BritecoreContact:
             contact_id: Unique contact identifier
             contact_type: Type of contact (individual or organization)
         """
-
         self.name = name
         self.address = address
         self.policy_number = policy_number

@@ -24,7 +24,6 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
-
     resolved_target_site = target_site or os.environ.get("target_site")
     _api_client: BritecoreAPIClient = BritecoreAPIClient(resolved_target_site)
     _api_client.init_client()

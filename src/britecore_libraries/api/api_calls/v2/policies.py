@@ -226,7 +226,6 @@ def create_policy(
     payload. For ``term_type='Custom'``, ``expiration_date`` is required.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-
     if term_type == "Custom" and not expiration_date:
         BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
 
@@ -309,7 +308,6 @@ def retrieve_revision_details(
     ``RequestParameters`` overrides and a long timeout is applied when not
     provided.
     """
-
     if not kwargs.get("request_timeout"):
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
@@ -431,7 +429,6 @@ def retrieve_billing_schedule_options(
     normalized ``process_result(...)`` payload for available schedules.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-
     if not policy_term_id and not policy_term_id:
         BritecoreError.MissingParameter(
             "Either policy_number or policy_term_id is needed"
@@ -552,7 +549,6 @@ def update_property_location(
     ``process_result(...)`` payload for the updated location.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-
     local_env: dict[str, Any] = locals()
 
     prop_json: dict[str, dict[str, Any]] = {

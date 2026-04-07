@@ -67,7 +67,6 @@ def load_zip_codes() -> ZipCodeLookup:
     FileNotFoundError
         If the specified CSV file is not found at the given path.
     """
-
     try:
         with import_file.open("r", encoding="utf-8", newline="") as csv_file:
             loaded_zip_codes = list(csv.DictReader(csv_file))

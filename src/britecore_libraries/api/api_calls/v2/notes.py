@@ -48,7 +48,6 @@ def retrieve_notes(
     ``RequestParameters`` overrides, and a long request timeout is applied when
     one is not provided.
     """
-
     LOGGER.debug("Getting notes")
 
     notes_json: dict[str, Any] = {}
