@@ -59,7 +59,7 @@ def add_payment_method(
     ach_routing: str | None = None,
     ach_name_on: str | None = None,
     metadata: dict[str, Any] | None = None,
-    type: str | None = None,
+    payment_method_type: str | None = None,
     card_number: str | None = None,
     address: dict[str, Any] | None = None,
     vendor_payment_method_id: str | None = None,
@@ -71,6 +71,10 @@ def add_payment_method(
     and billing address fields for the stored method. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
+    # Backward compatibility: allow legacy callers to pass type=... in kwargs.
+    if "type" in kwargs and not payment_method_type:
+        payment_method_type = kwargs.pop("type")
+
     return _post(
         "/api/v2/payments/add_payment_method",
         _build_payload(
@@ -88,7 +92,7 @@ def add_payment_method(
             ach_routing=ach_routing,
             ach_name_on=ach_name_on,
             metadata=metadata,
-            type=type,
+            type=payment_method_type,
             card_number=card_number,
             address=address,
             vendor_payment_method_id=vendor_payment_method_id,

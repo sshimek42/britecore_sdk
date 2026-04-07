@@ -55,11 +55,10 @@ def _run_case(
 
     with patch.object(
         client, "do_request", return_value=mock_response
-    ) as mock_do_request:
-        with patch.object(
-            client, "process_result", return_value={"ok": True}
-        ) as mock_process_result:
-            result = getattr(module, function_name)(**call_kwargs)
+    ) as mock_do_request, patch.object(
+        client, "process_result", return_value={"ok": True}
+    ) as mock_process_result:
+        result = getattr(module, function_name)(**call_kwargs)
 
     assert result == {"ok": True}
     mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
@@ -1041,9 +1040,8 @@ class TestNoneOmission:
 
         with patch.object(
             client, "do_request", return_value=mock_response
-        ) as mock_do_request:
-            with patch.object(client, "process_result", return_value={}):
-                module.get_csr_data(contact_id=None)
+        ) as mock_do_request, patch.object(client, "process_result", return_value={}):
+            module.get_csr_data(contact_id=None)
 
         _, call_kwargs = mock_do_request.call_args
         assert "contact_id" not in call_kwargs["json"]
@@ -1056,9 +1054,8 @@ class TestNoneOmission:
 
         with patch.object(
             client, "do_request", return_value=mock_response
-        ) as mock_do_request:
-            with patch.object(client, "process_result", return_value={}):
-                module.get_internal_error()
+        ) as mock_do_request, patch.object(client, "process_result", return_value={}):
+            module.get_internal_error()
 
         _, call_kwargs = mock_do_request.call_args
         assert call_kwargs["json"] == {}

@@ -30,7 +30,7 @@ def get_property_information_and_photos(
     normalized ``process_result(...)`` payload for the matching property.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    LOGGER.debug(f"Getting property information for property_id '{property_id}'")
+    LOGGER.debug("Getting property information for property_id '%s'", property_id)
     property_json: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/insured/get_property_information_and_photos",
         json={"property_id": property_id},

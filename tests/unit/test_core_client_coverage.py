@@ -243,18 +243,16 @@ class TestDoRequestExceptionMapping:
         client = self._initialized_client(mock_settings)
         with patch.object(
             client.http, "request", side_effect=urlTimeoutError("timed out")
-        ):
-            with pytest.raises(BritecoreError.RequestTimeoutError):
-                client.do_request("/api/v2/test")
+        ), pytest.raises(BritecoreError.RequestTimeoutError):
+            client.do_request("/api/v2/test")
 
     @pytest.mark.unit
     def test_request_timeout_error_str(self, env_api_key, mock_settings):
         client = self._initialized_client(mock_settings)
         with patch.object(
             client.http, "request", side_effect=urlTimeoutError("timed out")
-        ):
-            with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
-                client.do_request("/api/v2/test")
+        ), pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+            client.do_request("/api/v2/test")
         assert "timed out" in str(exc_info.value).lower()
 
     @pytest.mark.unit
@@ -262,25 +260,24 @@ class TestDoRequestExceptionMapping:
         client = self._initialized_client(mock_settings)
         with patch.object(
             client.http, "request", side_effect=ProtocolError("broken pipe")
-        ):
-            with pytest.raises(BritecoreError.NoDataReturned):
-                client.do_request("/api/v2/test")
+        ), pytest.raises(BritecoreError.NoDataReturned):
+            client.do_request("/api/v2/test")
 
     @pytest.mark.unit
     def test_response_error_raises_no_data_returned(self, env_api_key, mock_settings):
         client = self._initialized_client(mock_settings)
         with patch.object(
             client.http, "request", side_effect=ResponseError("bad response")
-        ):
-            with pytest.raises(BritecoreError.NoDataReturned):
-                client.do_request("/api/v2/test")
+        ), pytest.raises(BritecoreError.NoDataReturned):
+            client.do_request("/api/v2/test")
 
     @pytest.mark.unit
     def test_falsy_result_raises_no_data_returned(self, env_api_key, mock_settings):
         client = self._initialized_client(mock_settings)
-        with patch.object(client.http, "request", return_value=None):
-            with pytest.raises(BritecoreError.NoDataReturned):
-                client.do_request("/api/v2/test")
+        with patch.object(client.http, "request", return_value=None), pytest.raises(
+            BritecoreError.NoDataReturned
+        ):
+            client.do_request("/api/v2/test")
 
     @pytest.mark.unit
     def test_successful_request_returns_response(self, env_api_key, mock_settings):

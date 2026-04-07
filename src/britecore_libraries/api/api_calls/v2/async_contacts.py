@@ -63,7 +63,7 @@ async def anew_contact(
     payload together with the extracted contact ID, and invalidates cached contact
     reads on success; ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    LOGGER.debug(f"Creating contact '{name}'")
+    LOGGER.debug("Creating contact '%s'", name)
     if not phone:
         phone = [{}]
     if not email:
@@ -92,10 +92,10 @@ async def anew_contact(
         new_id = "Fail"
 
     if new_id == "Fail":
-        LOGGER.error(f"Failed to add contact - '{name}'")
+        LOGGER.error("Failed to add contact - '%s'", name)
         return None, None
 
-    LOGGER.debug(f"Added '{name}'")
+    LOGGER.debug("Added '%s'", name)
     return contact_json, new_id
 
 
@@ -111,7 +111,7 @@ async def aadd_contact_to_role(
     ``aprocess_result(...)`` payload, invalidates cached contact reads on success,
     and accepts ``RequestParameters`` overrides via ``**kwargs``.
     """
-    LOGGER.debug(f"Adding role '{role}' to '{contact_id}'")
+    LOGGER.debug("Adding role '%s' to '%s'", role, contact_id)
     role_request_json: dict[
         Literal["contact_id", "role_name"], str | ROLETYPES | None
     ] = {"contact_id": contact_id, "role_name": role}
@@ -133,7 +133,7 @@ async def aupdate_contact(
     ``aprocess_result(...)`` payload, invalidates cached contact reads on success,
     and accepts ``RequestParameters`` overrides via ``**kwargs``.
     """
-    LOGGER.debug(f"Updating contact information\n{contact}")
+    LOGGER.debug("Updating contact information\n%s", contact)
     update_request_json: dict[str, dict[str, str | list[dict[str, str]]]] = {
         "contact": contact
     }
@@ -153,7 +153,7 @@ async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> 
     Returns the async ``aprocess_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` plus cache override settings.
     """
-    LOGGER.debug(f"Retrieving contact id '{contact_id}'")
+    LOGGER.debug("Retrieving contact id '%s'", contact_id)
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/contacts/get_contact",
@@ -178,7 +178,7 @@ async def afind_contact_by_params(
     ``aprocess_result(...)`` payload, enables cacheable read lookups by default,
     and accepts ``RequestParameters`` plus cache override settings via ``**kwargs``.
     """
-    LOGGER.debug(f"Finding contact '{name}'")
+    LOGGER.debug("Finding contact '%s'", name)
     contact_retrieve_json: dict[str, str | None] = {
         "name": name,
         "role_name": role_name,
