@@ -12,6 +12,7 @@ exclude_patterns = [
   "htmlcov/**",
   "docs/**",
   "examples/**",
+  "tests/**",
 ]
 
 test_patterns = [

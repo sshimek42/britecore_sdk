@@ -43,7 +43,7 @@ def get_export_line_file(
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     request_result: BaseHTTPResponse | HTTPResponse | None = None
-    LOGGER.info(f"Retrieving '{line_name}' lines")
+    LOGGER.info("Retrieving '%s' lines", line_name)
 
     if line_type == "Line":
         web_request_json: dict[str, str | bool] = {
@@ -61,7 +61,7 @@ def get_export_line_file(
     elif line_type == "Policy":
         request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
 
-    LOGGER.info(f"Finished retrieving '{line_name}' lines")
+    LOGGER.info("Finished retrieving '%s' lines", line_name)
 
     API_CLIENT.process_results = API_CLIENT.process_result(request_result)
     if API_CLIENT.process_results is not None:

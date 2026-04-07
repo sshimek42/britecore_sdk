@@ -258,9 +258,9 @@ class BritecoreAPIClient:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
 
-        if response.status == 401 or response.status == 403:
+        if response.status in {401, 403}:
             LOGGER.error(
-                f"Authentication error - {response.status} - {response.reason}"
+                "Authentication error - %s - %s", response.status, response.reason
             )
             raise BritecoreError.AuthenticationError(
                 response.reason or "Unauthorized", http_status=response.status
@@ -281,31 +281,33 @@ class BritecoreAPIClient:
             )
 
         if response.status >= 500:
-            LOGGER.error(f"Server error - {response.status} - {response.reason}")
+            LOGGER.error("Server error - %s - %s", response.status, response.reason)
             raise BritecoreError.ServerError(
                 response.reason or "Internal Server Error", http_status=response.status
             )
 
         if response.status == 404:
-            LOGGER.error(f"Not found - {response.reason}")
+            LOGGER.error("Not found - %s", response.reason)
             raise BritecoreError.NotFoundError(
                 f"Error - {response.status} - {response.reason}"
             )
 
         if response.status == 409:
-            LOGGER.error(f"Conflict - {response.reason}")
+            LOGGER.error("Conflict - %s", response.reason)
             raise BritecoreError.ConflictError(
                 f"Error - {response.status} - {response.reason}"
             )
 
         if response.status in {400, 422}:
-            LOGGER.error(f"Validation error - {response.status} - {response.reason}")
+            LOGGER.error(
+                "Validation error - %s - %s", response.status, response.reason
+            )
             raise BritecoreError.ValidationError(
                 f"Error - {response.status} - {response.reason}"
             )
 
         if response.status != 200:
-            LOGGER.error(f"Error - {response.status} - {response.reason}")
+            LOGGER.error("Error - %s - %s", response.status, response.reason)
             raise BritecoreError.NoDataReturned(
                 f"Error - {response.status} - {response.reason}"
             )
@@ -324,7 +326,7 @@ class BritecoreAPIClient:
         )
 
         if not result:
-            LOGGER.error(f"Error - {message}")
+            LOGGER.error("Error - %s", message)
             raise BritecoreError.NoDataReturned(f"Error - {message}")
 
         data: Any = json_result.get("data")
@@ -511,7 +513,7 @@ class BritecoreAPIClient:
             if not correct_parameter:
                 parameter_used = parameter_priority[0]
 
-            LOGGER.debug(f"Sending {parameter_used}")
+            LOGGER.debug("Sending %s", parameter_used)
 
         return correct_parameter
 
