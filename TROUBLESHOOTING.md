@@ -123,11 +123,11 @@ Create `src/britecore_libraries/config/.secrets.toml`:
 
 ```toml
 [production]
-api_key = "your_api_key_here"
+api_key = "<SET_VIA_ENV_OR_SECRETS_FILE>"
 client_secret = ""
 
 [staging]
-api_key = "your_test_api_key_here"
+api_key = "<SET_VIA_ENV_OR_SECRETS_FILE>"
 ```
 
 Or just use environment variables (they override file settings).

@@ -34,7 +34,7 @@ def retrieve_notes(
     orderBy: str | None = "",
     page: int | None = 0,
     ascending: bool | None = False,
-    type: str | None = "",
+    note_type: str | None = "",
     filterExcludeAlerts: bool | None = False,
     filterSystemNotesOnly: bool | None = False,
     **kwargs: Unpack[RequestParameters],
@@ -50,6 +50,10 @@ def retrieve_notes(
     """
     LOGGER.debug("Getting notes")
 
+    # Backward compatibility: allow legacy callers to pass type=... in kwargs.
+    if "type" in kwargs and not note_type:
+        note_type = kwargs.pop("type")
+
     notes_json: dict[str, Any] = {}
     local_env: dict[str, str | None] = {**locals()}
 
@@ -57,6 +61,8 @@ def retrieve_notes(
         local_env.items()
     ):  # Add any non-default parameters to the request
         if v:
+            if k == "note_type":
+                k = "type"
             notes_json.update({k: v})
 
     provided_timeout: Timeout | None = kwargs.get("request_timeout")

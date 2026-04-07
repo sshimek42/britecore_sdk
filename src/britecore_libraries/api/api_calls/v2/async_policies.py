@@ -217,7 +217,7 @@ async def acreate_policy(
             "expiration_date needed with 'Custom' term_type"
         )
 
-    LOGGER.debug(f"Creating policy '{policy_number}'")
+    LOGGER.debug("Creating policy '%s'", policy_number)
     policy_request_json = {
         key: value
         for key, value in {
@@ -297,7 +297,7 @@ async def arate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) 
     Cached policy reads are invalidated on success, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    LOGGER.debug(f"Re-rating revision '{revision_id}'")
+    LOGGER.debug("Re-rating revision '%s'", revision_id)
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/rate_revision",
         json={"revision_id": revision_id},

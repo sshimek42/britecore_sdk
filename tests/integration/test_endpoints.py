@@ -719,11 +719,11 @@ class TestStructuredTracing:
         client.http = MagicMock()
         client.http.request.side_effect = Urllib3Timeout("timed out")
 
-        with patch(
-            "britecore_libraries.api.britecore_api_client.LOGGER"
-        ) as mock_logger:
-            with pytest.raises(BritecoreError.RequestTimeoutError):
-                client.do_request(path="/api/v2/test/slow", json={"x": 1})
+        with (
+            patch("britecore_libraries.api.britecore_api_client.LOGGER") as mock_logger,
+            pytest.raises(BritecoreError.RequestTimeoutError),
+        ):
+            client.do_request(path="/api/v2/test/slow", json={"x": 1})
 
         error_calls = [str(call) for call in list(mock_logger.error.call_args_list)]
         log_text = " ".join(error_calls)
@@ -746,9 +746,9 @@ class TestLiveSandboxQuotes:
         """Verify the client can initialise against the sandbox URL."""
         import os
 
-        from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls import init_api_client
 
-        client = get_api_client(os.environ["BRITECORE_SANDBOX_URL"])
+        client = init_api_client(os.environ["BRITECORE_SANDBOX_URL"])
         assert client is not None
 
     @pytest.mark.sandbox

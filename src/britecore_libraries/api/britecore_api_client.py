@@ -231,6 +231,84 @@ class BritecoreAPIClient:
         return None
 
     @classmethod
+    def _raise_for_http_status(
+        cls, response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse
+    ) -> None:
+        """Raise SDK exceptions for non-success HTTP statuses."""
+        if response.status in {401, 403}:
+            LOGGER.error(
+                "Authentication error - %s - %s", response.status, response.reason
+            )
+            raise BritecoreError.AuthenticationError(
+                response.reason or "Unauthorized", http_status=response.status
+            )
+
+        if response.status == 429:
+            LOGGER.error("Rate limit exceeded")
+            retry_after = None
+            if hasattr(response, "headers") and response.headers:
+                retry_after_val = response.headers.get("Retry-After")
+                if retry_after_val is not None:
+                    try:
+                        retry_after = int(retry_after_val)
+                    except (ValueError, TypeError):
+                        pass
+            raise BritecoreError.RateLimitError(
+                response.reason or "Too Many Requests", retry_after=retry_after
+            )
+
+        if response.status >= 500:
+            LOGGER.error("Server error - %s - %s", response.status, response.reason)
+            raise BritecoreError.ServerError(
+                response.reason or "Internal Server Error", http_status=response.status
+            )
+
+        if response.status == 404:
+            LOGGER.error("Not found - %s", response.reason)
+            raise BritecoreError.NotFoundError(
+                f"Error - {response.status} - {response.reason}"
+            )
+
+        if response.status == 409:
+            LOGGER.error("Conflict - %s", response.reason)
+            raise BritecoreError.ConflictError(
+                f"Error - {response.status} - {response.reason}"
+            )
+
+        if response.status in {400, 422}:
+            LOGGER.error("Validation error - %s - %s", response.status, response.reason)
+            raise BritecoreError.ValidationError(
+                f"Error - {response.status} - {response.reason}"
+            )
+
+        if response.status != 200:
+            LOGGER.error("Error - %s - %s", response.status, response.reason)
+            raise BritecoreError.NoDataReturned(
+                f"Error - {response.status} - {response.reason}"
+            )
+
+    @staticmethod
+    def _load_json_payload(
+        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
+    ) -> Any:
+        """Decode and parse the JSON payload from a response object."""
+        return loads(response.data.decode("utf-8"))
+
+    @classmethod
+    def _extract_success_data(cls, json_result: Any) -> Any:
+        """Validate API success flag and return normalized data payload."""
+        result = json_result.get("success")
+        message = cls._extract_error_message(
+            json_result.get("message", json_result.get("messages", "Unknown error"))
+        )
+
+        if not result:
+            LOGGER.error("Error - %s", message)
+            raise BritecoreError.NoDataReturned(f"Error - {message}")
+
+        return json_result.get("data")
+
+    @classmethod
     def process_result(
         cls,
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
@@ -257,77 +335,17 @@ class BritecoreAPIClient:
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
-
-        if response.status == 401 or response.status == 403:
-            LOGGER.error(
-                f"Authentication error - {response.status} - {response.reason}"
-            )
-            raise BritecoreError.AuthenticationError(
-                response.reason or "Unauthorized", http_status=response.status
-            )
-
-        if response.status == 429:
-            LOGGER.error("Rate limit exceeded")
-            retry_after = None
-            if hasattr(response, "headers") and response.headers:
-                retry_after_val = response.headers.get("Retry-After")
-                if retry_after_val is not None:
-                    try:
-                        retry_after = int(retry_after_val)
-                    except (ValueError, TypeError):
-                        pass
-            raise BritecoreError.RateLimitError(
-                response.reason or "Too Many Requests", retry_after=retry_after
-            )
-
-        if response.status >= 500:
-            LOGGER.error(f"Server error - {response.status} - {response.reason}")
-            raise BritecoreError.ServerError(
-                response.reason or "Internal Server Error", http_status=response.status
-            )
-
-        if response.status == 404:
-            LOGGER.error(f"Not found - {response.reason}")
-            raise BritecoreError.NotFoundError(
-                f"Error - {response.status} - {response.reason}"
-            )
-
-        if response.status == 409:
-            LOGGER.error(f"Conflict - {response.reason}")
-            raise BritecoreError.ConflictError(
-                f"Error - {response.status} - {response.reason}"
-            )
-
-        if response.status in {400, 422}:
-            LOGGER.error(f"Validation error - {response.status} - {response.reason}")
-            raise BritecoreError.ValidationError(
-                f"Error - {response.status} - {response.reason}"
-            )
-
-        if response.status != 200:
-            LOGGER.error(f"Error - {response.status} - {response.reason}")
-            raise BritecoreError.NoDataReturned(
-                f"Error - {response.status} - {response.reason}"
-            )
+        cls._raise_for_http_status(response)
 
         try:
-            json_result: Any = loads(response.data.decode("utf-8"))
+            json_result: Any = cls._load_json_payload(response)
         except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
             LOGGER.error("Error parsing API response: %s", parse_error)
             raise BritecoreError.NoDataReturned(
                 f"Error parsing API response: {parse_error}"
             ) from parse_error
 
-        result = json_result.get("success")
-        message = cls._extract_error_message(
-            json_result.get("message", json_result.get("messages", "Unknown error"))
-        )
-
-        if not result:
-            LOGGER.error(f"Error - {message}")
-            raise BritecoreError.NoDataReturned(f"Error - {message}")
-
-        data: Any = json_result.get("data")
+        data: Any = cls._extract_success_data(json_result)
         if logs:
             LOGGER.debug(data)
 
@@ -511,7 +529,7 @@ class BritecoreAPIClient:
             if not correct_parameter:
                 parameter_used = parameter_priority[0]
 
-            LOGGER.debug(f"Sending {parameter_used}")
+            LOGGER.debug("Sending %s", parameter_used)
 
         return correct_parameter
 
