@@ -103,33 +103,37 @@ Create `src/britecore_libraries/config/settings.toml` (public) and `.secrets.tom
 
 **settings.toml** (example):
 ```toml
+# Default urllib3 configuration
 [default]
-base_url = ""
-client_id = ""
-client_secret = ""
-api_key = ""
+web_timeout = 5
+web_retry = 3
+web_timeout_long = 30
 
+# Site definitions (endpoints only, no credentials)
 [production]
-base_url = "https://api.britecore.example.com"
-client_id = ""
-client_secret = ""
+# base_url and credentials go in .secrets.toml
+
+[staging]
+# base_url and credentials go in .secrets.toml
 ```
 
 **.secrets.toml** (never commit):
 ```toml
 [production]
-api_key = ""  # Set via BRITECORE_API_KEY environment variable
+base_url = "https://api.britecore.example.com"
+api_key = "your_real_api_key"
 
 [staging]
-api_key = ""  # Set via BRITECORE_API_KEY environment variable
+base_url = "https://api-staging.britecore.example.com"
+api_key = "your_staging_api_key"
 ```
 
 **Environment variables** (override file config):
 ```bash
-export BRITECORE_BASE_URL="https://api.britecore.example.com"
-export BRITECORE_CLIENT_ID="your_client_id"
-export BRITECORE_CLIENT_SECRET="your_client_secret"
-export BRITECORE_API_KEY="your_api_key"
+export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
+export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
+export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
+export BRITECORE_LIBRARIES_API_KEY="your_api_key"
 export target_site="production"
 ```
 

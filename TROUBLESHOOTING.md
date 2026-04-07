@@ -91,7 +91,7 @@ python -c "import os; print(os.environ.get('target_site'))"
 
 **Solution:**
 
-Check `src/britecore_libraries/config/settings.toml`:
+Check `src/britecore_libraries/config/.secrets.toml`:
 
 ```toml
 [production]
@@ -99,16 +99,20 @@ base_url = "https://..."          # Required
 api_key = "..."                   # Required (if no OAuth)
 client_id = ""                    # Leave blank for API key
 client_secret = ""                # Leave blank for API key
-web_timeout = 5                   # Required
-web_retry = 3                     # Required
+
+[staging]
+base_url = "https://..."          # Required
+client_id = "..."                 # Required (if no API key)
+client_secret = "..."             # Required (if no API key)
 ```
 
 **Or use environment variables:**
 
 ```powershell
-$env:BRITECORE_BASE_URL="https://..."
-$env:BRITECORE_API_KEY="..."
-$env:BRITECORE_WEB_TIMEOUT="5"
+$env:BRITECORE_LIBRARIES_BASE_URL="https://..."
+$env:BRITECORE_LIBRARIES_API_KEY="..."
+$env:BRITECORE_LIBRARIES_CLIENT_ID="..."
+$env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
 ```
 
 ---
@@ -123,11 +127,14 @@ Create `src/britecore_libraries/config/.secrets.toml`:
 
 ```toml
 [production]
-api_key = ""  # Set via BRITECORE_API_KEY environment variable
+base_url = "<SET_VIA_ENV_OR_SECRETS_FILE>"
+api_key = "<SET_VIA_ENV_OR_SECRETS_FILE>"
+client_id = ""
 client_secret = ""
 
 [staging]
-api_key = ""  # Set via BRITECORE_API_KEY environment variable
+base_url = "<SET_VIA_ENV_OR_SECRETS_FILE>"
+api_key = "<SET_VIA_ENV_OR_SECRETS_FILE>"
 ```
 
 Or just use environment variables (they override file settings).

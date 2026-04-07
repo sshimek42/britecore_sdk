@@ -68,15 +68,13 @@ $env:system = "your_system"
 
 Configure site values in:
 
-- `src/britecore_libraries/config/settings.toml`
-- `src/britecore_libraries/config/.secrets.toml`
+- `src/britecore_libraries/config/settings.toml` — urllib3 defaults only (web_timeout, web_retry, etc.)
+- `src/britecore_libraries/config/.secrets.toml` — all credentials and base_url (base_url, client_id, client_secret, api_key)
 
-Required site keys:
+Required keys in `.secrets.toml`:
 
 - `base_url`
-- `client_id`
-- `client_secret`
-- `api_key`
+- Either `api_key` (for API key auth) or both `client_id` + `client_secret` (for OAuth)
 
 Authentication behavior is automatic:
 
