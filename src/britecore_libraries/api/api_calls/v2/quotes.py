@@ -67,4 +67,3 @@ def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
 
 __all__ = ["create_full_quote", "get_quote"]
-
