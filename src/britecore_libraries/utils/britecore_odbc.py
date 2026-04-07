@@ -1,11 +1,10 @@
 """Wrapper for pyodbc"""
 
-import sys
-
 import pyodbc
 
 from britecore_libraries import logger
 from britecore_libraries.config import settings
+from britecore_libraries.exceptions import BritecoreError
 
 
 def __getattr__(name: str):
