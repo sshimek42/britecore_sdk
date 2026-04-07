@@ -37,6 +37,11 @@ def createurloverride(
     json_obj: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Create an external URL override for a BriteCore URL path.
+
+    The payload maps a BriteCore route to an external override URL and may
+    include optional HTTP method, shared secret, and category fields.
+    """
     return _post(
         "/api/v1/custom_ui/createURLOverride",
         _build_payload(json_obj=json_obj),
@@ -48,6 +53,7 @@ def deleteurloverride(
     json_obj: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Delete a configured URL override for a BriteCore URL path."""
     return _post(
         "/api/v1/custom_ui/deleteURLOverride",
         _build_payload(json_obj=json_obj),
@@ -58,6 +64,7 @@ def deleteurloverride(
 def retrieveurloverrides(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Retrieve all configured external URL overrides."""
     return _post("/api/v1/custom_ui/retrieveURLOverrides", {}, **kwargs)
 
 
@@ -65,6 +72,7 @@ def updateurloverride(
     json_obj: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Update an existing URL override for a BriteCore URL path."""
     return _post(
         "/api/v1/custom_ui/updateURLOverride",
         _build_payload(json_obj=json_obj),

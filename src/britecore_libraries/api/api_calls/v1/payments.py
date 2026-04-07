@@ -37,6 +37,13 @@ def makemanualpolicypayment(
     json_dict: dict[str, Any],
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Post a payment that has already been collected to a single policy.
+
+    This wrapper calls ``/api/v1/payments/makeManualPolicyPayment`` for
+    payments that do not need to be processed through an external vendor.
+    Returns the normalized ``process_result(...)`` payload and accepts
+    ``RequestParameters`` overrides via ``**kwargs``.
+    """
     return _post(
         "/api/v1/payments/makeManualPolicyPayment",
         _build_payload(json_dict=json_dict),
@@ -48,6 +55,7 @@ def make_manual_policy_payment(
     json_dict: dict[str, Any],
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Snake_case alias for :func:`makemanualpolicypayment`."""
     return makemanualpolicypayment(json_dict=json_dict, **kwargs)
 
 

@@ -37,6 +37,7 @@ def getattachment(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Push a file to the client using the file record referenced in ``json_dict``."""
     return _post(
         "/api/v1/printing/getAttachment",
         _build_payload(json_dict=json_dict),
@@ -48,6 +49,7 @@ def gettobeprinted(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Retrieve deliverables and associated files that should be printed."""
     return _post(
         "/api/v1/printing/getToBePrinted",
         _build_payload(json_dict=json_dict),
@@ -59,6 +61,7 @@ def markasprinted(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Mark all files referenced in ``json_dict`` as printed."""
     return _post(
         "/api/v1/printing/markAsPrinted",
         _build_payload(json_dict=json_dict),
@@ -70,6 +73,7 @@ def sendprinthawk(
     json_dict: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Send PrintHawk data, including the newer date/email-capable payload shape."""
     return _post(
         "/api/v1/printing/sendPrintHawk",
         _build_payload(json_dict=json_dict),
@@ -80,6 +84,7 @@ def sendprinthawk(
 def sendprinthawkemail(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Call the v1 PrintHawk email endpoint."""
     return _post("/api/v1/printing/sendPrintHawkEmail", {}, **kwargs)
 
 
@@ -90,6 +95,7 @@ def get_to_be_printed(
     ignore_state: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
+    """Helper alias that builds the ``json_dict`` payload for ``gettobeprinted``."""
     return gettobeprinted(
         json_dict={
             "from_date": from_date,
@@ -101,6 +107,7 @@ def get_to_be_printed(
 
 
 def mark_as_printed(file_ids: list[str], **kwargs: Unpack[RequestParameters]) -> Any:
+    """Helper alias that builds the ``json_dict`` payload for ``markasprinted``."""
     return markasprinted(json_dict={"file_ids": file_ids}, **kwargs)
 
 
