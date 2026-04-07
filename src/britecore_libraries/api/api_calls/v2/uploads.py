@@ -1,7 +1,7 @@
 """BriteCore v2 Uploads API endpoint wrappers.
 
-Provides:
-    attach_file_to_policy  -- Attach an uploaded file to a policy.
+This module provides the SDK wrapper for associating uploaded files with policy
+records through the BriteCore v2 uploads API.
 """
 
 from logging import Logger
@@ -45,20 +45,11 @@ def attach_file_to_policy(
     payload: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Attach an uploaded file to a policy.
+    """Attach an uploaded file to a policy record.
 
-    Parameters
-    ----------
-    payload : dict, optional
-        Object containing the file attachment details (e.g. file ID, policy ID,
-        document type, and any additional metadata).
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the attachment.
+    This wrapper sends ``payload`` to ``/api/v2/uploads/attach_file_to_policy``
+    and returns the normalized ``process_result(...)`` payload for the
+    attachment request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/uploads/attach_file_to_policy",

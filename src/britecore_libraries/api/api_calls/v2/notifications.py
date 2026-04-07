@@ -1,8 +1,7 @@
 """BriteCore v2 Notifications API endpoint wrappers.
 
-Provides:
-    acknowledge  -- Acknowledge one or more notifications.
-    current      -- Retrieve current (unacknowledged) notifications.
+This module provides wrappers for acknowledging notifications and retrieving
+the current unacknowledged notification list.
 """
 
 from logging import Logger
@@ -40,17 +39,11 @@ def _post(
 def acknowledge(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Acknowledge pending notifications.
+    """Acknowledge the caller's current notifications.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming acknowledgement.
+    This wrapper calls ``/api/v2/notifications/acknowledge`` and returns the
+    normalized ``process_result(...)`` payload confirming acknowledgement.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post("/api/v2/notifications/acknowledge", {}, **kwargs)
 
@@ -58,17 +51,11 @@ def acknowledge(
 def current(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the current (unacknowledged) notifications.
+    """Retrieve the current unacknowledged notifications.
 
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the current notifications.
+    This wrapper calls ``/api/v2/notifications/current`` and returns the
+    normalized ``process_result(...)`` payload for the active notification set.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post("/api/v2/notifications/current", {}, **kwargs)
 

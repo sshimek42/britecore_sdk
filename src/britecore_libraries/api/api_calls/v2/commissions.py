@@ -41,7 +41,12 @@ def delete_batch_payments(
     payment_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a batch of commission payments by ID."""
+    """Delete commission payments in batch.
+
+    Supply ``payment_ids`` for the commission payment records that should be
+    removed from the queue. Returns the normalized ``process_result(...)``
+    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """
     return _post(
         "/api/v2/commissions/delete_batch_payments",
         _build_payload(payment_ids=payment_ids),
@@ -53,7 +58,12 @@ def delete_payment(
     payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a single commission payment."""
+    """Delete a single commission payment.
+
+    Use ``payment_id`` to identify the commission payment record to remove.
+    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
+    include ``RequestParameters`` overrides for timeout, retry, or headers.
+    """
     return _post(
         "/api/v2/commissions/delete_payment",
         _build_payload(payment_id=payment_id),
@@ -62,7 +72,12 @@ def delete_payment(
 
 
 def get_commission_payees(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve the available commission payees."""
+    """Retrieve the list of commission payee agency numbers.
+
+    This endpoint returns the payees that can be referenced in commission payment
+    workflows. Returns the normalized ``process_result(...)`` payload, and
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """
     return _post("/api/v2/commissions/get_commission_payees", **kwargs)
 
 
@@ -70,7 +85,12 @@ def get_payment(
     commission_payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a commission payment by ID."""
+    """Retrieve a commission payment record.
+
+    Use ``commission_payment_id`` to fetch the specific payment record documented
+    by the commissions API. Returns the normalized ``process_result(...)``
+    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """
     return _post(
         "/api/v2/commissions/get_payment",
         _build_payload(commission_payment_id=commission_payment_id),
@@ -79,7 +99,12 @@ def get_payment(
 
 
 def get_unexported_commissions(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve commissions that have not yet been exported."""
+    """Retrieve commission records that have not yet been exported.
+
+    This endpoint is intended for export workflows that only process outstanding
+    commission data. Returns the normalized ``process_result(...)`` payload, and
+    ``**kwargs`` may include ``RequestParameters`` overrides.
+    """
     return _post("/api/v2/commissions/get_unexported_commissions", **kwargs)
 
 
@@ -87,7 +112,12 @@ def save_batch_payments(
     payments: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save a batch of commission payments."""
+    """Save commission payments in batch.
+
+    Pass serialized commission payment objects in ``payments`` to create or store
+    them in one request. Returns the normalized ``process_result(...)`` payload,
+    and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """
     return _post(
         "/api/v2/commissions/save_batch_payments",
         _build_payload(payments=payments),
@@ -99,7 +129,12 @@ def save_batch_payments_csv(
     data: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save batch commission payments from CSV data."""
+    """Save commission payments in batch from CSV data.
+
+    Use ``data`` for the CSV content expected by the commissions import workflow.
+    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
+    include ``RequestParameters`` overrides.
+    """
     return _post(
         "/api/v2/commissions/save_batch_payments_csv",
         _build_payload(data=data),
@@ -112,7 +147,12 @@ def save_payment(
     agency_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save a single commission payment."""
+    """Save a single commission payment.
+
+    The request uses ``amount`` and ``agency_number`` for the payment record being
+    stored. Returns the normalized ``process_result(...)`` payload, and
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """
     return _post(
         "/api/v2/commissions/save_payment",
         _build_payload(amount=amount, agency_number=agency_number),
@@ -124,7 +164,12 @@ def update_commission_payments_complete(
     commission_payment_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark commission payments as complete."""
+    """Clear selected payments from the commission queue.
+
+    Provide ``commission_payment_ids`` for the commission payments that should be
+    marked complete. Returns the normalized ``process_result(...)`` payload, and
+    ``**kwargs`` may supply ``RequestParameters`` overrides.
+    """
     return _post(
         "/api/v2/commissions/update_commission_payments_complete",
         _build_payload(commission_payment_ids=commission_payment_ids),

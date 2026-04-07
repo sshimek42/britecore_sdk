@@ -7,6 +7,12 @@ For a compact version, see `AGENTS.quickstart.md`.
 - Treat `src/britecore_libraries/` as the active codebase; ignore generated copies in `build/`, `dist/`, `env/`, and `*.egg-info/` unless packaging issues require them.
 - Tests live under `tests/` (not under `src/`), so run targeted pytest for changed modules and keep focused import/smoke checks for config-sensitive paths.
 
+## Repo layout contract
+
+- Authored source lives in `src/britecore_libraries/`; authored tests live in `tests/`; authored docs live in root `*.md` files and `docs/`.
+- Generated outputs are non-source and should not be edited directly: `build/`, `dist/`, `env/`, `.venv/`, `*.egg-info/`, `htmlcov/`, and `docs/_build/`.
+- Canonical compatibility/backlog docs are root files: `PYTHON_COMPATIBILITY.md` and `UNIMPLEMENTED_API_STUBS.md`; files under `docs/` include them for documentation builds.
+
 ## Big-picture architecture
 
 - API access centers on `BritecoreAPIClient` in `src/britecore_libraries/api/britecore_api_client.py`; endpoint wrappers call `do_request(...)` then `process_result(...)`.
@@ -21,6 +27,12 @@ For a compact version, see `AGENTS.quickstart.md`.
 - Use `RequestParameters` (`TypedDict` in `britecore_api_client.py`) with `**kwargs: Unpack[RequestParameters]` for timeout/retry/header overrides.
 - For mutually exclusive identifiers, reuse `API_CLIENT.multiple_parameter_verification(...)` (example: `retrieve_policy` in `v2/policies.py`).
 - Keep endpoints versioned under `api/api_calls/v1` and `api/api_calls/v2`; v2 is the primary surface.
+
+## Docstring source policy
+
+- For endpoint wrapper functions, use `britecore_api.json` as the primary source for summary, parameter intent, and response semantics.
+- Add SDK-specific context only where needed (for example: snake_case aliases, `RequestParameters`, or `process_result(...)` normalization behavior).
+- If the spec and current wrapper behavior differ, prefer describing the documented API contract and call out SDK-specific differences explicitly and briefly.
 
 ## Configuration and integration points
 

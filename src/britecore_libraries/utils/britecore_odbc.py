@@ -1,11 +1,10 @@
 """Wrapper for pyodbc"""
 
-import sys
-
 import pyodbc
 
 from britecore_libraries import logger
 from britecore_libraries.config import settings
+from britecore_libraries.exceptions import BritecoreError
 
 
 def __getattr__(name: str):
@@ -35,8 +34,8 @@ def get_cursor(
     try:
         conn1 = pyodbc.connect(conn_string, **conn_options)
     except pyodbc.DatabaseError as err:
-        logger.error(err)
-        sys.exit(str(err))
+        logger.error(str(err))
+        raise BritecoreError.DatabaseConnectionError(str(err)) from err
     logger.debug("Database connection succeeded")
 
     with conn1.cursor() as cursor:

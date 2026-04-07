@@ -1,9 +1,7 @@
 """BriteCore v2 Reports API endpoint wrappers.
 
-Provides:
-    list_files       -- List files associated with a report ID.
-    retrieve_reports -- Retrieve all available reports.
-    retrieve_report  -- Retrieve a single report by ID.
+This module provides wrappers for report listing, report retrieval, and
+report-file lookups in the BriteCore v2 reports API.
 """
 
 from typing import Any, Unpack
@@ -20,29 +18,11 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve a list of files associated with a specific report.
+    """List files associated with a report.
 
-    This function fetches the list of files linked to a given report ID by making a
-    request to the API endpoint for report files.
-
-    Parameters
-    ----------
-    report_id : str
-        The unique identifier of the report for which to retrieve file list.
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to pass to the API request.
-
-    Returns
-    -------
-    Any
-        The result of processing the API response, typically containing the list
-        of files associated with the report.
-
-    Raises
-    ------
-    Any exceptions raised by the underlying API client or request processing
-    mechanism are propagated as-is.
+    This wrapper sends ``report_id`` to ``/api/v2/reports/list_files`` and
+    returns the normalized ``process_result(...)`` payload for the matching
+    report files. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     list_json: dict[str, str] = {"report_id": report_id}
 
@@ -56,37 +36,11 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve reports from the API endpoint.
+    """Retrieve the available reports.
 
-    This function sends a request to the API to retrieve reports. It uses the
-    API client to perform the HTTP request and processes the result.
-
-    Parameters
-    ----------
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to pass to the API client's do_request method.
-        These parameters are unpacked from a RequestParameters type.
-
-    Returns
-    -------
-    Any
-        The processed result from the API request, which can be of any type
-        depending on the response data structure.
-
-    Raises
-    ------
-    Any exceptions raised by the underlying API client or HTTP request
-    mechanism are propagated as-is.
-
-    Notes
-    -----
-    - The function internally uses API_CLIENT.do_request to perform the actual
-      HTTP request to the "/api/v2/reports/retrieve_reports" endpoint.
-    - The required_json parameter is set to None, indicating no JSON payload
-      is sent with the request.
-    - The result from the request is processed using API_CLIENT.process_result
-      before being returned.
+    This wrapper calls ``/api/v2/reports/retrieve_reports`` and returns the
+    normalized ``process_result(...)`` payload for the report list.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     required_json = None
 
@@ -98,27 +52,11 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
 
 
 def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve a report by its ID from the API.
+    """Retrieve a report by identifier.
 
-    This function fetches a report from the API using the provided report ID. It constructs
-    a request with the report ID and sends it to the API endpoint for report retrieval.
-
-    Parameters
-    ----------
-    report_id : str
-        The unique identifier of the report to retrieve
-    **kwargs : Unpack[RequestParameters]
-        Additional keyword arguments to pass to the API request
-
-    Returns
-    -------
-    Any
-        The result of the API request processing, typically the report data
-
-    Raises
-    ------
-    Any exceptions raised by the underlying API client or request processing
+    This wrapper sends ``report_id`` to ``/api/v2/reports/retrieve_report`` and
+    returns the normalized ``process_result(...)`` payload for the matching
+    report. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     report_json: dict[str, str] = {"report_id": report_id}
 

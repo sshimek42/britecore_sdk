@@ -1,12 +1,7 @@
 """BriteCore v2 Signatures API endpoint wrappers.
 
-Provides:
-    docusign_auth       -- Perform a DocuSign authentication action.
-    docusign_config     -- Retrieve or set DocuSign configuration.
-    get_signatures      -- Retrieve signatures for a revision.
-    recreate_envelope   -- Recreate a DocuSign envelope for a revision.
-    update_signatures   -- Update signature records for an envelope.
-    void_envelope       -- Void a DocuSign envelope.
+This module provides wrappers for DocuSign authentication, configuration,
+signature retrieval, envelope recreation, and envelope status updates.
 """
 
 from logging import Logger
@@ -52,17 +47,10 @@ def docusign_auth(
 ) -> Any:
     """Perform a DocuSign authentication action.
 
-    Parameters
-    ----------
-    action : Any, optional
-        The authentication action to perform (e.g. ``"login"``).
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing auth result or redirect URL.
+    This wrapper sends ``action`` to ``/api/v2/signatures/docusign_auth`` and
+    returns the normalized ``process_result(...)`` payload for the DocuSign
+    authentication workflow. ``**kwargs`` accepts ``RequestParameters``
+    overrides.
     """
     return _post(
         "/api/v2/signatures/docusign_auth",
@@ -75,19 +63,12 @@ def docusign_config(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve or update the DocuSign integration configuration.
+    """Retrieve or update DocuSign configuration.
 
-    Parameters
-    ----------
-    data : Any, optional
-        Configuration data object to set. Omit to retrieve current config.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing DocuSign configuration.
+    This wrapper sends the optional ``data`` payload to
+    ``/api/v2/signatures/docusign_config`` and returns the normalized
+    ``process_result(...)`` payload for the DocuSign configuration record.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/signatures/docusign_config",
@@ -100,19 +81,11 @@ def get_signatures(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve signature records for a policy revision.
+    """Retrieve signature records for a revision.
 
-    Parameters
-    ----------
-    revision_id : Any, optional
-        UUID of the policy revision whose signatures to retrieve.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the signature records.
+    This wrapper sends ``revision_id`` to ``/api/v2/signatures/get_signatures``
+    and returns the normalized ``process_result(...)`` payload for the matching
+    signature records. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/signatures/get_signatures",
@@ -125,19 +98,12 @@ def recreate_envelope(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Recreate a DocuSign envelope for a policy revision.
+    """Recreate a DocuSign envelope for a revision.
 
-    Parameters
-    ----------
-    revision_id : Any, optional
-        UUID of the policy revision for which to recreate the envelope.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the new envelope details.
+    This wrapper sends ``revision_id`` to
+    ``/api/v2/signatures/recreate_envelope`` and returns the normalized
+    ``process_result(...)`` payload for the recreated envelope.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/signatures/recreate_envelope",
@@ -152,23 +118,12 @@ def update_signatures(
     status: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update signature records for a DocuSign envelope.
+    """Update signature records for an envelope.
 
-    Parameters
-    ----------
-    envelope_id : str, optional
-        ID of the DocuSign envelope to update.
-    signers : str, optional
-        Serialized signer information to apply.
-    status : str, optional
-        New status value for the signature records.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the update.
+    This wrapper sends ``envelope_id``, ``signers``, and ``status`` to
+    ``/api/v2/signatures/update_signatures`` and returns the normalized
+    ``process_result(...)`` payload for the update request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/signatures/update_signatures",
@@ -185,21 +140,10 @@ def void_envelope(
 ) -> Any:
     """Void a DocuSign envelope.
 
-    Parameters
-    ----------
-    envelope_id : Any, optional
-        ID of the DocuSign envelope to void.
-    revision_id : Any, optional
-        UUID of the associated policy revision.
-    void_reason : Any, optional
-        Reason for voiding the envelope.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the void operation.
+    This wrapper sends the envelope identifier, optional revision identifier,
+    and optional ``void_reason`` to ``/api/v2/signatures/void_envelope`` and
+    returns the normalized ``process_result(...)`` payload for the void
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     payload: dict[str, Any] = {}
     if envelope_id is not None:

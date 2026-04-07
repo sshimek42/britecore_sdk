@@ -38,7 +38,6 @@ class BritecoreQuote:
         Returns:
             Dictionary representation of policy
         """
-
         if not isinstance(self.underwriting_questions, list):
             LOGGER.debug("Missing or invalid underwriting questions")
             self.underwriting_questions = []

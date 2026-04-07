@@ -1,8 +1,7 @@
 """BriteCore v2 Inspections API endpoint wrappers.
 
-Provides:
-    update_inspection_dates -- Update next-inspection and request dates for a
-                               policy or property.
+This module provides the SDK wrapper for updating inspection dates for a
+policy or property.
 """
 
 from logging import Logger
@@ -30,25 +29,13 @@ def update_inspection_dates(
     inspection_date_request: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """
-    Update inspection dates for a policy or property.
+    """Update inspection dates for a policy or property.
 
-    This function allows updating inspection dates by providing either a policy number
-    or property ID. It verifies the provided parameters and constructs a request to
-    update the inspection dates through the API.
-
-    Args:
-        policy_number: The policy number for which inspection dates need to be updated.
-        property_id: The property ID for which inspection dates need to be updated.
-        next_inspection_date: The next inspection date to be set. (YYYY-MM-DD)
-        inspection_date_request: The inspection date request to be set. (YYYY-MM-DD)
-        **kwargs: Additional keyword arguments to be passed to the API client.
-
-    Returns:
-        The result of the API request processing.
-
-    Raises:
-        BritecoreError.MissingParameter: If neither policy_number nor property_id is provided.
+    This wrapper uses either ``property_id`` or ``policy_number`` together with
+    the requested inspection dates to call
+    ``/api/v2/inspections/update_inspection_dates``. It returns the normalized
+    ``process_result(...)`` payload for the update request and accepts
+    ``RequestParameters`` overrides via ``**kwargs``.
     """
     local_env: dict[str, str | None] = {**locals()}
 

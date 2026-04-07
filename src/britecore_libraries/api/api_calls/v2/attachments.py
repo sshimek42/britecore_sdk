@@ -1,17 +1,8 @@
 """BriteCore v2 Attachments API endpoint wrappers.
 
-Provides:
-    create_folder_in_user_folder        -- Create a folder inside a user folder.
-    delete_photo                        -- Delete an attachment photo by file ID.
-    get_attachments_file_list           -- Retrieve a paginated file list for a reference.
-    get_file_metadata                   -- Retrieve metadata for a specific file.
-    get_resource_photos                 -- Retrieve photos for a specific resource.
-    move_user_file                      -- Move a file to a different folder.
-    remove_attachments                  -- Remove multiple attachments by ID.
-    rename_user_file                    -- Rename an existing user file.
-    retrieve_attachments                -- Retrieve attachments for a reference, paginated.
-    upload_attachment_to_user_folder    -- Upload a file to a specific user folder.
-    upload_attachment_unified           -- Upload a file using the unified upload endpoint.
+This module provides wrappers for attachment folder management, file metadata,
+listing, uploads, moves, renames, and removals in the BriteCore v2
+attachments API.
 """
 
 from logging import Logger
@@ -58,25 +49,12 @@ def create_folder_in_user_folder(
     reference_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new folder inside a user folder.
+    """Create a folder inside a user folder.
 
-    Parameters
-    ----------
-    folder_name : str, optional
-        Name of the new folder.
-    parent_folder_id : str, optional
-        ID of the parent folder.
-    reference_id : str, optional
-        ID of the associated resource (e.g. policy ID).
-    reference_type : str, optional
-        Type of the associated resource (e.g. ``"policy"``).
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends the folder and reference fields to
+    ``/api/v2/attachments/create_folder_in_user_folder`` and returns the
+    normalized ``process_result(...)`` payload for the folder-creation request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/create_folder_in_user_folder",
@@ -94,19 +72,11 @@ def delete_photo(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete an attachment photo by file ID.
+    """Delete an attachment photo by file identifier.
 
-    Parameters
-    ----------
-    file_id : str, optional
-        UUID of the file to delete.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``file_id`` to ``/api/v2/attachments/delete_photo`` and
+    returns the normalized ``process_result(...)`` payload for the delete
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/delete_photo",
@@ -125,31 +95,12 @@ def get_attachments_file_list(
     reference_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a paginated list of attachment files for a reference.
+    """Retrieve a paginated attachment file list for a reference.
 
-    Parameters
-    ----------
-    ascending : bool, optional
-        Sort direction; ``True`` for ascending.
-    folder_id : str, optional
-        Filter by folder UUID.
-    include_forms : bool, optional
-        Whether to include form files in results.
-    order_by : str, optional
-        Field name to sort by.
-    page : int, optional
-        Page number (1-based).
-    reference_id : str, optional
-        ID of the associated resource.
-    reference_type : str, optional
-        Type of the associated resource.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the file list.
+    This wrapper sends the folder, reference, paging, and sorting filters to
+    ``/api/v2/attachments/get_attachments_file_list`` and returns the
+    normalized ``process_result(...)`` payload for the file-list request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/get_attachments_file_list",
@@ -172,17 +123,9 @@ def get_file_metadata(
 ) -> Any:
     """Retrieve metadata for a specific file.
 
-    Parameters
-    ----------
-    file_id : str, optional
-        UUID of the file whose metadata to retrieve.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing file metadata.
+    This wrapper sends ``file_id`` to ``/api/v2/attachments/get_file_metadata``
+    and returns the normalized ``process_result(...)`` payload for the file
+    metadata request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/get_file_metadata",
@@ -195,19 +138,12 @@ def get_resource_photos(
     reference_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve photos associated with a specific resource.
+    """Retrieve photos associated with a resource.
 
-    Parameters
-    ----------
-    reference_id : str, optional
-        ID of the resource whose photos to retrieve.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the resource photos.
+    This wrapper sends ``reference_id`` to
+    ``/api/v2/attachments/get_resource_photos`` and returns the normalized
+    ``process_result(...)`` payload for the photo lookup. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/get_resource_photos",
@@ -223,19 +159,10 @@ def move_user_file(
 ) -> Any:
     """Move a file to a different folder.
 
-    Parameters
-    ----------
-    file_id : str, optional
-        UUID of the file to move.
-    to_folder_id : str, optional
-        UUID of the destination folder.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``file_id`` and ``to_folder_id`` to
+    ``/api/v2/attachments/move_user_file`` and returns the normalized
+    ``process_result(...)`` payload for the move request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/move_user_file",
@@ -248,19 +175,12 @@ def remove_attachments(
     attachment_ids: list | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove multiple attachments by their IDs.
+    """Remove attachments by identifier list.
 
-    Parameters
-    ----------
-    attachment_ids : list, optional
-        List of attachment UUIDs to remove.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``attachment_ids`` to
+    ``/api/v2/attachments/remove_attachments`` and returns the normalized
+    ``process_result(...)`` payload for the removal request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/remove_attachments",
@@ -276,19 +196,10 @@ def rename_user_file(
 ) -> Any:
     """Rename an existing user file.
 
-    Parameters
-    ----------
-    file_id : str, optional
-        UUID of the file to rename.
-    file_name : str, optional
-        New name for the file.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``file_id`` and ``file_name`` to
+    ``/api/v2/attachments/rename_user_file`` and returns the normalized
+    ``process_result(...)`` payload for the rename request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/rename_user_file",
@@ -309,35 +220,12 @@ def retrieve_attachments(
     search_string: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve attachments for a reference, with pagination and filtering.
+    """Retrieve attachments for a reference with filtering and pagination.
 
-    Parameters
-    ----------
-    ascending : bool, optional
-        Sort direction; ``True`` for ascending.
-    folder_id : str, optional
-        Filter by folder UUID.
-    list_view : bool, optional
-        Return results in list-view format.
-    order_by : str, optional
-        Field name to sort by.
-    page : int, optional
-        Page number (1-based).
-    page_size : int, optional
-        Number of results per page.
-    reference_id : str, optional
-        ID of the associated resource.
-    reference_type : str, optional
-        Type of the associated resource.
-    search_string : str, optional
-        Text to search within file names or metadata.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the attachment list.
+    This wrapper sends the reference, folder, paging, sorting, and search
+    fields to ``/api/v2/attachments/retrieve_attachments`` and returns the
+    normalized ``process_result(...)`` payload for the attachment query.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/retrieve_attachments",
@@ -365,29 +253,13 @@ def upload_attachment_to_user_folder(
     reference_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Upload a Base64-encoded file to a specific user folder.
+    """Upload a file to a user folder.
 
-    Parameters
-    ----------
-    file_data_base64 : str, optional
-        Base64-encoded file contents.
-    file_name : str, optional
-        Name to give the uploaded file.
-    file_type : str, optional
-        MIME type or file type identifier.
-    folder_id : str, optional
-        Target folder UUID.
-    reference_id : str, optional
-        ID of the associated resource.
-    reference_type : str, optional
-        Type of the associated resource.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the new file details.
+    This wrapper sends the Base64 file payload, file metadata, folder
+    identifier, and reference fields to
+    ``/api/v2/attachments/upload_attachment_to_user_folder`` and returns the
+    normalized ``process_result(...)`` payload for the upload request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/upload_attachment_to_user_folder",
@@ -413,31 +285,12 @@ def upload_attachment_unified(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Upload a file using the unified attachment upload endpoint.
+    """Upload a file with the unified attachment endpoint.
 
-    Parameters
-    ----------
-    file_data_base64 : str, optional
-        Base64-encoded file contents.
-    file_name : str, optional
-        Name to give the uploaded file.
-    file_type : str, optional
-        MIME type or file type identifier.
-    folder_id : str, optional
-        Target folder UUID.
-    reference_id : str, optional
-        ID of the associated resource.
-    reference_type : str, optional
-        Type of the associated resource.
-    revision_id : str, optional
-        Policy revision UUID to associate with the upload.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the new file details.
+    This wrapper sends the file payload, file metadata, reference fields, and
+    optional ``revision_id`` to ``/api/v2/attachments/upload_attachment_unified``
+    and returns the normalized ``process_result(...)`` payload for the upload
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/attachments/upload_attachment_unified",

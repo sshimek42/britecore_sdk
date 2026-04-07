@@ -1,8 +1,7 @@
 """BriteCore v2 Data API endpoint wrappers.
 
-Provides:
-    export_data_as_csv        -- Export data as a CSV file.
-    get_available_dashboards  -- Retrieve the list of available dashboards.
+This module provides wrappers for data export and dashboard-discovery endpoints
+in the BriteCore v2 data API.
 """
 
 from logging import Logger
@@ -50,27 +49,12 @@ def export_data_as_csv(
     start_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export data as a CSV file.
+    """Export CSV data for the requested date range and data sets.
 
-    Parameters
-    ----------
-    as_of_date : str, optional
-        As-of date for the export in ``YYYY-MM-DD`` format.
-    end_date : str, optional
-        End date of the export range in ``YYYY-MM-DD`` format.
-    nonprep_dfs : str, optional
-        Non-prepared data frames to include.
-    prep_dfs : str, optional
-        Prepared data frames to include.
-    start_date : str, optional
-        Start date of the export range in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the CSV export data.
+    This wrapper sends the supplied date filters and prepared/non-prepared data
+    frame selections to ``/api/v2/data/export_data_as_csv`` and returns the
+    normalized ``process_result(...)`` payload for the export request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/data/export_data_as_csv",
@@ -89,19 +73,12 @@ def get_available_dashboards(
     module: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the list of dashboards available for a module.
+    """Retrieve dashboards available for a module.
 
-    Parameters
-    ----------
-    module : str, optional
-        Module name to filter available dashboards by.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing available dashboard definitions.
+    This wrapper sends the optional ``module`` filter to
+    ``/api/v2/data/get_available_dashboards`` and returns the normalized
+    ``process_result(...)`` payload describing the available dashboard
+    definitions. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/data/get_available_dashboards",

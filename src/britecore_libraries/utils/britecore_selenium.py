@@ -1,7 +1,5 @@
 """Selenium BriteCore Module"""
 
-import sys
-
 import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -11,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 from britecore_libraries import logger
 from britecore_libraries.config import settings
+from britecore_libraries.exceptions import BritecoreError
 
 retry = settings.web.retry
 if not retry:
@@ -60,8 +59,8 @@ def get_driver(
     try:
         driver = driver_info()
     except Exception as err:  # skipcq PYL-W0703
-        logger.critical(f"Cannot launch browser - {err}")
-        sys.exit(f"Cannot launch browser - {err}")
+        logger.error(f"Cannot launch browser - {err}")
+        raise BritecoreError.Base(f"Cannot launch browser - {err}") from err
 
     driver.maximize_window()
 
