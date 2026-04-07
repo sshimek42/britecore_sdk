@@ -503,8 +503,11 @@ class TestQuotesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client, "process_result", return_value={"id": "Q123", "amount": 500}
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client, "process_result", return_value={"id": "Q123", "amount": 500}
+                ),
             ):
                 result = quotes.get_quote("Q123")
 
@@ -526,11 +529,15 @@ class TestQuotesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=None), patch.object(
-                client,
-                "process_result",
-                side_effect=BritecoreError.NoDataReturned("No response"),
-            ), pytest.raises(BritecoreError.NoDataReturned):
+            with (
+                patch.object(client, "do_request", return_value=None),
+                patch.object(
+                    client,
+                    "process_result",
+                    side_effect=BritecoreError.NoDataReturned("No response"),
+                ),
+                pytest.raises(BritecoreError.NoDataReturned),
+            ):
                 quotes.get_quote("Q123")
 
     @pytest.mark.unit
@@ -552,10 +559,13 @@ class TestQuotesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client,
-                "process_result",
-                return_value={"id": "Q456", "carrier": "ACME"},
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "Q456", "carrier": "ACME"},
+                ),
             ):
                 result, quote_id = quotes.create_full_quote(quote_json)
 
@@ -579,8 +589,9 @@ class TestQuotesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=None), patch.object(
-                client, "process_result", return_value=None
+            with (
+                patch.object(client, "do_request", return_value=None),
+                patch.object(client, "process_result", return_value=None),
             ):
                 result, quote_id = quotes.create_full_quote(quote_json)
 
@@ -604,8 +615,9 @@ class TestQuotesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client, "process_result", return_value={"id": "Q789"}
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(client, "process_result", return_value={"id": "Q789"}),
             ):
                 result = quotes.create_full_quote(quote_json)
 
@@ -634,10 +646,13 @@ class TestPoliciesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client,
-                "process_result",
-                return_value={"id": "P123", "policy_number": "POL001"},
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "P123", "policy_number": "POL001"},
+                ),
             ):
                 result = policies.retrieve_policy(policy_number="POL001")
 
@@ -662,10 +677,13 @@ class TestPoliciesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client,
-                "process_result",
-                return_value={"id": "P456", "policy_number": "POL002"},
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "P456", "policy_number": "POL002"},
+                ),
             ):
                 result = policies.retrieve_policy(policy_id="P456")
 
@@ -690,8 +708,11 @@ class TestPoliciesEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client, "process_result", return_value={"added_items": ["item1"]}
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client, "process_result", return_value={"added_items": ["item1"]}
+                ),
             ):
                 result = policies.add_line_item(revision_id="REV123", item_id="ITEM456")
 
@@ -719,10 +740,13 @@ class TestContactsEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client,
-                "process_result",
-                return_value={"id": "C123", "name": "John Doe"},
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client,
+                    "process_result",
+                    return_value={"id": "C123", "name": "John Doe"},
+                ),
             ):
                 result = contacts.get_contact("C123")
 
@@ -753,8 +777,9 @@ class TestContactsEndpoints:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client, "process_result", return_value=contact_data
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(client, "process_result", return_value=contact_data),
             ):
                 result, contact_id = contacts.new_contact(
                     name="Jane Smith",
@@ -795,11 +820,14 @@ class TestBillingEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request, patch.object(
-            client, "process_result", return_value={"ok": True}
-        ) as mock_process_result:
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -830,11 +858,14 @@ class TestAccountingEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request, patch.object(
-            client, "process_result", return_value={"ok": True}
-        ) as mock_process_result:
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -865,11 +896,14 @@ class TestCommissionsEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request, patch.object(
-            client, "process_result", return_value={"ok": True}
-        ) as mock_process_result:
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -900,11 +934,14 @@ class TestPaymentsEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request, patch.object(
-            client, "process_result", return_value={"ok": True}
-        ) as mock_process_result:
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
@@ -919,8 +956,11 @@ class TestPaymentsEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
-        with patch.object(client, "do_request", return_value=mock_response) as mock_do_request, patch.object(
-            client, "process_result", return_value={"ok": True}
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(client, "process_result", return_value={"ok": True}),
         ):
             result = payments.make_manual_policy_payment(
                 json_dict={"policy_number": "POL-ALIAS", "amount": 12.34}
@@ -954,11 +994,15 @@ class TestEndpointErrorHandling:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client,
-                "process_result",
-                side_effect=BritecoreError.NoDataReturned("API Error"),
-            ), pytest.raises(BritecoreError.NoDataReturned):
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client,
+                    "process_result",
+                    side_effect=BritecoreError.NoDataReturned("API Error"),
+                ),
+                pytest.raises(BritecoreError.NoDataReturned),
+            ):
                 quotes.get_quote("Q123")
 
     @pytest.mark.unit
@@ -979,11 +1023,15 @@ class TestEndpointErrorHandling:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(client, "do_request", return_value=mock_response), patch.object(
-                client,
-                "process_result",
-                side_effect=BritecoreError.NoDataReturned("Error - 500"),
-            ), pytest.raises(BritecoreError.NoDataReturned):
+            with (
+                patch.object(client, "do_request", return_value=mock_response),
+                patch.object(
+                    client,
+                    "process_result",
+                    side_effect=BritecoreError.NoDataReturned("Error - 500"),
+                ),
+                pytest.raises(BritecoreError.NoDataReturned),
+            ):
                 quotes.get_quote("Q123")
 
     @pytest.mark.unit
@@ -1000,11 +1048,14 @@ class TestEndpointErrorHandling:
             mock_loader.return_value = mock_loader_instance
 
             client = get_api_client()
-            with patch.object(
-                client,
-                "do_request",
-                side_effect=BritecoreError.NoDataReturned("Connection error"),
-            ), pytest.raises(BritecoreError.NoDataReturned):
+            with (
+                patch.object(
+                    client,
+                    "do_request",
+                    side_effect=BritecoreError.NoDataReturned("Connection error"),
+                ),
+                pytest.raises(BritecoreError.NoDataReturned),
+            ):
                 quotes.get_quote("Q123")
 
 

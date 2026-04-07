@@ -299,9 +299,7 @@ class BritecoreAPIClient:
             )
 
         if response.status in {400, 422}:
-            LOGGER.error(
-                "Validation error - %s - %s", response.status, response.reason
-            )
+            LOGGER.error("Validation error - %s - %s", response.status, response.reason)
             raise BritecoreError.ValidationError(
                 f"Error - {response.status} - {response.reason}"
             )
