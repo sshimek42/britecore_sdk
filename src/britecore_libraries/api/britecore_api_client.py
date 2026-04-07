@@ -51,7 +51,6 @@ class LoadClientSettings:
             KeyError: If the 'target_site' environment variable is not set and no
                 target_site is provided during initialization.
         """
-
         if not target_site:
             target_site = os.environ.get("target_site") or ""
             if not target_site:
@@ -101,7 +100,6 @@ def _full_url(host: str, path: str) -> str:
     Returns:
         str: The complete URL formed by combining the host and path.
     """
-
     return Url(host=host, path=path).url
 
 
@@ -145,7 +143,6 @@ class BritecoreAPIClient:
             BritecoreError.NoSiteError: If no target site has been specified.
             BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
         """
-
         target_site = self.target_site
 
         if not target_site:
@@ -257,7 +254,6 @@ class BritecoreAPIClient:
             BritecoreError.NoDataReturned: When response is None, status code is not 200,
                                            or the API returns a failure status
         """
-
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned("Error - No response")
@@ -375,7 +371,6 @@ class BritecoreAPIClient:
             BritecoreError.RequestTimeoutError: If the request exceeds the configured timeout.
             BritecoreError.NoDataReturned: If the request fails due to other network issues.
         """
-
         if request_timeout is None:
             request_timeout = self.web_timeout
         if request_retries is None:
@@ -485,7 +480,6 @@ class BritecoreAPIClient:
         :return: Dictionary containing the selected parameter
         :rtype: dict[str, str | None]
         """
-
         multiple_found: bool = False
         non_empty_dict: dict[str, str | None] = {}
         parameter_used: str = ""
@@ -529,7 +523,6 @@ class BritecoreAPIClient:
         :param request_arguments: All arguments passed from a function
         :type request_arguments: dict[str,Any]
         """
-
         request_dict: dict[str, Any] = {}
         for _, (k, v) in enumerate(request_arguments.items()):
             if v:

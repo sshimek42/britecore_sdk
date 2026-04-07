@@ -108,7 +108,6 @@ def get_all_states(
     ``process_result(...)`` payload for state options. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-
     effective_date_json: dict[str, str] | None = {}
 
     if effective_date_id:
@@ -160,7 +159,6 @@ def list_policy_types(
     ``process_result(...)`` payload for policy-type options.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-
     if not effective_date and effective_date_id:
         BritecoreError.MissingParameter(
             "Either effective_date or effective_date is required"
