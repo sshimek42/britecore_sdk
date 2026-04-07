@@ -231,33 +231,10 @@ class BritecoreAPIClient:
         return None
 
     @classmethod
-    def process_result(
-        cls,
-        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
-        logs: bool = False,
-    ) -> Any:
-        """
-        Process HTTP response and extract data from successful API calls.
-
-        This class method handles the processing of HTTP responses from API calls,
-        validating the response status, parsing JSON data, and raising appropriate
-        exceptions for errors or missing data.
-
-        Parameters:
-            response: HTTPResponse object containing the API response
-            logs: Boolean flag to enable debug logging of the response data
-
-        Returns:
-            Parsed data from the API response if successful
-
-        Raises:
-            BritecoreError.NoDataReturned: When response is None, status code is not 200,
-                                           or the API returns a failure status
-        """
-        if response is None:
-            LOGGER.error("Error - No response")
-            raise BritecoreError.NoDataReturned("Error - No response")
-
+    def _raise_for_http_status(
+        cls, response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse
+    ) -> None:
+        """Raise SDK exceptions for non-success HTTP statuses."""
         if response.status in {401, 403}:
             LOGGER.error(
                 "Authentication error - %s - %s", response.status, response.reason
@@ -310,14 +287,16 @@ class BritecoreAPIClient:
                 f"Error - {response.status} - {response.reason}"
             )
 
-        try:
-            json_result: Any = loads(response.data.decode("utf-8"))
-        except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
-            LOGGER.error("Error parsing API response: %s", parse_error)
-            raise BritecoreError.NoDataReturned(
-                f"Error parsing API response: {parse_error}"
-            ) from parse_error
+    @staticmethod
+    def _load_json_payload(
+        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
+    ) -> Any:
+        """Decode and parse the JSON payload from a response object."""
+        return loads(response.data.decode("utf-8"))
 
+    @classmethod
+    def _extract_success_data(cls, json_result: Any) -> Any:
+        """Validate API success flag and return normalized data payload."""
         result = json_result.get("success")
         message = cls._extract_error_message(
             json_result.get("message", json_result.get("messages", "Unknown error"))
@@ -327,7 +306,46 @@ class BritecoreAPIClient:
             LOGGER.error("Error - %s", message)
             raise BritecoreError.NoDataReturned(f"Error - {message}")
 
-        data: Any = json_result.get("data")
+        return json_result.get("data")
+
+    @classmethod
+    def process_result(
+        cls,
+        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
+        logs: bool = False,
+    ) -> Any:
+        """
+        Process HTTP response and extract data from successful API calls.
+
+        This class method handles the processing of HTTP responses from API calls,
+        validating the response status, parsing JSON data, and raising appropriate
+        exceptions for errors or missing data.
+
+        Parameters:
+            response: HTTPResponse object containing the API response
+            logs: Boolean flag to enable debug logging of the response data
+
+        Returns:
+            Parsed data from the API response if successful
+
+        Raises:
+            BritecoreError.NoDataReturned: When response is None, status code is not 200,
+                                           or the API returns a failure status
+        """
+        if response is None:
+            LOGGER.error("Error - No response")
+            raise BritecoreError.NoDataReturned("Error - No response")
+        cls._raise_for_http_status(response)
+
+        try:
+            json_result: Any = cls._load_json_payload(response)
+        except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
+            LOGGER.error("Error parsing API response: %s", parse_error)
+            raise BritecoreError.NoDataReturned(
+                f"Error parsing API response: {parse_error}"
+            ) from parse_error
+
+        data: Any = cls._extract_success_data(json_result)
         if logs:
             LOGGER.debug(data)
 
