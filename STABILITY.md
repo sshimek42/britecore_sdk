@@ -41,6 +41,7 @@ older                   ← No support
 ### Within a major version
 
 ✅ **Guaranteed compatible:**
+
 - Bug fixes
 - New optional parameters (with sensible defaults)
 - New helper functions or utilities
@@ -48,6 +49,7 @@ older                   ← No support
 - Internal implementation changes
 
 ❌ **Not guaranteed compatible:**
+
 - Removing public functions or classes
 - Changing function signatures (parameters, return types)
 - Changing exception types or error messages
@@ -124,6 +126,7 @@ When Python versions reach end-of-life, we may:
 2. **Announce** — In release notes at least 2 releases ahead
 
 Current EOL dates (Python):
+
 - 3.11: October 2027
 - 3.12: October 2028
 - 3.13: October 2029
@@ -134,6 +137,7 @@ Current EOL dates (Python):
 ### Pinning
 
 Dependencies are pinned to compatible ranges:
+
 - Core deps: `package~=X.Y.Z` (patch-compatible)
 - Optional deps: Same approach
 - Dev deps: Looser pinning for flexibility
@@ -153,6 +157,7 @@ dependencies = [
 ### Major Dep Upgrades
 
 When a major dependency upgrades:
+
 - Evaluate compatibility
 - Test thoroughly
 - Document in CHANGELOG

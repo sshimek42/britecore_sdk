@@ -14,6 +14,7 @@
 **Cause:** Package not installed in current environment
 
 **Solution:**
+
 ```powershell
 # Install in editable mode
 pip install -e .
@@ -32,6 +33,7 @@ python -c "import britecore_libraries; print(britecore_libraries.__version__)"
 **Cause:** Network issues or large dependency tree
 
 **Solution:**
+
 ```powershell
 # Try with timeout
 pip install -e . --default-timeout=100
@@ -52,6 +54,7 @@ python --version  # Should be 3.11+
 **Cause:** Insufficient permissions
 
 **Solution:**
+
 ```powershell
 # Use --user flag
 pip install --user -e .
@@ -71,6 +74,7 @@ pip install -e .
 **Cause:** Missing environment variable
 
 **Solution:**
+
 ```powershell
 # Set environment variable
 $env:target_site = "your_site"
@@ -100,6 +104,7 @@ web_retry = 3                     # Required
 ```
 
 **Or use environment variables:**
+
 ```powershell
 $env:BRITECORE_BASE_URL="https://..."
 $env:BRITECORE_API_KEY="..."
@@ -136,6 +141,7 @@ Or just use environment variables (they override file settings).
 **Cause:** Invalid OAuth credentials or token endpoint unreachable
 
 **Solution:**
+
 ```python
 # Check credentials in config
 from britecore_libraries.config import settings
@@ -160,6 +166,7 @@ except Exception as e:
 **Cause:** API returned success=false or HTTP error
 
 **Solution:**
+
 ```python
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries.exceptions import BritecoreError
@@ -196,6 +203,7 @@ except BritecoreError.Base as exc:
 **Cause:** Phone number format not recognized
 
 **Solution:**
+
 ```python
 from britecore_libraries.validators import PhoneValidator
 
@@ -217,6 +225,7 @@ print(result)  # Normalized to: 5551234567
 **Cause:** Email format invalid
 
 **Solution:**
+
 ```python
 from britecore_libraries.validators import EmailValidator
 
@@ -239,6 +248,7 @@ print(result)  # Returns normalized emails
 **Cause:** Module imports create cycle
 
 **Solution:**
+
 ```python
 # Don't do this (circular):
 # In models.py: from validators import EmailValidator
@@ -257,6 +267,7 @@ if TYPE_CHECKING:
 **Cause:** Module or function doesn't exist or not exported
 
 **Solution:**
+
 ```python
 # Check what's available
 import britecore_libraries
@@ -279,6 +290,7 @@ from britecore_libraries.models import *
 **Cause:** Test dependencies not installed
 
 **Solution:**
+
 ```powershell
 pip install -e ".[dev]"
 python -m pytest tests/ -v
@@ -291,6 +303,7 @@ python -m pytest tests/ -v
 **Cause:** Mock setup incorrect
 
 **Solution:**
+
 ```python
 # Check import path matches actual location
 from unittest.mock import patch, MagicMock
@@ -308,6 +321,7 @@ with patch("britecore_libraries.api.api_calls.API_CLIENT") as mock:
 **Cause:** Coverage tool not configured
 
 **Solution:**
+
 ```powershell
 # Make sure pytest-cov installed
 pip install -e ".[dev]"
@@ -326,6 +340,7 @@ Invoke-Item htmlcov/index.html
 **Cause:** Running pytest from wrong directory
 
 **Solution:**
+
 ```powershell
 # Run from project root
 cd britecore_libraries
@@ -343,6 +358,7 @@ python -m pytest tests/ -v
 **Cause:** Default timeout too short
 
 **Solution:**
+
 ```python
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Timeout
@@ -361,6 +377,7 @@ policy = policies.retrieve_policy(
 **Cause:** Server temporarily unavailable
 
 **Solution:**
+
 ```python
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Retry
@@ -383,6 +400,7 @@ policy = policies.retrieve_policy(
 **Cause:** HTTPS certificate validation issue
 
 **Solution:**
+
 ```python
 # Check certificate validity
 import ssl
@@ -462,6 +480,7 @@ print(json.dumps(data, indent=2))
 ### Slow API responses
 
 **Solution:**
+
 ```python
 import time
 
@@ -483,6 +502,7 @@ print(f"Request took {elapsed:.2f}s")
 ### High memory usage
 
 **Solution:**
+
 ```python
 # Don't store large result sets
 # Process in batches instead
@@ -518,5 +538,3 @@ for i in range(10000):
 5. Check [CONTRIBUTING.md](CONTRIBUTING.md) for development
 
 ---
-
-

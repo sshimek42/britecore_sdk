@@ -38,7 +38,6 @@ Current guidance (living docs):
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-
 ## What this package provides
 
 - Domain models in `src/britecore_libraries/models/` for contact, policy, and quote payloads

@@ -1,5 +1,7 @@
 # Unimplemented API Stubs
 
+Canonical source: this file. `docs/unimplemented_api_stubs.md` includes this content.
+
 *Last updated: April 7, 2026*
 *Document type: Living implementation backlog*
 
@@ -16,7 +18,7 @@ If new BriteCore API domains are introduced and not yet wrapped, add them here.
 Use this lightweight format:
 
 | Domain | Planned module | Planned calls | Status |
-|---|---|---:|---|
+| --- | --- | ---: | --- |
 | `example_domain` | `src/britecore_libraries/api/api_calls/v2/example_domain.py` | 3 | Planned |
 
 ## Source of truth
