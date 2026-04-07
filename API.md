@@ -85,7 +85,7 @@ For wrappers that call `process_result(...)` (the standard `v2` pattern), respon
 }
 ```
 
-Some compatibility wrappers may return payloads shaped by legacy `v1` behavior.
+Some wrappers may return payloads shaped by `v1` API behavior where no `v2` equivalent exists.
 
 ---
 
@@ -114,7 +114,7 @@ Current domains include:
 - `policies`, `quotes`, `reports`, `return_premium`, `search`, `settings`
 - `signatures`, `uploads`, `utils`, `vendors`
 
-Compatibility wrappers in `v2` also expose canonical `v1` endpoints for:
+The `v2` module also exposes `v1` endpoints that have no `v2` equivalent:
 
 - `custom_ui`
 - `printing`

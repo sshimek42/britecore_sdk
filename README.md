@@ -205,7 +205,7 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CO
 
 ### API Wrappers
 - **v2 endpoints:** 30 modules covering policies, contacts, quotes, payments, and more (374+ endpoints)
-- **v1 endpoints:** Legacy compatibility layer
+- **v1 endpoints:** v1 API endpoints with no equivalent in v2
 - **Async wrappers:** Cache-aware async versions of key v2 endpoints
 
 ### Utilities

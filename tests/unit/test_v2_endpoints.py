@@ -950,7 +950,7 @@ class TestPaymentsEndpoints:
 
     @pytest.mark.unit
     def test_make_manual_policy_payment_alias(self, env_api_key, mock_settings):
-        """The snake_case alias should delegate to the legacy-named wrapper."""
+        """The snake_case alias should delegate to the original camelCase wrapper."""
         from britecore_libraries.api.api_calls.v2 import payments
 
         client = _get_initialized_client(mock_settings)
