@@ -1,8 +1,7 @@
 """BriteCore v2 Search API endpoint wrappers.
 
-Provides:
-    add_to_index       -- Add a document to a search index.
-    remove_from_index  -- Remove a document from a search index.
+This module provides wrappers for adding and removing documents from the
+BriteCore v2 search index.
 """
 
 from logging import Logger
@@ -50,21 +49,10 @@ def add_to_index(
 ) -> Any:
     """Add a document to a search index.
 
-    Parameters
-    ----------
-    document : dict, optional
-        The document object to index.
-    id : str, optional
-        Unique identifier for the document in the index.
-    index_name : str, optional
-        Name of the search index to add the document to.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the document was indexed.
+    This wrapper sends ``document``, ``id``, and ``index_name`` to
+    ``/api/v2/search/add_to_index`` and returns the normalized
+    ``process_result(...)`` payload for the indexing request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/search/add_to_index",
@@ -80,19 +68,10 @@ def remove_from_index(
 ) -> Any:
     """Remove a document from a search index.
 
-    Parameters
-    ----------
-    id : str, optional
-        Unique identifier of the document to remove.
-    index_name : str, optional
-        Name of the search index to remove the document from.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the document was removed.
+    This wrapper sends ``id`` and ``index_name`` to
+    ``/api/v2/search/remove_from_index`` and returns the normalized
+    ``process_result(...)`` payload for the removal request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/search/remove_from_index",

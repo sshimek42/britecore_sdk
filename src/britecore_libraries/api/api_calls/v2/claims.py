@@ -1,7 +1,7 @@
 """BriteCore v2 Claims API endpoint wrappers.
 
-Provides:
-    get_claim  -- Retrieve detailed claim information by claim ID.
+This module provides the SDK wrapper for retrieving claim details from the
+BriteCore v2 claims API.
 """
 
 from logging import Logger
@@ -22,27 +22,11 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Retrieve claim information by claim ID.
+    """Retrieve claim details by claim identifier.
 
-    This function fetches detailed information about a specific claim using the
-    provided claim ID. It constructs a search query and sends a request to the
-    API endpoint to retrieve the claim data.
-
-    Parameters:
-        claim_id (str): The unique identifier of the claim to retrieve
-        **kwargs (Unpack[RequestParameters]): Additional request parameters
-            that will be passed to the API client
-
-    Returns:
-        Any: The processed claim information returned by the API
-
-    Raises:
-        Any exceptions raised by the underlying API client or request processing mechanisms
-
-    Note:
-        This function uses a debug logger to trace execution and relies on
-            API_CLIENT for actual request handling and result processing
+    This wrapper sends ``claim_id`` to ``/api/v2/claims/get_claim`` and
+    returns the normalized ``process_result(...)`` payload for the matching
+    claim record. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Getting claim information")
     claim_search: dict[str, str] = {"claim_id": claim_id}

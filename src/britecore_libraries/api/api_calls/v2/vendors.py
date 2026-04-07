@@ -1,22 +1,7 @@
 """BriteCore v2 Vendors API endpoint wrappers.
 
-Provides:
-    build_ivans_manual_claim                              -- Build an IVANS manual claim file.
-    build_nxtech_initial_load                             -- Build an NxTech initial load file.
-    build_nxtech_manual_transactions                      -- Build NxTech manual transaction records.
-    commercial_munichre_indepth_eligibility               -- Check commercial MunichRe in-depth eligibility.
-    fetch_motor_vehicle_report_for_drivers                -- Fetch MVR reports for a list of drivers.
-    get_aon_cat_score                                     -- Retrieve an AON CAT score for a risk.
-    get_prefill_services_data                             -- Retrieve prefill services data for a property.
-    get_value360_token                                    -- Retrieve a Value360 token for a property.
-    get_wtw_score                                         -- Retrieve a Willis Towers Watson score.
-    invoice_cloud_autopay_enroll                          -- Enroll or unenroll a policy in Invoice Cloud autopay.
-    invoice_cloud_autopay_is_enrolled                     -- Check Invoice Cloud autopay enrollment status.
-    invoice_cloud_suppress_insured_deliverable_printings  -- Suppress/unsuppress insured printings via Invoice Cloud.
-    ivans_edocs_build                                     -- Build IVANS eDocs for a set of files.
-    ivans_file_upload                                     -- Upload a file to IVANS.
-    munichre_indepth_eligibility                          -- Check MunichRe in-depth eligibility for a property.
-    update_value360_replacement_cost_value                -- Update the Value360 replacement cost value.
+This module provides wrappers for third-party vendor integrations including
+IVANS, NxTech, Munich Re, AON, Value360, WTW, Invoice Cloud, and MVR services.
 """
 
 from logging import Logger
@@ -63,19 +48,10 @@ def build_ivans_manual_claim(
 ) -> Any:
     """Build an IVANS manual claim file.
 
-    Parameters
-    ----------
-    data_list : list, optional
-        List of claim data records to include.
-    file_date : str, optional
-        Date of the file in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``data_list`` and ``file_date`` to
+    ``/api/v2/vendors/build_ivans_manual_claim`` and returns the normalized
+    ``process_result(...)`` payload for the IVANS build request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/build_ivans_manual_claim",
@@ -89,21 +65,12 @@ def build_nxtech_initial_load(
     file_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Build an NxTech initial load file for a contact.
+    """Build an NxTech initial load file.
 
-    Parameters
-    ----------
-    contact_id : str, optional
-        UUID of the contact to include in the initial load.
-    file_date : str, optional
-        Date of the file in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``contact_id`` and ``file_date`` to
+    ``/api/v2/vendors/build_nxtech_initial_load`` and returns the normalized
+    ``process_result(...)`` payload for the build request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/build_nxtech_initial_load",
@@ -119,19 +86,10 @@ def build_nxtech_manual_transactions(
 ) -> Any:
     """Build NxTech manual transaction records.
 
-    Parameters
-    ----------
-    data_list : list, optional
-        List of transaction data records.
-    file_date : str, optional
-        Date of the file in ``YYYY-MM-DD`` format.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``data_list`` and ``file_date`` to
+    ``/api/v2/vendors/build_nxtech_manual_transactions`` and returns the
+    normalized ``process_result(...)`` payload for the build request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/build_nxtech_manual_transactions",
@@ -144,19 +102,12 @@ def commercial_munichre_indepth_eligibility(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check commercial MunichRe in-depth eligibility for a property.
+    """Check commercial Munich Re in-depth eligibility.
 
-    Parameters
-    ----------
-    property_id : str, optional
-        UUID of the commercial property to evaluate.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing eligibility results.
+    This wrapper sends ``property_id`` to
+    ``/api/v2/vendors/commercial_munichre_indepth_eligibility`` and returns the
+    normalized ``process_result(...)`` payload for the eligibility request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/commercial_munichre_indepth_eligibility",
@@ -170,21 +121,12 @@ def fetch_motor_vehicle_report_for_drivers(
     store_no_hit: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Fetch Motor Vehicle Report (MVR) data for a list of drivers.
+    """Fetch motor vehicle reports for drivers.
 
-    Parameters
-    ----------
-    drivers : list, optional
-        List of driver objects to process.
-    store_no_hit : bool, optional
-        Whether to store records when no hit is found.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing MVR results.
+    This wrapper sends ``drivers`` and ``store_no_hit`` to
+    ``/api/v2/vendors/fetch_motor_vehicle_report_for_drivers`` and returns the
+    normalized ``process_result(...)`` payload for the MVR request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/fetch_motor_vehicle_report_for_drivers",
@@ -198,21 +140,12 @@ def get_aon_cat_score(
     risk_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve an AON CAT score for a specific risk.
+    """Retrieve an AON CAT score for a risk.
 
-    Parameters
-    ----------
-    geocoding_service : str, optional
-        Name of the geocoding service to use.
-    risk_id : str, optional
-        UUID of the risk to score.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the CAT score.
+    This wrapper sends ``geocoding_service`` and ``risk_id`` to
+    ``/api/v2/vendors/get_aon_cat_score`` and returns the normalized
+    ``process_result(...)`` payload for the CAT score request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/get_aon_cat_score",
@@ -225,19 +158,12 @@ def get_prefill_services_data(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve prefill services data for a property.
+    """Retrieve prefill-services data for a property.
 
-    Parameters
-    ----------
-    property_id : str, optional
-        UUID of the property for which to retrieve prefill data.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing prefill data.
+    This wrapper sends ``property_id`` to
+    ``/api/v2/vendors/get_prefill_services_data`` and returns the normalized
+    ``process_result(...)`` payload for the prefill request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/get_prefill_services_data",
@@ -253,19 +179,10 @@ def get_value360_token(
 ) -> Any:
     """Retrieve a Value360 token for a property valuation session.
 
-    Parameters
-    ----------
-    home_type : str, optional
-        Type of home/property.
-    property_id : str, optional
-        UUID of the property.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the Value360 token.
+    This wrapper sends ``home_type`` and ``property_id`` to
+    ``/api/v2/vendors/get_value360_token`` and returns the normalized
+    ``process_result(...)`` payload for the token request. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/get_value360_token",
@@ -278,20 +195,12 @@ def get_wtw_score(
     property_descriptor: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a Willis Towers Watson (WTW) score for a property.
+    """Retrieve a WTW score for a property.
 
-    Parameters
-    ----------
-    property_descriptor : str, optional
-        Property identifier or descriptor passed to the WTW service as
-        ``property`` in the request body.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing the WTW score.
+    This wrapper sends ``property_descriptor`` as ``property`` to
+    ``/api/v2/vendors/get_wtw_score`` and returns the normalized
+    ``process_result(...)`` payload for the scoring request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     payload: dict[str, Any] = {}
     if property_descriptor is not None:
@@ -306,19 +215,10 @@ def invoice_cloud_autopay_enroll(
 ) -> Any:
     """Enroll or unenroll a policy in Invoice Cloud autopay.
 
-    Parameters
-    ----------
-    enable : Any, optional
-        ``True`` to enroll; ``False`` to unenroll.
-    policy_number : str, optional
-        Policy number to update.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``enable`` and ``policy_number`` to
+    ``/api/v2/vendors/invoice_cloud_autopay_enroll`` and returns the
+    normalized ``process_result(...)`` payload for the enrollment update.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/invoice_cloud_autopay_enroll",
@@ -331,19 +231,12 @@ def invoice_cloud_autopay_is_enrolled(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check the Invoice Cloud autopay enrollment status for a policy.
+    """Check Invoice Cloud autopay enrollment status.
 
-    Parameters
-    ----------
-    policy_number : str, optional
-        Policy number to check.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response indicating enrollment status.
+    This wrapper sends ``policy_number`` to
+    ``/api/v2/vendors/invoice_cloud_autopay_is_enrolled`` and returns the
+    normalized ``process_result(...)`` payload for the enrollment lookup.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/invoice_cloud_autopay_is_enrolled",
@@ -357,21 +250,12 @@ def invoice_cloud_suppress_insured_deliverable_printings(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Suppress or unsuppress insured deliverable printings via Invoice Cloud.
+    """Suppress or unsuppress insured deliverable printings.
 
-    Parameters
-    ----------
-    enable : bool, optional
-        ``True`` to suppress; ``False`` to unsuppress.
-    policy_number : str, optional
-        Policy number to update.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``enable`` and ``policy_number`` to
+    ``/api/v2/vendors/invoice_cloud_suppress_insured_deliverable_printings``
+    and returns the normalized ``process_result(...)`` payload for the update
+    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/invoice_cloud_suppress_insured_deliverable_printings",
@@ -387,19 +271,10 @@ def ivans_edocs_build(
 ) -> Any:
     """Build IVANS eDocs for a set of files.
 
-    Parameters
-    ----------
-    date_cursor : str, optional
-        Date cursor in ``YYYY-MM-DD`` format.
-    file_ids : list, optional
-        List of file UUIDs to include in the eDocs build.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``date_cursor`` and ``file_ids`` to
+    ``/api/v2/vendors/ivans_edocs_build`` and returns the normalized
+    ``process_result(...)`` payload for the eDocs build request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/ivans_edocs_build",
@@ -415,19 +290,10 @@ def ivans_file_upload(
 ) -> Any:
     """Upload a file to IVANS.
 
-    Parameters
-    ----------
-    file_name : str, optional
-        Name of the file to upload.
-    ivans_type : str, optional
-        IVANS file type identifier.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response.
+    This wrapper sends ``file_name`` and ``ivans_type`` to
+    ``/api/v2/vendors/ivans_file_upload`` and returns the normalized
+    ``process_result(...)`` payload for the upload request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/ivans_file_upload",
@@ -440,19 +306,12 @@ def munichre_indepth_eligibility(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check MunichRe in-depth eligibility for a residential property.
+    """Check Munich Re in-depth eligibility for a property.
 
-    Parameters
-    ----------
-    property_id : str, optional
-        UUID of the property to evaluate.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response containing eligibility results.
+    This wrapper sends ``property_id`` to
+    ``/api/v2/vendors/munichre_indepth_eligibility`` and returns the normalized
+    ``process_result(...)`` payload for the eligibility request. ``**kwargs``
+    accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/munichre_indepth_eligibility",
@@ -466,21 +325,12 @@ def update_value360_replacement_cost_value(
     result: dict | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update the Value360 replacement cost value from a report result.
+    """Update the Value360 replacement cost value.
 
-    Parameters
-    ----------
-    report_id : str, optional
-        UUID of the Value360 report.
-    result : dict, optional
-        The result object containing replacement cost data.
-    **kwargs : Unpack[RequestParameters]
-        Optional timeout / retry / header overrides.
-
-    Returns
-    -------
-    Any
-        Processed API response confirming the update.
+    This wrapper sends ``report_id`` and ``result`` to
+    ``/api/v2/vendors/update_value360_replacement_cost_value`` and returns the
+    normalized ``process_result(...)`` payload for the update request.
+    ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     return _post(
         "/api/v2/vendors/update_value360_replacement_cost_value",
