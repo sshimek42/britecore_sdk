@@ -12,29 +12,33 @@
 ```text
 
 ┌─────────────────────────────────────────────────────────┐
-│                  Application Layer                       │
-│  (Your code using BriteCore Libraries)                  │
-└────────────────────┬────────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────────┐
-│                  Domain Layer                            │
-│  • Models (Contact, Policy, Quote)                      │
-│  • Validators (Email, Phone, Address, Name)            │
-│  • Mappers (Regex patterns, Field mappings)            │
-└────────────────────┬────────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────────┐
-│                   API Layer                              │
-│  • API Endpoints (v1, v2)                              │
-│  • API Client (Request/Response handling)              │
-│  • Authentication (API Key, OAuth2)                    │
-└────────────────────┬────────────────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────────────────┐
-│                Infrastructure Layer                      │
-│  • Configuration (Dynaconf)                            │
-│  • Utilities (ODBC, Selenium, Logging)                 │
-│  • External Services (OAuth, HTTP)                     │
+│                    Application Layer                    │
+│          (Your code using BriteCore Libraries)          │
+└────────────────────────────┬────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│                      Domain Layer                       │
+│   • Models         (Contact, Policy, Quote)             │
+│   • Validators     (Email, Phone, Address, Name)        │
+│   • Maps           (Regex patterns, Field mappings)     │
+└────────────────────────────┬────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│                        API Layer                        │
+│   • Endpoints        (v1, v2, async v2)                 │
+│   • Sync Client      (Request/Response handling)        │
+│   • Async Client     (TTL cache, in-flight dedup)       │
+│   • Auth             (API Key or OAuth2)                │
+└────────────────────────────┬────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────┐
+│                  Infrastructure Layer                   │
+│   • Config         (Dynaconf, settings + secrets)       │
+│   • Utilities      (ODBC, Selenium, Menus)              │
+│   • Transport      (urllib3, OAuth token)               │
 └─────────────────────────────────────────────────────────┘
 
 ```
@@ -58,16 +62,19 @@ src/britecore_libraries/
 │   ├── quote.py       # BritecoreQuote class
 │   └── __init__.py    # Exports
 ├── validators/
-│   ├── email_validator.py      # Email validation
-│   ├── phone_validator.py      # Phone validation
 │   ├── address_validator.py    # Address validation
+│   ├── email_validator.py      # Email validation
 │   ├── name_validator.py       # Name normalization
+│   ├── phone_validator.py      # Phone validation
 │   └── __init__.py             # Exports
 ├── maps/
-│   ├── britecore_policy_name_map.py    # Regex patterns
+│   ├── britecore_agency_map.py         # Agency regex patterns
 │   ├── britecore_field_map.py          # Field mappings
-│   └── __init__.py                     # Exports
-└── constants.py         # Shared constants
+│   ├── britecore_policy_map.py         # Policy regex patterns
+│   └── __init__.py                     # Runtime fallback loader
+├── resources/
+│   └── zip_codes.csv           # Bundled ZIP code reference data
+└── constants.py                # Shared constants
 
 ```
 
@@ -87,6 +94,11 @@ validated = contact.process_contact()
 
 ```
 
+> **Note:** Map files (`britecore_agency_map.py`, `britecore_field_map.py`,
+> `britecore_policy_map.py`) contain site-specific regex data and are gitignored.
+> See [docs/MAP_FILES.md](docs/MAP_FILES.md) for the expected format and a
+> runtime fallback pattern for local/private map files.
+
 ---
 
 ### 2. API Layer
@@ -98,21 +110,53 @@ validated = contact.process_contact()
 ```text
 
 src/britecore_libraries/api/
-├── britecore_api_client.py              # Main API client
+├── britecore_api_client.py              # Main sync API client
+├── britecore_async_api_client.py        # Async facade with TTL cache
 ├── britecore_oauth_token_manager.py     # OAuth2 token handling
+├── request_cache.py                     # Thread-safe TTL response cache
+├── types.py                             # Shared type definitions
 ├── api_calls/
 │   ├── __init__.py                      # Lazy init + exports
 │   ├── v1/                              # v1 API endpoints (no v2 equivalent)
-│   │   ├── contacts.py
-│   │   ├── printing.py
+│   │   ├── contacts.py                  # v1 contact endpoints
+│   │   ├── custom_ui.py                 # Custom UI URL overrides
+│   │   ├── payments.py                  # Manual policy payment
+│   │   ├── printing.py                  # Document printing
 │   │   └── __init__.py
-│   └── v2/                              # Current endpoints
-│       ├── policies.py                  # Policy-related endpoints
-│       ├── contacts.py                  # Contact endpoints
-│       ├── quotes.py                    # Quote endpoints
-│       ├── deliverables.py              # Deliverable endpoints
-│       ├── utils.py                     # Utility/admin endpoints
-│       ├── claims.py, insured.py, lines.py, etc.
+│   └── v2/                              # v2 API endpoints
+│       ├── accounting.py
+│       ├── async_contacts.py            # Async + cached contact wrappers
+│       ├── async_policies.py            # Async + cached policy wrappers
+│       ├── async_quotes.py              # Async + cached quote wrappers
+│       ├── attachments.py
+│       ├── billing.py
+│       ├── claims.py
+│       ├── commissions.py
+│       ├── contacts.py
+│       ├── custom_ui.py
+│       ├── dashboards.py
+│       ├── data.py
+│       ├── deliverables.py
+│       ├── errors.py
+│       ├── inspections.py
+│       ├── insured.py
+│       ├── intacct.py
+│       ├── lines.py
+│       ├── nightly_jobs.py
+│       ├── notes.py
+│       ├── notifications.py
+│       ├── payments.py
+│       ├── policies.py
+│       ├── printing.py
+│       ├── quotes.py
+│       ├── reports.py
+│       ├── return_premium.py
+│       ├── search.py
+│       ├── settings.py
+│       ├── signatures.py
+│       ├── uploads.py
+│       ├── utils.py
+│       ├── vendors.py
 │       └── __init__.py
 └── __init__.py
 
@@ -142,7 +186,7 @@ data = API_CLIENT.process_result(response)
 `do_request(...)` defaults:
 
 - timeout: `web_timeout` (default 5s)
-- retries: `web_retry` (default 5 with urllib3 backoff)
+- retries: `web_retry` (default 3 with urllib3 backoff)
 - authentication: API key injected into request payload for API-key mode,
   bearer token header for OAuth mode
 
@@ -154,7 +198,8 @@ This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `
 - Fewer abstraction layers: `requests` is built on top of `urllib3`.
 - Operational consistency: easier to keep transport behavior explicit in a reusable library.
 
-`requests` remains a good choice for application scripts and one-off integrations where concise syntax is the main priority.
+`requests` remains a good choice for application scripts and one-off integrations where
+concise syntax is the main priority.
 
 ---
 
@@ -168,17 +213,19 @@ This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `
 
 src/britecore_libraries/
 ├── config/
-│   ├── config.py            # Dynaconf settings loader
-│   ├── settings.toml        # Default configuration
-│   ├── .secrets.toml        # Environment secrets (git-ignored)
+│   ├── config.py            # Dynaconf settings loader + LoadClientSettings
+│   ├── settings.toml        # urllib3 defaults only (web_timeout, web_retry, etc.)
+│   ├── .secrets.toml        # All credentials: base_url, api_key, client_id,
+│   │                        # client_secret — gitignored, never committed
 │   └── __init__.py
 ├── utils/
-│   ├── britecore_odbc.py    # Database connections (pyodbc)
-│   ├── britecore_selenium.py # Browser automation (Selenium)
+│   ├── britecore_odbc.py    # Database connections (optional: pyodbc)
+│   ├── britecore_selenium.py # Browser automation (optional: selenium)
+│   ├── interactive_menu.py  # CLI menu helpers (optional: pyinputplus)
 │   ├── zip_code_lookup.py   # ZIP code CSV lookup
 │   └── __init__.py
-├── base_logger.py           # Singleton logger
-└── exceptions.py            # Custom exceptions
+├── base_logger.py           # Package-level logger setup
+└── exceptions.py            # Custom exception hierarchy
 
 ```
 
@@ -186,18 +233,21 @@ src/britecore_libraries/
 
 ```python
 
-# Dynaconf loads from multiple sources
-from britecore_libraries.config import settings
+# Dynaconf loads from multiple sources (highest to lowest priority)
+# 1. Environment variables (BRITECORE_LIBRARIES_*)
+# 2. .secrets.toml (base_url, api_key, client_id, client_secret)
+# 3. settings.toml (web_timeout, web_retry, web_timeout_long defaults)
+# 4. Built-in defaults
 
-# 1. Load settings.toml (defaults)
-# 2. Load .secrets.toml (secrets)
-# 3. Override with environment variables
-# 4. Validate required keys
+from britecore_libraries.config.config import LoadClientSettings
 
-# Access configuration
-settings.base_url           # From environment or config file
-settings.web_timeout        # From config
-settings.web_retry          # From config
+loader = LoadClientSettings("my_site")
+site_config = loader.load_config()
+
+site_config.base_url          # From .secrets.toml or env var
+site_config.api_key           # From .secrets.toml or env var
+site_config.web_timeout       # From settings.toml
+site_config.web_retry         # From settings.toml
 
 ```
 
@@ -230,7 +280,7 @@ settings.web_retry          # From config
    }
 3. Store token + expiry time
 4. On each request:
-   - Check if token expired
+   - Check if token expired (with safety buffer)
    - If expired, request new token
    - Set header: "Authorization: Bearer <token>"
 5. Send request to endpoint
@@ -274,23 +324,49 @@ api_client = _LazyAPIClient()
 
 ---
 
+## Async & Caching
+
+`AsyncBritecoreAPIClient` wraps the sync client with:
+
+- **TTL cache:** Thread-safe in-memory cache keyed by canonicalized request
+  (auth headers excluded from key)
+- **Namespace invalidation:** Mutation wrappers invalidate related read caches
+  (e.g., `update_contact` invalidates the `contacts` namespace)
+- **In-flight deduplication:** Concurrent identical requests share a single
+  in-flight `asyncio.Task` rather than issuing duplicate HTTP calls
+- **Per-call overrides:** `cache_enabled`, `cache_ttl_seconds`, `cache_bypass`,
+  `cache_invalidate_on_success`, `dedupe_in_flight` via `RequestParameters`
+
+See [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for full behavior documentation.
+
+---
+
 ## Error Handling
 
 ### Exception Hierarchy
 
 ```text
 
-Exception
-├── BritecoreError (our custom exceptions)
-│   ├── NoDataReturned       # API returned success=false
-│   ├── NoTokenReturned      # OAuth token request failed
-│   ├── InvalidPhoneNumber   # Phone validation failed
-│   ├── InvalidEmailAddress  # Email validation failed
-│   ├── InvalidAddress       # Address validation failed
-│   ├── NoSiteError          # target_site not configured
-│   ├── MissingParameter     # Required param missing
-│   └── ConflictingParameters # Multiple exclusive params
-└── ... (urllib3, pyodbc, etc.)
+BritecoreError (namespace class)
+└── Base(Exception)
+    ├── NoDataReturned          # API returned success=false or no data
+    │   ├── ValidationError     # HTTP 400 / 422 validation failure
+    │   ├── NotFoundError       # HTTP 404 resource not found
+    │   └── ConflictError       # HTTP 409 conflict
+    ├── NoTokenReturned         # OAuth token request failed
+    ├── AuthenticationError     # HTTP 401 / 403 auth failure
+    ├── RateLimitError          # HTTP 429 rate limit exceeded
+    ├── ServerError             # HTTP 5xx server error
+    ├── RequestTimeoutError     # Request exceeded configured timeout
+    ├── ConfigurationError      # Missing base_url, api_key, etc.
+    ├── InvalidPhoneNumber      # Phone validation failed
+    ├── InvalidEmailAddress     # Email validation failed
+    ├── InvalidAddress          # Address validation failed
+    ├── BritecoreKeyError       # Required config key missing
+    ├── NoSiteError             # target_site not configured
+    ├── MissingParameter        # Required API parameter missing
+    ├── ConflictingParameters   # Mutually exclusive params supplied
+    └── DatabaseConnectionError # pyodbc connection failure
 
 ```
 
@@ -308,11 +384,15 @@ Exception
 # process_result() raises:
 BritecoreError.NoDataReturned("Policy not found")
 
-# Caller handles:
+# Caller handles specific types:
 try:
-    policy = get_policy("POL001")
-except BritecoreError.NoDataReturned as e:
-    logger.error(f"Failed: {e}")
+    policy = policies.retrieve_policy(policy_number="POL001")
+except BritecoreError.NotFoundError:
+    logger.warning("Policy not found")
+except BritecoreError.AuthenticationError:
+    logger.error("Auth failed — check credentials")
+except BritecoreError.Base as e:
+    logger.error("SDK failure: %s", e)
 
 ```
 
@@ -334,7 +414,7 @@ Raw Input
     │   └─► "JOHN@EXAMPLE.COM" → "john@example.com"
     │
     ├─► AddressValidator({...}).process()
-    │   └─► Validate state, ZIP, etc.
+    │   └─► Validate state, ZIP, normalize components
     │
     └─► Output (Ready for API)
         {
@@ -350,32 +430,32 @@ Raw Input
 
 ## API Endpoint Pattern
 
-### Implemented Endpoint Example
+### Standard v2 Endpoint Example
 
 ```python
 
 # In api/api_calls/v2/policies.py
 
 def retrieve_policy(
-    policy_number: Optional[str] = None,
-    policy_id: Optional[str] = None,
-    revision_id: Optional[str] = None,
+    policy_number: str | None = None,
+    policy_id: str | None = None,
+    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> dict:
     """
     Retrieve a policy by number, ID, or revision ID.
-    
+
     Parameters:
         policy_number: Policy number (e.g., "POL001")
         policy_id: Policy UUID
         revision_id: Revision UUID
-        **kwargs: Timeout, retry settings
-    
+        **kwargs: Timeout, retry, header overrides (RequestParameters)
+
     Returns:
-        Dictionary with policy data
+        Normalized process_result() payload for the matching policy.
     """
-    
-    # 1. Resolve which parameter to use
+
+    # 1. Resolve which identifier to use (mutually exclusive)
     params = [
         {"policy_id": policy_id},
         {"revision_id": revision_id},
@@ -385,14 +465,14 @@ def retrieve_policy(
         params,
         priority=["revision_id", "policy_id", "policy_number"]
     )
-    
+
     # 2. Make request
     response = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_policy",
         json=payload,
         **kwargs
     )
-    
+
     # 3. Process and return
     return API_CLIENT.process_result(response)
 
@@ -405,17 +485,27 @@ def retrieve_policy(
 ```text
 
 tests/
-├── conftest.py              # Shared fixtures
-├── unit/                    # Unit tests (fast, isolated)
-│   ├── test_config.py       # Config loading
-│   ├── test_api_client.py   # API client
-│   ├── test_oauth_token_manager.py
-│   ├── test_maps.py         # Regex fallback
-│   ├── test_validators.py   # Data validation
-│   ├── test_models.py       # Domain models
-│   └── test_exceptions.py   # Error handling
-└── integration/             # Integration tests
-    └── test_endpoints.py    # Endpoint wrappers
+├── conftest.py                         # Shared fixtures (env_api_key, mock_settings, etc.)
+├── unit/
+│   ├── test_api_client.py              # BritecoreAPIClient unit tests
+│   ├── test_api_spec_alignment.py      # Verify wrappers align with britecore_api.json
+│   ├── test_async_api_client.py        # AsyncBritecoreAPIClient unit tests
+│   ├── test_async_v2_api_calls.py      # Async endpoint wrapper tests
+│   ├── test_concurrency.py             # Multi-instance + thread-safety tests
+│   ├── test_config.py                  # Config loading tests
+│   ├── test_core_client_coverage.py    # do_request / process_result coverage
+│   ├── test_exceptions.py              # Exception hierarchy + legacy class imports
+│   ├── test_logging_tokens.py          # Verify no SCLogging tokens remain
+│   ├── test_maps.py                    # Regex map fallback behavior
+│   ├── test_models.py                  # Domain model tests
+│   ├── test_oauth_token_manager.py     # OAuth token lifecycle tests
+│   ├── test_v1_endpoint_routing.py     # v1 endpoint path + docstring tests
+│   ├── test_v2_endpoints.py            # v2 endpoint wrapper tests
+│   ├── test_v2_new_endpoints.py        # v2 newer endpoint tests
+│   ├── test_validators.py              # Validator tests
+│   └── test_zip_code_lookup.py         # ZIP code lookup tests
+└── integration/
+    └── test_endpoints.py               # Full endpoint integration + sandbox tests
 
 ```
 
@@ -425,17 +515,25 @@ tests/
 
 # conftest.py
 @pytest.fixture
-def mock_http_response():
-    """Mock successful HTTP response."""
-    response = MagicMock()
-    response.status = 200
-    response.data = b'{"success": true, "data": {...}}'
-    return response
+def mock_settings():
+    """Provide a mock settings namespace for client initialization."""
+    return SimpleNamespace(
+        base_url="https://test.example.com",
+        api_key="test_api_key",
+        client_id="",
+        client_secret="",
+        web_timeout=5,
+        web_retry=3,
+        web_timeout_long=30,
+    )
 
-# test_api_client.py
-def test_process_result(mock_http_response):
-    result = API_CLIENT.process_result(mock_http_response)
-    assert result is not None
+# test_v2_endpoints.py
+def test_retrieve_policy(env_api_key, mock_settings):
+    client = _get_initialized_client(mock_settings)
+    with patch.object(client, "do_request", return_value=mock_response):
+        with patch.object(client, "process_result", return_value={"policy_id": "123"}):
+            result = policies.retrieve_policy(policy_number="POL001")
+    assert result["policy_id"] == "123"
 
 ```
 
@@ -449,6 +547,8 @@ def test_process_result(mock_http_response):
 
 api/api_calls/          # Uses
     ├─→ britecore_api_client.py
+    ├─→ britecore_async_api_client.py  (async modules)
+    ├─→ request_cache.py               (async modules)
     ├─→ config/settings
     └─→ exceptions.py
 
@@ -457,7 +557,7 @@ models/                 # Uses
     └─→ logger
 
 validators/             # Uses
-    ├─→ maps/regex_patterns
+    ├─→ maps/ (lazy-loaded regexes)
     ├─→ exceptions.py
     └─→ logger
 
@@ -467,12 +567,14 @@ validators/             # Uses
 
 ```text
 
-urllib3          # HTTP requests
-pyodbc          # Database access
-selenium        # Browser automation
-dynaconf        # Configuration
-csv (stdlib)    # ZIP code CSV parsing
-sclogging       # Logging
+Core (always installed):
+  urllib3          # HTTP requests and connection pooling
+  dynaconf         # Configuration management
+
+Optional extras:
+  pyodbc           # Database access ([database])
+  selenium         # Browser automation ([browser])
+  pyinputplus      # Interactive CLI menus ([browser] or standalone)
 
 ```
 
@@ -483,15 +585,15 @@ sclogging       # Logging
 ### API Client Optimizations
 
 1. **Connection Pooling:** urllib3 PoolManager with configurable pool size
-2. **Timeouts:** Configurable per-request (default 5s, long 50s)
+2. **Timeouts:** Configurable per-request (default 5s, long 30s)
 3. **Retries:** Exponential backoff for transient failures (502, 503, 504)
-4. **Token Caching:** OAuth tokens cached until expiration
+4. **Token Caching:** OAuth tokens cached until expiration (with safety buffer)
 
-### Lazy Initialization
+### Async Client Optimizations
 
-- No import-time work
-- Client initializes only on first use
-- Thread-safe with double-check locking
+1. **TTL Cache:** In-memory response cache per request key, default TTL 60s
+2. **In-flight Deduplication:** Concurrent identical requests share one `asyncio.Task`
+3. **Namespace Invalidation:** Targeted cache invalidation on mutation success
 
 ### Validation Caching
 
@@ -506,14 +608,16 @@ sclogging       # Logging
 
 ```bash
 
-# Never commit secrets
-.gitignore:
-    src/britecore_libraries/config/.secrets.toml
+# Never commit secrets — .secrets.toml is gitignored
+# settings.toml contains only urllib3 defaults (no credentials)
 
-# Use environment variables
-export target_site=your_site
-export BRITECORE_BASE_URL=...
-export BRITECORE_API_KEY=...
+# Use environment variables for all credentials
+export BRITECORE_LIBRARIES_BASE_URL="https://your-instance.com"
+export BRITECORE_LIBRARIES_API_KEY="..."
+# or OAuth:
+export BRITECORE_LIBRARIES_CLIENT_ID="..."
+export BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+export target_site="production"
 
 ```
 
@@ -521,8 +625,13 @@ export BRITECORE_API_KEY=...
 
 ```python
 
-from britecore_libraries import logger
+import logging
 
+# Module-level control
+logging.getLogger("britecore_libraries").setLevel(logging.DEBUG)
+
+# Standard Python logging — no custom formatting tokens
+from britecore_libraries import logger
 logger.debug("Detailed info")
 logger.info("Important events")
 logger.error("Errors with context")
@@ -533,24 +642,23 @@ logger.error("Errors with context")
 
 - Track token refresh rate (indicates expiry issues)
 - Monitor request latency (timeout tuning)
-- Alert on validation failures (data quality)
+- Alert on `BritecoreError.RateLimitError` (backoff needed)
+- Alert on `BritecoreError.ServerError` (upstream BriteCore health)
 
 ---
 
 ## Future Enhancements
 
-1. **Complete API Coverage** - Continue implementing uncovered endpoint groups from `britecore_api.json`
-2. **Async Support** - Add async/await patterns
-3. **Caching Layer** - Cache policy/quote lookups
-4. **Metrics** - Built-in instrumentation
-5. **API Documentation** - Generate from docstrings
+1. **Metrics / Tracing** - Built-in instrumentation hooks (request ID, latency, retry count)
+2. **Retry Strategies** - Per-error-type retry configuration
+3. **SDK Code Generation** - Regenerate endpoint wrappers from `britecore_api.json` spec
 
 ---
 
 ## Documentation Freshness
 
-- Last verified: `2026-03-26`
-- Verified against: `src/britecore_libraries/api/api_calls/` and `API.md`
+- Last verified: `2026-04-07`
+- Verified against: `src/britecore_libraries/` directory structure and `exceptions.py`
 
 ---
 
