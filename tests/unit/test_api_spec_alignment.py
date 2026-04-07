@@ -90,6 +90,8 @@ def test_wrapper_paths_exist_in_api_spec() -> None:
         + _format_path_list(missing)
         + "\n\nIf intentional, add path(s) to KNOWN_SPEC_GAPS in tests/unit/test_api_spec_alignment.py."
     )
+
+
 @pytest.mark.unit
 def test_spec_paths_have_wrappers_report_only() -> None:
     """Report spec endpoints that do not yet have wrappers.
@@ -103,10 +105,10 @@ def test_spec_paths_have_wrappers_report_only() -> None:
 
     strict_mode = os.getenv("BRITECORE_STRICT_SPEC_COVERAGE", "").strip() == "1"
     if strict_mode:
-        assert not uncovered, (
-            "Spec endpoints without wrapper implementations:\n"
-            + _format_path_list(uncovered)
+        assert (
+            not uncovered
+        ), "Spec endpoints without wrapper implementations:\n" + _format_path_list(
+            uncovered
         )
 
     assert True
-
