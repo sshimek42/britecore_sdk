@@ -18,8 +18,8 @@ enabled = true
 
 [[transformers]]
 name = "black"
-enabled = true
+enabled = false
 
 [[transformers]]
 name = "isort"
-enabled = true
+enabled = false
