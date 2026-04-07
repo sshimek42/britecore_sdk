@@ -60,8 +60,8 @@ def get_driver(
     try:
         driver = driver_info()
     except Exception as err:  # skipcq PYL-W0703
-        logger.critical(f"Cannot launch browser - {err}")
-        sys.exit(f"Cannot launch browser - {err}")
+        logger.error(f"Cannot launch browser - {err}")
+        raise BritecoreError.Base(f"Cannot launch browser - {err}") from err
 
     driver.maximize_window()
 

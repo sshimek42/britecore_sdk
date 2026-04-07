@@ -1,19 +1,18 @@
 """BriteCore v2 Lines API endpoint wrappers.
 
-Provides interactive and programmatic helpers for working with BriteCore
-line/policy export data and line-menu selection flows.
+Provides programmatic helpers for working with BriteCore
+line/policy export data.
 
 Key functions:
     get_export_line_file -- Fetch export data for a specific line or policy type.
-    line_menu            -- Interactive CLI menu for selecting effective date,
-                            state, and line combinations.
+
+For interactive menu functionality, see britecore_libraries.utils.interactive_menu.
 """
 
 from json import loads
 from logging import Logger
 from typing import Any, Unpack
 
-import pyinputplus as py_menu
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
 from britecore_libraries import BritecoreError, logger
@@ -82,129 +81,16 @@ def get_export_line_file(
     return request_result
 
 
-def line_menu(
-    **kwargs: Unpack[RequestParameters],
-) -> tuple[list, list, list, str, str, str]:
+# Backward compatibility: re-export from new interactive_menu utility module.
+# This import is lazy to avoid requiring pyinputplus for API-only users.
+def line_menu(**kwargs: Unpack[RequestParameters]):
     """
-    Creates menus for each different line option
+    Deprecated: Use britecore_libraries.utils.interactive_menu.line_menu instead.
 
-    This function generates interactive menus to select effective date, state, and line
-    options from API data. It handles user input for choosing from multiple options
-    and returns the selected values along with their identifiers.
-
-    :param print_menu_title: Title for the menu being displayed
-    :type print_menu_title: str
-    :param print_menu_options: Dictionary mapping option names to their identifiers
-    :type print_menu_options: dict
-    :param print_menu_default: Default selection option
-    :type print_menu_default: str
-    :return: Tuple containing the selected identifiers and names
-    :rtype: tuple[list[Any], list[Any]] or tuple[list[Any], str]
+    This function is retained for backward compatibility.
     """
-    request_result: BaseHTTPResponse | HTTPResponse | None
-
-    def print_menu(
-        print_menu_title: str,
-        print_menu_options: dict,
-        print_menu_default: str,
-    ) -> tuple[list, str]:
-        """
-        Display a menu with given title and options, and return the selected option's ID and name.
-
-        This function prints a formatted menu based on the provided title and options,
-        allows the user to make a selection, and returns the corresponding ID and name
-        of the selected option. It supports both single and multiple options, handling
-        special cases like "All" selection and default values.
-
-        Parameters:
-            print_menu_title: The title to display above the menu options.
-            print_menu_options: A dictionary mapping option names to their corresponding IDs.
-            print_menu_default: The default option to select if only one option is available.
-
-        Returns:
-            A tuple containing:
-                - line_id: The ID of the selected option, which can be a string or a list of strings.
-                - name: The name of the selected option, which can be a string or a list of strings.
-        """
-        line_id: str | list[str]
-        name: str | list[str]
-
-        LOGGER.info(
-            f"\nChoose {print_menu_title.lower()}\n{'=' * (len(print_menu_title) + 7)}"
-        )
-        if len(print_menu_options) > 1:
-            menu_options_list: list = list(print_menu_options.keys())
-            tmp_line = py_menu.inputMenu(
-                menu_options_list,
-                lettered=False,
-                numbered=True,
-                prompt="",
-                default=len(print_menu_options) + 1,
-                blank=True,
-            )
-            if tmp_line in ("All", ""):
-                line_id = list(print_menu_options.values())
-                name = list(print_menu_options.keys())
-            else:
-                line_id = print_menu_options[tmp_line]
-                name = tmp_line
-        else:
-            LOGGER.info("1. " + print_menu_default)
-            tmp_line = print_menu_default
-            line_id = print_menu_options[menu_default]
-            name = menu_default
-        LOGGER.info(f"{tmp_line} selected")
-        return line_id, name
-
-    LOGGER.debug("Getting dates")
-    request_result = API_CLIENT.do_request(
-        path="/api/v2/lines/get_all_effective_dates", **kwargs
-    )
-    get_dates: Any = API_CLIENT.process_result(request_result)
-
-    LOGGER.debug("Getting states")
-    menu_options: dict[str, str] = {}
-    menu_default: str = ""
-    for make_menu in get_dates:
-        menu_options.update({make_menu["description"]: make_menu["id"]})
-        menu_default = make_menu["description"]
-    eff_date: tuple[list[str], str] = print_menu("Date", menu_options, menu_default)
-    eff_date_json: dict[str, list[str]] | None = {"effective_date_id": eff_date[0]}
-
-    request_result = API_CLIENT.do_request(
-        path="/api/v2/lines/get_all_states", json=eff_date_json, **kwargs
-    )
-    get_states: Any = API_CLIENT.process_result(request_result)
-
-    menu_options = {}
-    for make_menu in get_states:
-        menu_options.update({make_menu["name"]: make_menu["id"]})
-        menu_default = make_menu["name"]
-    eff_state = print_menu("State", menu_options, menu_default)
-    eff_state_json: dict[str, list[str]] = {
-        "effective_date_id": eff_date[0],
-        "location_id": eff_state[0],
-    }
-
-    request_result = API_CLIENT.do_request(
-        path="/api/v2/lines/get_all_lines", json=eff_state_json, **kwargs
-    )
-    all_lines: Any = API_CLIENT.process_result(request_result)
-    menu_options: dict[str, str] = {}
-    menu_name: list[str] = []
-    for make_menu in all_lines:
-        menu_options.update({make_menu["name"]: make_menu["id"]})
-        menu_name.append(make_menu["name"])
-    eff_line = print_menu("Line", menu_options, menu_name[0])
-
-    return (
-        eff_date[0],
-        eff_state[0],
-        eff_line[0],
-        eff_date[1],
-        eff_state[1],
-        eff_line[1],
-    )
+    from britecore_libraries.utils.interactive_menu import line_menu as _line_menu
+    return _line_menu(**kwargs)
 
 
 def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
