@@ -719,9 +719,10 @@ class TestStructuredTracing:
         client.http = MagicMock()
         client.http.request.side_effect = Urllib3Timeout("timed out")
 
-        with patch(
-            "britecore_libraries.api.britecore_api_client.LOGGER"
-        ) as mock_logger, pytest.raises(BritecoreError.RequestTimeoutError):
+        with (
+            patch("britecore_libraries.api.britecore_api_client.LOGGER") as mock_logger,
+            pytest.raises(BritecoreError.RequestTimeoutError),
+        ):
             client.do_request(path="/api/v2/test/slow", json={"x": 1})
 
         error_calls = [str(call) for call in list(mock_logger.error.call_args_list)]
