@@ -14,6 +14,7 @@ Key docs:
 
 - [docs/index.md](docs/index.md) for the Sphinx docs entry point in-repo
 - [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
+- [examples/README.md](examples/README.md) for runnable sample scripts
 - [API.md](API.md) for endpoint reference and coverage details
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
 - [docs/MAP_FILES.md](docs/MAP_FILES.md) for sensitive map-file policy and sample structures
@@ -107,6 +108,13 @@ from britecore_libraries.api.api_calls.v2 import policies
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
 
+```
+
+Runnable local sample:
+
+```powershell
+python examples/basic_api_usage.py
+python examples/basic_api_usage.py --help
 ```
 
 ## Use async cached wrappers
