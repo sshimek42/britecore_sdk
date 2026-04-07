@@ -102,7 +102,7 @@ src/britecore_libraries/api/
 ├── britecore_oauth_token_manager.py     # OAuth2 token handling
 ├── api_calls/
 │   ├── __init__.py                      # Lazy init + exports
-│   ├── v1/                              # Legacy endpoints
+│   ├── v1/                              # v1 API endpoints (no v2 equivalent)
 │   │   ├── contacts.py
 │   │   ├── printing.py
 │   │   └── __init__.py
