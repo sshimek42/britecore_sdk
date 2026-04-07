@@ -23,19 +23,38 @@ pip install britecore_libraries
 
 ### 2. Configure
 
-Set environment variables or create `config/.secrets.toml`:
+Set environment variables or create `src/britecore_libraries/config/.secrets.toml`:
 
+**Linux/macOS (bash):**
 ```bash
-export BRITECORE_BASE_URL="https://your-britecore-instance.com"
-export BRITECORE_API_KEY="your_api_key_here"
+export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
+export BRITECORE_LIBRARIES_API_KEY="your_api_key_here"
+export target_site="production"
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
+$env:BRITECORE_LIBRARIES_API_KEY="your_api_key_here"
+$env:target_site="production"
 ```
 
 Or for OAuth:
 
+**Linux/macOS (bash):**
 ```bash
-export BRITECORE_BASE_URL="https://your-britecore-instance.com"
-export BRITECORE_CLIENT_ID="your_client_id"
-export BRITECORE_CLIENT_SECRET="your_client_secret"
+export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
+export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
+export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
+export target_site="production"
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
+$env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
+$env:BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
+$env:target_site="production"
 ```
 
 ### 3. Use
@@ -118,6 +137,8 @@ web_timeout_long = 30
 ```
 
 **.secrets.toml** (never commit):
+
+API key authentication:
 ```toml
 [production]
 base_url = "https://api.britecore.example.com"
@@ -128,13 +149,37 @@ base_url = "https://api-staging.britecore.example.com"
 api_key = "your_staging_api_key"
 ```
 
+Or OAuth authentication:
+```toml
+[production]
+base_url = "https://api.britecore.example.com"
+client_id = "your_real_client_id"
+client_secret = "your_real_client_secret"
+
+[staging]
+base_url = "https://api-staging.britecore.example.com"
+client_id = "your_staging_client_id"
+client_secret = "your_staging_client_secret"
+```
+
 **Environment variables** (override file config):
+
+**Linux/macOS (bash):**
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
 export BRITECORE_LIBRARIES_API_KEY="your_api_key"
 export target_site="production"
+```
+
+**Windows (PowerShell):**
+```powershell
+$env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
+$env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
+$env:BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
+$env:BRITECORE_LIBRARIES_API_KEY="your_api_key"
+$env:target_site="production"
 ```
 
 See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed setup.
