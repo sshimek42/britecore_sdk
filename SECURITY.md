@@ -147,7 +147,6 @@ Security vulnerabilities follow [CVE](https://www.cve.org/) guidelines:
 
 For security concerns or questions about this policy:
 
-- Email security contact (see above)
 - Contact the repository owner via a private GitHub channel (see above)
 - Do not open public issues for suspected vulnerabilities
 - See [STABILITY.md](STABILITY.md) for other support channels
