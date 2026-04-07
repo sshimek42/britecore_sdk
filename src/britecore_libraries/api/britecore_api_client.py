@@ -382,7 +382,12 @@ class BritecoreAPIClient:
 
         request_headers = dict(request_headers or {})
         if not self.use_api_key and "Authorization" not in request_headers:
-            request_headers.update(self.token_class.get_authorization_headers())
+            token_manager = self.token_class
+            if token_manager is None:
+                raise BritecoreError.ConfigurationError(
+                    "OAuth token manager not initialized"
+                )
+            request_headers.update(token_manager.get_authorization_headers())
 
         if not self.base_url:
             raise BritecoreError.ConfigurationError("base_url not configured")
@@ -408,7 +413,11 @@ class BritecoreAPIClient:
             if request_body:
                 body_bytes = dumps(request_body).encode("utf-8")
 
-            request_result: urllib3.BaseHTTPResponse = self.http.request(
+            http_client = self.http
+            if http_client is None:
+                raise BritecoreError.ConfigurationError("HTTP client not initialized")
+
+            request_result: urllib3.BaseHTTPResponse = http_client.request(
                 method=method,
                 url=request_url,
                 headers=request_headers,
@@ -477,7 +486,7 @@ class BritecoreAPIClient:
         """
 
         multiple_found: bool = False
-        non_empty_dict: dict[str, str] = {}
+        non_empty_dict: dict[str, str | None] = {}
         parameter_used: str = ""
         correct_parameter: dict[str, str | None] = {}
 
@@ -493,7 +502,7 @@ class BritecoreAPIClient:
             correct_parameter = {parameter_used: None}
         else:
             parameter_used = list(non_empty_dict.keys())[0]
-            correct_parameter = non_empty_dict
+            correct_parameter = dict(non_empty_dict)
 
         if multiple_found:
             for each_priority in parameter_priority:
