@@ -91,7 +91,11 @@ def get_to_be_printed(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     return gettobeprinted(
-        json_dict={"from_date": from_date, "to_date": to_date, "ignore_state": ignore_state},
+        json_dict={
+            "from_date": from_date,
+            "to_date": to_date,
+            "ignore_state": ignore_state,
+        },
         **kwargs,
     )
 

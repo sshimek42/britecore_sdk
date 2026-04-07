@@ -45,7 +45,6 @@ def _post(
     return API_CLIENT.process_result(cast(Any, request_result))
 
 
-
 def add_payment_method(
     card_expires_mm: str | None = None,
     ach_bank: str | None = None,
