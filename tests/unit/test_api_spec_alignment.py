@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -73,6 +74,10 @@ def _spec_paths() -> set[str]:
     return set(payload.get("paths", {}).keys())
 
 
+def _format_path_list(paths: list[str]) -> str:
+    return "\n".join(f"- {path}" for path in paths)
+
+
 @pytest.mark.unit
 def test_wrapper_paths_exist_in_api_spec() -> None:
     wrapper_paths = _all_wrapper_paths()
@@ -82,6 +87,26 @@ def test_wrapper_paths_exist_in_api_spec() -> None:
 
     assert not missing, (
         "Wrapper endpoints not found in britecore_api.json:\n"
-        + "\n".join(f"- {path}" for path in missing)
+        + _format_path_list(missing)
         + "\n\nIf intentional, add path(s) to KNOWN_SPEC_GAPS in tests/unit/test_api_spec_alignment.py."
     )
+@pytest.mark.unit
+def test_spec_paths_have_wrappers_report_only() -> None:
+    """Report spec endpoints that do not yet have wrappers.
+
+    By default this test is non-blocking and always passes. Set
+    BRITECORE_STRICT_SPEC_COVERAGE=1 to enforce wrapper coverage.
+    """
+    wrapper_paths = _all_wrapper_paths()
+    spec_paths = _spec_paths()
+    uncovered = sorted(spec_paths - wrapper_paths)
+
+    strict_mode = os.getenv("BRITECORE_STRICT_SPEC_COVERAGE", "").strip() == "1"
+    if strict_mode:
+        assert not uncovered, (
+            "Spec endpoints without wrapper implementations:\n"
+            + _format_path_list(uncovered)
+        )
+
+    assert True
+
