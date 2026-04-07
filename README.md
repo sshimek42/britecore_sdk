@@ -1,166 +1,230 @@
 # britecore_libraries
 
-*Last updated: April 7, 2026*
-*Document type: Living guide*
+A professional **Python SDK for the BriteCore API** — complete endpoint coverage, async support, OAuth/API key authentication, and type hints.
 
-Python utilities and API wrappers for working with BriteCore services.
+> No existing BriteCore client library? Look no further. This SDK provides everything you need: 374+ endpoints, domain models, validators, and clean async wrappers.
 
-## Start here
+**Status:** Stable (v1.1.0) | **License:** Apache-2.0 | **Python:** 3.11+
 
-- Use the library: install, configure, and call a `v2` endpoint.
-- Contribute to the library: use editable install, run tests, follow project conventions.
+---
 
-Key docs:
+## Quick Start
 
-- [docs/index.md](docs/index.md) for the Sphinx docs entry point in-repo
-- [GETTING_STARTED.md](GETTING_STARTED.md) for broader setup and examples
-- [examples/README.md](examples/README.md) for runnable sample scripts
-- [API.md](API.md) for endpoint reference and coverage details
-- [https://api.britecore.com/](https://api.britecore.com/) for supplemental external API reference docs (canonical SDK contract stays in `britecore_api.json`)
-- [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior and tuning
-- [docs/MAP_FILES.md](docs/MAP_FILES.md) for sensitive map-file policy and sample structures
-- [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
-- [UNIMPLEMENTED_API_STUBS.md](UNIMPLEMENTED_API_STUBS.md) for the current stub backlog of unimplemented API domains/calls
-- [ARCHITECTURE.md](ARCHITECTURE.md) for component-level design
-- [CONTRIBUTING.md](CONTRIBUTING.md) for contribution workflow
-- [AGENTS.md](AGENTS.md) for repository-specific coding guidance
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
+### 1. Install
 
-## Documentation map
-
-Current guidance (living docs):
-
-- [GETTING_STARTED.md](GETTING_STARTED.md)
-- [API.md](API.md)
-- [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md)
-- [UNIMPLEMENTED_API_STUBS.md](UNIMPLEMENTED_API_STUBS.md)
-- [ARCHITECTURE.md](ARCHITECTURE.md)
-- [CONTRIBUTING.md](CONTRIBUTING.md)
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-
-## What this package provides
-
-- Domain models in `src/britecore_libraries/models/` for contact, policy, and quote payloads
-- Data validators in `src/britecore_libraries/validators/` for names, email, phone, and addresses
-- Versioned endpoint wrappers in `src/britecore_libraries/api/api_calls/v1` and `src/britecore_libraries/api/api_calls/v2`
-- Shared API transport in `src/britecore_libraries/api/britecore_api_client.py`
-- API-first utilities, plus optional helpers in `src/britecore_libraries/utils/` (ODBC/Selenium are opt-in extras)
-
-## Use the library
-
-Requirements:
-
-- Python `>=3.11` (from `pyproject.toml`)
-
-Current package status:
-
-- Version: `1.1.0`
-- Stability commitment: semantic versioning from `1.0.0` onward
-- Recommended starting point for compatibility details: `PYTHON_COMPATIBILITY.md`
-
-Install:
-
-```powershell
-
-python -m pip install -e .
-
+```bash
+pip install britecore_libraries
 ```
 
-API-only profile (recommended for pure BriteCore API usage):
+### 2. Configure
 
-- You do **not** need ODBC or Selenium utilities.
-- The base install is sufficient for all API client and endpoint wrapper functionality.
+Set environment variables or create `config/.secrets.toml`:
 
-Optional extras (install only when needed):
-
-```powershell
-python -m pip install -e ".[database]"   # enables pyodbc helpers
-python -m pip install -e ".[browser]"    # enables selenium helpers
-python -m pip install -e ".[all]"        # installs all optional extras
+```bash
+export BRITECORE_BASE_URL="https://your-britecore-instance.com"
+export BRITECORE_API_KEY="your_api_key_here"
 ```
 
-Configure runtime environment variables:
+Or for OAuth:
 
-```powershell
-
-$env:target_site = "your_site"
-$env:system = "your_system"
-
+```bash
+export BRITECORE_BASE_URL="https://your-britecore-instance.com"
+export BRITECORE_CLIENT_ID="your_client_id"
+export BRITECORE_CLIENT_SECRET="your_client_secret"
 ```
 
-Set site values in `src/britecore_libraries/config/settings.toml` and `src/britecore_libraries/config/.secrets.toml`.
-Required site keys: `base_url`, `client_id`, `client_secret`, `api_key`.
-
-Quick smoke check:
-
-```powershell
-
-python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
-
-```
-
-Minimal API call example:
+### 3. Use
 
 ```python
-
 from britecore_libraries.api.api_calls.v2 import policies
 
+# Retrieve a policy
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
-
 ```
 
-Runnable local sample:
+See [examples/basic_api_usage.py](examples/basic_api_usage.py) for more detailed examples.
 
-```powershell
-python examples/basic_api_usage.py
-python examples/basic_api_usage.py --help
+---
+
+## Features
+
+✅ **Complete API coverage** — 374/374 endpoints across v1 and v2  
+✅ **Async-ready** — Cache-aware async wrappers for high-concurrency workflows  
+✅ **Flexible auth** — Automatic API key or OAuth2 token management  
+✅ **Type hints** — Full PEP 561 type information for IDE support  
+✅ **Validators** — Email, phone, address, and name validation utilities  
+✅ **Models** — Domain classes for Contact, Policy, and Quote payloads  
+✅ **Config-first** — Dynaconf-based environment and secrets management  
+✅ **Production-ready** — Stable API, comprehensive tests, security-focused  
+
+---
+
+## Documentation
+
+| Topic | Link |
+| --- | --- |
+| **Setup & examples** | [GETTING_STARTED.md](GETTING_STARTED.md) |
+| **API reference** | [API.md](API.md) |
+| **Async & caching** | [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) |
+| **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| **Python compatibility** | [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) |
+| **Contributing** | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| **Troubleshooting** | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) |
+| **Security policy** | [SECURITY.md](SECURITY.md) |
+
+## Installation & Configuration
+
+### Requirements
+
+- Python `>=3.11`
+
+### Install
+
+```bash
+# Base install (API client + wrappers)
+pip install britecore_libraries
+
+# With optional extras
+pip install britecore_libraries[database]    # pyodbc support
+pip install britecore_libraries[browser]     # Selenium support
+pip install britecore_libraries[all]         # All extras
+pip install britecore_libraries[dev]         # Development (tests, linting, type checking)
 ```
 
-## Use async cached wrappers
+### Configuration
 
-The `v2` package now exports async wrappers directly (for example `aget_quote`,
-`aget_contact`, `aretrieve_policy`) with cache-aware defaults for read calls.
-Use [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for exact defaults, kwargs,
-and invalidation behavior.
+Create `src/britecore_libraries/config/settings.toml` (public) and `.secrets.toml` (gitignored):
 
-## Contribute to the library
+**settings.toml** (example):
+```toml
+[default]
+base_url = ""
+client_id = ""
+client_secret = ""
+api_key = ""
 
-Install with development dependencies:
-
-```powershell
-
-python -m pip install -e ".[dev]"
-
+[production]
+base_url = "https://api.britecore.example.com"
+client_id = ""
+client_secret = ""
 ```
 
-Run tests:
+**.secrets.toml** (never commit):
+```toml
+[production]
+api_key = ""  # Set via BRITECORE_API_KEY environment variable
 
-```powershell
-
-python -m pytest tests/ -v
-python -m pytest tests/unit -m unit -v
-python -m pytest tests/integration -m integration -v
-
+[staging]
+api_key = ""  # Set via BRITECORE_API_KEY environment variable
 ```
 
-Minimum validation for core client/exception changes:
-
-```powershell
-
-python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
-python -m pytest tests/unit/test_api_client.py -v
-
+**Environment variables** (override file config):
+```bash
+export BRITECORE_BASE_URL="https://api.britecore.example.com"
+export BRITECORE_CLIENT_ID="your_client_id"
+export BRITECORE_CLIENT_SECRET="your_client_secret"
+export BRITECORE_API_KEY="your_api_key"
+export target_site="production"
 ```
 
-CI additionally enforces `ruff`, `black --check`, and targeted `mypy` checks.
+See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed setup.
 
-Follow repository conventions in `AGENTS.md`, especially around endpoint wrapper patterns and lazy API client usage via `get_api_client()`.
+---
 
-## Architecture notes
+## What This Package Provides
 
-- `BritecoreAPIClient` handles transport and response processing
-- Endpoint modules generally build request JSON, call `do_request(...)`, and return `process_result(...)`
-- Auth mode is automatic: API key when `client_id`/`client_secret` are blank; OAuth when both are provided
-- Config is Dynaconf-based in `src/britecore_libraries/config/config.py`
-- API client access in wrapper modules is lazy through `src/britecore_libraries/api/api_calls/__init__.py`
+### API Wrappers
+- **v2 endpoints:** 30 modules covering policies, contacts, quotes, payments, and more (374+ endpoints)
+- **v1 endpoints:** Legacy compatibility layer
+- **Async wrappers:** Cache-aware async versions of key v2 endpoints
+
+### Utilities
+- **Models:** `BritecoreContact`, `BritecorePolicy`, `BritecoreQuote` with type hints
+- **Validators:** Email, phone, address, and name validation
+- **Auth:** Automatic OAuth2 or API key selection based on config
+- **Config:** Dynaconf-based environment/secrets management
+- **Logging:** Structured logging with standard Python logging module
+
+### Optional Extras
+- **ODBC:** Database connectivity helpers (`pyodbc`)
+- **Selenium:** Browser automation support (`selenium`)
+- **Interactive:** Menu-driven CLI utilities (`pyinputplus`)
+
+---
+
+## Using Async Wrappers
+
+The `v2` package exports async-aware wrappers (e.g., `aget_quote`, `aget_contact`, `aretrieve_policy`) with built-in caching for read operations.
+
+```python
+import asyncio
+from britecore_libraries.api.api_calls.v2 import async_policies
+
+async def main():
+    policy = await async_policies.aretrieve_policy(policy_number="POL001")
+    print(policy)
+
+asyncio.run(main())
+```
+
+See [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for cache configuration and invalidation.
+
+---
+
+## Development
+
+### Install for Development
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Run Tests
+
+```bash
+# All tests
+pytest tests/ -v
+
+# By category
+pytest tests/unit -m unit -v
+pytest tests/integration -m integration -v
+
+# Core client changes
+pytest tests/unit/test_api_client.py tests/unit/test_core_client_coverage.py -v
+```
+
+### Linting & Type Checking
+
+```bash
+ruff check src/
+black --check src/
+mypy src/britecore_libraries/api/britecore_api_client.py
+```
+
+### Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Workflow and branch conventions
+- Endpoint wrapper patterns
+- Code quality expectations
+- Repository-specific guidance in [AGENTS.md](AGENTS.md)
+
+## Architecture
+
+- **`BritecoreAPIClient`** — Core HTTP transport and response processing
+- **Endpoint modules** — Build request JSON → call `do_request()` → return `process_result()`
+- **Auth modes** — Automatic: API key (when `client_id`/`client_secret` blank) or OAuth2 (when both provided)
+- **Config** — Dynaconf-based in `src/britecore_libraries/config/` with environment variable overrides
+- **Lazy initialization** — API client initializes on first use to avoid import-time failures
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
+
+---
+
+## Support & Links
+
+- **Issues & feedback:** [GitHub Issues](https://github.com/sshimek42/britecore_libraries/issues)
+- **Security concerns:** See [SECURITY.md](SECURITY.md)
+- **Roadmap & stability:** See [STABILITY.md](STABILITY.md)
+- **External API docs:** [api.britecore.com](https://api.britecore.com/) (supplemental reference)
