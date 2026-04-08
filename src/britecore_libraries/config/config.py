@@ -1,10 +1,13 @@
 """Settings config"""
 
+import logging
 import os
 from pathlib import Path
 from typing import Any
 
 from dynaconf import Dynaconf, Validator
+
+LOGGER = logging.getLogger(__name__)
 
 curr_dir = Path(__file__).parent
 setting_files: list[str] = [".secrets.toml", "settings.toml"]
@@ -56,6 +59,10 @@ class LoadClientSettings:
 
         Returns:
             SimpleNamespace: Combined configuration settings for the target site.
+
+        Raises:
+            Exception: If target site configuration fails to load and no
+                default fallback is available.
         """
         from types import SimpleNamespace
 
@@ -74,6 +81,11 @@ class LoadClientSettings:
                         web_timeout_long=settings.get("web_timeout_long"),
                         web_browser=settings.get("web_browser", default=""),
                     )
-            except Exception:
-                pass
+            except Exception as exc:
+                LOGGER.error(
+                    "Failed to load configuration for target_site '%s': %s. "
+                    "Falling back to default settings.",
+                    target_site,
+                    exc,
+                )
         return settings

@@ -142,6 +142,10 @@ try:
 
     logger.debug("maps: loaded load_regexes from local britecore_policy_name_map.py")
 except ImportError:
+    # Both _builtin_load_regexes and the private britecore_policy_name_map.load_regexes
+    # return tuple[dict[str | Any, re.Pattern[str] | Any], dict[str, dict[str, int]]].
+    # The type: ignore is necessary because mypy cannot verify the private module's
+    # signature; runtime behavior is identical between the two implementations.
     load_regexes = _builtin_load_regexes  # type: ignore[assignment]
     logger.debug(
         "maps: britecore_policy_name_map.py absent – using built-in load_regexes"
