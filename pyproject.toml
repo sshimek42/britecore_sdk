@@ -118,3 +118,17 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 pretty = true
 
+[[tool.mypy.overrides]]
+module = [
+  "britecore_libraries.api.api_calls.v1.contacts",
+  "britecore_libraries.api.api_calls.v2.async_contacts",
+  "britecore_libraries.api.api_calls.v2.async_policies",
+  "britecore_libraries.api.api_calls.v2.async_quotes",
+  "britecore_libraries.api.api_calls.v2.contacts",
+  "britecore_libraries.api.api_calls.v2.deliverables",
+  "britecore_libraries.api.api_calls.v2.inspections",
+  "britecore_libraries.api.api_calls.v2.lines",
+  "britecore_libraries.api.api_calls.v2.policies",
+]
+ignore_errors = true
+

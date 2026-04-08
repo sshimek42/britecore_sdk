@@ -3,7 +3,7 @@
 import re
 from ast import literal_eval
 from re import Pattern
-from typing import Any
+from typing import Any, cast
 
 from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
@@ -469,7 +469,10 @@ class AddressValidator:
         Returns:
             str: The normalized address string, or empty string if input is empty
         """
-        street_replacements = _COMPILED_REGEXES.get("street_name_replacement", {})
+        street_replacements = cast(
+            dict[Pattern[str], str],
+            _COMPILED_REGEXES.get("street_name_replacement", {}),
+        )
 
         pattern: Pattern[str]
         replacement: str

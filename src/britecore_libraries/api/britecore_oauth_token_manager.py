@@ -93,7 +93,7 @@ class OAuthToken:
             return
         self.token = access_token
         expires_in: float = float(http_result_dict.get("expires_in", 0))
-        self.token_time: datetime = (
+        self.token_time = (
             datetime.now()
             + timedelta(seconds=expires_in)
             - timedelta(seconds=TOKEN_SKEW_SECONDS)
