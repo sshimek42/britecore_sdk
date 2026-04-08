@@ -25,7 +25,7 @@ Example:
 ```text
 
 1.x.y (Active)          ← Bug fixes, minor features, security patches
-0.x.y (Deprecated)      ← Critical security patches for 12 months from 1.0.0 release
+0.x.y (Pre-release)     ← No ongoing support commitment
 older                   ← No support
 
 ```
@@ -70,41 +70,23 @@ def get_policy(policy_id: str) -> dict:  # Changed return type
 
 ```
 
-## Deprecation Policy
+## Breaking Change Policy
 
 When breaking changes are necessary:
 
-1. **Deprecation warning** — Issue added in minor release with `DeprecationWarning`
-
-   ```python
-
-   import warnings
-   warnings.warn(
-       "old_function() is deprecated; use new_function() instead",
-       DeprecationWarning,
-       stacklevel=2
-   )
-
-   ```
-
-2. **Documentation** — Add to release notes and update relevant guide pages
-3. **Minimum notice** — At least **2 minor releases** before removal (usually 2–3 months)
-4. **Removal** — Only in next major version
+1. **Major release only** — Public API removals and signature changes ship in a major release.
+2. **Documentation** — Release notes and relevant guide pages are updated for the new contract.
+3. **Migration guidance** — Replacement usage is documented in the release notes.
 
 ### Example Timeline
 
 ```text
 
-1.0.0  → Introduce new API, start deprecating old API
-         (Release notes: "old_api() deprecated; use new_api() instead")
+1.0.0  → Initial stable API contract
 
-1.1.0  → Still support old API with warning
-         (Release notes: "old_api() deprecated; will remove in 2.0")
+1.1.0  → Non-breaking additions and fixes
 
-1.2.0  → Still support old API with warning
-
-2.0.0  → Remove old API
-         (Release notes: "Breaking: removed old_api(); use new_api() instead")
+2.0.0  → Breaking API update with migration guidance
 
 ```
 

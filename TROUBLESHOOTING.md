@@ -197,6 +197,22 @@ driver = get_driver(browser="Firefox")
 
 ---
 
+### "No Windows console found" from `questionary` in PyCharm
+
+**Cause:** Some IDE run consoles on Windows do not expose a native Win32
+console buffer to `prompt_toolkit`/`questionary`.
+
+**Solution:**
+
+`utils.interactive_menu.line_menu()` now falls back automatically to a plain
+numbered `input()` menu when rich prompts cannot be initialized.
+
+If you still want the richer interactive prompt UI, run the same script from a
+native terminal (PowerShell, Windows Terminal, or `cmd.exe`) instead of the IDE
+run console.
+
+---
+
 ### "Failed to retrieve OAuth token"
 
 **Cause:** Invalid OAuth credentials or token endpoint unreachable
@@ -496,7 +512,6 @@ policy = policies.retrieve_policy(policy_number="POL001")
 ```
 
 ---
-
 
 ## Still Having Issues?
 

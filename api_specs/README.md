@@ -22,7 +22,7 @@ api_specs/
 - `tests/unit/test_api_spec_alignment.py` validates wrapper paths against the
   current spec only.
 
-## Legacy specs
+## Archived specs
 
 Files under `api_specs/legacy/` are archival reference material.
 
@@ -39,7 +39,7 @@ Do not use them as the default enforcement target for:
 - endpoint coverage claims
 - public SDK support statements
 
-## Legacy scope split
+## Archive scope split
 
 - `api_specs/legacy/britecore/` contains archived BriteCore-related specs.
 - `api_specs/legacy/third_party/` contains archived third-party integration
@@ -57,4 +57,3 @@ Do not use them as the default enforcement target for:
 These files are primarily repository assets for maintenance, documentation, and
 quality checks. They should not be treated as runtime configuration files unless
 an explicit runtime use case is introduced later.
-

@@ -17,8 +17,8 @@ External API docs are available at [https://api.britecore.com/](https://api.brit
 Files under `api_specs/legacy/` are archival reference material for historical
 research and backlog planning, not the default support contract for the current SDK.
 
-The SDK surfaces wrappers across versioned `v1` and `v2` API modules under
-`src/britecore_libraries/api/api_calls/`.
+The SDK surfaces wrappers under `src/britecore_libraries/api/api_calls/v2/`
+plus supported `v1` wrappers where no `v2` equivalent exists.
 
 For known wrapper/spec drift currently tracked in tests, see
 `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).

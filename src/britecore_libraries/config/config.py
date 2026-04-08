@@ -50,8 +50,7 @@ class LoadClientSettings:
 
     def __init__(self, target_site: str | None = None) -> None:
         """
-        Initialize with a target site, falling back to the ``target_site``
-        environment variable when *target_site* is ``None`` or empty.
+        Initialize with a target site or the ``target_site`` environment value.
         """
         self.target_site: str | None = target_site or os.environ.get("target_site")
 
@@ -63,8 +62,8 @@ class LoadClientSettings:
             SimpleNamespace: Combined configuration settings for the target site.
 
         Raises:
-            Exception: If target site configuration fails to load and no
-                default fallback is available.
+            BritecoreError.ConfigurationError: If target site configuration
+                fails to load.
         """
         from types import SimpleNamespace
 
@@ -86,12 +85,9 @@ class LoadClientSettings:
                         web_browser=settings.get("web_browser", default=""),
                     )
             except Exception as exc:
-                LOGGER.error(
-                    "Failed to load configuration for target_site '%s': %s. "
-                    "Falling back to default settings.",
-                    target_site,
-                    exc,
-                )
+                raise BritecoreError.ConfigurationError(
+                    f"Failed to load configuration for target_site '{target_site}': {exc}"
+                ) from exc
         return settings
 
 

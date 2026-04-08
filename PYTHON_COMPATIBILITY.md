@@ -37,9 +37,8 @@ Syntax compatibility with 3.10 is marginal; 3.11 is the safe floor because
 
 | Library Version | BriteCore API | Notes |
 | --- | --- | --- |
-| 1.0.0 | v2 (current) | All v2 endpoints supported |
-| 1.0.0 | v1 | Supported where v1 endpoints are used |
-| 0.x | v1 + v2 | Pre-release; no stability guarantee |
+| 1.0.0+ | current API | Endpoint wrappers and specs track the current contract |
+| 0.x | pre-release API surface | Pre-release; no stability guarantee |
 
 ---
 
@@ -61,12 +60,11 @@ Starting from `1.0.0` the library follows **semantic versioning**:
 - `BritecoreError` exception hierarchy
 - `RequestParameters` TypedDict
 
-### Deprecation policy
+### Breaking-change policy
 
-1. A deprecation warning (`DeprecationWarning`) is emitted for at least **two
-   minor releases** before removal for public API symbols.
-2. The deprecated symbol is removed in the next **major** release.
-3. The CHANGELOG documents every deprecation at introduction and removal.
+1. Public API removals and signature changes occur only in a **major** release.
+2. Breaking changes are documented in `CHANGELOG.md`.
+3. Minor and patch releases maintain the documented public API contract.
 
 ---
 
