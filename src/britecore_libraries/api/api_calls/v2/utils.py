@@ -33,7 +33,9 @@ def get_available_function_names(**kwargs: Unpack[RequestParameters]) -> Any:
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/utils/get_available_function_names"
+    )
 
 
 def rebuild_search_index(
@@ -53,4 +55,6 @@ def rebuild_search_index(
         json=rebuild_index,
         **kwargs,
     )
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/utils/rebuild_search_index"
+    )

@@ -74,7 +74,9 @@ def retrieve_policy(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/retrieve_policy"
+    )
 
 
 def add_line_item(
@@ -274,7 +276,9 @@ def retrieve_policy_terms(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/retrieve_policy_terms"
+    )
 
 
 def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -292,7 +296,9 @@ def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/rate_revision"
+    )
 
 
 def retrieve_revision_details(
@@ -322,7 +328,9 @@ def retrieve_revision_details(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/retrieve_revision_details"
+    )
 
 
 def retrieve_risks(
@@ -350,7 +358,9 @@ def retrieve_risks(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/retrieve_risks"
+    )
 
 
 def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -368,7 +378,9 @@ def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> 
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/retrieve_risk_details"
+    )
 
 
 def update_rating_information(
@@ -394,7 +406,9 @@ def update_rating_information(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/update_rating_information"
+    )
 
 
 def rate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -412,7 +426,9 @@ def rate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/rate_risk"
+    )
 
 
 def retrieve_billing_schedule_options(
@@ -443,7 +459,9 @@ def retrieve_billing_schedule_options(
         json=billing_search_json,
         **kwargs,
     )
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/retrieve_billing_schedule_options"
+    )
 
 
 def new_revision_contact(
@@ -507,7 +525,9 @@ def new_revision_contact(
             **kwargs,
         )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/update_revision_contact"
+    )
 
 
 def create_risk(
@@ -532,7 +552,9 @@ def create_risk(
         path="/api/v2/policies/create_risk", json=risk_json, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/create_risk"
+    )
 
 
 def update_property_location(
@@ -559,7 +581,9 @@ def update_property_location(
         path="/api/v2/policies/update_property_location", json=prop_json, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/update_property_location"
+    )
 
 
 def new_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:

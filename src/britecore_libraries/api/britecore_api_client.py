@@ -232,15 +232,19 @@ class BritecoreAPIClient:
 
     @classmethod
     def _raise_for_http_status(
-        cls, response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse
+        cls,
+        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
+        endpoint: str | None = None,
     ) -> None:
-        """Raise SDK exceptions for non-success HTTP statuses."""
+        """Raise SDK exceptions for non-success HTTP statuses with endpoint context."""
         if response.status in {401, 403}:
             LOGGER.error(
                 "Authentication error - %s - %s", response.status, response.reason
             )
             raise BritecoreError.AuthenticationError(
-                response.reason or "Unauthorized", http_status=response.status
+                response.reason or "Unauthorized",
+                http_status=response.status,
+                endpoint=endpoint,
             )
 
         if response.status == 429:
@@ -260,31 +264,41 @@ class BritecoreAPIClient:
         if response.status >= 500:
             LOGGER.error("Server error - %s - %s", response.status, response.reason)
             raise BritecoreError.ServerError(
-                response.reason or "Internal Server Error", http_status=response.status
+                response.reason or "Internal Server Error",
+                http_status=response.status,
+                endpoint=endpoint,
             )
 
         if response.status == 404:
             LOGGER.error("Not found - %s", response.reason)
             raise BritecoreError.NotFoundError(
-                f"Error - {response.status} - {response.reason}"
+                f"Error - {response.status} - {response.reason}",
+                http_status=response.status,
+                endpoint=endpoint,
             )
 
         if response.status == 409:
             LOGGER.error("Conflict - %s", response.reason)
             raise BritecoreError.ConflictError(
-                f"Error - {response.status} - {response.reason}"
+                f"Error - {response.status} - {response.reason}",
+                http_status=response.status,
+                endpoint=endpoint,
             )
 
         if response.status in {400, 422}:
             LOGGER.error("Validation error - %s - %s", response.status, response.reason)
             raise BritecoreError.ValidationError(
-                f"Error - {response.status} - {response.reason}"
+                f"Error - {response.status} - {response.reason}",
+                http_status=response.status,
+                endpoint=endpoint,
             )
 
         if response.status != 200:
             LOGGER.error("Error - %s - %s", response.status, response.reason)
             raise BritecoreError.NoDataReturned(
-                f"Error - {response.status} - {response.reason}"
+                f"Error - {response.status} - {response.reason}",
+                http_status=response.status,
+                endpoint=endpoint,
             )
 
     @staticmethod
@@ -313,6 +327,7 @@ class BritecoreAPIClient:
         cls,
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
         logs: bool = False,
+        endpoint: str | None = None,
     ) -> Any:
         """
         Process HTTP response and extract data from successful API calls.
@@ -324,6 +339,7 @@ class BritecoreAPIClient:
         Parameters:
             response: HTTPResponse object containing the API response
             logs: Boolean flag to enable debug logging of the response data
+            endpoint: Optional endpoint path for error context and diagnostics
 
         Returns:
             Parsed data from the API response if successful
@@ -334,15 +350,18 @@ class BritecoreAPIClient:
         """
         if response is None:
             LOGGER.error("Error - No response")
-            raise BritecoreError.NoDataReturned("Error - No response")
-        cls._raise_for_http_status(response)
+            raise BritecoreError.NoDataReturned(
+                "Error - No response", endpoint=endpoint
+            )
+        cls._raise_for_http_status(response, endpoint=endpoint)
 
         try:
             json_result: Any = cls._load_json_payload(response)
         except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
             LOGGER.error("Error parsing API response: %s", parse_error)
             raise BritecoreError.NoDataReturned(
-                f"Error parsing API response: {parse_error}"
+                f"Error parsing API response: {parse_error}",
+                endpoint=endpoint,
             ) from parse_error
 
         data: Any = cls._extract_success_data(json_result)
