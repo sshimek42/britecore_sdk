@@ -16,8 +16,12 @@ class TestLoadDatabaseConfig:
         from britecore_libraries.config import config
 
         with patch.object(config, "settings") as mock_settings:
-            mock_settings.using_env.return_value.__enter__ = MagicMock(return_value=mock_settings)
-            mock_settings.using_env.return_value.__exit__ = MagicMock(return_value=False)
+            mock_settings.using_env.return_value.__enter__ = MagicMock(
+                return_value=mock_settings
+            )
+            mock_settings.using_env.return_value.__exit__ = MagicMock(
+                return_value=False
+            )
             mock_settings.get.side_effect = ["Driver=ODBC", {"timeout": 30}]
 
             conn_string, conn_options = config.load_database_config("homestead")
@@ -31,8 +35,12 @@ class TestLoadDatabaseConfig:
         from britecore_libraries.config import config
 
         with patch.object(config, "settings") as mock_settings:
-            mock_settings.using_env.return_value.__enter__ = MagicMock(return_value=mock_settings)
-            mock_settings.using_env.return_value.__exit__ = MagicMock(return_value=False)
+            mock_settings.using_env.return_value.__enter__ = MagicMock(
+                return_value=mock_settings
+            )
+            mock_settings.using_env.return_value.__exit__ = MagicMock(
+                return_value=False
+            )
             mock_settings.get.side_effect = [None, None]
 
             with pytest.raises(BritecoreError.ConfigurationError):
@@ -53,7 +61,9 @@ class TestBritecoreOdbcLazyConfig:
     @pytest.mark.unit
     @patch("britecore_libraries.utils.britecore_odbc.pyodbc.connect")
     @patch("britecore_libraries.utils.britecore_odbc._resolve_db_config")
-    def test_get_cursor_loads_config_when_args_missing(self, mock_resolve, mock_connect):
+    def test_get_cursor_loads_config_when_args_missing(
+        self, mock_resolve, mock_connect
+    ):
         """Uses resolved config when cursor args are not provided."""
         from britecore_libraries.utils.britecore_odbc import get_cursor
 
@@ -95,7 +105,9 @@ class TestBritecoreOdbcLazyConfig:
         """Config resolution errors are surfaced as configuration errors."""
         from britecore_libraries.utils.britecore_odbc import get_cursor
 
-        mock_resolve.side_effect = BritecoreError.ConfigurationError("missing db config")
+        mock_resolve.side_effect = BritecoreError.ConfigurationError(
+            "missing db config"
+        )
 
         with pytest.raises(BritecoreError.ConfigurationError):
             get_cursor(target_site="wausau")
@@ -115,4 +127,3 @@ class TestBritecoreOdbcLazyConfig:
 
         with pytest.raises(TypeError):
             get_cursor(None, None, "wausau")
-

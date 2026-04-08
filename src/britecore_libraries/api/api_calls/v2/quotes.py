@@ -40,7 +40,9 @@ def create_full_quote(
     """
     # Validate required parameters
     if not quote_json or not isinstance(quote_json, dict):
-        raise BritecoreError.MissingParameter("quote_json is required and must be a dict")
+        raise BritecoreError.MissingParameter(
+            "quote_json is required and must be a dict"
+        )
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
     )

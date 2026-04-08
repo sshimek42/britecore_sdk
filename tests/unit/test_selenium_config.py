@@ -73,7 +73,9 @@ class TestBcLoginDefaults:
         mock_driver.find_elements.return_value = [user_box, pass_box]
         mock_driver.title = "Dashboard"
 
-        with patch("britecore_libraries.utils.britecore_selenium.logger") as mock_logger:
+        with patch(
+            "britecore_libraries.utils.britecore_selenium.logger"
+        ) as mock_logger:
             bc_login(
                 driver=mock_driver,
                 url="https://example.com",
@@ -84,4 +86,3 @@ class TestBcLoginDefaults:
             mock_logger.debug.assert_called_once_with(
                 "Logging into BriteCore as %s", "test_user"
             )
-

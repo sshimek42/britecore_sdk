@@ -6,9 +6,9 @@ modules require environment-specific setup and are tested pragmatically here.
 Interactive menu tests verify API structure and documentation.
 """
 
-import pytest
-from unittest.mock import MagicMock, patch, Mock
 import inspect
+
+import pytest
 
 
 class TestZipCodeLookup:
@@ -18,12 +18,14 @@ class TestZipCodeLookup:
     def test_zip_lookup_module_loads(self):
         """Test that zip_code_lookup module loads successfully."""
         from britecore_libraries.utils import zip_code_lookup
+
         assert zip_code_lookup is not None
 
     @pytest.mark.unit
     def test_zip_lookup_has_load_zip_codes(self):
         """Test that zip_code_lookup has load_zip_codes function."""
         from britecore_libraries.utils.zip_code_lookup import load_zip_codes
+
         assert callable(load_zip_codes)
 
 
@@ -36,9 +38,12 @@ class TestUtilityModuleStructure:
         try:
             # Attempt to inspect module without importing all code
             import britecore_libraries.utils.britecore_odbc as odbc_module
+
             # If import succeeds, verify key functions exist
-            assert hasattr(odbc_module, 'get_cursor') or True  # May fail if config missing
-            assert hasattr(odbc_module, 'close_cursor') or True
+            assert (
+                hasattr(odbc_module, "get_cursor") or True
+            )  # May fail if config missing
+            assert hasattr(odbc_module, "close_cursor") or True
         except (ImportError, AttributeError):
             # Config issues are acceptable - this module depends on db configuration
             pytest.skip("ODBC module requires database configuration")
@@ -48,6 +53,7 @@ class TestUtilityModuleStructure:
         """Test that Selenium module has expected structure if it can be imported."""
         try:
             import britecore_libraries.utils.britecore_selenium as selenium_module
+
             # Verify module exists
             assert selenium_module is not None
         except (ImportError, AttributeError):
@@ -57,7 +63,12 @@ class TestUtilityModuleStructure:
     def test_interactive_menu_module_can_be_imported(self):
         """Test that interactive_menu module can be imported and has expected attrs."""
         try:
-            from britecore_libraries.utils.interactive_menu import line_menu, LOGGER, API_CLIENT
+            from britecore_libraries.utils.interactive_menu import (
+                API_CLIENT,
+                LOGGER,
+                line_menu,
+            )
+
             assert callable(line_menu)
             assert LOGGER is not None
             assert API_CLIENT is not None
@@ -72,6 +83,7 @@ class TestInteractiveMenu:
     def test_line_menu_function_exists(self):
         """Test that line_menu function exists and is callable."""
         from britecore_libraries.utils.interactive_menu import line_menu
+
         assert callable(line_menu)
 
     @pytest.mark.unit
@@ -92,12 +104,14 @@ class TestInteractiveMenu:
     def test_interactive_menu_module_loads(self):
         """Test that interactive_menu module loads successfully."""
         from britecore_libraries.utils import interactive_menu
+
         assert interactive_menu is not None
 
     @pytest.mark.unit
     def test_interactive_menu_has_logger(self):
         """Test that interactive_menu has LOGGER attribute."""
         from britecore_libraries.utils.interactive_menu import LOGGER
+
         assert LOGGER is not None
         assert hasattr(LOGGER, "info")
         assert hasattr(LOGGER, "debug")
@@ -107,6 +121,7 @@ class TestInteractiveMenu:
     def test_interactive_menu_has_api_client(self):
         """Test that interactive_menu has API_CLIENT attribute."""
         from britecore_libraries.utils.interactive_menu import API_CLIENT
+
         assert API_CLIENT is not None
 
     @pytest.mark.unit
@@ -150,6 +165,7 @@ class TestUtilityModuleImports:
     def test_can_import_zip_code_lookup(self):
         """Test that zip_code_lookup can be imported."""
         from britecore_libraries.utils import zip_code_lookup
+
         assert zip_code_lookup is not None
 
     @pytest.mark.unit
@@ -163,5 +179,3 @@ class TestUtilityModuleImports:
         assert "from britecore_libraries.api" in source
         assert "RequestParameters" in source
         assert "api_client" in source
-
-

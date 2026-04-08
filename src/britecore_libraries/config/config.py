@@ -132,4 +132,3 @@ def load_database_config(target_site: str) -> tuple[str, dict[str, Any]]:
         )
 
     return conn_string, conn_options
-

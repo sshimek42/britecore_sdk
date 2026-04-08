@@ -114,7 +114,7 @@ class BritecoreError:
             super().__init__(message)
 
         def __str__(self) -> str:
-            parts = [f"BriteCore authentication failed"]
+            parts = ["BriteCore authentication failed"]
             if self.http_status:
                 parts[0] += f" (HTTP {self.http_status})"
             parts[0] += f" - {self.message}"
@@ -153,7 +153,7 @@ class BritecoreError:
             super().__init__(message)
 
         def __str__(self) -> str:
-            parts = [f"BriteCore server error"]
+            parts = ["BriteCore server error"]
             if self.http_status:
                 parts[0] += f" (HTTP {self.http_status})"
             parts[0] += f" - {self.message}"
