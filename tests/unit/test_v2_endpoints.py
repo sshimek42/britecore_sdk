@@ -214,12 +214,6 @@ COMMISSIONS_ENDPOINT_CASES = [
 
 PAYMENTS_ENDPOINT_CASES = [
     (
-        "makemanualpolicypayment",
-        {"json_dict": {"policy_number": "POL-1", "amount": 50.0}},
-        {"json_dict": {"policy_number": "POL-1", "amount": 50.0}},
-        "/api/v1/payments/makeManualPolicyPayment",
-    ),
-    (
         "add_payment_method",
         {
             "card_expires_mm": "04",
@@ -228,7 +222,7 @@ PAYMENTS_ENDPOINT_CASES = [
             "card_name_on": "Jane Doe",
             "contact_id": "C-1",
             "card_type": "visa",
-            "type": "card",
+            "payment_method_type": "card",
             "card_number": "4111111111111111",
             "address": {"street": "123 Main"},
         },
@@ -947,30 +941,6 @@ class TestPaymentsEndpoints:
         assert result == {"ok": True}
         mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
         mock_process_result.assert_called_once_with(mock_response)
-
-    @pytest.mark.unit
-    def test_make_manual_policy_payment_alias(self, env_api_key, mock_settings):
-        """The snake_case alias should delegate to the original camelCase wrapper."""
-        from britecore_libraries.api.api_calls.v2 import payments
-
-        client = _get_initialized_client(mock_settings)
-        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
-
-        with (
-            patch.object(
-                client, "do_request", return_value=mock_response
-            ) as mock_do_request,
-            patch.object(client, "process_result", return_value={"ok": True}),
-        ):
-            result = payments.make_manual_policy_payment(
-                json_dict={"policy_number": "POL-ALIAS", "amount": 12.34}
-            )
-
-        assert result == {"ok": True}
-        mock_do_request.assert_called_once_with(
-            path="/api/v1/payments/makeManualPolicyPayment",
-            json={"json_dict": {"policy_number": "POL-ALIAS", "amount": 12.34}},
-        )
 
 
 class TestEndpointErrorHandling:

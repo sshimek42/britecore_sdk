@@ -1,39 +1,31 @@
-"""Map loading with runtime fallback for local/private map files.
+"""Map exports and regex loader for the SDK."""
 
-Built-in defaults are used when private ``*_map.py`` files are absent.
-Drop a private ``*_map.py`` file alongside this ``__init__.py`` to
-override any of the built-in maps without touching library source.
-
-Fallback resolution order (for each symbol):
-  1. Import from the matching local ``*_map.py`` on ``sys.path``
-  2. Built-in default (empty dict / inline reference implementation)
-"""
-
-import logging
 import os
 import re
 from typing import Any
 
-logger = logging.getLogger(__name__)
+from britecore_libraries.maps.britecore_agency_map import agency
+from britecore_libraries.maps.britecore_field_map import (
+    field_map_to_britecore,
+    field_map_to_named_insured,
+    field_map_to_risk_location,
+)
+from britecore_libraries.maps.britecore_policy_map import (
+    britecore_policy_type_map,
+    policy_map,
+)
 
-# ---------------------------------------------------------------------------
-# Built-in regex / naming-group implementation
-# (mirrors the reference britecore_policy_name_map.py; used when that file
-#  is absent from the local environment)
-# ---------------------------------------------------------------------------
 
-
-def _builtin_load_regexes() -> (
+def load_regexes() -> (
     tuple[dict[str | Any, re.Pattern[str] | Any], dict[str, dict[str, int]]]
 ):
-    """Built-in fallback implementation of load_regexes.
-
-    Returns the same tuple as the private ``britecore_policy_name_map``
-    module: ``(compiled_regexes, name_groups)``.
-    """
+    """Return compiled regexes and naming groups for the configured system."""
     mutual_system = os.environ.get("system", "")
-    if not mutual_system or mutual_system not in ("mips", "spectrum_v1", "spectrum_v2"):
-        mutual_system = "mips"
+    if not mutual_system:
+        raise ValueError(
+            "The 'system' environment variable is not set. "
+            "Set it to the mutual system identifier before calling load_regexes()."
+        )
 
     common: dict[str | Any, re.Pattern[str] | Any] = {
         "search_name_mult": re.compile(
@@ -99,7 +91,7 @@ def _builtin_load_regexes() -> (
         },
     }
 
-    common.update(system_overrides[mutual_system])
+    common.update(system_overrides.get(mutual_system, {}))
 
     system_naming_groups: dict[str, dict[str, dict[str, int]]] = {
         "mips": {
@@ -134,78 +126,11 @@ def _builtin_load_regexes() -> (
     return common, system_naming_groups[mutual_system]
 
 
-# ---------------------------------------------------------------------------
-# load_regexes — try local private file first, then built-in fallback
-# ---------------------------------------------------------------------------
-try:
-    from britecore_libraries.maps.britecore_policy_name_map import load_regexes
-
-    logger.debug("maps: loaded load_regexes from local britecore_policy_name_map.py")
-except ImportError:
-    # Both _builtin_load_regexes and the private britecore_policy_name_map.load_regexes
-    # return tuple[dict[str | Any, re.Pattern[str] | Any], dict[str, dict[str, int]]].
-    # The type: ignore is necessary because mypy cannot verify the private module's
-    # signature; runtime behavior is identical between the two implementations.
-    load_regexes = _builtin_load_regexes  # type: ignore[assignment]
-    logger.debug(
-        "maps: britecore_policy_name_map.py absent – using built-in load_regexes"
-    )
-
-# ---------------------------------------------------------------------------
-# Agency map
-# ---------------------------------------------------------------------------
-try:
-    from britecore_libraries.maps.britecore_agency_map import agency
-
-    logger.debug("maps: loaded agency from local britecore_agency_map.py")
-except ImportError:
-    agency: dict[str, str] = {}
-    logger.debug("maps: britecore_agency_map.py absent – agency map is empty")
-
-# ---------------------------------------------------------------------------
-# Policy maps
-# ---------------------------------------------------------------------------
-try:
-    from britecore_libraries.maps.britecore_policy_map import (
-        britecore_policy_type_map,
-        policy_map,
-    )
-
-    logger.debug("maps: loaded policy maps from local britecore_policy_map.py")
-except ImportError:
-    policy_map: dict[str, str] = {}
-    britecore_policy_type_map: dict[str, dict[str, str]] = {}
-    logger.debug("maps: britecore_policy_map.py absent – policy maps are empty")
-
-# ---------------------------------------------------------------------------
-# Field maps
-# ---------------------------------------------------------------------------
-try:
-    from britecore_libraries.maps.britecore_field_map import (
-        field_map_to_britecore,
-        field_map_to_named_insured,
-        field_map_to_risk_location,
-    )
-
-    logger.debug("maps: loaded field maps from local britecore_field_map.py")
-except ImportError:
-    field_map_to_britecore: dict[str, Any] = {}
-    field_map_to_named_insured: dict[str, Any] = {}
-    field_map_to_risk_location: dict[str, Any] = {}
-    logger.debug("maps: britecore_field_map.py absent – field maps are empty")
-
-# ---------------------------------------------------------------------------
-# Public surface
-# ---------------------------------------------------------------------------
 __all__ = [
-    # regex / naming groups
     "load_regexes",
-    # agency
     "agency",
-    # policy
     "policy_map",
     "britecore_policy_type_map",
-    # field
     "field_map_to_britecore",
     "field_map_to_named_insured",
     "field_map_to_risk_location",

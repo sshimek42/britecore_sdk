@@ -22,11 +22,11 @@ class TestApiCallsClientState:
         fake_ctor = MagicMock(return_value=fake_client)
         monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
 
-        returned = module.init_api_client("wausau")
+        returned = module.init_api_client("test-site")
 
         assert returned is fake_client
         assert module._api_client is fake_client
-        fake_ctor.assert_called_once_with("wausau")
+        fake_ctor.assert_called_once_with("test-site")
         fake_client.init_client.assert_called_once_with()
 
         # Access through lazy proxy must reuse seeded global client.
@@ -44,13 +44,12 @@ class TestApiCallsClientState:
         fake_ctor = MagicMock(return_value=fake_async_client)
         monkeypatch.setattr(module, "AsyncBritecoreAPIClient", fake_ctor)
 
-        returned = module.init_async_api_client("wausau")
+        returned = module.init_async_api_client("test-site")
 
         assert returned is fake_async_client
         assert module._async_api_client is fake_async_client
-        fake_ctor.assert_called_once_with("wausau")
+        fake_ctor.assert_called_once_with("test-site")
 
         # Access through lazy proxy must reuse seeded global async client.
         assert module.async_api_client.token == "async-ready"
         fake_ctor.assert_called_once()
-

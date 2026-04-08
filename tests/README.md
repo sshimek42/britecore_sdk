@@ -101,14 +101,13 @@ pytest tests/unit/test_api_client.py::TestLazyAPIClientInitialization::test_api_
 
 The test suite targets >80% code coverage for core modules:
 
-- **Configuration**: Dynaconf loading, validators, fallbacks
+- **Configuration**: Dynaconf loading and validators
 - **API Client**: Lazy initialization, auth modes, request/response handling
 - **OAuth Token Manager**: Token refresh, expiration, error handling
 - **Validators**: Email, phone, address, name normalization
 - **Models**: Contact, Policy, Quote data structures
 - **Endpoints**: Quote, Policy, Contact API wrappers
 - **Exceptions**: All custom exception types
-- **Deprecation**: Legacy class compatibility
 
 ## Fixtures
 

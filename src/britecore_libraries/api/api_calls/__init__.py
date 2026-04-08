@@ -17,6 +17,10 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
     and initializes the client connection. The target site can be provided as an argument
     or will default to the value of the 'target_site' environment variable.
 
+    Calling this function also sets the module-level ``_api_client`` so that the
+    lazy proxy (``api_client``) used by endpoint wrappers resolves to this instance
+    rather than re-initialising without a site on first use.
+
     Args:
         target_site: The target site URL or identifier for the Britecore API.
                      Defaults to the value of the 'target_site' environment variable.
@@ -25,16 +29,25 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
+    global _api_client
     resolved_target_site = target_site or os.environ.get("target_site")
-    _api_client: BritecoreAPIClient = BritecoreAPIClient(resolved_target_site)
-    _api_client.init_client()
-    return _api_client
+    client: BritecoreAPIClient = BritecoreAPIClient(resolved_target_site)
+    client.init_client()
+    _api_client = client
+    return client
 
 
 def init_async_api_client(target_site: str | None = None) -> AsyncBritecoreAPIClient:
-    """Initialize and return a lazy async API client wrapper."""
+    """Initialize and return a lazy async API client wrapper.
+
+    Also sets the module-level ``_async_api_client`` so the lazy proxy resolves
+    to this instance rather than re-initialising without a site on first use.
+    """
+    global _async_api_client
     resolved_target_site = target_site or os.environ.get("target_site")
-    return AsyncBritecoreAPIClient(resolved_target_site)
+    client = AsyncBritecoreAPIClient(resolved_target_site)
+    _async_api_client = client
+    return client
 
 
 # Lazy initialization: _api_client is only created on first access to avoid
@@ -84,7 +97,7 @@ def get_async_api_client() -> AsyncBritecoreAPIClient:
     return _async_api_client
 
 
-# Backward compatibility: module-level api_client proxy that triggers lazy init
+# Module-level api_client proxy that triggers lazy init
 class _LazyAPIClient:
     """Lazy-loading proxy for the global API client.
 
@@ -121,10 +134,10 @@ async_api_client: AsyncBritecoreAPIClient = cast(
 )
 
 
-# Safe fallback timeout values used by modules that import these names at
+# Default timeout values used by modules that import these names at
 # import-time. They intentionally do not force client initialization.
 # Once a client is initialized, request methods still use the client's own
-# configured timeout values unless a wrapper explicitly passes these fallbacks.
+# configured timeout values unless a wrapper explicitly passes these values.
 web_timeout_long: int = 50
 web_timeout: int = 5
 
