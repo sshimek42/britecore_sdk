@@ -49,9 +49,12 @@ def run_live_policy_lookup(policy_number: str) -> None:
 
     This requires valid local configuration and credentials.
     """
+    from britecore_libraries.api.api_calls import init_api_client
     from britecore_libraries.api.api_calls.v2 import policies
 
     print(f"\nRunning live retrieve_policy call for policy_number={policy_number!r}...")
+    # Uses target_site from environment; pass a site string here if you prefer explicit site selection.
+    init_api_client()
     result = policies.retrieve_policy(policy_number=policy_number)
     print("Live API call succeeded. Result preview:")
     if isinstance(result, dict):

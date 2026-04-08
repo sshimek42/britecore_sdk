@@ -245,9 +245,11 @@ except Exception as e:
 **Solution:**
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries.exceptions import BritecoreError
 
+init_api_client("your_site")
 try:
     policy = policies.retrieve_policy(policy_number="INVALID")
 except BritecoreError.NotFoundError as e:
@@ -437,9 +439,11 @@ python -m pytest tests/ -v
 **Solution:**
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Timeout
 
+init_api_client("your_site")
 # Use longer timeout
 policy = policies.retrieve_policy(
     policy_number="POL001",
@@ -456,9 +460,11 @@ policy = policies.retrieve_policy(
 **Solution:**
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Retry
 
+init_api_client("your_site")
 # Configure retries
 policy = policies.retrieve_policy(
     policy_number="POL001",
@@ -506,7 +512,10 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Now all debug messages will print
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
+
+init_api_client("your_site")
 policy = policies.retrieve_policy(policy_number="POL001")
 # Check console for debug output
 ```

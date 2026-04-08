@@ -101,7 +101,11 @@ python -c "from britecore_libraries.api.api_calls import get_api_client; print(t
 
 ```python
 
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
+
+# Explicitly initialize the shared client for your configured site.
+init_api_client("your_site")
 
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
@@ -132,9 +136,12 @@ For exact behavior, supported cache kwargs, and invalidation examples, use
 
 import asyncio
 
+from britecore_libraries.api.api_calls import init_async_api_client
 from britecore_libraries.api.api_calls.v2 import aget_quote
 
 async def main() -> None:
+    # Explicitly initialize the shared async client for your configured site.
+    init_async_api_client("your_site")
     quote = await aget_quote("quote_123")
     print(quote)
 
