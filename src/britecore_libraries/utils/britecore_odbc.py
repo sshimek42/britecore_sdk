@@ -47,7 +47,9 @@ def get_cursor(
         conn_options = conn_options or resolved_conn_options
 
     if conn_string is None or conn_options is None:
-        raise BritecoreError.ConfigurationError("Database connection settings are required")
+        raise BritecoreError.ConfigurationError(
+            "Database connection settings are required"
+        )
 
     try:
         conn1 = pyodbc.connect(conn_string, **conn_options)
