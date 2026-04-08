@@ -12,7 +12,10 @@
 This document provides a reference for implemented SDK endpoint wrappers.
 
 External API docs are available at [https://api.britecore.com/](https://api.britecore.com/), but
-`britecore_api.json` in this repository remains the canonical contract for this SDK.
+`api_specs/current/britecore.json` in this repository remains the canonical contract for this SDK.
+
+Files under `api_specs/legacy/` are archival reference material for historical
+research and backlog planning, not the default support contract for the current SDK.
 
 The SDK surfaces wrappers across versioned `v1` and `v2` API modules under
 `src/britecore_libraries/api/api_calls/`.
@@ -348,6 +351,6 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 ## Documentation Freshness
 
 - Last verified: `2026-04-07`
-- Verified against: `britecore_api.json`, `src/britecore_libraries/api/api_calls/v1/`, and `src/britecore_libraries/api/api_calls/v2/`
+- Verified against: `api_specs/current/britecore.json`, `src/britecore_libraries/api/api_calls/v1/`, and `src/britecore_libraries/api/api_calls/v2/`
 - Known wrapper/spec drift is tracked in `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
 - Use module-level docs in `src/britecore_libraries/api/api_calls/v1/` and `src/britecore_libraries/api/api_calls/v2/` as the source of truth for current wrapper names.

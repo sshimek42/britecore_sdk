@@ -1,4 +1,4 @@
-"""Guardrail tests for API path alignment with britecore_api.json."""
+"""Guardrail tests for API path alignment with the canonical current API spec."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 API_CALLS_ROOT = REPO_ROOT / "src" / "britecore_libraries" / "api" / "api_calls"
-SPEC_PATH = REPO_ROOT / "britecore_api.json"
+SPEC_PATH = REPO_ROOT / "api_specs" / "current" / "britecore.json"
 
-# Baseline known contract drift between wrappers and britecore_api.json.
+# Baseline known contract drift between wrappers and api_specs/current/britecore.json.
 # Keep this list minimal and remove entries when spec/wrapper paths converge.
 KNOWN_SPEC_GAPS: set[str] = {
     "/api/v2/lines/list_policy_types",
@@ -93,7 +93,7 @@ def test_wrapper_paths_exist_in_api_spec() -> None:
     missing = sorted(wrapper_paths - spec_paths - KNOWN_SPEC_GAPS)
 
     assert not missing, (
-        "Wrapper endpoints not found in britecore_api.json:\n"
+        "Wrapper endpoints not found in api_specs/current/britecore.json:\n"
         + _format_path_list(missing)
         + "\n\nIf intentional, add path(s) to KNOWN_SPEC_GAPS in tests/unit/test_api_spec_alignment.py."
     )
