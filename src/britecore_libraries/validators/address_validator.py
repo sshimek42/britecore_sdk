@@ -408,9 +408,8 @@ class AddressValidator:
         """
         Validates and corrects a state abbreviation based on postal code lookup.
 
-        This method processes a state string by normalizing it and attempts to
-        validate it against a postal code database. If the state cannot be
-        validated, a default fallback is applied.
+        This method processes a state string by normalizing it and validates
+        it against postal code lookup data.
 
         Parameters:
             state (str): The state abbreviation to validate, may contain
@@ -419,7 +418,7 @@ class AddressValidator:
 
         Returns:
             str: The validated state abbreviation, potentially corrected
-                based on postal code database or default fallback
+                based on postal code database
 
         Notes:
             This method uses a global ZIP code lookup index for lookups and
@@ -450,7 +449,7 @@ class AddressValidator:
                 LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
             else:
                 LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
-                state = "WI"  # Default fallback
+                raise BritecoreError.InvalidAddress(log_string)
 
         return state
 

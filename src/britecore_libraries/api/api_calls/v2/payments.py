@@ -15,9 +15,6 @@ from britecore_libraries.api.api_calls import (
     RequestParameters,
     api_client,
 )
-from britecore_libraries.api.api_calls.v1.payments import (
-    makemanualpolicypayment as _v1_makemanualpolicypayment,
-)
 
 LOGGER: Logger = logger
 
@@ -71,10 +68,6 @@ def add_payment_method(
     and billing address fields for the stored method. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    # Backward compatibility: allow legacy callers to pass type=... in kwargs.
-    kwargs_any = cast(dict[str, Any], kwargs)
-    if "type" in kwargs_any and not payment_method_type:
-        payment_method_type = kwargs_any.pop("type")
 
     return _post(
         "/api/v2/payments/add_payment_method",
@@ -639,32 +632,6 @@ def update_sweep_payments_complete(
     )
 
 
-def make_manual_policy_payment(
-    json_dict: dict[str, Any],
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Post a payment already collected outside vendor processing.
-
-    This v2 export delegates to ``/api/v1/payments/makeManualPolicyPayment`` and
-    uses ``json_dict`` for the collected payment payload tied to a policy.
-    Returns the normalized ``process_result(...)`` response from that endpoint,
-    and ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
-    return makemanualpolicypayment(json_dict=json_dict, **kwargs)
-
-
-def makemanualpolicypayment(
-    json_dict: dict[str, Any],
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Delegate to ``/api/v1/payments/makeManualPolicyPayment``.
-
-    This v2 compatibility wrapper delegates to the canonical v1 implementation
-    and returns its normalized ``process_result(...)`` payload.
-    """
-    return _v1_makemanualpolicypayment(json_dict=json_dict, **kwargs)
-
-
 __all__ = [
     "add_payment_method",
     "apply_selected_payments",
@@ -677,10 +644,8 @@ __all__ = [
     "get_payment_method_info",
     "get_unpaid_invoices_by_date",
     "import_payment_entries",
-    "make_manual_policy_payment",
     "make_payment_by_contact_and_payment_method",
     "make_payment_by_invoice_or_policy",
-    "makemanualpolicypayment",
     "mark_payment_nsf",
     "remove_payment_method",
     "retrieve_account_payoff_amount",

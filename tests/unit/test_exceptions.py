@@ -1,6 +1,4 @@
-"""Tests for exceptions and deprecation warnings."""
-
-import warnings
+"""Tests for exceptions and strict import behavior."""
 
 import pytest
 
@@ -108,53 +106,31 @@ class TestBritecoreExceptions:
             raise BritecoreError.NotFoundError("not found")
 
 
-class TestDeprecationWarnings:
-    """Tests for deprecation warnings."""
+class TestClassesModuleRemoval:
+    """Tests for removed classes compatibility module."""
 
     @pytest.mark.unit
-    def test_classes_import_raises_deprecation_warning(self):
-        """Test that importing from classes raises DeprecationWarning."""
-        # Reset the module to catch the warning
+    def test_classes_import_raises_import_error(self):
+        """Importing from classes raises ImportError with migration guidance."""
         import sys
 
         if "britecore_libraries.classes" in sys.modules:
             del sys.modules["britecore_libraries.classes"]
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        with pytest.raises(ImportError, match="has been removed"):
             from britecore_libraries.classes import BritecoreContact  # noqa: F401
 
-            assert w is not None
-
-            # Check that a deprecation warning was raised
-            assert len(w) >= 1
-            assert issubclass(w[-1].category, DeprecationWarning)
-            assert "deprecated" in str(w[-1].message).lower()
-
     @pytest.mark.unit
-    def test_classes_backward_compatibility(self):
-        """Test that deprecated classes are still functional."""
+    def test_classes_import_error_mentions_replacement_modules(self):
+        """Import error message points users to models/validators imports."""
         import sys
 
         if "britecore_libraries.classes" in sys.modules:
             del sys.modules["britecore_libraries.classes"]
 
-        with warnings.catch_warnings(record=True):
-            warnings.simplefilter("ignore")
+        with pytest.raises(ImportError) as exc_info:
+            from britecore_libraries.classes import BritecoreContact  # noqa: F401
 
-            from britecore_libraries.classes import (
-                BritecoreAddress,
-                BritecoreContact,
-                BritecoreEmail,
-                BritecoreError,
-                BritecorePhone,
-                BritecorePolicy,
-            )
-
-            # Verify the classes are accessible
-            assert BritecoreContact is not None
-            assert BritecorePolicy is not None
-            assert BritecoreAddress is not None
-            assert BritecoreEmail is not None
-            assert BritecorePhone is not None
-            assert BritecoreError is not None
+        message = str(exc_info.value).lower()
+        assert "models" in message
+        assert "validators" in message

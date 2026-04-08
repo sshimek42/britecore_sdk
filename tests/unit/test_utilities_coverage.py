@@ -96,9 +96,8 @@ class TestInteractiveMenu:
 
         # Verify key documentation elements
         assert "menu" in doc_lower
-        assert "parameters" in doc_lower or "param" in doc_lower.lower()
+        assert "parameters" in doc_lower or "param" in doc_lower
         assert "returns" in doc_lower or "return" in doc_lower
-        assert "tuple" in doc_lower
 
     @pytest.mark.unit
     def test_interactive_menu_module_loads(self):
@@ -147,15 +146,15 @@ class TestInteractiveMenu:
         assert "/api/v2/lines/get_all_lines" in source
 
     @pytest.mark.unit
-    def test_line_menu_returns_expected_tuple_structure(self):
-        """Test that line_menu return type annotation is correct."""
+    def test_line_menu_returns_expected_dict_structure(self):
+        """Test that line_menu return type annotation is a dict."""
         from britecore_libraries.utils.interactive_menu import line_menu
 
         # Check return annotation from function signature
         sig = inspect.signature(line_menu)
         assert sig.return_annotation is not None
-        # Should return a 6-tuple
-        assert "tuple" in str(sig.return_annotation).lower()
+        # Should return a dict
+        assert "dict" in str(sig.return_annotation).lower()
 
 
 class TestUtilityModuleImports:

@@ -42,7 +42,7 @@ class OAuthToken:
         # Robustly parse incoming URL (with or without scheme) and rebuild endpoints
         parsed: Url = parse_url(url)
         scheme: str = parsed.scheme or "https"
-        host: str = parsed.host or url  # fallback if a bare host was passed
+        host: str = parsed.host or url  # handles bare host input
         self.scope = Url(scheme=scheme, host=host, path="/api").url
         self.url = Url(scheme=scheme, host=host, path="/api/auth/oauth2/token").url
         self.token: str = ""

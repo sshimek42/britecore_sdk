@@ -45,7 +45,9 @@ def get_export_line_file(
     request_result: BaseHTTPResponse | HTTPResponse | None = None
     LOGGER.info("Retrieving '%s' lines", line_name)
 
-    if line_type == "Line":
+    normalized_line_type = line_type.strip().lower()
+
+    if normalized_line_type in {"line", "lines"}:
         web_request_json: dict[str, str | bool] = {
             "curr_eff_date_id": line[0],
             "curr_line_id": line[2],
@@ -58,8 +60,12 @@ def get_export_line_file(
             json=web_request_json,
             **kwargs,
         )
-    elif line_type == "Policy":
+    elif normalized_line_type in {"policy", "policies"}:
         request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
+    else:
+        raise BritecoreError.MissingParameter(
+            "line_type must be one of: 'Line', 'lines', 'Policy', or 'policies'"
+        )
 
     LOGGER.info("Finished retrieving '%s' lines", line_name)
 
@@ -68,20 +74,6 @@ def get_export_line_file(
         return loads(API_CLIENT.process_results)
 
     return request_result
-
-
-# Backward compatibility: re-export from new interactive_menu utility module.
-# This import is lazy to avoid requiring pyinputplus for API-only users.
-def line_menu(**kwargs: Unpack[RequestParameters]):
-    """Compatibility helper delegating to ``interactive_menu.line_menu``.
-
-    This deprecated v2 helper delegates to
-    ``britecore_libraries.utils.interactive_menu.line_menu`` and returns its
-    menu selection workflow result.
-    """
-    from britecore_libraries.utils.interactive_menu import line_menu as _line_menu
-
-    return _line_menu(**kwargs)
 
 
 def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:

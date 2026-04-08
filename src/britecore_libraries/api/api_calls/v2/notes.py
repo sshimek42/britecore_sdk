@@ -50,10 +50,6 @@ def retrieve_notes(
     """
     LOGGER.debug("Getting notes")
 
-    # Backward compatibility: allow legacy callers to pass type=... in kwargs.
-    if "type" in kwargs and not note_type:
-        note_type = kwargs.pop("type")
-
     notes_json: dict[str, Any] = {}
     local_env: dict[str, str | None] = {**locals()}
 

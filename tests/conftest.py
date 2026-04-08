@@ -122,7 +122,7 @@ def env_oauth(monkeypatch):
 
 @pytest.fixture
 def env_no_system(monkeypatch):
-    """Set up environment without system variable (should fallback to mips)."""
+    """Set up environment without system variable (load_regexes will raise ValueError)."""
     monkeypatch.delenv("system", raising=False)
     yield
     monkeypatch.delenv("system", raising=False)

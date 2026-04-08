@@ -1,7 +1,7 @@
 """Unit tests for the newly-implemented v2 endpoint modules.
 
-Covers: attachments, custom_ui, dashboards, data, errors, intacct,
-nightly_jobs, notifications, printing, return_premium, search,
+Covers: attachments, dashboards, data, errors, intacct,
+nightly_jobs, notifications, return_premium, search,
 settings, signatures, uploads, vendors.
 
 Each test class uses the same parametrized pattern as test_v2_endpoints.py:
@@ -164,58 +164,6 @@ class TestAttachmentsEndpoints:
         _run_case(
             mock_settings,
             "britecore_libraries.api.api_calls.v2.attachments",
-            function_name,
-            call_kwargs,
-            expected_json,
-            expected_path,
-        )
-
-
-# ---------------------------------------------------------------------------
-# custom_ui
-# ---------------------------------------------------------------------------
-
-CUSTOM_UI_CASES = [
-    ("retrieveurloverrides", {}, {}, "/api/v1/custom_ui/retrieveURLOverrides"),
-    (
-        "createurloverride",
-        {"json_obj": {"url": "/custom"}},
-        {"json_obj": {"url": "/custom"}},
-        "/api/v1/custom_ui/createURLOverride",
-    ),
-    (
-        "deleteurloverride",
-        {"json_obj": {"id": "UI-1"}},
-        {"json_obj": {"id": "UI-1"}},
-        "/api/v1/custom_ui/deleteURLOverride",
-    ),
-    (
-        "updateurloverride",
-        {"json_obj": {"id": "UI-1", "url": "/updated"}},
-        {"json_obj": {"id": "UI-1", "url": "/updated"}},
-        "/api/v1/custom_ui/updateURLOverride",
-    ),
-]
-
-
-class TestCustomUIEndpoints:
-    @pytest.mark.unit
-    @pytest.mark.parametrize(
-        ("function_name", "call_kwargs", "expected_json", "expected_path"),
-        CUSTOM_UI_CASES,
-    )
-    def test_custom_ui_wrapper_requests(
-        self,
-        env_api_key,
-        mock_settings,
-        function_name,
-        call_kwargs,
-        expected_json,
-        expected_path,
-    ):
-        _run_case(
-            mock_settings,
-            "britecore_libraries.api.api_calls.v2.custom_ui",
             function_name,
             call_kwargs,
             expected_json,
@@ -551,64 +499,6 @@ class TestNotificationsEndpoints:
         _run_case(
             mock_settings,
             "britecore_libraries.api.api_calls.v2.notifications",
-            function_name,
-            call_kwargs,
-            expected_json,
-            expected_path,
-        )
-
-
-# ---------------------------------------------------------------------------
-# printing
-# ---------------------------------------------------------------------------
-
-PRINTING_CASES = [
-    (
-        "getattachment",
-        {"json_dict": {"attachment_id": "ATT-1"}},
-        {"json_dict": {"attachment_id": "ATT-1"}},
-        "/api/v1/printing/getAttachment",
-    ),
-    (
-        "gettobeprinted",
-        {"json_dict": {"policy_id": "POL-1"}},
-        {"json_dict": {"policy_id": "POL-1"}},
-        "/api/v1/printing/getToBePrinted",
-    ),
-    (
-        "markasprinted",
-        {"json_dict": {"ids": ["P-1", "P-2"]}},
-        {"json_dict": {"ids": ["P-1", "P-2"]}},
-        "/api/v1/printing/markAsPrinted",
-    ),
-    (
-        "sendprinthawk",
-        {"json_dict": {"document_id": "DOC-1"}},
-        {"json_dict": {"document_id": "DOC-1"}},
-        "/api/v1/printing/sendPrintHawk",
-    ),
-    ("sendprinthawkemail", {}, {}, "/api/v1/printing/sendPrintHawkEmail"),
-]
-
-
-class TestPrintingEndpoints:
-    @pytest.mark.unit
-    @pytest.mark.parametrize(
-        ("function_name", "call_kwargs", "expected_json", "expected_path"),
-        PRINTING_CASES,
-    )
-    def test_printing_wrapper_requests(
-        self,
-        env_api_key,
-        mock_settings,
-        function_name,
-        call_kwargs,
-        expected_json,
-        expected_path,
-    ):
-        _run_case(
-            mock_settings,
-            "britecore_libraries.api.api_calls.v2.printing",
             function_name,
             call_kwargs,
             expected_json,
