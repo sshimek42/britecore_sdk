@@ -1,9 +1,11 @@
 """Wrapper for pyodbc"""
 
+from typing import Any
+
 import pyodbc
 
 from britecore_libraries import logger
-from britecore_libraries.config import settings
+from britecore_libraries.config.config import load_database_config
 from britecore_libraries.exceptions import BritecoreError
 
 
@@ -11,26 +13,42 @@ def __getattr__(name: str):
     return getattr(pyodbc, name)
 
 
-run_on = "homestead"
-site_settings = settings.__getattr__("default")
-site_settings += settings.__getattr__(run_on)
-
-db_conn_string = site_settings.db_conn_string
-db_conn_options = site_settings.db_conn_options
+def _resolve_db_config(target_site: str) -> tuple[str, dict[str, Any]]:
+    """Resolve DB config for the explicitly provided site."""
+    return load_database_config(target_site=target_site)
 
 
 def get_cursor(
-    conn_string: str = db_conn_string, conn_options: dict = db_conn_options
+    conn_string: str | None = None,
+    conn_options: dict[str, Any] | None = None,
+    *,
+    target_site: str | None = None,
 ) -> pyodbc.Cursor:
-    """Gets a cursor using default setting in config
-    Can be overridden with parameters
+    """Gets a cursor using default setting in config.
+
+    Can be overridden with parameters.
     :param conn_string: Connection string
     :type conn_string: Str
     :param conn_options: Connection options
     :type conn_options: Dict
+    :param target_site: Keyword-only site/environment name used to resolve DB settings
+        from ``.secrets.toml`` when ``conn_string``/``conn_options`` are omitted.
+    :type target_site: Str | None
     :return: Cursor
     :rtype: pyodbc.Cursor
     """
+    if conn_string is None or conn_options is None:
+        if not target_site or not target_site.strip():
+            raise BritecoreError.ConfigurationError(
+                "target_site is required when loading ODBC settings from config"
+            )
+        resolved_conn_string, resolved_conn_options = _resolve_db_config(target_site)
+        conn_string = conn_string or resolved_conn_string
+        conn_options = conn_options or resolved_conn_options
+
+    if conn_string is None or conn_options is None:
+        raise BritecoreError.ConfigurationError("Database connection settings are required")
+
     try:
         conn1 = pyodbc.connect(conn_string, **conn_options)
     except pyodbc.DatabaseError as err:
