@@ -121,7 +121,14 @@ def retrieve_policy_ids(
     (``/api/v2/policies/retrieve_policy``) and extracts
     ``active_revision.id`` and ``active_revision.primary_property_id`` from the
     normalized ``process_result(...)`` payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If policy_number is missing.
     """
+    # Validate required parameters
+    if not policy_number or not policy_number.strip():
+        raise BritecoreError.MissingParameter("policy_number is required")
+
     LOGGER.debug("Getting policy info")
     policy_json: Any = retrieve_policy(policy_number, **kwargs)
     active_revision: Any = policy_json["active_revision"]

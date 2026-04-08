@@ -11,7 +11,7 @@ from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
-from britecore_libraries import logger
+from britecore_libraries import BritecoreError, logger
 from britecore_libraries.api.api_calls import (
     BritecoreAPIClient,
     RequestParameters,
@@ -34,7 +34,13 @@ def create_full_quote(
     where ``quote_id`` is extracted from the normalized payload when present.
     ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
     headers, or retry settings.
+
+    Raises:
+        BritecoreError.MissingParameter: If quote_json is missing or empty.
     """
+    # Validate required parameters
+    if not quote_json or not isinstance(quote_json, dict):
+        raise BritecoreError.MissingParameter("quote_json is required and must be a dict")
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
     )
@@ -56,7 +62,13 @@ def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     normalized ``process_result(...)`` payload for the requested quote.
     ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
     headers, or retry settings.
+
+    Raises:
+        BritecoreError.MissingParameter: If id is missing.
     """
+    # Validate required parameters
+    if not id or not id.strip():
+        raise BritecoreError.MissingParameter("quote id is required")
     quote_json: dict[str, str] = {"id": id}
 
     LOGGER.debug("Getting quote")
