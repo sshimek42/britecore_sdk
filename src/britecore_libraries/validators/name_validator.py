@@ -18,11 +18,14 @@ def _get_regexes() -> dict[str, Pattern[str]]:
     return _COMPILED_REGEXES
 
 
-def _get_business_name_regex() -> Pattern:
+def _get_business_name_regex() -> Pattern[str]:
     """Lazy load business name regex from maps."""
     global _BUSINESS_NAME_REGEX
     _get_regexes()
-    _BUSINESS_NAME_REGEX = _COMPILED_REGEXES.get("reg_business_name")
+    regex = _COMPILED_REGEXES.get("reg_business_name")
+    if not isinstance(regex, Pattern):
+        raise ValueError("Missing or invalid 'reg_business_name' regex")
+    _BUSINESS_NAME_REGEX = regex
     return _BUSINESS_NAME_REGEX
 
 
@@ -85,7 +88,7 @@ class NameValidator:
             return suffix.upper()
 
         # Check for repeated letters (III, II)
-        char_counts = {}
+        char_counts: dict[str, int] = {}
         for char in suffix_lower:
             char_counts[char] = char_counts.get(char, 0) + 1
 
