@@ -2,17 +2,40 @@
 
 import os
 import re
+from importlib import import_module
+from logging import getLogger
 from typing import Any
 
-from britecore_libraries.maps.britecore_agency_map import agency
-from britecore_libraries.maps.britecore_field_map import (
-    field_map_to_britecore,
-    field_map_to_named_insured,
-    field_map_to_risk_location,
+LOGGER = getLogger(__name__)
+
+
+def _safe_map_import(module_name: str, attr_name: str) -> Any:
+    """Import a map symbol when available; otherwise return an empty fallback."""
+    try:
+        module = import_module(module_name)
+        return getattr(module, attr_name)
+    except (ImportError, AttributeError):
+        LOGGER.debug(
+            "Map module missing: %s.%s; using empty fallback", module_name, attr_name
+        )
+        return {}
+
+
+agency = _safe_map_import("britecore_libraries.maps.britecore_agency_map", "agency")
+field_map_to_britecore = _safe_map_import(
+    "britecore_libraries.maps.britecore_field_map", "field_map_to_britecore"
 )
-from britecore_libraries.maps.britecore_policy_map import (
-    britecore_policy_type_map,
-    policy_map,
+field_map_to_named_insured = _safe_map_import(
+    "britecore_libraries.maps.britecore_field_map", "field_map_to_named_insured"
+)
+field_map_to_risk_location = _safe_map_import(
+    "britecore_libraries.maps.britecore_field_map", "field_map_to_risk_location"
+)
+britecore_policy_type_map = _safe_map_import(
+    "britecore_libraries.maps.britecore_policy_map", "britecore_policy_type_map"
+)
+policy_map = _safe_map_import(
+    "britecore_libraries.maps.britecore_policy_map", "policy_map"
 )
 
 
