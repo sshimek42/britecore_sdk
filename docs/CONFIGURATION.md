@@ -24,14 +24,15 @@ src/britecore_libraries/config/
 
 ### `settings.toml` (Public)
 
-Contains **only** default urllib3 configuration (no endpoints, no credentials):
+Contains default non-secret runtime settings (no credentials):
 
 ```toml
-# Default urllib3 configuration (applies to all sites unless overridden)
+# Default runtime configuration (applies to all sites unless overridden)
 [default]
-web_timeout = 5
-web_retry = 3
-web_timeout_long = 30
+web_timeout = 30
+web_retry = 10
+web_timeout_long = 60
+web_browser = "Edge"
 
 # Site section definitions (no base_url or credentials — those go in .secrets.toml)
 [example_site]
@@ -43,7 +44,7 @@ web_timeout_long = 30
 
 **When to edit:**
 
-- Adjust urllib3 defaults (timeout, retry count)
+- Adjust default runtime settings (timeouts, retries, browser)
 - Add new site section headers (credentials go in .secrets.toml)
 
 **Never commit:**
@@ -71,6 +72,13 @@ client_secret = "your_real_client_secret"
 [example_site_test]
 base_url = "https://api-test.example.com"
 api_key = "your_real_api_key"
+
+# Optional utility settings (site-scoped)
+db_conn_string = "Driver={ODBC Driver 17 for SQL Server};Server=...;Database=...;"
+db_conn_options = { autocommit = true, timeout = 30 }
+web_user = "selenium_user"
+web_pass = "selenium_password"
+web_browser = "Edge"
 ```
 
 **How to create:**
@@ -171,6 +179,45 @@ else:
     # Use API key
 ```
 
+## Optional Utility Keys
+
+These keys are optional and only used when importing/calling the related utilities.
+
+### ODBC (`britecore_odbc`)
+
+- `db_conn_string` (required for config-based ODBC usage)
+- `db_conn_options` (required for config-based ODBC usage; must be a dict)
+
+```python
+from britecore_libraries.utils.britecore_odbc import get_cursor
+
+# Requires explicit target_site when loading DB config from Dynaconf
+cursor = get_cursor(target_site="example_site")
+
+# Explicit values bypass config lookup
+cursor = get_cursor(
+    conn_string="Driver={ODBC Driver 17 for SQL Server};Server=...;Database=...;",
+    conn_options={"autocommit": True},
+)
+```
+
+If config lookup is used without `target_site`, the utility raises
+`BritecoreError.ConfigurationError`.
+
+### Selenium (`britecore_selenium`)
+
+- `web_browser` (optional default browser)
+- `web_user` (optional login default for `bc_login`)
+- `web_pass` (optional login default for `bc_login`)
+
+Browser precedence in `get_driver(...)`:
+
+1. Explicit `browser` argument
+2. Config value `web_browser`
+3. Fallback default `Edge`
+
+Invalid browser names raise `BritecoreError.Base`.
+
 ## Validation
 
 When you call `client.init_client()`, Dynaconf validates required keys:
@@ -185,7 +232,7 @@ client.init_client()
 
 | Error | Cause | Fix |
 | ----- | ----- | --- |
-| `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `settings.toml` or `[example_site]` section |
+| `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `.secrets.toml` site section or set `BRITECORE_LIBRARIES_BASE_URL` |
 | `BritecoreKeyError` | Missing `client_id`/`client_secret` | Add both for OAuth, or add `api_key` for API key auth |
 | `BritecoreKeyError` | Missing `api_key` | Add `api_key` to `.secrets.toml` |
 | Config not loading | `target_site` not set | Set `$env:target_site` or pass to `BritecoreAPIClient("site_name")` |
@@ -260,16 +307,16 @@ python app.py
 
    Should output your site name (e.g., `example_site`)
 
-2. Check `settings.toml` has the section:
+2. Check `.secrets.toml` has the site section with required auth keys:
 
    ```powershell
-   grep -A 3 "\[example_site\]" src/britecore_libraries/config/settings.toml
+   Select-String -Path "src/britecore_libraries/config/.secrets.toml" -Pattern "\[example_site\]"
    ```
 
 3. Check `.secrets.toml` exists and has values:
 
    ```powershell
-   cat src/britecore_libraries/config/.secrets.toml
+   Get-Content "src/britecore_libraries/config/.secrets.toml"
    ```
 
 4. Test config loading directly:

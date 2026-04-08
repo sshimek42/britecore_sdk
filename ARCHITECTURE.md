@@ -1,6 +1,6 @@
 # System Architecture
 
-*Last updated: April 7, 2026*
+*Last updated: April 8, 2026*
 *Document type: Living design reference*
 
 **BriteCore Libraries** - Technical design and component overview
@@ -214,9 +214,12 @@ concise syntax is the main priority.
 src/britecore_libraries/
 ├── config/
 │   ├── config.py            # Dynaconf settings loader + LoadClientSettings
-│   ├── settings.toml        # urllib3 defaults only (web_timeout, web_retry, etc.)
+│   ├── settings.toml        # Default runtime settings (timeouts/retries/browser)
 │   ├── .secrets.toml        # All credentials: base_url, api_key, client_id,
-│   │                        # client_secret — gitignored, never committed
+│   │                        # client_secret; optional utility keys:
+│   │                        # db_conn_string/db_conn_options,
+│   │                        # web_user/web_pass/web_browser
+│   │                        # — gitignored, never committed
 │   └── __init__.py
 ├── utils/
 │   ├── britecore_odbc.py    # Database connections (optional: pyodbc)
@@ -236,7 +239,7 @@ src/britecore_libraries/
 # Dynaconf loads from multiple sources (highest to lowest priority)
 # 1. Environment variables (BRITECORE_LIBRARIES_*)
 # 2. .secrets.toml (base_url, api_key, client_id, client_secret)
-# 3. settings.toml (web_timeout, web_retry, web_timeout_long defaults)
+# 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long/web_browser)
 # 4. Built-in defaults
 
 from britecore_libraries.config.config import LoadClientSettings
@@ -248,8 +251,19 @@ site_config.base_url          # From .secrets.toml or env var
 site_config.api_key           # From .secrets.toml or env var
 site_config.web_timeout       # From settings.toml
 site_config.web_retry         # From settings.toml
+site_config.db_conn_string    # Optional ODBC connection string (site-scoped)
+site_config.db_conn_options   # Optional ODBC connection options (site-scoped)
+site_config.web_browser       # Optional Selenium default browser (site-scoped)
 
 ```
+
+Utility-specific validation boundaries:
+
+- API client initialization validates auth/base_url keys for API usage.
+- ODBC utility validates `db_conn_string` and `db_conn_options` only when
+  `get_cursor(..., target_site="...")` performs config-backed DB resolution.
+- Selenium utility validates browser names in `get_driver(...)` (explicit
+  argument overrides configured `web_browser`).
 
 ---
 

@@ -45,6 +45,16 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - **Configuration:**
   - `.deepsource.toml` expanded to exclude test directories and increased
     `max_line_length` to 120 for practical line-length requirements.
+  - ODBC utilities now require explicit `target_site` for config-backed
+    DB resolution (`get_cursor(..., target_site="...")`); no implicit site
+    fallback is used for DB config lookup.
+  - Selenium utility now reads flat Dynaconf keys (`web_retry`,
+    `web_timeout`, `web_timeout_long`, `web_browser`, `web_user`, `web_pass`),
+    and `get_driver(browser=...)` explicitly overrides configured
+    `web_browser` with validation for supported browser names.
+  - Project documentation updated (`README.md`, `GETTING_STARTED.md`,
+    `docs/CONFIGURATION.md`, `TROUBLESHOOTING.md`, `ARCHITECTURE.md`) to
+    reflect optional utility settings and updated ODBC/Selenium behavior.
 
 ### Fixed
 

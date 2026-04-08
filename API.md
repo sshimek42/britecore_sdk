@@ -166,11 +166,14 @@ endpoint(
 )
 ```
 
-Retry defaults from `BritecoreAPIClient.init_client()` are:
+Retry and timeout defaults come from config keys loaded by
+`BritecoreAPIClient.init_client()`:
 
-- `web_timeout`: `5` seconds
-- `web_timeout_long`: `50` seconds
-- `web_retry`: `5` retries with exponential backoff (`0.5` factor)
+- `web_timeout`
+- `web_timeout_long`
+- `web_retry` (urllib3 retry configuration)
+
+See `src/britecore_libraries/config/settings.toml` for current shipped defaults.
 
 `request_retries` should be used for idempotent/retry-safe operations only.
 

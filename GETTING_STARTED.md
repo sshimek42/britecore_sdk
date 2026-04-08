@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: April 7, 2026*
+*Last updated: April 8, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -68,8 +68,8 @@ $env:system = "your_system"
 
 Configure site values in:
 
-- `src/britecore_libraries/config/settings.toml` — urllib3 defaults only (web_timeout, web_retry, etc.)
-- `src/britecore_libraries/config/.secrets.toml` — all credentials and base_url (base_url, client_id, client_secret, api_key)
+- `src/britecore_libraries/config/settings.toml` — default runtime settings (timeouts/retries/browser)
+- `src/britecore_libraries/config/.secrets.toml` — credentials and optional utility keys (`base_url`, `client_id`, `client_secret`, `api_key`, `db_conn_string`, `db_conn_options`, `web_user`, `web_pass`, `web_browser`)
 
 Required keys in `.secrets.toml`:
 
@@ -80,6 +80,12 @@ Authentication behavior is automatic:
 
 - API key auth when `client_id` and `client_secret` are blank
 - OAuth auth when both are provided
+
+Optional utility notes:
+
+- ODBC utility config is site-scoped and loaded only when calling `get_cursor(...)`.
+- ODBC config lookup requires explicit `target_site` in the call when you do not pass `conn_string`/`conn_options` directly.
+- Selenium uses flat keys from config (`web_browser`, `web_user`, `web_pass`) and lets `get_driver(browser=...)` override config browser.
 
 ## Smoke checks
 
@@ -100,6 +106,19 @@ from britecore_libraries.api.api_calls.v2 import policies
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
 
+```
+
+## Optional utility examples
+
+```python
+from britecore_libraries.utils.britecore_odbc import get_cursor
+from britecore_libraries.utils.britecore_selenium import get_driver
+
+# ODBC: load db_conn_string/db_conn_options from [your_site] in .secrets.toml
+cursor = get_cursor(target_site="your_site")
+
+# Selenium: explicit browser overrides configured web_browser
+driver = get_driver(browser="Firefox")
 ```
 
 ## Async cached wrappers
@@ -135,6 +154,6 @@ python -m pytest tests/integration -m integration -v
 
 ## Common issues
 
-- Import-time failures in API modules usually indicate missing `target_site` or site config.
+- API client initialization failures usually indicate missing `target_site` or site config.
 - Endpoint wrappers expect response normalization through `process_result(...)`; prefer using provided `v2` modules.
 - If policy name mapping behaves unexpectedly, verify `system` is set for regex map selection.
