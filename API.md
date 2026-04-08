@@ -17,8 +17,9 @@ External API docs are available at [https://api.britecore.com/](https://api.brit
 Files under `api_specs/legacy/` are archival reference material for historical
 research and backlog planning, not the default support contract for the current SDK.
 
-The SDK surfaces wrappers under `src/britecore_libraries/api/api_calls/v2/`
-plus supported `v1` wrappers where no `v2` equivalent exists.
+The SDK surfaces wrappers under `src/britecore_libraries/api/api_calls/v2/`.
+Endpoints without a `v2` equivalent are available in
+`src/britecore_libraries/api/api_calls/v1/`.
 
 For known wrapper/spec drift currently tracked in tests, see
 `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
@@ -121,7 +122,7 @@ Current domains include:
 - `policies`, `quotes`, `reports`, `return_premium`, `search`, `settings`
 - `signatures`, `uploads`, `utils`, `vendors`
 
-The `v2` module also exposes `v1` endpoints that have no `v2` equivalent:
+`v1`-only endpoint modules (import from `britecore_libraries.api.api_calls.v1`):
 
 - `custom_ui`
 - `printing`
