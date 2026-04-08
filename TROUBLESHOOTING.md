@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-*Last updated: April 7, 2026*
+*Last updated: April 8, 2026*
 *Document type: Living troubleshooting guide*
 
 **BriteCore Libraries** - Common issues and solutions
@@ -142,6 +142,60 @@ Or just use environment variables (they override file settings).
 ---
 
 ## Runtime Issues
+
+### "target_site is required when loading ODBC settings from config"
+
+**Cause:** `britecore_odbc.get_cursor(...)` was called without explicit
+`target_site` and without explicit `conn_string`/`conn_options`.
+
+**Solution:**
+
+```python
+from britecore_libraries.utils.britecore_odbc import get_cursor
+
+# Config-backed ODBC usage (reads db_conn_* from [production] in .secrets.toml)
+cursor = get_cursor(target_site="production")
+
+# Or bypass config lookup entirely
+cursor = get_cursor(
+    conn_string="Driver={ODBC Driver 17 for SQL Server};Server=...;Database=...;",
+    conn_options={"autocommit": True, "timeout": 30},
+)
+```
+
+Ensure the selected site section in `src/britecore_libraries/config/.secrets.toml`
+contains both:
+
+- `db_conn_string`
+- `db_conn_options` (TOML inline table / dict)
+
+---
+
+### "Invalid browser specified" when using Selenium utility
+
+**Cause:** Unsupported `web_browser` config value or unsupported
+`get_driver(browser=...)` value.
+
+Supported values: `Edge`, `Firefox`, `Chrome`, `Opera`, `Safari`
+(case-insensitive).
+
+**Solution:**
+
+```toml
+[production]
+web_browser = "Edge"
+web_user = "selenium_user"
+web_pass = "selenium_password"
+```
+
+```python
+from britecore_libraries.utils.britecore_selenium import get_driver
+
+# Override configured web_browser for this call
+driver = get_driver(browser="Firefox")
+```
+
+---
 
 ### "Failed to retrieve OAuth token"
 
@@ -443,88 +497,6 @@ policy = policies.retrieve_policy(policy_number="POL001")
 
 ---
 
-### Inspect Request/Response
-
-```python
-from britecore_libraries.api.api_calls import API_CLIENT
-from unittest.mock import patch
-
-with patch.object(API_CLIENT, 'do_request', wraps=API_CLIENT.do_request) as mock:
-    policy = retrieve_policy(policy_number="POL001")
-    
-    # Check what was sent
-    call_args = mock.call_args
-    print(f"Path: {call_args[1]['path']}")
-    print(f"Payload: {call_args[1]['json']}")
-```
-
----
-
-### Check API Response Format
-
-```python
-import json
-from britecore_libraries.api.api_calls import API_CLIENT
-
-response = API_CLIENT.do_request(
-    path="/api/v2/policies/retrieve_policy",
-    json={"policy_number": "POL001"}
-)
-
-# Raw response
-print(f"Status: {response.status}")
-print(f"Data: {response.data.decode('utf-8')}")
-
-# Parsed response
-data = json.loads(response.data)
-print(json.dumps(data, indent=2))
-```
-
----
-
-## Performance Issues
-
-### Slow API responses
-
-**Solution:**
-
-```python
-import time
-
-start = time.time()
-policy = retrieve_policy(policy_number="POL001")
-elapsed = time.time() - start
-
-print(f"Request took {elapsed:.2f}s")
-
-# If too slow:
-# 1. Check network latency: ping api.britecore.com
-# 2. Increase timeout
-# 3. Check server status
-# 4. Use connection pooling (automatic with urllib3)
-```
-
----
-
-### High memory usage
-
-**Solution:**
-
-```python
-# Don't store large result sets
-# Process in batches instead
-
-# Bad:
-all_policies = [retrieve_policy(f"POL{i}") for i in range(10000)]
-
-# Good:
-for i in range(10000):
-    policy = retrieve_policy(f"POL{i}")
-    process_policy(policy)
-    # Memory freed after each iteration
-```
-
----
 
 ## Still Having Issues?
 
