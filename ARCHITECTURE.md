@@ -381,6 +381,11 @@ BritecoreError (namespace class)
 
 ```python
 
+from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls.v2 import policies
+from britecore_libraries import logger
+from britecore_libraries.exceptions import BritecoreError
+
 # API returns:
 {
     "success": false,
@@ -392,6 +397,8 @@ BritecoreError (namespace class)
 BritecoreError.NoDataReturned("Policy not found")
 
 # Caller handles specific types:
+init_api_client("your_site")
+
 try:
     policy = policies.retrieve_policy(policy_number="POL001")
 except BritecoreError.NotFoundError:

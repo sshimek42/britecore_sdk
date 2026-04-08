@@ -32,9 +32,11 @@ See also:
 ## Quick import pattern
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 # Import the domain module (recommended)
 from britecore_libraries.api.api_calls.v2 import policies, contacts, quotes
 
+init_api_client("your_site")
 result = policies.retrieve_policy(policy_number="POL-001")
 ```
 
@@ -62,8 +64,10 @@ headers = {"Authorization": "Bearer <access_token>"}
 ### Standard Request
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
+init_api_client("your_site")
 response = policies.retrieve_policy(
     policy_number="POL001",
     request_timeout=5,        # seconds
@@ -126,6 +130,7 @@ The `v2` module also exposes `v1` endpoints that have no `v2` equivalent:
 ### Representative examples
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import (
     policies,
     contacts,
@@ -135,6 +140,7 @@ from britecore_libraries.api.api_calls.v2 import (
     lines,
 )
 
+init_api_client("your_site")
 policy = policies.retrieve_policy(policy_number="POL001")
 policy_terms = policies.retrieve_policy_terms(policy_number="POL001")
 
@@ -182,9 +188,11 @@ See `src/britecore_libraries/config/settings.toml` for current shipped defaults.
 ## Error Handling
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
+init_api_client("your_site")
 try:
     policy = policies.retrieve_policy(policy_number="INVALID")
 except BritecoreError.NotFoundError as e:
@@ -207,9 +215,11 @@ The API implements rate limiting. If you receive 429 status:
 
 ```python
 import time
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
+init_api_client("your_site")
 max_retries = 3
 retry_delay = 5  # seconds
 
@@ -231,8 +241,10 @@ for attempt in range(max_retries):
 Some endpoints expose explicit pagination fields:
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import accounting
 
+init_api_client("your_site")
 page_1 = accounting.get_invoices(policy_id="uuid", page_number=1, page_size=25)
 page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
 ```
@@ -244,9 +256,11 @@ page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
 Many wrappers support optional filters and ordering fields:
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries import logger
 
+init_api_client("your_site")
 risks = policies.retrieve_risks(
     revision_id="revision_uuid",
     page=0,
@@ -264,8 +278,10 @@ For bulk operations, use loops rather than batch endpoints (most don't exist):
 
 ```python
 from britecore_libraries import logger
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
+init_api_client("your_site")
 policy_numbers = ["POL001", "POL002", "POL003"]
 
 for policy_number in policy_numbers:
@@ -285,9 +301,11 @@ for policy_number in policy_numbers:
 ```python
 from datetime import datetime
 
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.models import BritecorePolicy
 from britecore_libraries.api.api_calls.v2 import policies
 
+init_api_client("your_site")
 policy_model = BritecorePolicy(policy_number="POL001", effective_date=datetime.now(), policy_type_id="type_1")
 api_payload = policy_model.to_dict()
 
@@ -304,8 +322,10 @@ response, revision_id = policies.create_policy(
 
 ```python
 from britecore_libraries.validators import EmailValidator, PhoneValidator
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import contacts
 
+init_api_client("your_site")
 email = EmailValidator.normalize_email("test@example.com")
 phone = PhoneValidator.normalize_phone("5551234567")
 
@@ -328,8 +348,10 @@ For workflows that return progress/status fields, poll retrieval endpoints:
 
 ```python
 import time
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import reports
 
+init_api_client("your_site")
 report_id = "report_uuid"
 for _ in range(60):
     status = reports.retrieve_report(report_id=report_id)
