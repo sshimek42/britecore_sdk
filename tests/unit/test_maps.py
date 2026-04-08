@@ -47,6 +47,15 @@ class TestLoadRegexes:
         with pytest.raises(KeyError):
             load_regexes()
 
+    @pytest.mark.unit
+    def test_load_regexes_raises_when_system_not_set(self, monkeypatch):
+        """load_regexes raises ValueError when system env is missing."""
+        monkeypatch.delenv("system", raising=False)
+        from britecore_libraries.maps import load_regexes
+
+        with pytest.raises(ValueError, match="system"):
+            load_regexes()
+
 
 class TestMapsPublicExports:
     """Smoke tests for exported map symbols."""
@@ -63,6 +72,21 @@ class TestMapsPublicExports:
 
         for name in maps_mod.__all__:
             assert hasattr(maps_mod, name), f"__all__ entry missing from module: {name}"
+
+    @pytest.mark.unit
+    def test_safe_map_import_returns_attribute_when_module_exists(self, monkeypatch):
+        """_safe_map_import returns attribute from an importable module."""
+        import types
+
+        import britecore_libraries.maps as maps_mod
+
+        fake_module_name = "tests.fake_map_module"
+        fake_module = types.ModuleType(fake_module_name)
+        fake_module.some_map = {"k": "v"}
+        monkeypatch.setitem(sys.modules, fake_module_name, fake_module)
+
+        result = maps_mod._safe_map_import(fake_module_name, "some_map")
+        assert result == {"k": "v"}
 
 
 class TestMapsStrictImports:
