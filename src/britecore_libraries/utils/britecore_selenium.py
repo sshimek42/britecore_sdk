@@ -11,24 +11,24 @@ from britecore_libraries import logger
 from britecore_libraries.config import settings
 from britecore_libraries.exceptions import BritecoreError
 
-retry = settings.web.retry
+retry = settings.get("web_retry")
 if not retry:
     retry = 5
 
-wait_short = settings.web_timeout
+wait_short = settings.get("web_timeout")
 if not wait_short:
     wait_short = 5
 
-wait_long = settings.web.timeout_long
+wait_long = settings.get("web_timeout_long")
 if not wait_long:
     wait_long = wait_short * 10
 
-web_browser = settings.web_browser
+web_browser = settings.get("web_browser")
 if not web_browser:
     web_browser = "Edge"
 
-    if web_browser.lower() not in ("edge", "firefox", "chrome", "opera", "safari"):
-        logger.error("Invalid browser specified - %s", web_browser)
+if web_browser.lower() not in ("edge", "firefox", "chrome", "opera", "safari"):
+    logger.error("Invalid browser specified - %s", web_browser)
 
 ignored_exceptions = (
     selenium.common.exceptions.ElementClickInterceptedException,
@@ -54,8 +54,21 @@ def get_driver(
     :rtype: Union[None, selenium.webdriver.edge.webdriver.WebDriver,
     selenium.webdriver.firefox.webdriver.WebDriver]
     """
-    logger.info("Launching %s", browser)
-    driver_info = getattr(webdriver, browser)
+    browser_value = (browser or web_browser or "Edge").strip()
+    browser_map = {
+        "edge": "Edge",
+        "firefox": "Firefox",
+        "chrome": "Chrome",
+        "opera": "Opera",
+        "safari": "Safari",
+    }
+    browser_name = browser_map.get(browser_value.lower())
+    if not browser_name:
+        logger.error("Invalid browser specified - %s", browser_value)
+        raise BritecoreError.Base(f"Invalid browser specified - {browser_value}")
+
+    logger.info("Launching %s", browser_name)
+    driver_info = getattr(webdriver, browser_name)
     try:
         driver = driver_info()
     except Exception as err:  # skipcq PYL-W0703
@@ -74,9 +87,9 @@ def bc_login(
         | selenium.webdriver.Chrome
         | selenium.webdriver.Safari
     ),
-    url: str = settings.base_url,
-    user: str = settings.web_user,
-    password: str = settings.web_pass,
+    url: str = settings.get("base_url", default=""),
+    user: str = settings.get("web_user", default=""),
+    password: str = settings.get("web_pass", default=""),
     role_select: bool = False,
 ) -> None:
     """
@@ -98,7 +111,7 @@ def bc_login(
 
     login_box = driver.find_elements(By.CLASS_NAME, "el-input__inner")
 
-    logger.debug("Logging into BriteCore as %s", settings.web_user)
+    logger.debug("Logging into BriteCore as %s", user)
     user_box = login_box[0]
     pass_box = login_box[1]
     user_box.send_keys(user)
@@ -119,4 +132,4 @@ def bc_login(
 
 
 def __getattr__(name):
-    return getattr("selenium", name)
+    return getattr(selenium, name)
