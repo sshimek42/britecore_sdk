@@ -26,12 +26,12 @@ For a compact version, see `AGENTS.quickstart.md`.
 - Follow `src/britecore_libraries/api/api_calls/v2/quotes.py`: build request dict, call `API_CLIENT.do_request(path=..., json=..., **kwargs)`, then return `API_CLIENT.process_result(...)`.
 - Use `RequestParameters` (`TypedDict` in `britecore_api_client.py`) with `**kwargs: Unpack[RequestParameters]` for timeout/retry/header overrides.
 - For mutually exclusive identifiers, reuse `API_CLIENT.multiple_parameter_verification(...)` (example: `retrieve_policy` in `v2/policies.py`).
-- Keep endpoints versioned under `api/api_calls/v1` and `api/api_calls/v2`; v2 is the primary surface.
+- Keep endpoints under `api/api_calls/v2` for active SDK development; supported v1 wrappers remain where no v2 equivalent exists.
 
 ## Docstring source policy
 
 - For endpoint wrapper functions, use `api_specs/current/britecore.json` as the primary source for summary, parameter intent, and response semantics.
-- Treat files under `api_specs/legacy/` as archival/reference input for backlog or migration work, not as the default enforcement target for wrapper docs or tests.
+- Treat files under `api_specs/legacy/` as archival/reference input only; use `api_specs/current/britecore.json` for wrapper docs and tests.
 - Add SDK-specific context only where needed (for example: snake_case aliases, `RequestParameters`, or `process_result(...)` normalization behavior).
 - If the spec and current wrapper behavior differ, prefer describing the documented API contract and call out SDK-specific differences explicitly and briefly.
 
@@ -80,5 +80,5 @@ logging.basicConfig(level=logging.INFO)  # Global config
 ## Gotchas that affect agent changes
 
 - API client initialization is now lazy: `api_client` is a proxy that initializes on first use, avoiding failures in contexts without config/env. Call `get_api_client()` for explicit control.
-- `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; wrappers that bypass it (some v1 modules) handle raw payloads differently.
+- `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; some v1 wrappers with no v2 equivalent may parse raw payloads directly.
 - Keep public exports updated via `__all__` in package `__init__.py` files when adding new top-level functionality.

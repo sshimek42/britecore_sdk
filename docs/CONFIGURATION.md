@@ -8,7 +8,7 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 
 - TOML files (primary)
 - Environment variables
-- Fallback defaults
+- Default values
 - Per-site overrides
 
 ## Config Files
@@ -56,7 +56,7 @@ web_browser = "Edge"
 Contains **all sensitive credentials and site configuration**. **This file is gitignored.**
 
 ```toml
-# Default (fallback) credentials
+# Default credentials template
 [default]
 base_url = ""
 client_id = ""
@@ -214,9 +214,17 @@ Browser precedence in `get_driver(...)`:
 
 1. Explicit `browser` argument
 2. Config value `web_browser`
-3. Fallback default `Edge`
+3. Default `Edge`
 
 Invalid browser names raise `BritecoreError.Base`.
+
+### Interactive menu behavior in IDE consoles
+
+`utils.interactive_menu.line_menu()` uses `questionary` for richer prompts when a
+native console is available. In some IDE run consoles on Windows (including
+PyCharm), `questionary`/`prompt_toolkit` may not have a Win32 console buffer.
+When that occurs, the SDK automatically falls back to a plain numbered `input()`
+menu so line/date/state selection still works.
 
 ## Validation
 

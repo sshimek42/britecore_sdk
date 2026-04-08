@@ -27,7 +27,7 @@
                              ▼
 ┌─────────────────────────────────────────────────────────┐
 │                        API Layer                        │
-│   • Endpoints        (v1, v2, async v2)                 │
+│   • Endpoints        (current API + async wrappers)     │
 │   • Sync Client      (Request/Response handling)        │
 │   • Async Client     (TTL cache, in-flight dedup)       │
 │   • Auth             (API Key or OAuth2)                │
@@ -71,7 +71,7 @@ src/britecore_libraries/
 │   ├── britecore_agency_map.py         # Agency regex patterns
 │   ├── britecore_field_map.py          # Field mappings
 │   ├── britecore_policy_map.py         # Policy regex patterns
-│   └── __init__.py                     # Runtime fallback loader
+│   └── __init__.py                     # Map exports + regex loader
 ├── resources/
 │   └── zip_codes.csv           # Bundled ZIP code reference data
 └── constants.py                # Shared constants
@@ -96,8 +96,7 @@ validated = contact.process_contact()
 
 > **Note:** Map files (`britecore_agency_map.py`, `britecore_field_map.py`,
 > `britecore_policy_map.py`) contain site-specific regex data and are gitignored.
-> See [docs/MAP_FILES.md](docs/MAP_FILES.md) for the expected format and a
-> runtime fallback pattern for local/private map files.
+> See [docs/MAP_FILES.md](docs/MAP_FILES.md) for map module layout and expected format.
 
 ---
 
@@ -117,12 +116,6 @@ src/britecore_libraries/api/
 ├── types.py                             # Shared type definitions
 ├── api_calls/
 │   ├── __init__.py                      # Lazy init + exports
-│   ├── v1/                              # v1 API endpoints (no v2 equivalent)
-│   │   ├── contacts.py                  # v1 contact endpoints
-│   │   ├── custom_ui.py                 # Custom UI URL overrides
-│   │   ├── payments.py                  # Manual policy payment
-│   │   ├── printing.py                  # Document printing
-│   │   └── __init__.py
 │   └── v2/                              # v2 API endpoints
 │       ├── accounting.py
 │       ├── async_contacts.py            # Async + cached contact wrappers
@@ -224,7 +217,7 @@ src/britecore_libraries/
 ├── utils/
 │   ├── britecore_odbc.py    # Database connections (optional: pyodbc)
 │   ├── britecore_selenium.py # Browser automation (optional: selenium)
-│   ├── interactive_menu.py  # CLI menu helpers (optional: pyinputplus)
+│   ├── interactive_menu.py  # CLI menu helpers (optional: questionary)
 │   ├── zip_code_lookup.py   # ZIP code CSV lookup
 │   └── __init__.py
 ├── base_logger.py           # Package-level logger setup
@@ -508,12 +501,12 @@ tests/
 │   ├── test_concurrency.py             # Multi-instance + thread-safety tests
 │   ├── test_config.py                  # Config loading tests
 │   ├── test_core_client_coverage.py    # do_request / process_result coverage
-│   ├── test_exceptions.py              # Exception hierarchy + legacy class imports
+│   ├── test_exceptions.py              # Exception hierarchy tests
 │   ├── test_logging_tokens.py          # Verify no SCLogging tokens remain
-│   ├── test_maps.py                    # Regex map fallback behavior
+│   ├── test_maps.py                    # Regex map behavior
 │   ├── test_models.py                  # Domain model tests
 │   ├── test_oauth_token_manager.py     # OAuth token lifecycle tests
-│   ├── test_v1_endpoint_routing.py     # v1 endpoint path + docstring tests
+│   ├── test_v1_endpoint_routing.py     # endpoint routing + docstring tests
 │   ├── test_v2_endpoints.py            # v2 endpoint wrapper tests
 │   ├── test_v2_new_endpoints.py        # v2 newer endpoint tests
 │   ├── test_validators.py              # Validator tests
@@ -588,7 +581,7 @@ Core (always installed):
 Optional extras:
   pyodbc           # Database access ([database])
   selenium         # Browser automation ([browser])
-  pyinputplus      # Interactive CLI menus ([browser] or standalone)
+  questionary      # Interactive CLI menus ([interactive])
 
 ```
 

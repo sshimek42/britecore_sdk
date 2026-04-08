@@ -29,11 +29,11 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
     validators, and utilities (DeepSource PYL-W1203).
   - Collapsed nested `with` statements in tests (PTC-W0062).
   - Removed Python built-in shadowing (`type` → `note_type`, `type` →
-    `payment_method_type`) with backward-compatible kwargs extraction.
+    `payment_method_type`) and standardized wrapper kwargs.
 - **Documentation polish:**
   - Added `api_specs/README.md` and normalized checked-in API spec layout to
     `api_specs/current/` and `api_specs/legacy/`.
-  - Split archived legacy specs into `api_specs/legacy/britecore/` and
+  - Split archived specs into `api_specs/legacy/britecore/` and
     `api_specs/legacy/third_party/` for clearer ownership and scope.
   - Removed placeholder credential examples from `SECURITY.md` and
     `TROUBLESHOOTING.md` to avoid false positives from secrets scanners.
@@ -47,7 +47,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
     `max_line_length` to 120 for practical line-length requirements.
   - ODBC utilities now require explicit `target_site` for config-backed
     DB resolution (`get_cursor(..., target_site="...")`); no implicit site
-    fallback is used for DB config lookup.
+    resolution is used for DB config lookup.
   - Selenium utility now reads flat Dynaconf keys (`web_retry`,
     `web_timeout`, `web_timeout_long`, `web_browser`, `web_user`, `web_pass`),
     and `get_driver(browser=...)` explicitly overrides configured
@@ -59,7 +59,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - MyPy `TypedDict` compatibility in `payments.py` via explicit casting for
-  backward-compatible kwargs extraction.
+  standardized kwargs handling.
 - DeepSource findings (D202, W1203, PTC-W0048, PTC-W0062, PY-R1000,
   PY-D0003, E1121) addressed via targeted refactoring and configuration.
 - Markdown lint formatting (MD012, MD031, MD032, MD040, MD060) across all
@@ -89,18 +89,16 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - `tests/unit/test_v2_new_endpoints.py` — parametrized unit tests for all
   newly implemented domain modules.
 - `tests/unit/test_logging_tokens.py` — regression tests that assert no
-  legacy SCLogging color-format tokens remain in the source tree and that
+  SCLogging color-format tokens remain in the source tree and that
   runtime log output is plain text.
 - CI workflow (`.github/workflows/ci.yml`) now covers Python 3.11–3.14,
   runs ruff, black, mypy, and pytest with a 60% coverage gate.
 - `docs/MAP_FILES.md` — policy and sample structures for sensitive
   `*_map.py` files that must not be committed to version control.
-- `maps/__init__.py` runtime fallback pattern: `britecore_libraries.maps`
-  now re-exports `agency`, `policy_map`, `britecore_policy_type_map`,
+- `maps/__init__.py` map export pattern: `britecore_libraries.maps`
+  re-exports `agency`, `policy_map`, `britecore_policy_type_map`,
   `field_map_to_britecore`, `field_map_to_named_insured`, and
-  `field_map_to_risk_location` with graceful `ImportError` fallbacks to
-  empty dicts, and `load_regexes` falls back to a built-in implementation
-  when the private `britecore_policy_name_map.py` is absent.
+  `field_map_to_risk_location`.
 
 ### Changed
 
@@ -121,8 +119,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Private map files (`britecore_agency_map.py`, `britecore_field_map.py`,
   `britecore_policy_map.py`, `britecore_policy_name_map.py`) removed from
   git tracking. `.gitignore` pattern `maps/*_map.py` prevents accidental
-  re-addition. The runtime fallback in `maps/__init__.py` ensures the
-  package still imports cleanly in environments without these files.
+  re-addition.
 - Documentation dependencies now constrain `sphinx` to `>=8.2.3,<9.1` so the
   `docs` extra remains resolvable on Python 3.11, matching the supported
   project floor and CI verification range.

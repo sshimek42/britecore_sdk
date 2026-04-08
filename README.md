@@ -25,6 +25,7 @@ pip install britecore_libraries
 Set environment variables or create `src/britecore_libraries/config/.secrets.toml`:
 
 **Linux/macOS (bash):**
+
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 export BRITECORE_LIBRARIES_API_KEY="your_api_key_here"
@@ -32,6 +33,7 @@ export target_site="production"
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 $env:BRITECORE_LIBRARIES_API_KEY="your_api_key_here"
@@ -41,14 +43,17 @@ $env:target_site="production"
 Or for OAuth:
 
 **Linux/macOS (bash):**
+
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
 export target_site="production"
+
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 $env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
@@ -59,7 +64,11 @@ $env:target_site="production"
 ### 3. Use
 
 ```python
+from britecore_libraries.api.api_calls import init_api_client
 from britecore_libraries.api.api_calls.v2 import policies
+
+# Initialize the client for your configured site (matches a section in .secrets.toml)
+init_api_client("production")
 
 # Retrieve a policy
 result = policies.retrieve_policy(policy_number="POL001")
@@ -120,6 +129,7 @@ pip install britecore_libraries[dev]         # Development (tests, linting, type
 Create `src/britecore_libraries/config/settings.toml` (public runtime defaults) and `.secrets.toml` (gitignored secrets):
 
 **settings.toml** (example):
+
 ```toml
 # Default runtime configuration
 [default]
@@ -134,11 +144,13 @@ web_browser = "Edge"
 
 [staging]
 # base_url and credentials go in .secrets.toml
+
 ```
 
 **.secrets.toml** (never commit):
 
 API key authentication:
+
 ```toml
 [production]
 base_url = "https://api.britecore.example.com"
@@ -150,6 +162,7 @@ api_key = "your_staging_api_key"
 ```
 
 Or OAuth authentication:
+
 ```toml
 [production]
 base_url = "https://api.britecore.example.com"
@@ -160,6 +173,7 @@ client_secret = "your_real_client_secret"
 base_url = "https://api-staging.britecore.example.com"
 client_id = "your_staging_client_id"
 client_secret = "your_staging_client_secret"
+
 ```
 
 **Environment variables** (override file config):
@@ -167,6 +181,7 @@ client_secret = "your_staging_client_secret"
 API key authentication:
 
 **Linux/macOS (bash):**
+
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 export BRITECORE_LIBRARIES_API_KEY="your_api_key"
@@ -174,6 +189,7 @@ export target_site="production"
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 $env:BRITECORE_LIBRARIES_API_KEY="your_api_key"
@@ -183,6 +199,7 @@ $env:target_site="production"
 Or OAuth authentication:
 
 **Linux/macOS (bash):**
+
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
@@ -191,9 +208,11 @@ export target_site="production"
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 $env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
+
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
 $env:target_site="production"
 ```
@@ -205,11 +224,12 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CO
 ## What This Package Provides
 
 ### API Wrappers
-- **v2 endpoints:** 30 modules covering policies, contacts, quotes, payments, and more (374+ endpoints)
-- **v1 endpoints:** v1 API endpoints with no equivalent in v2
-- **Async wrappers:** Cache-aware async versions of key v2 endpoints
+
+- **Endpoint modules:** 30 modules covering policies, contacts, quotes, payments, and more (374+ endpoints)
+- **Async wrappers:** Cache-aware async versions of key endpoint workflows
 
 ### Utilities
+
 - **Models:** `BritecoreContact`, `BritecorePolicy`, `BritecoreQuote` with type hints
 - **Validators:** Email, phone, address, and name validation
 - **Auth:** Automatic OAuth2 or API key selection based on config
@@ -217,9 +237,10 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CO
 - **Logging:** Structured logging with standard Python logging module
 
 ### Optional Extras
+
 - **ODBC:** Database connectivity helpers (`pyodbc`)
 - **Selenium:** Browser automation support (`selenium`)
-- **Interactive:** Menu-driven CLI utilities (`pyinputplus`)
+- **Interactive:** Menu-driven CLI utilities (`questionary`)
 
 ### Optional Utility Config
 
@@ -254,7 +275,7 @@ Selenium browser selection precedence:
 
 - `get_driver(browser=...)` argument (if passed)
 - `web_browser` from config
-- fallback default `Edge`
+- default `Edge`
 
 ---
 

@@ -103,7 +103,7 @@ Quality gates run in CI:
 - For endpoint wrappers, follow existing `v2` module pattern: build payload, call `API_CLIENT.do_request(...)`, return `API_CLIENT.process_result(...)`.
 - Use `RequestParameters` and `**kwargs: Unpack[RequestParameters]` in new endpoint functions where request overrides are supported.
 - Use `API_CLIENT.multiple_parameter_verification(...)` for mutually exclusive identifiers.
-- Prefer models and validators packages over legacy imports from `classes`.
+- Use imports from `models` and `validators`; `classes` import paths are removed.
 
 ## Repo layout contract
 
