@@ -13,6 +13,19 @@ if src_path not in sys.path:
 
 
 @pytest.fixture
+def default_system_env(monkeypatch):
+    """Default system for tests that rely on map regex loading."""
+    monkeypatch.setenv("system", "mips")
+    yield
+
+
+@pytest.fixture(autouse=True)
+def _apply_default_system_env(default_system_env):
+    """Autouse wrapper to apply default system unless a test overrides it."""
+    yield
+
+
+@pytest.fixture
 def mock_settings():
     """Mock Dynaconf settings object."""
     settings = MagicMock()

@@ -66,7 +66,7 @@ class TestMapsPublicExports:
 
 
 class TestMapsStrictImports:
-    """Maps package requires authored map modules without runtime fallbacks."""
+    """Maps package gracefully falls back when optional map modules are missing."""
 
     @pytest.mark.unit
     def test_maps_import_fails_when_required_module_missing(self):
@@ -78,8 +78,9 @@ class TestMapsStrictImports:
         try:
             sys.modules[blocked] = None  # type: ignore[assignment]
             sys.modules.pop(maps_key, None)
-            with pytest.raises(ModuleNotFoundError):
-                importlib.import_module(maps_key)
+            maps_mod = importlib.import_module(maps_key)
+            assert hasattr(maps_mod, "agency")
+            assert maps_mod.agency == {}
         finally:
             if saved_maps is not None:
                 sys.modules[maps_key] = saved_maps
