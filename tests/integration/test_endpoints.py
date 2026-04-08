@@ -55,7 +55,7 @@ class TestQuotesEndpoints:
 
             from britecore_libraries.api.api_calls.v2.quotes import create_full_quote
 
-            result, quote_id = create_full_quote({})
+            result, quote_id = create_full_quote({"policy_type_id": "pt-1"})
 
             assert result is None
             assert quote_id is None
@@ -69,7 +69,7 @@ class TestQuotesEndpoints:
 
             from britecore_libraries.api.api_calls.v2.quotes import create_full_quote
 
-            result = create_full_quote({})
+            result = create_full_quote({"policy_type_id": "pt-1"})
             assert isinstance(result, tuple)
             assert len(result) == 2
 
