@@ -6,6 +6,7 @@ from britecore_libraries.api.britecore_api_client import (
     RequestParameters,
 )
 from britecore_libraries.api.britecore_async_api_client import AsyncBritecoreAPIClient
+from britecore_libraries.exceptions import BritecoreError
 
 
 def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
@@ -50,21 +51,36 @@ def get_api_client() -> BritecoreAPIClient:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     Raises:
+        BritecoreError.Base: If lazy initialization fails.
         Any exceptions from BritecoreAPIClient.init_client() if initialization fails.
     """
     global _api_client
     if _api_client is None:
         _api_client = init_api_client()
-    assert _api_client is not None
+    if _api_client is None:
+        raise BritecoreError.Base(
+            "API client initialization returned None; check configuration"
+        )
     return _api_client
 
 
 def get_async_api_client() -> AsyncBritecoreAPIClient:
-    """Get or lazily initialize the global async API client instance."""
+    """
+    Get or lazily initialize the global async API client instance.
+
+    Returns:
+        AsyncBritecoreAPIClient: A configured async API client instance.
+
+    Raises:
+        BritecoreError.Base: If lazy initialization fails.
+    """
     global _async_api_client
     if _async_api_client is None:
         _async_api_client = init_async_api_client()
-    assert _async_api_client is not None
+    if _async_api_client is None:
+        raise BritecoreError.Base(
+            "Async API client initialization returned None; check configuration"
+        )
     return _async_api_client
 
 
