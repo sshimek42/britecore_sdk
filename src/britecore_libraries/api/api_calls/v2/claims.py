@@ -33,4 +33,6 @@ def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/claims/get_claim", json=claim_search, **kwargs
     )
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/claims/get_claim"
+    )

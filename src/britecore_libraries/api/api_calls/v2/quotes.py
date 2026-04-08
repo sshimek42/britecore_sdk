@@ -39,7 +39,9 @@ def create_full_quote(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
     )
 
-    json_info: Any = API_CLIENT.process_result(request_result)
+    json_info: Any = API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/quotes/create_full_quote"
+    )
 
     if not json_info:
         return None, None
@@ -63,7 +65,9 @@ def get_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/quotes/get_quote"
+    )
 
 
 __all__ = ["create_full_quote", "get_quote"]

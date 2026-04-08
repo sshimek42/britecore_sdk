@@ -95,7 +95,9 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
         path="/api/v2/lines/get_all_effective_dates", **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/lines/get_all_effective_dates"
+    )
 
 
 def get_all_states(
@@ -117,7 +119,9 @@ def get_all_states(
         path="/api/v2/lines/get_all_states", json=effective_date_json, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/lines/get_all_states"
+    )
 
 
 def get_all_lines(
@@ -143,7 +147,9 @@ def get_all_lines(
         path="/api/v2/lines/get_all_lines", json=current_lines_json, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/lines/get_all_lines"
+    )
 
 
 def list_policy_types(
@@ -180,4 +186,6 @@ def list_policy_types(
         path="/api/v2/lines/list_policy_types", json=policy_types_json, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/lines/list_policy_types"
+    )

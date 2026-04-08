@@ -64,4 +64,6 @@ def update_inspection_dates(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/inspections/update_inspection_dates"
+    )

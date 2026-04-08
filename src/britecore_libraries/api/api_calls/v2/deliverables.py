@@ -69,7 +69,9 @@ def list_attachments(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/deliverables/list_attachments"
+    )
 
 
 def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -85,7 +87,9 @@ def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         path="/api/v2/deliverables/get_attachment", json=file_search, **kwargs
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/deliverables/get_attachment"
+    )
 
 
 def get_edeliverables(

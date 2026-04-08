@@ -59,7 +59,9 @@ def new_contact(
         path="/api/v2/contacts/new_contact", json=contact_request_json, **kwargs
     )
 
-    contact_json: Any = API_CLIENT.process_result(request_result)
+    contact_json: Any = API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/contacts/new_contact"
+    )
 
     try:
         new_id: str = contact_json.get("contact_id", "Fail")
@@ -96,7 +98,9 @@ def add_contact_to_role(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/contacts/add_contact_to_role"
+    )
 
 
 def update_contact(
@@ -117,7 +121,9 @@ def update_contact(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/contacts/update_contact"
+    )
 
 
 def get_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -135,7 +141,9 @@ def get_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/contacts/get_contact"
+    )
 
 
 def find_contact_by_params(
@@ -163,4 +171,6 @@ def find_contact_by_params(
         **kwargs,
     )
 
-    return API_CLIENT.process_result(request_result)
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/contacts/find_contact_by_params"
+    )

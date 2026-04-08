@@ -22,17 +22,26 @@ class BritecoreError:
             message: str,
             request: str | None = None,
             http_error: str | None = None,
+            endpoint: str | None = None,
+            http_status: int | None = None,
         ) -> None:
             self.request = request
             self.http_error = http_error
+            self.endpoint = endpoint
+            self.http_status = http_status
             super().__init__(message)
 
         def __str__(self) -> str:
-            return (
-                f"No data returned - {self.message}\n"
-                f"Request: {self.request}\n"
-                f"HTTP Error: {self.http_error}"
-            )
+            parts = [f"No data returned - {self.message}"]
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
+            if self.http_status:
+                parts.append(f"HTTP Status: {self.http_status}")
+            if self.request:
+                parts.append(f"Request: {self.request}")
+            if self.http_error:
+                parts.append(f"HTTP Error: {self.http_error}")
+            return "\n".join(parts)
 
     class NoTokenReturned(Base):
         """Raised when OAuth token request fails."""
@@ -42,18 +51,24 @@ class BritecoreError:
             message: str,
             request: str | None = None,
             http_error: str | None = None,
+            http_status: int | None = None,
         ) -> None:
             self.request = request
             self.http_error = http_error
+            self.http_status = http_status
             super().__init__(message)
 
         def __str__(self) -> str:
-            return (
-                "BriteCore was unable to return any authorization token - "
-                f"{self.message}\n"
-                f"Request: {self.request}\n"
-                f"HTTP Error: {self.http_error}"
-            )
+            parts = [
+                f"BriteCore was unable to return any authorization token - {self.message}"
+            ]
+            if self.http_status:
+                parts.append(f"HTTP Status: {self.http_status}")
+            if self.request:
+                parts.append(f"Request: {self.request}")
+            if self.http_error:
+                parts.append(f"HTTP Error: {self.http_error}")
+            return "\n".join(parts)
 
     class InvalidPhoneNumber(Base):
         """Raised when phone number validation fails."""
@@ -92,13 +107,20 @@ class BritecoreError:
             self,
             message: str,
             http_status: int | None = None,
+            endpoint: str | None = None,
         ) -> None:
             self.http_status = http_status
+            self.endpoint = endpoint
             super().__init__(message)
 
         def __str__(self) -> str:
-            status_info = f" (HTTP {self.http_status})" if self.http_status else ""
-            return f"BriteCore authentication failed{status_info} - {self.message}"
+            parts = [f"BriteCore authentication failed"]
+            if self.http_status:
+                parts[0] += f" (HTTP {self.http_status})"
+            parts[0] += f" - {self.message}"
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
+            return "\n".join(parts)
 
     class RateLimitError(Base):
         """Raised when the API rate limit is exceeded (HTTP 429)."""
@@ -124,13 +146,20 @@ class BritecoreError:
             self,
             message: str,
             http_status: int | None = None,
+            endpoint: str | None = None,
         ) -> None:
             self.http_status = http_status
+            self.endpoint = endpoint
             super().__init__(message)
 
         def __str__(self) -> str:
-            status_info = f" (HTTP {self.http_status})" if self.http_status else ""
-            return f"BriteCore server error{status_info} - {self.message}"
+            parts = [f"BriteCore server error"]
+            if self.http_status:
+                parts[0] += f" (HTTP {self.http_status})"
+            parts[0] += f" - {self.message}"
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
+            return "\n".join(parts)
 
     class ValidationError(NoDataReturned):
         """Raised when API validation fails (for example HTTP 400/422)."""
@@ -154,13 +183,20 @@ class BritecoreError:
             self,
             message: str,
             timeout_seconds: int | float | None = None,
+            endpoint: str | None = None,
         ) -> None:
             self.timeout_seconds = timeout_seconds
+            self.endpoint = endpoint
             super().__init__(message)
 
         def __str__(self) -> str:
-            timeout_info = f" ({self.timeout_seconds}s)" if self.timeout_seconds else ""
-            return f"Request timeout{timeout_info} - {self.message}"
+            parts = ["Request timeout"]
+            if self.timeout_seconds:
+                parts[0] += f" ({self.timeout_seconds}s)"
+            parts[0] += f" - {self.message}"
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
+            return "\n".join(parts)
 
     class DatabaseConnectionError(Base):
         """Raised when a database connection fails."""
