@@ -12,7 +12,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 ### Added
 
 - `tests/unit/test_api_spec_alignment.py` — validates wrapper paths against
-  the canonical `britecore_api.json` specification.
+  the canonical `api_specs/current/britecore.json` specification.
 - `tests/unit/test_v1_endpoint_routing.py` — unit tests for v1 custom_ui,
   payments, and printing endpoints.
 - `tests/unit/test_zip_code_lookup.py` — tests for US zip code lookup utility.
@@ -31,6 +31,10 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   - Removed Python built-in shadowing (`type` → `note_type`, `type` →
     `payment_method_type`) with backward-compatible kwargs extraction.
 - **Documentation polish:**
+  - Added `api_specs/README.md` and normalized checked-in API spec layout to
+    `api_specs/current/` and `api_specs/legacy/`.
+  - Split archived legacy specs into `api_specs/legacy/britecore/` and
+    `api_specs/legacy/third_party/` for clearer ownership and scope.
   - Removed placeholder credential examples from `SECURITY.md` and
     `TROUBLESHOOTING.md` to avoid false positives from secrets scanners.
   - Unified private security contact wording in `SECURITY.md`.

@@ -488,7 +488,7 @@ tests/
 ├── conftest.py                         # Shared fixtures (env_api_key, mock_settings, etc.)
 ├── unit/
 │   ├── test_api_client.py              # BritecoreAPIClient unit tests
-│   ├── test_api_spec_alignment.py      # Verify wrappers align with britecore_api.json
+│   ├── test_api_spec_alignment.py      # Verify wrappers align with api_specs/current/britecore.json
 │   ├── test_async_api_client.py        # AsyncBritecoreAPIClient unit tests
 │   ├── test_async_v2_api_calls.py      # Async endpoint wrapper tests
 │   ├── test_concurrency.py             # Multi-instance + thread-safety tests
@@ -651,7 +651,7 @@ logger.error("Errors with context")
 
 1. **Metrics / Tracing** - Built-in instrumentation hooks (request ID, latency, retry count)
 2. **Retry Strategies** - Per-error-type retry configuration
-3. **SDK Code Generation** - Regenerate endpoint wrappers from `britecore_api.json` spec
+3. **SDK Code Generation** - Regenerate endpoint wrappers from `api_specs/current/britecore.json`
 
 ---
 

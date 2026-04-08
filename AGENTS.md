@@ -30,7 +30,8 @@ For a compact version, see `AGENTS.quickstart.md`.
 
 ## Docstring source policy
 
-- For endpoint wrapper functions, use `britecore_api.json` as the primary source for summary, parameter intent, and response semantics.
+- For endpoint wrapper functions, use `api_specs/current/britecore.json` as the primary source for summary, parameter intent, and response semantics.
+- Treat files under `api_specs/legacy/` as archival/reference input for backlog or migration work, not as the default enforcement target for wrapper docs or tests.
 - Add SDK-specific context only where needed (for example: snake_case aliases, `RequestParameters`, or `process_result(...)` normalization behavior).
 - If the spec and current wrapper behavior differ, prefer describing the documented API contract and call out SDK-specific differences explicitly and briefly.
 
