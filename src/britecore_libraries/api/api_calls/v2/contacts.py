@@ -9,7 +9,7 @@ from typing import Any, Literal, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
-from britecore_libraries import logger
+from britecore_libraries import BritecoreError, logger
 from britecore_libraries.api.api_calls import (
     BritecoreAPIClient,
     RequestParameters,
@@ -38,7 +38,16 @@ def new_contact(
     ``contact_id`` as an SDK-specific convenience tuple of
     ``(contact_data, contact_id)``. ``**kwargs`` accepts ``RequestParameters``
     overrides.
+
+    Raises:
+        BritecoreError.MissingParameter: If name or address is missing.
     """
+    # Validate required parameters
+    if not name or not name.strip():
+        raise BritecoreError.MissingParameter("contact name is required")
+    if not address or len(address) == 0:
+        raise BritecoreError.MissingParameter("contact address list is required")
+
     LOGGER.debug("Creating contact '%s'", name)
     if not phone:
         phone = [{}]
@@ -87,7 +96,14 @@ def add_contact_to_role(
     ``/api/v2/contacts/add_contact_to_role`` and returns the normalized
     ``process_result(...)`` payload for the role-assignment request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
+
+    Raises:
+        BritecoreError.MissingParameter: If contact_id is missing.
     """
+    # Validate required parameters
+    if not contact_id or not contact_id.strip():
+        raise BritecoreError.MissingParameter("contact_id is required")
+
     LOGGER.debug("Adding role '%s' to '%s'", role, contact_id)
     role_request_json: dict[
         Literal["contact_id", "role_name"], str | ROLETYPES | None
@@ -132,7 +148,14 @@ def get_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     This wrapper sends ``contact_id`` to ``/api/v2/contacts/get_contact`` and
     returns the normalized ``process_result(...)`` payload for the matching
     contact record. ``**kwargs`` accepts ``RequestParameters`` overrides.
+
+    Raises:
+        BritecoreError.MissingParameter: If contact_id is missing.
     """
+    # Validate required parameters
+    if not contact_id or not contact_id.strip():
+        raise BritecoreError.MissingParameter("contact_id is required")
+
     LOGGER.debug("Retrieving contact id '%s'", contact_id)
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
