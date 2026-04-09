@@ -84,6 +84,8 @@ async def anew_contact(
         json=contact_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for anew_contact")
     contact_json: Any = await API_CLIENT.aprocess_result(request_result)
 
     try:
@@ -120,6 +122,8 @@ async def aadd_contact_to_role(
         json=role_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aadd_contact_to_role")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -142,6 +146,8 @@ async def aupdate_contact(
         json=update_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aupdate_contact")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -162,6 +168,8 @@ async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> 
             dict(kwargs), cache_key_parts=[f"contact:{contact_id}"]
         ),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aget_contact")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -194,6 +202,8 @@ async def afind_contact_by_params(
         json=contact_retrieve_json,
         **_apply_contact_read_cache(dict(kwargs), cache_key_parts=cache_parts),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for afind_contact_by_params")
     return await API_CLIENT.aprocess_result(request_result)
 
 
