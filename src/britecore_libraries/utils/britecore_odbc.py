@@ -48,7 +48,8 @@ def get_cursor(
 
     if conn_string is None or conn_options is None:
         raise BritecoreError.ConfigurationError(
-            "Database connection settings are required"
+            "Database connection settings are required.\n"
+            "Tip: To check your ODBC settings, run: python -m britecore_libraries.utils.check_odbc_settings"
         )
 
     try:

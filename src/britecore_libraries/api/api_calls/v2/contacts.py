@@ -197,3 +197,55 @@ def find_contact_by_params(
     return API_CLIENT.process_result(
         request_result, endpoint="/api/v2/contacts/find_contact_by_params"
     )
+
+
+def get_contacts_by_ids(
+    contact_id_list: list[str], **kwargs: Unpack[RequestParameters]
+) -> Any:
+    """Retrieve contacts by id.
+
+    This wrapper sends a list of contact IDs to `/api/v2/contacts/get_contacts_by_ids` and returns the normalized
+    `process_result(...)` payload for the matching contacts. `**kwargs` accepts `RequestParameters` overrides.
+
+    Parameters
+    ----------
+    contact_id_list : list of str
+        Required. List of Contact ids to retrieve.
+
+    Returns
+    -------
+    success : bool
+        True if successful, false if not
+    messages : list of str
+        List of human-readable error messages
+    data : dict
+        Contains contacts keyed by id.
+    """
+    if (
+        not contact_id_list
+        or not isinstance(contact_id_list, list)
+        or not all(isinstance(x, str) for x in contact_id_list)
+    ):
+        raise BritecoreError.MissingParameter(
+            "contact_id_list (list of str) is required"
+        )
+    LOGGER.debug("Retrieving contacts by ids: %s", contact_id_list)
+    request_json = {"contact_id_list": ",".join(contact_id_list)}
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/contacts/get_contacts_by_ids",
+        json=request_json,
+        **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/contacts/get_contacts_by_ids"
+    )
+
+
+__all__ = [
+    "new_contact",
+    "add_contact_to_role",
+    "update_contact",
+    "get_contact",
+    "find_contact_by_params",
+    "get_contacts_by_ids",
+]

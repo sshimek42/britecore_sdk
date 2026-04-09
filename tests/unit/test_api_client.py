@@ -28,7 +28,7 @@ class TestLazyAPIClientInitialization:
     def test_get_api_client_returns_client(
         self, env_api_key, mock_settings, monkeypatch
     ):
-        """Test that get_api_client returns initialized client."""
+        """Test that get_api_client returns initialized client after explicit init."""
         with patch(
             "britecore_libraries.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
@@ -36,8 +36,12 @@ class TestLazyAPIClientInitialization:
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
 
-            from britecore_libraries.api.api_calls import get_api_client
+            from britecore_libraries.api.api_calls import (
+                get_api_client,
+                init_api_client,
+            )
 
+            init_api_client(target_site="test_site")
             client = get_api_client()
 
             assert client is not None
@@ -45,7 +49,7 @@ class TestLazyAPIClientInitialization:
 
     @pytest.mark.unit
     def test_lazy_proxy_delegates_to_client(self, env_api_key, mock_settings):
-        """Test that lazy proxy delegates attribute access to initialized client."""
+        """Test that lazy proxy delegates attribute access to initialized client after explicit init."""
         with patch(
             "britecore_libraries.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
@@ -60,8 +64,9 @@ class TestLazyAPIClientInitialization:
 
             importlib.reload(britecore_libraries.api.api_calls)
 
-            from britecore_libraries.api.api_calls import api_client
+            from britecore_libraries.api.api_calls import api_client, init_api_client
 
+            init_api_client(target_site="test_site")
             # Access an attribute on the proxy (should trigger init)
             assert hasattr(api_client, "base_url")
 
@@ -108,13 +113,11 @@ class TestBritecoreAPIClientInit:
 
     @pytest.mark.unit
     def test_init_raises_error_without_site(self):
-        """Test that init_client raises error without target_site."""
+        """Test that BritecoreAPIClient raises error without target_site."""
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
 
-        client = BritecoreAPIClient(None)
-
-        with pytest.raises(BritecoreError.NoSiteError):
-            client.init_client()
+        with pytest.raises(ValueError):
+            BritecoreAPIClient(None)
 
     @pytest.mark.unit
     def test_init_sets_timeouts(self, env_api_key, mock_settings):

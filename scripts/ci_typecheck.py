@@ -8,6 +8,7 @@ Shared CI script for type checking, linting, and testing.
 Usage:
   python scripts/ci_typecheck.py
 """
+
 import subprocess
 import sys
 
@@ -48,6 +49,6 @@ def main():
         "Unit tests",
     )
 
+
 if __name__ == "__main__":
     main()
-

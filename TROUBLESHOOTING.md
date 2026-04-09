@@ -245,11 +245,11 @@ except Exception as e:
 **Solution:**
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries.exceptions import BritecoreError
 
-init_api_client("your_site")
+client = get_api_client()
 try:
     policy = policies.retrieve_policy(policy_number="INVALID")
 except BritecoreError.NotFoundError as e:
@@ -439,11 +439,11 @@ python -m pytest tests/ -v
 **Solution:**
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Timeout
 
-init_api_client("your_site")
+client = get_api_client()
 # Use longer timeout
 policy = policies.retrieve_policy(
     policy_number="POL001",
@@ -460,11 +460,11 @@ policy = policies.retrieve_policy(
 **Solution:**
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from urllib3 import Retry
 
-init_api_client("your_site")
+client = get_api_client()
 # Configure retries
 policy = policies.retrieve_policy(
     policy_number="POL001",
@@ -512,10 +512,10 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Now all debug messages will print
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
-init_api_client("your_site")
+client = get_api_client()
 policy = policies.retrieve_policy(policy_number="POL001")
 # Check console for debug output
 ```
@@ -541,3 +541,33 @@ policy = policies.retrieve_policy(policy_number="POL001")
 5. Check [CONTRIBUTING.md](CONTRIBUTING.md) for development
 
 ---
+
+## Private Maps Behavior
+
+Some features in britecore_libraries rely on map files (such as policy, field, or agency maps) located in `src/britecore_libraries/maps/`. These files provide environment-specific mappings and are selected at runtime based on environment variables.
+
+- **Map file selection:**
+  - The environment variable `system` determines which map file is loaded (e.g., `britecore_policy_name_map.py`).
+  - If `system` is not set, the SDK may fall back to a default map or raise an error, depending on the utility.
+  - If the required map file is missing, a `BritecoreError.KeyError` or similar will be raised.
+
+- **Required environment variables:**
+  - `system` (selects the map variant)
+  - `target_site` (for config loading, may also affect map selection)
+
+- **Fallback behavior:**
+  - If a map file for the specified `system` is not found, the SDK may:
+    - Use a default map (if implemented)
+    - Raise a configuration or key error
+  - Always check logs for details if a map is missing or an env var is unset.
+
+- **Troubleshooting:**
+  - Ensure the correct `system` value is set in your environment.
+  - Verify that the corresponding map file exists in `src/britecore_libraries/maps/`.
+  - If you see errors about missing maps or unset variables, set the required env vars and restart your process.
+
+---
+
+## Troubleshooting Summary
+
+- **API client initialization failures** usually indicate missing `target_site` or site config. The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.

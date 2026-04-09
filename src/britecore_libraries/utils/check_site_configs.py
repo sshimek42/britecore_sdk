@@ -6,26 +6,37 @@ Usage:
 
 Outputs a table of sites and whether they are correctly configured for API access.
 """
+
 import os
 import sys
+
 import toml
-from typing import Dict, List
 
 REQUIRED_KEYS = ["base_url"]
 OAUTH_KEYS = ["client_id", "client_secret"]
 API_KEY = "api_key"
+FORBIDDEN_KEYS = ["api_key", "client_id", "client_secret"]
 
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "..", "config", ".secrets.toml")
+CONFIG_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config",
+    ".secrets.toml",
+)
+SETTINGS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config",
+    "settings.toml",
+)
 
 
-def load_secrets(path: str) -> Dict:
+def load_secrets(path: str) -> dict:
     if not os.path.exists(path):
         print(f"Config file not found: {path}")
         sys.exit(1)
     return toml.load(path)
 
 
-def check_site(site: str, config: Dict) -> (bool, List[str]):
+def check_site(site: str, config: dict) -> (bool, list[str]):
     missing = []
     for key in REQUIRED_KEYS:
         if not config.get(key):
@@ -43,18 +54,42 @@ def check_site(site: str, config: Dict) -> (bool, List[str]):
     return (len(missing) == 0), missing
 
 
+def warn_if_secrets_in_settings(path: str) -> None:
+    if not os.path.exists(path):
+        return
+    settings = toml.load(path)
+    found = []
+    for section, config in settings.items():
+        if isinstance(config, dict):
+            for key in FORBIDDEN_KEYS:
+                if key in config and config[key]:
+                    found.append((section, key))
+        else:
+            # Top-level keys
+            if section in FORBIDDEN_KEYS and config:
+                found.append(("[top-level]", section))
+    if found:
+        print(
+            "\nWARNING: Sensitive keys found in settings.toml (should be in .secrets.toml only):"
+        )
+        for section, key in found:
+            print(f"  Section: {section}, Key: {key}")
+        print("Move these to .secrets.toml and remove from settings.toml!")
+
+
 def main():
+    warn_if_secrets_in_settings(SETTINGS_PATH)
     secrets = load_secrets(CONFIG_PATH)
-    sites = secrets.keys()
-    print(f"Checking API config for {len(sites)} site(s) in {CONFIG_PATH}...\n")
+    # Only process keys whose value is a dict (site sections)
+    site_sections = {k: v for k, v in secrets.items() if isinstance(v, dict)}
+    print(f"Checking API config for {len(site_sections)} site(s) in {CONFIG_PATH}...\n")
     print(f"{'Site':<20} {'Status':<10} Missing Keys")
     print("-" * 60)
-    for site in sites:
-        config = secrets[site]
+    for site, config in site_sections.items():
         ok, missing = check_site(site, config)
         status = "OK" if ok else "INCORRECT"
         print(f"{site:<20} {status:<10} {', '.join(missing) if missing else ''}")
 
+
 if __name__ == "__main__":
     main()
-

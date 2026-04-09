@@ -29,49 +29,40 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 def get_export_line_file(
     line: tuple,
-    line_type: str,
-    line_name: str,
     include_custom_sequences: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve export-line file data for a line or policy context.
+    """Retrieve export-line file data for a line.
 
-    For ``line_type == 'Line'``, this wrapper sends line identifiers to
-    ``/api/v2/lines/get_export_line_file``. For ``line_type == 'Policy'``, it
-    calls ``/api/v2/policies/get_policies``. It then processes the response and
-    attempts to return parsed JSON payload data when available.
+    This wrapper sends line identifiers to
+    ``/api/v2/lines/get_export_line_file`` and returns the parsed JSON payload data.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
+
+    Args:
+        line: Tuple of (effective_date_id, state_id, line_id)
+        include_custom_sequences: Whether to include custom sequences in the export
+        **kwargs: Additional request parameters for the API client
     """
-    request_result: BaseHTTPResponse | HTTPResponse | None = None
-    LOGGER.info("Retrieving '%s' lines", line_name)
+    LOGGER.info("Retrieving line export for IDs: %s", line)
 
-    normalized_line_type = line_type.strip().lower()
+    web_request_json: dict[str, str | bool | None] = {
+        "curr_eff_date_id": line[0],
+        "curr_line_id": line[2],
+        "curr_state_id": line[1],
+        "include_custom_sequences": include_custom_sequences,
+    }
 
-    if normalized_line_type in {"line", "lines"}:
-        web_request_json: dict[str, str | bool] = {
-            "curr_eff_date_id": line[0],
-            "curr_line_id": line[2],
-            "curr_state_id": line[1],
-            "include_custom_sequences": include_custom_sequences,
-        }
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/lines/get_export_line_file",
+        json={k: v for k, v in web_request_json.items() if v is not None},
+        **kwargs,
+    )
 
-        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-            path="/api/v2/lines/get_export_line_file",
-            json=web_request_json,
-            **kwargs,
-        )
-    elif normalized_line_type in {"policy", "policies"}:
-        request_result = API_CLIENT.do_request(path="/api/v2/policies/get_policies")
-    else:
-        raise BritecoreError.MissingParameter(
-            "line_type must be one of: 'Line', 'lines', 'Policy', or 'policies'"
-        )
+    LOGGER.info("Finished retrieving line export for IDs: %s", line)
 
-    LOGGER.info("Finished retrieving '%s' lines", line_name)
-
-    API_CLIENT.process_results = API_CLIENT.process_result(request_result)
-    if API_CLIENT.process_results is not None:
-        return loads(API_CLIENT.process_results)
+    processed_result = API_CLIENT.process_result(request_result)
+    if processed_result is not None:
+        return loads(processed_result)
 
     return request_result
 
@@ -168,14 +159,21 @@ def list_policy_types(
     ]
     parameter_priority: list[str] = ["effective_date_id", "effective_date"]
 
-    policy_types_json: dict[str, str] = api_client.multiple_parameter_verification(
-        parameter_list, parameter_priority
+    policy_types_json: dict[str, str | None] = (
+        api_client.multiple_parameter_verification(parameter_list, parameter_priority)
     )
 
     policy_types_json.update({"location_id": location_id})
 
+    # Remove None values before sending
+    filtered_policy_types_json = {
+        k: v for k, v in policy_types_json.items() if v is not None
+    }
+
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/lines/list_policy_types", json=policy_types_json, **kwargs
+        path="/api/v2/lines/list_policy_types",
+        json=filtered_policy_types_json,
+        **kwargs,
     )
 
     return API_CLIENT.process_result(

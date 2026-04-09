@@ -4,6 +4,7 @@ require a ``setup.py`` entry point (e.g. ``pip install -e .`` on older pip
 versions, some IDE integrations).  Do not add metadata here; edit
 ``pyproject.toml`` instead.
 """
+
 from setuptools import setup
 
 setup()

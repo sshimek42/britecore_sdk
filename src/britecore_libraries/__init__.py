@@ -10,6 +10,7 @@ This package provides:
 - Custom exceptions
 """
 
+import os
 from importlib.metadata import PackageNotFoundError, version
 
 from britecore_libraries.base_logger import get_logger
@@ -54,6 +55,16 @@ from britecore_libraries.validators import (
     fix_suffix_capitalization,
     normalize_business_name,
 )
+
+if os.environ.get("BRITECORE_ENV") == "development":
+    try:
+        from britecore_libraries.utils import check_site_configs
+
+        check_site_configs.warn_if_secrets_in_settings(
+            os.path.join(os.path.dirname(__file__), "config", "settings.toml")
+        )
+    except Exception:
+        pass  # Do not block startup
 
 __all__ = [
     # Models

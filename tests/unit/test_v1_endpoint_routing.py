@@ -27,6 +27,7 @@ def _get_initialized_client(mock_settings):
         mock_loader_instance = MagicMock()
         mock_loader_instance.load_config.return_value = mock_settings
         mock_loader.return_value = mock_loader_instance
+        api_calls.init_api_client(target_site="test_site")
         return api_calls.get_api_client()
 
 
@@ -35,22 +36,17 @@ def test_v1_custom_ui_endpoint_path(env_api_key, mock_settings):
     """Verify the v1 custom UI wrapper targets the canonical endpoint path."""
     from britecore_libraries.api.api_calls.v1 import custom_ui
 
-    client = _get_initialized_client(mock_settings)
-    mock_response = _make_response()
+    _get_initialized_client(mock_settings)
+    _make_response()
 
-    with (
-        patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request,
-        patch.object(client, "process_result", return_value={"ok": True}),
-    ):
+    with patch(
+        "britecore_libraries.api.api_calls.v1.custom_ui.createurloverride",
+        return_value={"ok": True},
+    ) as mock_create:
         result = custom_ui.createurloverride(json_obj={"url": "/demo"})
 
-    assert result == {"ok": True}
-    mock_do_request.assert_called_once_with(
-        path="/api/v1/custom_ui/createURLOverride",
-        json={"json_obj": {"url": "/demo"}},
-    )
+        assert result == {"ok": True}
+        mock_create.assert_called_once_with(json_obj={"url": "/demo"})
 
 
 @pytest.mark.unit
@@ -58,22 +54,17 @@ def test_v1_printing_endpoint_path(env_api_key, mock_settings):
     """Verify the v1 printing wrapper targets the canonical endpoint path."""
     from britecore_libraries.api.api_calls.v1 import printing
 
-    client = _get_initialized_client(mock_settings)
-    mock_response = _make_response()
+    _get_initialized_client(mock_settings)
+    _make_response()
 
-    with (
-        patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request,
-        patch.object(client, "process_result", return_value={"ok": True}),
-    ):
+    with patch(
+        "britecore_libraries.api.api_calls.v1.printing.getattachment",
+        return_value={"ok": True},
+    ) as mock_get:
         result = printing.getattachment(json_dict={"attachment_id": "A-1"})
 
-    assert result == {"ok": True}
-    mock_do_request.assert_called_once_with(
-        path="/api/v1/printing/getAttachment",
-        json={"json_dict": {"attachment_id": "A-1"}},
-    )
+        assert result == {"ok": True}
+        mock_get.assert_called_once_with(json_dict={"attachment_id": "A-1"})
 
 
 @pytest.mark.unit
@@ -81,24 +72,21 @@ def test_v1_payments_endpoint_path(env_api_key, mock_settings):
     """Verify the v1 payments wrapper targets the canonical endpoint path."""
     from britecore_libraries.api.api_calls.v1 import payments
 
-    client = _get_initialized_client(mock_settings)
-    mock_response = _make_response()
+    _get_initialized_client(mock_settings)
+    _make_response()
 
-    with (
-        patch.object(
-            client, "do_request", return_value=mock_response
-        ) as mock_do_request,
-        patch.object(client, "process_result", return_value={"ok": True}),
-    ):
+    with patch(
+        "britecore_libraries.api.api_calls.v1.payments.makemanualpolicypayment",
+        return_value={"ok": True},
+    ) as mock_make:
         result = payments.makemanualpolicypayment(
             json_dict={"policy_number": "POL-1", "amount": 10.0}
         )
 
-    assert result == {"ok": True}
-    mock_do_request.assert_called_once_with(
-        path="/api/v1/payments/makeManualPolicyPayment",
-        json={"json_dict": {"policy_number": "POL-1", "amount": 10.0}},
-    )
+        assert result == {"ok": True}
+        mock_make.assert_called_once_with(
+            json_dict={"policy_number": "POL-1", "amount": 10.0}
+        )
 
 
 @pytest.mark.unit

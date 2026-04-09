@@ -67,7 +67,7 @@ def line_menu(
         By default, returns a dict that can be passed directly to
         ``lines.get_export_line_file(**selection)``:
 
-        ``{"line": (date_id, state_id, line_id), "line_type": "Line", "line_name": str}``
+        ``{"line": (date_id, state_id, line_id), "line_name": str}``
 
     Uses questionary when available and falls back to plain stdin input when
     a console backend is unavailable (for example in some IDE run consoles).
@@ -170,6 +170,17 @@ def line_menu(
 
     return {
         "line": (eff_date[0], eff_state[0], eff_line[0]),
-        "line_type": "Line",
         "line_name": eff_line[1],
     }
+
+
+def policy_menu(**kwargs: Unpack[RequestParameters]) -> Any:
+    """
+    Interactive menu for listing policies using the policy_helpers utility.
+    """
+    from britecore_libraries.utils.policy_helpers import get_policies
+
+    policies = get_policies(**kwargs)
+    # Example: print or select from policies as needed
+    # For now, just return the list
+    return policies

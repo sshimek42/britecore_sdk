@@ -1,9 +1,11 @@
 """
 Script to check that all test data files referenced by tests exist and are valid (basic parse check).
 """
-import os
-import glob
+
 import csv
+import glob
+import os
+
 
 def check_test_data_files():
     # Example: look for all CSV files in tests/data/
@@ -26,12 +28,13 @@ def check_test_data_files():
         print("All test data files are present and parseable.")
     return ok
 
+
 def main():
     print("Checking test data files...")
     ok = check_test_data_files()
     if not ok:
         exit(1)
 
+
 if __name__ == "__main__":
     main()
-

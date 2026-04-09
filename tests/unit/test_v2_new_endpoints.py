@@ -16,6 +16,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 from urllib3 import BaseHTTPResponse
 
+from britecore_libraries.exceptions import BritecoreError
+
 # ---------------------------------------------------------------------------
 # Helpers (mirrors test_v2_endpoints.py)
 # ---------------------------------------------------------------------------
@@ -958,3 +960,46 @@ class TestNoneOmission:
 
         _, call_kwargs = mock_do_request.call_args
         assert call_kwargs["json"] == {}
+
+
+# ---------------------------------------------------------------------------
+# New endpoint tests: get_contacts_by_ids
+# ---------------------------------------------------------------------------
+
+
+class TestContactsGetContactsByIds:
+    @pytest.mark.unit
+    def test_get_contacts_by_ids_success(self, mock_settings):
+        from britecore_libraries.api.api_calls.v2 import contacts
+
+        contact_ids = ["C1", "C2"]
+        expected_data = {
+            "C1": {"id": "C1", "name": "Alice"},
+            "C2": {"id": "C2", "name": "Bob"},
+        }
+        mock_response = MagicMock()
+        with patch.object(contacts, "API_CLIENT") as mock_client:
+            mock_client.do_request.return_value = mock_response
+            mock_client.process_result.return_value = {
+                "success": True,
+                "data": expected_data,
+                "messages": [],
+            }
+            result = contacts.get_contacts_by_ids(contact_ids)
+            assert result["success"] is True
+            assert result["data"] == expected_data
+            mock_client.do_request.assert_called_once_with(
+                path="/api/v2/contacts/get_contacts_by_ids",
+                json={"contact_id_list": ",".join(contact_ids)},
+            )
+            mock_client.process_result.assert_called_once_with(
+                mock_response, endpoint="/api/v2/contacts/get_contacts_by_ids"
+            )
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("bad_ids", [None, [], "notalist"])
+    def test_get_contacts_by_ids_invalid(self, bad_ids):
+        from britecore_libraries.api.api_calls.v2 import contacts
+
+        with pytest.raises(BritecoreError.MissingParameter):
+            contacts.get_contacts_by_ids(bad_ids)
