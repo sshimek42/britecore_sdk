@@ -1,15 +1,20 @@
 """Email address validation and normalization."""
 
+import logging
 import re
 from re import Pattern
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from britecore_libraries import logger
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps import get_common_regexes
 
-LOGGER = logger
+if TYPE_CHECKING:
+    logger: logging.Logger
+else:
+    from britecore_libraries import logger
+
+LOGGER: logging.Logger = logger
 
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: dict[str, Pattern[str]] = {}

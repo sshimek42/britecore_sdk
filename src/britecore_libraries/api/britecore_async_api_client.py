@@ -38,7 +38,11 @@ class AsyncBritecoreAPIClient:
 
         async with self._client_init_lock:
             if self._client is None:
-                client = BritecoreAPIClient(self.target_site)
+                # Ensure target_site is str, fallback to empty string if None
+                target_site: str = (
+                    self.target_site if self.target_site is not None else ""
+                )
+                client = BritecoreAPIClient(target_site)
                 await asyncio.to_thread(client.init_client)
                 self._client = client
 

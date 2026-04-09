@@ -51,13 +51,11 @@ def list_attachments(
     ]
     parameter_priority: list[str] = ["revision_id", "contact_id", "policy_id"]
 
-    attachments_search = api_client.multiple_parameter_verification(
-        parameter_list, parameter_priority
+    attachments_search: dict[str, str | None] = (
+        api_client.multiple_parameter_verification(parameter_list, parameter_priority)
     )
 
-    for _, (k, v) in enumerate(
-        local_env.items()
-    ):  # Add any non-default parameters to request
+    for _, (k, v) in enumerate(local_env.items()):
         if v and k not in parameter_priority:
             attachments_search.update({k: v})
 
@@ -105,7 +103,7 @@ def get_edeliverables(
     ``process_result(...)`` payload for the e-deliverable query.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    required_json: dict[str, str] = {
+    required_json: dict[str, str | bool | None] = {
         "date_from": date_from,
         "date_to": date_to,
         "unprocessed_only": unprocessed_only,

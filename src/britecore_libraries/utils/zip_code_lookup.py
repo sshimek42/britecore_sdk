@@ -1,9 +1,14 @@
 import csv
+import logging
 from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from britecore_libraries import logger
+if TYPE_CHECKING:
+    logger: logging.Logger
+else:
+    from britecore_libraries import logger
 
 LOGGER: Logger = logger
 

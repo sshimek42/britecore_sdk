@@ -22,7 +22,9 @@ class TestLoadClientSettings:
         from britecore_libraries.config.config import LoadClientSettings
 
         monkeypatch.setenv("target_site", "env_site")
-        with pytest.raises(ValueError):  # Specify the expected exception type
+        from britecore_libraries.exceptions import BritecoreError
+
+        with pytest.raises(BritecoreError.ConfigurationError):
             LoadClientSettings(None)
 
     @pytest.mark.unit

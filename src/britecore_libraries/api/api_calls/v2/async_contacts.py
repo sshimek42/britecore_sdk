@@ -79,7 +79,7 @@ async def anew_contact(
     if phone[0] != {}:
         contact_request_json.update({"phones": phone})
 
-    request_result = await API_CLIENT.ado_request(
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/contacts/new_contact",
         json=contact_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
@@ -114,10 +114,11 @@ async def aadd_contact_to_role(
     and accepts ``RequestParameters`` overrides via ``**kwargs``.
     """
     LOGGER.debug("Adding role '%s' to '%s'", role, contact_id)
-    role_request_json: dict[
-        Literal["contact_id", "role_name"], str | ROLETYPES | None
-    ] = {"contact_id": contact_id, "role_name": role}
-    request_result = await API_CLIENT.ado_request(
+    role_request_json: dict[str, str | ROLETYPES | None] = {
+        "contact_id": contact_id,
+        "role_name": role,
+    }
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/contacts/add_contact_to_role",
         json=role_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
@@ -138,10 +139,8 @@ async def aupdate_contact(
     and accepts ``RequestParameters`` overrides via ``**kwargs``.
     """
     LOGGER.debug("Updating contact information\n%s", contact)
-    update_request_json: dict[str, dict[str, str | list[dict[str, str]]]] = {
-        "contact": contact
-    }
-    request_result = await API_CLIENT.ado_request(
+    update_request_json: dict[str, Any] = {"contact": contact}
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/contacts/update_contact",
         json=update_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
@@ -161,7 +160,7 @@ async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> 
     """
     LOGGER.debug("Retrieving contact id '%s'", contact_id)
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
-    request_result = await API_CLIENT.ado_request(
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/contacts/get_contact",
         json=contact_retrieve_json,
         **_apply_contact_read_cache(
@@ -187,7 +186,7 @@ async def afind_contact_by_params(
     and accepts ``RequestParameters`` plus cache override settings via ``**kwargs``.
     """
     LOGGER.debug("Finding contact '%s'", name)
-    contact_retrieve_json: dict[str, str | None] = {
+    contact_retrieve_json: dict[str, str | ROLETYPES | None] = {
         "name": name,
         "role_name": role_name,
         "dob": dob,
@@ -197,7 +196,7 @@ async def afind_contact_by_params(
         cache_parts.append(f"role:{role_name}")
     if dob:
         cache_parts.append(f"dob:{dob}")
-    request_result = await API_CLIENT.ado_request(
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/contacts/find_contact_by_params",
         json=contact_retrieve_json,
         **_apply_contact_read_cache(dict(kwargs), cache_key_parts=cache_parts),

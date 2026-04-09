@@ -1,5 +1,6 @@
 """Address validation and normalization."""
 
+import logging
 import re
 from ast import literal_eval
 from re import Pattern
@@ -11,7 +12,7 @@ from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps import get_common_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
 
-LOGGER = logger
+LOGGER: logging.Logger = logger
 FIX_ADDRESS = False
 NO_ADDRESS_CHANGE = "NO CHANGES MADE"
 ADDRESS_CHANGE = "ADDRESS UPDATED"

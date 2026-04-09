@@ -118,4 +118,12 @@ ignore_missing_imports = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 pretty = true
-
+exclude = [
+    "build/",
+    "dist/",
+    "env/",
+    ".venv/",
+    ".*egg-info/",
+    "htmlcov/",
+    "src/britecore_libraries/build/",
+]

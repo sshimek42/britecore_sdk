@@ -54,7 +54,7 @@ async def acreate_full_quote(
     on success, and accepts ``RequestParameters`` overrides via ``**kwargs``.
     """
     request_kwargs = _apply_quote_mutation_cache(dict(kwargs))
-    request_result = await API_CLIENT.ado_request(
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/quotes/create_full_quote",
         json=quote_json,
         **request_kwargs,
@@ -80,7 +80,7 @@ async def aget_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     request_kwargs = _apply_quote_read_cache(
         dict(kwargs), cache_key_parts=[f"quote:{id}"]
     )
-    request_result = await API_CLIENT.ado_request(
+    request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/quotes/get_quote",
         json=quote_json,
         **request_kwargs,

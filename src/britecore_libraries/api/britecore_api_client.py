@@ -1,6 +1,5 @@
 """Wrapper for BriteCore API calls"""
 
-# ...existing code...
 import time
 import uuid
 from json import JSONDecodeError, dumps, loads

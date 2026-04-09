@@ -1,14 +1,19 @@
 """BriteCore contact model."""
 
-from typing import Literal
+import logging
+from typing import TYPE_CHECKING, Literal
 
-from britecore_libraries import logger
+if TYPE_CHECKING:
+    logger: logging.Logger
+else:
+    from britecore_libraries import logger
+
 from britecore_libraries.validators.address_validator import AddressValidator
 from britecore_libraries.validators.email_validator import EmailValidator
 from britecore_libraries.validators.name_validator import NameValidator
 from britecore_libraries.validators.phone_validator import PhoneValidator
 
-LOGGER = logger
+LOGGER: logging.Logger = logger
 
 ROLETYPES = Literal[
     "Additional Insured",

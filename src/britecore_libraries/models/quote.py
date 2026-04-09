@@ -1,12 +1,16 @@
 """BriteCore policy model."""
 
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from britecore_libraries import logger
+if TYPE_CHECKING:
+    logger: logging.Logger
+else:
+    from britecore_libraries import logger
 
-LOGGER = logger
+LOGGER: logging.Logger = logger
 
 
 @dataclass
