@@ -162,7 +162,7 @@ def retrieve_policy_list_from_user(
     )
     user_json = API_CLIENT.process_result(request_result)["records"]
 
-    policy_list = []
+    policy_list: list[str] = []
 
     contact_name = contact_name.strip().lower()
 
@@ -268,14 +268,14 @@ def retrieve_policy_terms(
     if not policy_number and not policy_id:
         BritecoreError.MissingParameter("Either policy_id or policy_number is required")
 
-    parameter_list: list[dict[str, str]] = [
+    parameter_list: list[dict[str, str | None]] = [
         {"policy_id": policy_id},
         {"policy_number": policy_number},
     ]
     parameter_priority: list[str] = ["policy_id", "policy_number"]
 
-    policy_retrieve_json: dict[str, str] = API_CLIENT.multiple_parameter_verification(
-        parameter_list, parameter_priority
+    policy_retrieve_json: dict[str, str | None] = (
+        API_CLIENT.multiple_parameter_verification(parameter_list, parameter_priority)
     )
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/policies/retrieve_policy_terms",
@@ -393,7 +393,7 @@ def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> 
 def update_rating_information(
     property_id: str | None = "",
     revision_id: str | None = "",
-    items: list[dict[str, Any]] = None,
+    items: list[dict[str, Any]] | None = None,
     reset_premium: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
@@ -452,7 +452,7 @@ def retrieve_billing_schedule_options(
     normalized ``process_result(...)`` payload for available schedules.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    if not policy_term_id and not policy_term_id:
+    if not policy_number and not policy_term_id:
         BritecoreError.MissingParameter(
             "Either policy_number or policy_term_id is needed"
         )
@@ -496,44 +496,36 @@ def new_revision_contact(
     request_result: Any = None
     LOGGER.debug("Adding contact")
 
-    contact_add_json: dict[
-        Literal["revision_id", "role"],
-        Literal[
-            "namedInsured", "addtlInterest", "financeCompany", "underwriter", "driver"
-        ]
-        | str
-        | None,
-    ] = {
+    contact_add_json: dict[str, str | None] = {
         "revision_id": revision_id,
         "role": contact_role,
     }
 
     if not x_id:
-        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        request_result = API_CLIENT.do_request(
             path="/api/v2/policies/new_revision_contact",
             json=contact_add_json,
             **kwargs,
         )
-
         contact_add_result = API_CLIENT.process_result(request_result)
     else:
         contact_add_result = {"x_revisions_contact_id": x_id}
 
+    update_request_result: BaseHTTPResponse | HTTPResponse | None = None
     if contact_add_result:
         x_contact: Any = contact_add_result["x_revisions_contact_id"]
         update_revision_json: dict[str, str] = {
             "x_revisions_contact_id": x_contact,
             "contact_id": contact_id,
         }
-
-        request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        update_request_result = API_CLIENT.do_request(
             path="/api/v2/policies/update_revision_contact",
             json=update_revision_json,
             **kwargs,
         )
 
     return API_CLIENT.process_result(
-        request_result, endpoint="/api/v2/policies/update_revision_contact"
+        update_request_result, endpoint="/api/v2/policies/update_revision_contact"
     )
 
 

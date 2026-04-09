@@ -48,7 +48,7 @@ def update_inspection_dates(
     ]
     parameter_priority: list[str] = ["property_id", "policy_number"]
 
-    inspection_json: dict[str, str] = api_client.multiple_parameter_verification(
+    inspection_json: dict[str, str | None] = api_client.multiple_parameter_verification(
         parameter_list, parameter_priority
     )
 

@@ -53,7 +53,7 @@ def new_contact(
         phone = [{}]
     if not email:
         email = [{}]
-    contact_request_json: dict[str, str | list] = {
+    contact_request_json: dict[str, Any] = {
         "name": name,
         "addresses": address,
     }
@@ -73,9 +73,9 @@ def new_contact(
     )
 
     try:
-        new_id: str = contact_json.get("contact_id", "Fail")
+        new_id = contact_json.get("contact_id", "Fail")
     except AttributeError:
-        new_id: str = "Fail"
+        new_id = "Fail"
 
     if new_id == "Fail":
         LOGGER.error("Failed to add contact - '%s'", name)
@@ -105,9 +105,10 @@ def add_contact_to_role(
         raise BritecoreError.MissingParameter("contact_id is required")
 
     LOGGER.debug("Adding role '%s' to '%s'", role, contact_id)
-    role_request_json: dict[
-        Literal["contact_id", "role_name"], str | ROLETYPES | None
-    ] = {"contact_id": contact_id, "role_name": role}
+    role_request_json: dict[str, str | ROLETYPES | None] = {
+        "contact_id": contact_id,
+        "role_name": role,
+    }
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/contacts/add_contact_to_role",
         json=role_request_json,
@@ -183,7 +184,7 @@ def find_contact_by_params(
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
     LOGGER.debug("Finding contact '%s'", name)
-    contact_retrieve_json: dict[str, str | None] = {
+    contact_retrieve_json: dict[str, str | ROLETYPES | None] = {
         "name": name,
         "role_name": role_name,
         "dob": dob,
@@ -230,7 +231,7 @@ def get_contacts_by_ids(
             "contact_id_list (list of str) is required"
         )
     LOGGER.debug("Retrieving contacts by ids: %s", contact_id_list)
-    request_json = {"contact_id_list": ",".join(contact_id_list)}
+    request_json: dict[str, str] = {"contact_id_list": ",".join(contact_id_list)}
     request_result = API_CLIENT.do_request(
         path="/api/v2/contacts/get_contacts_by_ids",
         json=request_json,
