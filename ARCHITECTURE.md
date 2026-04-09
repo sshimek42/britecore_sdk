@@ -11,35 +11,35 @@
 
 ```text
 
-┌─────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────────┐
 │                    Application Layer                    │
 │          (Your code using BriteCore Libraries)          │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
+└──────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼
+┌────────────────────────────────────────────────────────────┐
 │                      Domain Layer                       │
 │   • Models         (Contact, Policy, Quote)             │
 │   • Validators     (Email, Phone, Address, Name)        │
 │   • Maps           (Regex patterns, Field mappings)     │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
+└──────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼
+┌────────────────────────────────────────────────────────────┐
 │                        API Layer                        │
 │   • Endpoints        (current API + async wrappers)     │
 │   • Sync Client      (Request/Response handling)        │
 │   • Async Client     (TTL cache, in-flight dedup)       │
 │   • Auth             (API Key or OAuth2)                │
-└────────────────────────────┬────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────┐
+└──────────────────────────────┬────────────────────────────┘
+                              │
+                              ▼
+┌────────────────────────────────────────────────────────────┐
 │                  Infrastructure Layer                   │
 │   • Config         (Dynaconf, settings + secrets)       │
 │   • Utilities      (ODBC, Selenium, Menus)              │
 │   • Transport      (urllib3, OAuth token)               │
-└─────────────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────────┘
 
 ```
 
@@ -314,19 +314,11 @@ else:
 **Solution:** Lazy proxy pattern
 
 ```python
+# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+from britecore_libraries.api.api_calls import get_api_client
 
-# Old approach (BROKEN)
-api_client = init_api_client()  # Fails if no config
-
-# New approach (FIXED)
-class _LazyAPIClient:
-    def __getattr__(self, name):
-        return getattr(get_api_client(), name)
-
-api_client = _LazyAPIClient()
-# Now safe to import without config
-# Initializes on first method call
-
+client = get_api_client()
+# Now safe to import without config; initializes on first method call
 ```
 
 ---
@@ -393,12 +385,14 @@ from britecore_libraries.exceptions import BritecoreError
     "data": {}
 }
 
+
 # process_result() raises:
 BritecoreError.NoDataReturned("Policy not found")
 
 # Caller handles specific types:
-init_api_client("your_site")
+from britecore_libraries.api.api_calls import get_api_client
 
+client = get_api_client()
 try:
     policy = policies.retrieve_policy(policy_number="POL001")
 except BritecoreError.NotFoundError:
@@ -407,9 +401,6 @@ except BritecoreError.AuthenticationError:
     logger.error("Auth failed — check credentials")
 except BritecoreError.Base as e:
     logger.error("SDK failure: %s", e)
-
-```
-
 ---
 
 ## Data Validation Pipeline

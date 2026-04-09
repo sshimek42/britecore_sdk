@@ -49,7 +49,6 @@ export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
 export target_site="production"
-
 ```
 
 **Windows (PowerShell):**
@@ -64,18 +63,23 @@ $env:target_site="production"
 ### 3. Use
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
-# Initialize the client for your configured site (matches a section in .secrets.toml)
-init_api_client("production")
+# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+client = get_api_client()
 
 # Retrieve a policy
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
-```
 
 See [examples/basic_api_usage.py](examples/basic_api_usage.py) for more detailed examples.
+
+---
+
+### About API Client Initialization
+
+The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 
 ---
 
@@ -342,7 +346,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **Endpoint modules** — Build request JSON → call `do_request()` → return `process_result()`
 - **Auth modes** — Automatic: API key (when `client_id`/`client_secret` blank) or OAuth2 (when both provided)
 - **Config** — Dynaconf-based in `src/britecore_libraries/config/` with environment variable overrides
-- **Lazy initialization** — API client initializes on first use to avoid import-time failures
+- **Lazy initialization** — API client initializes on first use to avoid import-time failures (see "About API Client Initialization" above)
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
 

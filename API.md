@@ -33,16 +33,17 @@ See also:
 ## Quick import pattern
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 # Import the domain module (recommended)
 from britecore_libraries.api.api_calls.v2 import policies, contacts, quotes
 
-init_api_client("your_site")
+# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+client = get_api_client()
 result = policies.retrieve_policy(policy_number="POL-001")
 ```
 
 Domain modules are importable from `britecore_libraries.api.api_calls.v2`.
-The API client initializes lazily on first request; use `get_api_client()` for explicit control when needed.
+The API client initializes lazily on first request; use `get_api_client()` for explicit control when needed. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 
 ---
 
@@ -65,10 +66,10 @@ headers = {"Authorization": "Bearer <access_token>"}
 ### Standard Request
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
-init_api_client("your_site")
+client = get_api_client()
 response = policies.retrieve_policy(
     policy_number="POL001",
     request_timeout=5,        # seconds
@@ -189,11 +190,11 @@ See `src/britecore_libraries/config/settings.toml` for current shipped defaults.
 ## Error Handling
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
-init_api_client("your_site")
+client = get_api_client()
 try:
     policy = policies.retrieve_policy(policy_number="INVALID")
 except BritecoreError.NotFoundError as e:
@@ -216,11 +217,11 @@ The API implements rate limiting. If you receive 429 status:
 
 ```python
 import time
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.api.api_calls.v2 import policies
 
-init_api_client("your_site")
+client = get_api_client()
 max_retries = 3
 retry_delay = 5  # seconds
 
@@ -242,10 +243,10 @@ for attempt in range(max_retries):
 Some endpoints expose explicit pagination fields:
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import accounting
 
-init_api_client("your_site")
+client = get_api_client()
 page_1 = accounting.get_invoices(policy_id="uuid", page_number=1, page_size=25)
 page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
 ```
@@ -257,11 +258,11 @@ page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
 Many wrappers support optional filters and ordering fields:
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 from britecore_libraries import logger
 
-init_api_client("your_site")
+client = get_api_client()
 risks = policies.retrieve_risks(
     revision_id="revision_uuid",
     page=0,
@@ -279,10 +280,10 @@ For bulk operations, use loops rather than batch endpoints (most don't exist):
 
 ```python
 from britecore_libraries import logger
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
-init_api_client("your_site")
+client = get_api_client()
 policy_numbers = ["POL001", "POL002", "POL003"]
 
 for policy_number in policy_numbers:
@@ -292,7 +293,6 @@ for policy_number in policy_numbers:
         print(policy["id"])
     except Exception as e:
         logger.error(f"Failed for {policy_number}: {e}")
-
 ```
 
 ---
@@ -302,11 +302,11 @@ for policy_number in policy_numbers:
 ```python
 from datetime import datetime
 
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.models import BritecorePolicy
 from britecore_libraries.api.api_calls.v2 import policies
 
-init_api_client("your_site")
+client = get_api_client()
 policy_model = BritecorePolicy(policy_number="POL001", effective_date=datetime.now(), policy_type_id="type_1")
 api_payload = policy_model.to_dict()
 
@@ -323,10 +323,10 @@ response, revision_id = policies.create_policy(
 
 ```python
 from britecore_libraries.validators import EmailValidator, PhoneValidator
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import contacts
 
-init_api_client("your_site")
+client = get_api_client()
 email = EmailValidator.normalize_email("test@example.com")
 phone = PhoneValidator.normalize_phone("5551234567")
 
@@ -349,17 +349,16 @@ For workflows that return progress/status fields, poll retrieval endpoints:
 
 ```python
 import time
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import reports
 
-init_api_client("your_site")
+client = get_api_client()
 report_id = "report_uuid"
 for _ in range(60):
     status = reports.retrieve_report(report_id=report_id)
     if status.get("status") in {"completed", "failed"}:
         break
     time.sleep(5)
-```
 
 ---
 
@@ -369,6 +368,11 @@ For maintained runnable examples, see `examples/README.md` and
 `examples/basic_api_usage.py`.
 
 ---
+
+
+### About API Client Initialization
+
+The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 
 See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.md) for adding new endpoints.
 

@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+"""
+Shared CI script for type checking, linting, and testing.
+- Type checks: mypy
+- Lint: ruff, black (check only)
+- Tests: pytest (unit and coverage)
+
+Usage:
+  python scripts/ci_typecheck.py
+"""
+import subprocess
+import sys
+
+
+def run(cmd, desc):
+    print(f"\n=== {desc} ===")
+    result = subprocess.run(cmd, shell=True)
+    if result.returncode != 0:
+        print(f"FAILED: {desc}")
+        sys.exit(result.returncode)
+
+
+def main():
+    # Lint
+    run("ruff check src tests", "Lint (ruff)")
+    run("black --check src tests", "Format check (black)")
+    # Type check
+    run(
+        "mypy src/britecore_libraries/exceptions.py "
+        "src/britecore_libraries/api/britecore_api_client.py "
+        "src/britecore_libraries/api/britecore_async_api_client.py "
+        "src/britecore_libraries/api/britecore_oauth_token_manager.py "
+        "src/britecore_libraries/api/request_cache.py "
+        "src/britecore_libraries/api/types.py "
+        "src/britecore_libraries/api/api_calls/v1 "
+        "src/britecore_libraries/api/api_calls/v2 "
+        "src/britecore_libraries/config/config.py "
+        "src/britecore_libraries/maps/__init__.py "
+        "src/britecore_libraries/models "
+        "src/britecore_libraries/validators "
+        "src/britecore_libraries/utils/britecore_odbc.py "
+        "src/britecore_libraries/utils/britecore_selenium.py",
+        "Type check (mypy)",
+    )
+    # Unit tests
+    run(
+        "pytest tests/unit -m unit --cov=src/britecore_libraries --cov-report=term-missing --cov-fail-under=60",
+        "Unit tests",
+    )
+
+if __name__ == "__main__":
+    main()
+

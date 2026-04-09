@@ -29,9 +29,7 @@ Related docs:
 ## Install
 
 ```powershell
-
 python -m pip install -e .
-
 ```
 
 API-only profile (recommended):
@@ -50,9 +48,7 @@ python -m pip install -e ".[all]"        # all optional extras
 Install development tooling when you plan to run tests:
 
 ```powershell
-
 python -m pip install -e ".[dev]"
-
 ```
 
 ## Configuration
@@ -60,10 +56,8 @@ python -m pip install -e ".[dev]"
 Set environment variables for the current shell session:
 
 ```powershell
-
 $env:target_site = "your_site"
 $env:system = "your_system"
-
 ```
 
 Configure site values in:
@@ -90,26 +84,21 @@ Optional utility notes:
 ## Smoke checks
 
 ```powershell
-
 python -c "import britecore_libraries; print(britecore_libraries.__version__)"
-
 python -c "from britecore_libraries.api.api_calls import get_api_client; print(type(get_api_client()).__name__)"
-
 ```
 
 ## First API call
 
 ```python
-
-from britecore_libraries.api.api_calls import init_api_client
+from britecore_libraries.api.api_calls import get_api_client
 from britecore_libraries.api.api_calls.v2 import policies
 
-# Explicitly initialize the shared client for your configured site.
-init_api_client("your_site")
+# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+client = get_api_client()
 
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
-
 ```
 
 ## Optional utility examples
@@ -133,34 +122,31 @@ For exact behavior, supported cache kwargs, and invalidation examples, use
 [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
 
 ```python
-
 import asyncio
 
 from britecore_libraries.api.api_calls import init_async_api_client
 from britecore_libraries.api.api_calls.v2 import aget_quote
 
 async def main() -> None:
-    # Explicitly initialize the shared async client for your configured site.
+    # Explicitly initialize the shared async client for your configured site (rarely needed; see docs for lazy pattern).
     init_async_api_client("your_site")
     quote = await aget_quote("quote_123")
     print(quote)
 
 asyncio.run(main())
-
-```
+---
 
 ## Run tests
 
 ```powershell
-
 python -m pytest tests/ -v
 python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v
-
 ```
 
-## Common issues
+## API Client Initialization Notes
 
+- The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 - API client initialization failures usually indicate missing `target_site` or site config.
 - Endpoint wrappers expect response normalization through `process_result(...)`; prefer using provided `v2` modules.
 - If policy name mapping behaves unexpectedly, verify `system` is set for regex map selection.
