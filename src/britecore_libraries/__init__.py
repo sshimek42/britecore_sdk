@@ -36,7 +36,7 @@ from britecore_libraries.constants import (
 
 # Exceptions
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps import load_regexes
+from britecore_libraries.maps import get_common_regexes, load_regexes
 
 # Core models
 from britecore_libraries.models import (
@@ -75,6 +75,7 @@ __all__ = [
     "DEFAULT_PHONE_TYPE",
     "COMMON_CITY_REPLACEMENT",
     "load_regexes",
+    "get_common_regexes",
     # API client helpers
     "get_api_client",
     "get_async_api_client",

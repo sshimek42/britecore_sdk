@@ -7,7 +7,7 @@ from typing import Any
 from britecore_libraries import logger
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps import load_regexes
+from britecore_libraries.maps import get_common_regexes
 
 LOGGER = logger
 
@@ -21,16 +21,15 @@ def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
 
     This function manages a global cache of compiled regular expressions to avoid
     recompiling them on each call. It initializes the cache if it hasn't been
-    populated yet by calling the load_regexes() function.
+    populated yet by calling the get_common_regexes() function.
 
     Returns:
         dict[str | Any, Pattern[str] | Any]: A dictionary containing compiled
-        regular expressions keyed by their names or identifiers. The values are
-        compiled regex patterns that can be used for pattern matching operations.
+        regular expressions keyed by their names or identifiers.
     """
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES, _name_groups = load_regexes()
+        _COMPILED_REGEXES = get_common_regexes()
     return _COMPILED_REGEXES
 
 
