@@ -12,33 +12,33 @@
 ```text
 
 ┌────────────────────────────────────────────────────────────┐
-│                    Application Layer                    │
-│          (Your code using BriteCore Libraries)          │
-└──────────────────────────────┬────────────────────────────┘
+│                    Application Layer                       │
+│          (Your code using BriteCore Libraries)             │
+└──────────────────────────────┬─────────────────────────────┘
                               │
                               ▼
 ┌────────────────────────────────────────────────────────────┐
-│                      Domain Layer                       │
-│   • Models         (Contact, Policy, Quote)             │
-│   • Validators     (Email, Phone, Address, Name)        │
-│   • Maps           (Regex patterns, Field mappings)     │
-└──────────────────────────────┬────────────────────────────┘
+│                      Domain Layer                          │
+│   • Models         (Contact, Policy, Quote)                │
+│   • Validators     (Email, Phone, Address, Name)           │
+│   • Maps           (Regex patterns, Field mappings)        │
+└──────────────────────────────┬─────────────────────────────┘
                               │
                               ▼
 ┌────────────────────────────────────────────────────────────┐
-│                        API Layer                        │
-│   • Endpoints        (current API + async wrappers)     │
-│   • Sync Client      (Request/Response handling)        │
-│   • Async Client     (TTL cache, in-flight dedup)       │
-│   • Auth             (API Key or OAuth2)                │
-└──────────────────────────────┬────────────────────────────┘
+│                        API Layer                           │
+│   • Endpoints        (current API + async wrappers)        │
+│   • Sync Client      (Request/Response handling)           │
+│   • Async Client     (TTL cache, in-flight dedup)          │
+│   • Auth             (API Key or OAuth2)                   │
+└──────────────────────────────┬─────────────────────────────┘
                               │
                               ▼
 ┌────────────────────────────────────────────────────────────┐
-│                  Infrastructure Layer                   │
-│   • Config         (Dynaconf, settings + secrets)       │
-│   • Utilities      (ODBC, Selenium, Menus)              │
-│   • Transport      (urllib3, OAuth token)               │
+│                  Infrastructure Layer                      │
+│   • Config         (Dynaconf, settings + secrets)          │
+│   • Utilities      (ODBC, Selenium, Menus)                 │
+│   • Transport      (urllib3, OAuth token)                  │
 └────────────────────────────────────────────────────────────┘
 
 ```
