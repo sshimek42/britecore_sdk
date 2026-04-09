@@ -5,7 +5,7 @@ from re import Pattern
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps import load_regexes
+from britecore_libraries.maps import get_common_regexes
 
 # Lazy-loaded regex patterns
 _COMPILED_REGEXES: dict[str, Pattern[str]] = {}
@@ -15,17 +15,13 @@ def _get_regexes() -> dict[str, Pattern[str]]:
     """
     Retrieve compiled regex patterns for parsing.
 
-    This function returns a dictionary of pre-compiled regular expressions
-    used for parsing various components of the input data. The regex patterns
-    are loaded once and cached for subsequent calls to improve performance.
-
     Returns:
         dict[str, Pattern[str]]: A dictionary mapping regex pattern names to
         their compiled regular expression objects.
     """
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES, _name_groups = load_regexes()
+        _COMPILED_REGEXES = get_common_regexes()
     return _COMPILED_REGEXES
 
 

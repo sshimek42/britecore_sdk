@@ -3,7 +3,7 @@
 import re
 from re import Pattern
 
-from britecore_libraries.maps import load_regexes
+from britecore_libraries.maps import get_common_regexes
 
 # Lazy-loaded from maps if needed
 _BUSINESS_NAME_REGEX: Pattern | None = None
@@ -14,7 +14,7 @@ def _get_regexes() -> dict[str, Pattern[str]]:
     """Lazy load compiled regexes from maps."""
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES, _name_groups = load_regexes()
+        _COMPILED_REGEXES = get_common_regexes()
     return _COMPILED_REGEXES
 
 

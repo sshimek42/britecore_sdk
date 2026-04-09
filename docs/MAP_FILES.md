@@ -1,74 +1,41 @@
-# Sensitive Map Files
+# Map Files
 
-Use this guide when maintaining private mapping data under `src/britecore_libraries/maps/`.
+> **Architecture note:** As of the April 2026 refactor, all client-specific
+> mapping data (agency, field, policy type) has been **removed from
+> `britecore_libraries`** and is now owned exclusively by `britecore_import`.
+> See `britecore_import/data/mappings/` and
+> `britecore_import/src/britecore_import/mappings/` for the current
+> source of truth.
 
-## Policy
+## What `britecore_libraries/maps/` now provides
 
-- Files matching `*_map.py` under `src/britecore_libraries/maps/` are treated as sensitive.
-- Do not commit real map content to GitHub.
+Only two public functions remain:
+
+| Function | Purpose |
+|---|---|
+| `get_common_regexes()` | Carrier-agnostic compiled regex patterns used by validators (address, email, name, phone). No env vars required. |
+| `load_regexes(system, overrides, naming_groups)` | Merges common patterns with caller-supplied carrier overrides. Carrier data is injected by `britecore_import.mappings.RegexMappings`. |
+
+## Where mapping data now lives (in `britecore_import`)
+
+| Data | File | Access class |
+|---|---|---|
+| Agency name → UUID | `data/mappings/agency_mappings.toml` | `AgencyMappings` |
+| Carrier field → BriteCore field | `data/mappings/field_mappings.toml` | `FieldMappings` |
+| Policy type code → UUID | `data/mappings/policy_type_mappings.toml` | `PolicyTypeMappings` |
+| System regex overrides + name groups | `mappings/regex_mappings.py` | `RegexMappings` |
+
+## Security policy (unchanged)
+
+- TOML map files under `data/mappings/` are treated as sensitive — do not commit real UUIDs or agency names to public repos.
 - Keep private map files only in local or internal deployment environments.
-
-## Sample file formats
-
-The examples below show expected structures only. Use placeholder values in committed examples and real values only in private copies.
-
-### Agency map sample
-
-```python
-# Example structure only
-agency: dict[str, str] = {
-    "example agency llc": "11111111-1111-1111-1111-111111111111",
-    "example agency": "11111111-1111-1111-1111-111111111111",
-    "another agency": "22222222-2222-2222-2222-222222222222",
-}
-```
-
-### Field map sample
-
-```python
-# Example structure only
-field_map: dict[str, str] = {
-    "external_field_name": "britecore_field_name",
-    "agent_code": "agency_id",
-    "policy_no": "policy_number",
-}
-```
-
-### Policy map sample
-
-```python
-# Example structure only
-policy: dict[str, str] = {
-    "homeowners": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    "dwelling_fire": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-}
-```
-
-### Policy name regex map sample
-
-```python
-import re
-
-# Example structure only
-REGEX_MAPS: dict[str, dict[str, re.Pattern[str]]] = {
-    "example_system": {
-        "reg_zip": re.compile(r"[^0-9]"),
-        "reg_city_state": re.compile(r"\s{2,}"),
-    }
-}
-
-
-def load_regexes(system: str) -> dict[str, re.Pattern[str]]:
-    return REGEX_MAPS.get(system, {})
-```
-
-## Deployment checklist for private maps
-
-- Keep real `*_map.py` files in private environments only.
-- Validate imports in your runtime image before deployment.
 - Do not store map payloads in public CI logs or artifacts.
 - Rotate sensitive IDs if a private map file is ever exposed.
 
-## Notes for existing repositories
+## Adding a new carrier system
 
-If sensitive `*_map.py` files were already tracked, add the ignore rules and remove them from Git index history in your remediation workflow.
+1. Add field mappings to `data/mappings/field_mappings.toml` under a new `[system_name]` section.
+2. Add agency/policy mappings to the corresponding TOML files.
+3. Add regex overrides and naming groups to `mappings/regex_mappings.py` (`_SYSTEM_OVERRIDES` and `_SYSTEM_NAMING_GROUPS`).
+4. Register the mutual in `settings/settings.toml` and `Settings._parse_mutuals()`.
+

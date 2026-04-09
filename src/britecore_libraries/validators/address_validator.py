@@ -8,7 +8,7 @@ from typing import Any, cast
 from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.maps import load_regexes
+from britecore_libraries.maps import get_common_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
 
 LOGGER = logger
@@ -93,7 +93,7 @@ def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
 
     This function manages a global cache of compiled regular expressions to avoid
     recompiling them on each call. It initializes the cache if it hasn't been
-    populated yet by calling the load_regexes() function.
+    populated yet by calling the get_common_regexes() function.
 
     Returns:
         Dict: A dictionary containing compiled regular expressions that can be
@@ -101,7 +101,7 @@ def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
     """
     global _COMPILED_REGEXES
     if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES, _name_groups = load_regexes()
+        _COMPILED_REGEXES = get_common_regexes()
     return _COMPILED_REGEXES
 
 
