@@ -37,6 +37,7 @@ def _get_initialized_client(mock_settings):
         mock_loader_instance = MagicMock()
         mock_loader_instance.load_config.return_value = mock_settings
         mock_loader.return_value = mock_loader_instance
+        api_calls.init_api_client(target_site="test_site")
         return api_calls.get_api_client()
 
 
@@ -482,7 +483,7 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_get_quote_success(self, env_api_key, mock_settings):
         """Test successful quote retrieval."""
-        from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls import get_api_client, init_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
 
         mock_response = _make_response(
@@ -496,7 +497,9 @@ class TestQuotesEndpoints:
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
 
+            init_api_client(target_site="test_site")
             client = get_api_client()
+
             with (
                 patch.object(client, "do_request", return_value=mock_response),
                 patch.object(
@@ -512,7 +515,7 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_get_quote_no_response(self, env_api_key, mock_settings):
         """Test quote retrieval when API returns None."""
-        from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls import get_api_client, init_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
 
         with patch(
@@ -522,6 +525,7 @@ class TestQuotesEndpoints:
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
 
+            init_api_client(target_site="test_site")
             client = get_api_client()
             with (
                 patch.object(client, "do_request", return_value=None),
@@ -537,7 +541,7 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_create_full_quote_success(self, env_api_key, mock_settings):
         """Test successful full quote creation."""
-        from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls import get_api_client, init_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
 
         quote_json = {"carrier": "ACME", "coverage": "Liability"}
@@ -552,6 +556,7 @@ class TestQuotesEndpoints:
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
 
+            init_api_client(target_site="test_site")
             client = get_api_client()
             with (
                 patch.object(client, "do_request", return_value=mock_response),
@@ -570,7 +575,7 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_create_full_quote_no_data(self, env_api_key, mock_settings):
         """Test create_full_quote when API returns no data."""
-        from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls import get_api_client, init_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
 
         quote_json = {"carrier": "ACME"}
@@ -582,6 +587,7 @@ class TestQuotesEndpoints:
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
 
+            init_api_client(target_site="test_site")
             client = get_api_client()
             with (
                 patch.object(client, "do_request", return_value=None),
@@ -595,7 +601,7 @@ class TestQuotesEndpoints:
     @pytest.mark.unit
     def test_create_full_quote_returns_tuple(self, env_api_key, mock_settings):
         """Test create_full_quote returns a tuple of (data, id)."""
-        from britecore_libraries.api.api_calls import get_api_client
+        from britecore_libraries.api.api_calls import get_api_client, init_api_client
         from britecore_libraries.api.api_calls.v2 import quotes
 
         quote_json = {"carrier": "ACME"}
@@ -608,6 +614,7 @@ class TestQuotesEndpoints:
             mock_loader_instance.load_config.return_value = mock_settings
             mock_loader.return_value = mock_loader_instance
 
+            init_api_client(target_site="test_site")
             client = get_api_client()
             with (
                 patch.object(client, "do_request", return_value=mock_response),

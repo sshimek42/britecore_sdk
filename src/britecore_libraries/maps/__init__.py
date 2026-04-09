@@ -11,15 +11,13 @@ This module provides two things:
 2. ``load_regexes(system, overrides, naming_groups)`` – returns the common
    patterns extended with caller-supplied, carrier-specific overrides and
    naming-group index maps.  The carrier-specific content belongs in the
-   consuming project (e.g. ``britecore_import.mappings.RegexMappings``); this
-   function just merges and returns the combined result.
+   consuming project; this function just merges and returns the combined result.
 
 Data maps (agency, field, policy type) were previously bundled here as
 ``britecore_agency_map.py``, ``britecore_field_map.py``, and
-``britecore_policy_map.py``.  Those files have been removed — all mapping data
-is now owned by ``britecore_import`` (loaded from TOML files under
-``data/mappings/`` via ``AgencyMappings``, ``FieldMappings``, and
-``PolicyTypeMappings``).
+``britecore_policy_map.py``.  Those files have been removed — carrier-specific mapping data
+is no longer included in this package. If you require such mappings, manage them in your own
+deployment or integration layer.
 """
 
 import os
@@ -28,7 +26,6 @@ from logging import getLogger
 from typing import Any
 
 LOGGER = getLogger(__name__)
-
 
 
 def get_common_regexes() -> dict[str, re.Pattern[str] | Any]:

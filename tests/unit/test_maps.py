@@ -49,9 +49,9 @@ class TestGetCommonRegexes:
         result = get_common_regexes()
         for key, val in result.items():
             if key != "street_name_replacement":
-                assert isinstance(val, re.Pattern), (
-                    f"Expected compiled Pattern for key {key!r}, got {type(val)}"
-                )
+                assert isinstance(
+                    val, re.Pattern
+                ), f"Expected compiled Pattern for key {key!r}, got {type(val)}"
 
 
 class TestLoadRegexes:
@@ -149,6 +149,3 @@ class TestMapsPublicExports:
 
         for name in maps_mod.__all__:
             assert hasattr(maps_mod, name), f"__all__ entry missing from module: {name}"
-
-
-

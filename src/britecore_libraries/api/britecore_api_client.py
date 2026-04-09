@@ -1,6 +1,6 @@
 """Wrapper for BriteCore API calls"""
 
-import os
+# ...existing code...
 import time
 import uuid
 from json import JSONDecodeError, dumps, loads
@@ -38,23 +38,19 @@ class LoadClientSettings:
         """
         Initialize the object with a target site.
 
-        This constructor sets up the target site for the object. If no target site is
-        provided during initialization, it attempts to retrieve the site from the
-        environment variable 'target_site'. If the environment variable is not found,
-        an error will be logged.
+        This constructor sets up the target site for the object. The target site must be
+        provided explicitly; no environment variable fallback is allowed.
 
         Args:
-            target_site: The target site to be set. If None or empty, the value will be
-                retrieved from the 'target_site' environment variable.
+            target_site: The target site to be set. Must not be None or empty.
 
         Raises:
-            KeyError: If the 'target_site' environment variable is not set and no
-                target_site is provided during initialization.
+            ValueError: If no target_site is provided during initialization.
         """
         if not target_site:
-            target_site = os.environ.get("target_site") or ""
-            if not target_site:
-                LOGGER.error("Missing environment variable 'target_site'")
+            raise ValueError(
+                "target_site must be specified explicitly; environment fallback is not allowed."
+            )
         self.target_site: str = target_site
 
     def load_config(self) -> Any:
@@ -115,8 +111,20 @@ class BritecoreAPIClient:
     process without interfering with each other.
     """
 
-    def __init__(self, target_site: str | None) -> None:
-        """Initialize client state; call ``init_client`` before making requests."""
+    def __init__(self, target_site: str) -> None:
+        """
+        Initialize client state; call ``init_client`` before making requests.
+
+        Args:
+            target_site: The target site to be set. Must not be None or empty.
+
+        Raises:
+            ValueError: If no target_site is provided during initialization.
+        """
+        if not target_site:
+            raise ValueError(
+                "target_site must be specified explicitly; environment fallback is not allowed."
+            )
         self.api_key: str | None = None
         self.token_class: OAuthToken | None = None
         self.use_api_key: bool | None = None
@@ -142,12 +150,13 @@ class BritecoreAPIClient:
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
             BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
+            ValueError: If target_site is not specified.
         """
         target_site = self.target_site
-
         if not target_site:
-            raise BritecoreError.NoSiteError("No site has been specified")
-
+            raise ValueError(
+                "target_site must be specified explicitly; environment fallback is not allowed."
+            )
         self.site_settings = LoadClientSettings(target_site).load_config()
 
         self.enable_timers = True
@@ -161,7 +170,8 @@ class BritecoreAPIClient:
         else:
             raise BritecoreError.BritecoreKeyError(
                 "base_url not configured. Please set base_url in your "
-                "settings.toml or .secrets.toml file."
+                "settings.toml or .secrets.toml file.\n"
+                "Tip: To check your site configuration, run: python -m britecore_libraries.utils.check_site_configs"
             )
 
         self.web_timeout = self.site_settings.web_timeout
@@ -197,7 +207,8 @@ class BritecoreAPIClient:
             except AttributeError as attribute_error:
                 raise BritecoreError.BritecoreKeyError(
                     "api_key not found. Please set the api_key in your "
-                    ".secrets.toml file."
+                    ".secrets.toml file.\n"
+                    "Tip: To check your site configuration, run: python -m britecore_libraries.utils.check_site_configs"
                 ) from attribute_error
             self.token_class = None
         else:

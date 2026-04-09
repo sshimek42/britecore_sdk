@@ -36,7 +36,6 @@ class TestLineMenu:
 
         assert result == {
             "line": ("date-1", "state-1", "line-1"),
-            "line_type": "Line",
             "line_name": "Homeowners",
         }
         select_mock.assert_called_once()
@@ -71,7 +70,7 @@ class TestLineMenu:
         result = interactive_menu.line_menu()
 
         assert result["line"][0] == "date-1"
-        assert result["line_type"] == "Line"
+        # line_type is no longer present
 
     @pytest.mark.unit
     def test_line_menu_falls_back_when_questionary_console_unavailable(
@@ -102,7 +101,6 @@ class TestLineMenu:
 
         assert result == {
             "line": ("date-2", "state-1", "line-1"),
-            "line_type": "Line",
             "line_name": "Homeowners",
         }
 
@@ -116,8 +114,8 @@ class TestLinesExports:
         assert not hasattr(lines_module, "line_menu")
 
     @pytest.mark.unit
-    def test_get_export_line_file_accepts_lines_alias(self, monkeypatch):
-        """get_export_line_file accepts line_type='lines' (plural)."""
+    def test_get_export_line_file_accepts_line_tuple(self, monkeypatch):
+        """get_export_line_file accepts a line tuple and returns parsed result."""
         fake_client = MagicMock()
         fake_client.do_request.return_value = MagicMock()
         fake_client.process_result.return_value = '{"ok": true}'
@@ -125,8 +123,6 @@ class TestLinesExports:
 
         result = lines_module.get_export_line_file(
             line=("date-1", "state-1", "line-1"),
-            line_type="lines",
-            line_name="Homeowners",
         )
 
         assert result == {"ok": True}

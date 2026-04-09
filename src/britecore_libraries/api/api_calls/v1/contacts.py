@@ -4,7 +4,7 @@ from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
-from britecore_libraries import logger
+from britecore_libraries import BritecoreError, logger
 from britecore_libraries.api.api_calls import (
     BritecoreAPIClient,
     RequestParameters,
@@ -44,7 +44,7 @@ def retrieve_contact_list(
     Raises:
         Any exceptions raised by the underlying API client or HTTP request
     """
-    contact_request_json: dict[str, str] = {
+    contact_request_json: dict[str, str | None] = {
         "searchString": search_str,
         "filter": search_filter,
         "currentPage": current_page,
@@ -55,9 +55,12 @@ def retrieve_contact_list(
 
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v1/contacts/retrieveContactList",
-        json=contact_request_json,
+        json={k: v for k, v in contact_request_json.items() if v is not None},
         **kwargs,
     )
+
+    if request_result is None or not hasattr(request_result, "data"):
+        raise BritecoreError.NoDataReturned("No response from contact list API")
 
     contact_json: Any = loads(request_result.data.decode("utf-8"))
 

@@ -1,4 +1,4 @@
-import os
+# ...existing code...
 from typing import cast
 
 from britecore_libraries.api.britecore_api_client import (
@@ -29,9 +29,12 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
+    if not target_site:
+        raise BritecoreError.ConfigurationError(
+            "target_site must be specified explicitly; environment fallback is not allowed."
+        )
     global _api_client
-    resolved_target_site = target_site or os.environ.get("target_site")
-    client: BritecoreAPIClient = BritecoreAPIClient(resolved_target_site)
+    client: BritecoreAPIClient = BritecoreAPIClient(target_site)
     client.init_client()
     _api_client = client
     return client
@@ -43,9 +46,12 @@ def init_async_api_client(target_site: str | None = None) -> AsyncBritecoreAPICl
     Also sets the module-level ``_async_api_client`` so the lazy proxy resolves
     to this instance rather than re-initialising without a site on first use.
     """
+    if not target_site:
+        raise BritecoreError.ConfigurationError(
+            "target_site must be specified explicitly; environment fallback is not allowed."
+        )
     global _async_api_client
-    resolved_target_site = target_site or os.environ.get("target_site")
-    client = AsyncBritecoreAPIClient(resolved_target_site)
+    client = AsyncBritecoreAPIClient(target_site)
     _async_api_client = client
     return client
 
@@ -69,7 +75,10 @@ def get_api_client() -> BritecoreAPIClient:
     """
     global _api_client
     if _api_client is None:
-        _api_client = init_api_client()
+        raise BritecoreError.ConfigurationError(
+            "API client has not been initialized. Call init_api_client(target_site=...) first.\n"
+            "Tip: To check your site configuration, run: python -m britecore_libraries.utils.check_site_configs"
+        )
     if _api_client is None:
         raise BritecoreError.Base(
             "API client initialization returned None; check configuration"
@@ -89,7 +98,9 @@ def get_async_api_client() -> AsyncBritecoreAPIClient:
     """
     global _async_api_client
     if _async_api_client is None:
-        _async_api_client = init_async_api_client()
+        raise BritecoreError.ConfigurationError(
+            "Async API client has not been initialized. Call init_async_api_client(target_site=...) first."
+        )
     if _async_api_client is None:
         raise BritecoreError.Base(
             "Async API client initialization returned None; check configuration"

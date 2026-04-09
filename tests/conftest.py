@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -139,3 +139,25 @@ def env_no_system(monkeypatch):
     monkeypatch.delenv("system", raising=False)
     yield
     monkeypatch.delenv("system", raising=False)
+
+
+@pytest.fixture(autouse=True)
+def mock_api_client(monkeypatch):
+    """
+    Autouse fixture to mock Britecore API client initialization and singleton for all tests.
+    Prevents ConfigurationError due to missing config and allows API calls to be intercepted.
+    """
+    # Patch init_api_client to do nothing and return a MagicMock
+    with patch(
+        "britecore_libraries.api.api_calls.init_api_client", return_value=MagicMock()
+    ):
+        # Patch api_client singleton to a MagicMock
+        with patch(
+            "britecore_libraries.api.api_calls.api_client", new_callable=MagicMock
+        ) as mock_client:
+            # Patch get_api_client to return the MagicMock
+            with patch(
+                "britecore_libraries.api.api_calls.get_api_client",
+                return_value=mock_client,
+            ):
+                yield

@@ -471,12 +471,11 @@ class TestInitClientConfigErrors:
         assert "base_url" in str(exc_info.value).lower()
 
     @pytest.mark.unit
-    def test_no_site_raises_no_site_error(self):
+    def test_no_site_raises_value_error(self):
         from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
 
-        client = BritecoreAPIClient(None)
-        with pytest.raises(BritecoreError.NoSiteError):
-            client.init_client()
+        with pytest.raises(ValueError):
+            BritecoreAPIClient(None)
 
     @pytest.mark.unit
     def test_defaults_applied_when_timeout_missing(self, env_api_key, mock_settings):

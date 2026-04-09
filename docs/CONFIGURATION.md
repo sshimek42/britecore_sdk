@@ -97,12 +97,12 @@ web_browser = "Edge"
 
 ### Automatic (Recommended)
 
-```python
-from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
 
-# Loads from settings.toml + .secrets.toml automatically
-client = BritecoreAPIClient(target_site="example_site")
-client.init_client()
+```python
+# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+from britecore_libraries.api.api_calls import get_api_client
+
+client = get_api_client()
 ```
 
 **What happens:**
@@ -111,10 +111,11 @@ client.init_client()
 2. Dynaconf merges `settings.toml` + `.secrets.toml` + environment variables
 3. Secrets override public settings
 
-### Via `get_api_client()` (Lazy)
+
+### Via `get_api_client()` (Lazy, Recommended)
 
 ```python
-from britecore_libraries import get_api_client
+from britecore_libraries.api.api_calls import get_api_client
 
 # Lazy initialization -- config is loaded on first use
 client = get_api_client()
@@ -228,13 +229,8 @@ menu so line/date/state selection still works.
 
 ## Validation
 
-When you call `client.init_client()`, Dynaconf validates required keys:
 
-```python
-client = BritecoreAPIClient("example_site")
-client.init_client()
-# Raises BritecoreError if base_url or auth credentials are missing
-```
+When you call `client.init_client()`, Dynaconf validates required keys. This is only needed for advanced/manual scenarios. For most use cases, prefer `get_api_client()`.
 
 **Common errors:**
 
@@ -301,7 +297,7 @@ python app.py
 - Set `BRITECORE_LIBRARIES_BASE_URL` for the target BriteCore instance.
 - Choose one auth mode: either set `BRITECORE_LIBRARIES_API_KEY`, or set both `BRITECORE_LIBRARIES_CLIENT_ID` and `BRITECORE_LIBRARIES_CLIENT_SECRET`.
 - Store production secrets in a secrets manager (Vault, AWS Secrets Manager, etc.), not in committed files.
-- Verify startup with a minimal init check (`get_api_client()` or `BritecoreAPIClient(...).init_client()`) before serving traffic.
+- Verify startup with a minimal init check (`get_api_client()`) before serving traffic. Use `BritecoreAPIClient(...).init_client()` only for advanced/manual scenarios.
 
 ## Troubleshooting
 
@@ -383,6 +379,30 @@ python app.py
     client = BritecoreAPIClient("mysite")
     client.init_client()
     ```
+
+## Private Maps Behavior
+
+Some features in britecore_libraries rely on map files (such as policy, field, or agency maps) located in `src/britecore_libraries/maps/`. These files provide environment-specific mappings and are selected at runtime based on environment variables.
+
+- **Map file selection:**
+  - The environment variable `system` determines which map file is loaded (e.g., `britecore_policy_name_map.py`).
+  - If `system` is not set, the SDK may fall back to a default map or raise an error, depending on the utility.
+  - If the required map file is missing, a `BritecoreError.KeyError` or similar will be raised.
+
+- **Required environment variables:**
+  - `system` (selects the map variant)
+  - `target_site` (for config loading, may also affect map selection)
+
+- **Fallback behavior:**
+  - If a map file for the specified `system` is not found, the SDK may:
+    - Use a default map (if implemented)
+    - Raise a configuration or key error
+  - Always check logs for details if a map is missing or an env var is unset.
+
+- **Troubleshooting:**
+  - Ensure the correct `system` value is set in your environment.
+  - Verify that the corresponding map file exists in `src/britecore_libraries/maps/`.
+  - If you see errors about missing maps or unset variables, set the required env vars and restart your process.
 
 ## See Also
 

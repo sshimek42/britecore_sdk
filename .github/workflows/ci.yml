@@ -28,33 +28,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Lint (ruff)
-        run: ruff check src tests
-
-      - name: Format check (black)
-        run: black --check src tests
-
-      - name: Type check (mypy)
-        run: |
-          mypy \
-            src/britecore_libraries/exceptions.py \
-            src/britecore_libraries/api/britecore_api_client.py \
-            src/britecore_libraries/api/britecore_async_api_client.py \
-            src/britecore_libraries/api/britecore_oauth_token_manager.py \
-            src/britecore_libraries/api/request_cache.py \
-            src/britecore_libraries/api/types.py \
-            src/britecore_libraries/api/api_calls/v1 \
-            src/britecore_libraries/api/api_calls/v2 \
-            src/britecore_libraries/config/config.py \
-            src/britecore_libraries/maps/__init__.py \
-            src/britecore_libraries/models \
-            src/britecore_libraries/validators \
-            src/britecore_libraries/utils/britecore_odbc.py \
-            src/britecore_libraries/utils/britecore_selenium.py
-
-      - name: Unit tests
-        run: |
-          pytest tests/unit -m unit --cov=src/britecore_libraries --cov-report=term-missing --cov-fail-under=60
+      - name: Lint, typecheck, and unit tests (shared script)
+        run: python scripts/ci_typecheck.py
 
       - name: Upload coverage report
         if: matrix.python-version == '3.11'

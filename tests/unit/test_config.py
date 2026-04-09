@@ -17,13 +17,13 @@ class TestLoadClientSettings:
         assert loader.target_site == "test_site"
 
     @pytest.mark.unit
-    def test_init_with_env_variable(self, monkeypatch):
-        """Test initialization from environment variable."""
+    def test_init_with_env_variable_raises(self, monkeypatch):
+        """Test that initialization without explicit target_site raises error."""
         from britecore_libraries.config.config import LoadClientSettings
 
         monkeypatch.setenv("target_site", "env_site")
-        loader = LoadClientSettings(None)
-        assert loader.target_site == "env_site"
+        with pytest.raises(ValueError):  # Specify the expected exception type
+            LoadClientSettings(None)
 
     @pytest.mark.unit
     def test_load_config_merges_default(self, mock_settings):
