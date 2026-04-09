@@ -505,7 +505,9 @@ async def anew_revision_contact(
             **request_kwargs,
         )
         if request_result is None:
-            raise RuntimeError("ado_request returned None for anew_revision_contact (new_revision_contact)")
+            raise RuntimeError(
+                "ado_request returned None for anew_revision_contact (new_revision_contact)"
+            )
         contact_add_result = await API_CLIENT.aprocess_result(request_result)
     else:
         contact_add_result = {"x_revisions_contact_id": x_id}
@@ -522,10 +524,14 @@ async def anew_revision_contact(
             **request_kwargs,
         )
         if request_result is None:
-            raise RuntimeError("ado_request returned None for anew_revision_contact (update_revision_contact)")
+            raise RuntimeError(
+                "ado_request returned None for anew_revision_contact (update_revision_contact)"
+            )
 
     if request_result is None:
-        raise RuntimeError("ado_request returned None for anew_revision_contact (final)")
+        raise RuntimeError(
+            "ado_request returned None for anew_revision_contact (final)"
+        )
     return await API_CLIENT.aprocess_result(request_result)
 
 
