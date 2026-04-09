@@ -64,6 +64,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   PY-D0003, E1121) addressed via targeted refactoring and configuration.
 - Markdown lint formatting (MD012, MD031, MD032, MD040, MD060) across all
   docs.
+- Added 'toml' as a required dependency in pyproject.toml for Python 3.11+ compatibility. This resolves CI failures due to missing toml when running utility scripts and tests that require it.
 
 ---
 
