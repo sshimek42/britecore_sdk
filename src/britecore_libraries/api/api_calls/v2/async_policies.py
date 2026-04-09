@@ -96,6 +96,8 @@ async def aretrieve_policy(
             request_kwargs, cache_key_parts=[part for part in cache_parts if part]
         ),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aretrieve_policy")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -133,6 +135,8 @@ async def aadd_line_item(
         json=line_add_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aadd_line_item")
     line_json = await API_CLIENT.aprocess_result(request_result)
     if line_json is not None:
         LOGGER.debug(line_json["added_items"])
@@ -243,6 +247,8 @@ async def acreate_policy(
         json=policy_request_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for acreate_policy")
     policy_json = await API_CLIENT.aprocess_result(request_result)
     return policy_json, policy_json["revision_id"]
 
@@ -266,7 +272,7 @@ async def aretrieve_policy_terms(
         )
 
     client = await API_CLIENT.aget_client()
-    parameter_list: list[dict[str, str]] = [
+    parameter_list: list[dict[str, str | None]] = [
         {"policy_id": policy_id},
         {"policy_number": policy_number},
     ]
@@ -286,6 +292,8 @@ async def aretrieve_policy_terms(
             dict(kwargs), cache_key_parts=[p for p in cache_parts if p]
         ),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aretrieve_policy_terms")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -303,6 +311,8 @@ async def arate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) 
         json={"revision_id": revision_id},
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for arate_revision")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -334,6 +344,8 @@ async def aretrieve_revision_details(
             ],
         ),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aretrieve_revision_details")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -380,6 +392,8 @@ async def aretrieve_risks(
         json=revision_retrieve_json,
         **_apply_policy_read_cache(dict(kwargs), cache_key_parts=cache_parts),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aretrieve_risks")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -401,6 +415,8 @@ async def aretrieve_risk_details(
             dict(kwargs), cache_key_parts=[f"risk_id:{risk_id}"]
         ),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aretrieve_risk_details")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -434,6 +450,8 @@ async def aupdate_rating_information(
         json=revision_retrieve_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aupdate_rating_information")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -450,6 +468,8 @@ async def arate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
         json={"risk_id": risk_id},
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for arate_risk")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -484,6 +504,8 @@ async def anew_revision_contact(
             json=contact_add_json,
             **request_kwargs,
         )
+        if request_result is None:
+            raise RuntimeError("ado_request returned None for anew_revision_contact (new_revision_contact)")
         contact_add_result = await API_CLIENT.aprocess_result(request_result)
     else:
         contact_add_result = {"x_revisions_contact_id": x_id}
@@ -499,7 +521,11 @@ async def anew_revision_contact(
             json=update_revision_json,
             **request_kwargs,
         )
+        if request_result is None:
+            raise RuntimeError("ado_request returned None for anew_revision_contact (update_revision_contact)")
 
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for anew_revision_contact (final)")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -532,6 +558,8 @@ async def acreate_risk(
         json=risk_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for acreate_risk")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -566,6 +594,8 @@ async def aupdate_property_location(
         json=prop_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aupdate_property_location")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -582,6 +612,8 @@ async def anew_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) 
         json={"property_id": property_id},
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for anew_mortgagee")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -605,6 +637,8 @@ async def astore_mortgagee(
         },
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for astore_mortgagee")
     return await API_CLIENT.aprocess_result(request_result)
 
 
@@ -630,6 +664,8 @@ async def aretrieve_policy_snapshot(
             ],
         ),
     )
+    if request_result is None:
+        raise RuntimeError("ado_request returned None for aretrieve_policy_snapshot")
     return await API_CLIENT.aprocess_result(request_result)
 
 

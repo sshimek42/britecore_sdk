@@ -126,8 +126,8 @@ def line_menu(
     get_dates: Any = API_CLIENT.process_result(request_result)
 
     LOGGER.debug("Getting states")
-    menu_options: dict[str, str] = {}
-    menu_default: str = ""
+    date_menu_options: dict[str, str] = {}
+    date_menu_default: str = ""
     for make_menu in get_dates:
         # Prefer explicit effective_date in menus; fall back for older payloads.
         date_label = (
@@ -135,9 +135,9 @@ def line_menu(
             or make_menu.get("description")
             or str(make_menu.get("id"))
         )
-        menu_options.update({date_label: make_menu["id"]})
-        menu_default = date_label
-    eff_date = print_menu("Date", menu_options, menu_default)
+        date_menu_options.update({date_label: make_menu["id"]})
+        date_menu_default = date_label
+    eff_date = print_menu("Date", date_menu_options, date_menu_default)
     eff_date_json: dict[str, str | list[str]] | None = {
         "effective_date_id": eff_date[0]
     }
@@ -147,11 +147,12 @@ def line_menu(
     )
     get_states: Any = API_CLIENT.process_result(request_result)
 
-    menu_options = {}
+    state_menu_options: dict[str, str] = {}
+    state_menu_default: str = ""
     for make_menu in get_states:
-        menu_options.update({make_menu["name"]: make_menu["id"]})
-        menu_default = make_menu["name"]
-    eff_state = print_menu("State", menu_options, menu_default)
+        state_menu_options.update({make_menu["name"]: make_menu["id"]})
+        state_menu_default = make_menu["name"]
+    eff_state = print_menu("State", state_menu_options, state_menu_default)
     eff_state_json: dict[str, str | list[str]] = {
         "effective_date_id": eff_date[0],
         "location_id": eff_state[0],
@@ -161,12 +162,12 @@ def line_menu(
         path="/api/v2/lines/get_all_lines", json=eff_state_json, **kwargs
     )
     all_lines: Any = API_CLIENT.process_result(request_result)
-    menu_options: dict[str, str] = {}
-    menu_name: list[str] = []
+    line_menu_options: dict[str, str] = {}
+    line_menu_names: list[str] = []
     for make_menu in all_lines:
-        menu_options.update({make_menu["name"]: make_menu["id"]})
-        menu_name.append(make_menu["name"])
-    eff_line = print_menu("Line", menu_options, menu_name[0])
+        line_menu_options.update({make_menu["name"]: make_menu["id"]})
+        line_menu_names.append(make_menu["name"])
+    eff_line = print_menu("Line", line_menu_options, line_menu_names[0])
 
     return {
         "line": (eff_date[0], eff_state[0], eff_line[0]),
