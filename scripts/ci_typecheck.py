@@ -11,41 +11,55 @@ Usage:
 
 import subprocess
 import sys
+from collections.abc import Sequence
 
 
-def run(cmd, desc):
+def run(cmd: Sequence[str], desc: str) -> None:
     print(f"\n=== {desc} ===")
-    result = subprocess.run(cmd, shell=True)
+    result = subprocess.run(cmd, check=False)
     if result.returncode != 0:
         print(f"FAILED: {desc}")
         sys.exit(result.returncode)
 
 
-def main():
+def main() -> None:
     # Lint
-    run("ruff check src tests", "Lint (ruff)")
-    run("black --check src tests", "Format check (black)")
+    run(["ruff", "check", "src", "tests"], "Lint (ruff)")
+    run(["black", "--check", "src", "tests"], "Format check (black)")
+
     # Type check
     run(
-        "mypy src/britecore_libraries/exceptions.py "
-        "src/britecore_libraries/api/britecore_api_client.py "
-        "src/britecore_libraries/api/britecore_async_api_client.py "
-        "src/britecore_libraries/api/britecore_oauth_token_manager.py "
-        "src/britecore_libraries/api/request_cache.py "
-        "src/britecore_libraries/api/types.py "
-        "src/britecore_libraries/api/api_calls/v1 "
-        "src/britecore_libraries/api/api_calls/v2 "
-        "src/britecore_libraries/config/config.py "
-        "src/britecore_libraries/maps/__init__.py "
-        "src/britecore_libraries/models "
-        "src/britecore_libraries/validators "
-        "src/britecore_libraries/utils/britecore_odbc.py "
-        "src/britecore_libraries/utils/britecore_selenium.py",
+        [
+            "mypy",
+            "src/britecore_libraries/exceptions.py",
+            "src/britecore_libraries/api/britecore_api_client.py",
+            "src/britecore_libraries/api/britecore_async_api_client.py",
+            "src/britecore_libraries/api/britecore_oauth_token_manager.py",
+            "src/britecore_libraries/api/request_cache.py",
+            "src/britecore_libraries/api/types.py",
+            "src/britecore_libraries/api/api_calls/v1",
+            "src/britecore_libraries/api/api_calls/v2",
+            "src/britecore_libraries/config/config.py",
+            "src/britecore_libraries/maps/__init__.py",
+            "src/britecore_libraries/models",
+            "src/britecore_libraries/validators",
+            "src/britecore_libraries/utils/britecore_odbc.py",
+            "src/britecore_libraries/utils/britecore_selenium.py",
+        ],
         "Type check (mypy)",
     )
+
     # Unit tests
     run(
-        "pytest tests/unit -m unit --cov=src/britecore_libraries --cov-report=term-missing --cov-fail-under=60",
+        [
+            "pytest",
+            "tests/unit",
+            "-m",
+            "unit",
+            "--cov=src/britecore_libraries",
+            "--cov-report=term-missing",
+            "--cov-fail-under=60",
+        ],
         "Unit tests",
     )
 

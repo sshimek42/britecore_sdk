@@ -73,7 +73,6 @@ def get_api_client() -> BritecoreAPIClient:
         BritecoreError.Base: If lazy initialization fails.
         Any exceptions from BritecoreAPIClient.init_client() if initialization fails.
     """
-    global _api_client
     if _api_client is None:
         raise BritecoreError.ConfigurationError(
             "API client has not been initialized. Call init_api_client(target_site=...) first.\n"
@@ -96,7 +95,6 @@ def get_async_api_client() -> AsyncBritecoreAPIClient:
     Raises:
         BritecoreError.Base: If lazy initialization fails.
     """
-    global _async_api_client
     if _async_api_client is None:
         raise BritecoreError.ConfigurationError(
             "Async API client has not been initialized. Call init_async_api_client(target_site=...) first."

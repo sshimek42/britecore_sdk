@@ -2,6 +2,8 @@
 Run all repository health/config/data checks for local dev and CI.
 """
 
+# pylint: disable=cyclic-import
+
 import subprocess
 import sys
 

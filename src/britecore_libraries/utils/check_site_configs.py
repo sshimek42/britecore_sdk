@@ -36,7 +36,7 @@ def load_secrets(path: str) -> dict:
     return toml.load(path)
 
 
-def check_site(site: str, config: dict) -> tuple[bool, list[str]]:
+def check_site(_site: str, config: dict) -> tuple[bool, list[str]]:
     missing = []
     for key in REQUIRED_KEYS:
         if not config.get(key):
