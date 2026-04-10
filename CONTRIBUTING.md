@@ -48,7 +48,9 @@ pre-commit run --all-files
 Notes:
 
 - Python hooks include `ruff`, `ruff-format`, and `black`.
-- Markdown linting runs via `pymarkdown` and only triggers when `*.md` files are changed.
+- Markdown structure linting runs via `pymarkdown` and only triggers when `*.md` files are changed.
+- CI also runs `Vale` on changed Markdown files for low-noise prose/style checks.
+- If you have `Vale` installed locally, you can run it manually with `vale --config=.vale.ini README.md`.
 
 Optional virtual environment:
 
