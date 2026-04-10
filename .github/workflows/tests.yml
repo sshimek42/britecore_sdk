@@ -51,14 +51,6 @@ jobs:
         name: codecov-umbrella
         fail_ci_if_error: false
 
-    - name: Upload coverage to DeepSource
-      if: matrix.python-version == '3.11'
-      run: |
-        curl https://deepsource.io/cli | sh
-        ./bin/deepsource report --analyzer test-coverage --key python --value-file ./coverage.xml
-      env:
-        DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
-
     - name: Generate coverage report
       run: |
         coverage report --fail-under=75
