@@ -31,17 +31,39 @@ jobs:
         run: |
           python -m pip_audit
 
-      - name: Run pre-commit hooks (changed files only)
+      - name: Determine changed-file range
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            FROM_REF="origin/${{ github.base_ref }}"
-            TO_REF="${{ github.sha }}"
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            echo "FROM_REF=origin/${{ github.base_ref }}" >> "$GITHUB_ENV"
           else
             FROM_REF="${{ github.event.before }}"
-            TO_REF="${{ github.sha }}"
+            if [ -z "$FROM_REF" ] || [ "$FROM_REF" = "0000000000000000000000000000000000000000" ]; then
+              FROM_REF="HEAD^"
+            fi
+            echo "FROM_REF=$FROM_REF" >> "$GITHUB_ENV"
           fi
+          echo "TO_REF=${{ github.sha }}" >> "$GITHUB_ENV"
 
+      - name: Run pre-commit hooks (changed files only)
+        run: |
           python -m pre_commit run --from-ref "$FROM_REF" --to-ref "$TO_REF"
+
+      - name: Install Vale
+        run: |
+          VALE_VERSION=3.14.1
+          curl -fsSL -o vale.tar.gz "https://github.com/vale-cli/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz"
+          tar -xzf vale.tar.gz vale
+          chmod +x vale
+
+      - name: Run Vale on changed Markdown files
+        run: |
+          mapfile -t changed_md < <(git diff --name-only --diff-filter=ACMRT "$FROM_REF" "$TO_REF" -- '*.md')
+          if [ ${#changed_md[@]} -eq 0 ]; then
+            echo "No Markdown changes to lint with Vale."
+            exit 0
+          fi
+          ./vale --config=.vale.ini "${changed_md[@]}"
 
       - name: Run ruff
         run: |
