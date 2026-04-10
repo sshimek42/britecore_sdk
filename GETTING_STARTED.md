@@ -32,6 +32,10 @@ Related docs:
 python -m pip install -e .
 ```
 
+```bash
+python -m pip install -e .
+```
+
 API-only profile (recommended):
 
 - If you are only calling BriteCore APIs, stop at the base install above.
@@ -45,9 +49,19 @@ python -m pip install -e ".[browser]"    # selenium utilities
 python -m pip install -e ".[all]"        # all optional extras
 ```
 
+```bash
+python -m pip install -e ".[database]"   # pyodbc utilities
+python -m pip install -e ".[browser]"    # selenium utilities
+python -m pip install -e ".[all]"        # all optional extras
+```
+
 Install development tooling when you plan to run tests:
 
 ```powershell
+python -m pip install -e ".[dev]"
+```
+
+```bash
 python -m pip install -e ".[dev]"
 ```
 
@@ -58,6 +72,11 @@ Set environment variables for the current shell session:
 ```powershell
 $env:target_site = "your_site"
 $env:system = "your_system"
+```
+
+```bash
+export target_site="your_site"
+export system="your_system"
 ```
 
 Configure site values in:
@@ -84,6 +103,11 @@ Optional utility notes:
 ## Smoke checks
 
 ```powershell
+python -c "import britecore_libraries; print(britecore_libraries.__version__)"
+python -c "from britecore_libraries.api.api_calls import get_api_client; print(type(get_api_client()).__name__)"
+```
+
+```bash
 python -c "import britecore_libraries; print(britecore_libraries.__version__)"
 python -c "from britecore_libraries.api.api_calls import get_api_client; print(type(get_api_client()).__name__)"
 ```
@@ -134,11 +158,19 @@ async def main() -> None:
     print(quote)
 
 asyncio.run(main())
+```
+
 ---
 
 ## Run tests
 
 ```powershell
+python -m pytest tests/ -v
+python -m pytest tests/unit -m unit -v
+python -m pytest tests/integration -m integration -v
+```
+
+```bash
 python -m pytest tests/ -v
 python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v

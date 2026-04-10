@@ -626,6 +626,21 @@ export target_site="production"
 
 ```
 
+```powershell
+
+# Never commit secrets -- .secrets.toml is gitignored
+# settings.toml contains only urllib3 defaults (no credentials)
+
+# Use environment variables for all credentials
+$env:BRITECORE_LIBRARIES_BASE_URL="https://your-instance.com"
+$env:BRITECORE_LIBRARIES_API_KEY="..."
+# or OAuth:
+$env:BRITECORE_LIBRARIES_CLIENT_ID="..."
+$env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+$env:target_site="production"
+
+```
+
 ### Logging
 
 ```python

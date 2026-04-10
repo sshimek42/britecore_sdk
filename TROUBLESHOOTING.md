@@ -83,6 +83,14 @@ $env:target_site = "your_site"
 python -c "import os; print(os.environ.get('target_site'))"
 ```
 
+```bash
+# Set environment variable
+export target_site="your_site"
+
+# Verify
+python -c "import os; print(os.environ.get('target_site'))"
+```
+
 ---
 
 ### "Configuration validation failed"
@@ -114,6 +122,18 @@ $env:BRITECORE_LIBRARIES_API_KEY="..."
 $env:BRITECORE_LIBRARIES_CLIENT_ID="..."
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
 ```
+
+Validate site sections and key combinations quickly:
+
+```powershell
+python -m britecore_libraries.utils.check_site_configs
+```
+
+Interpretation:
+
+- `OK`: site has `base_url` and valid auth (`client_id` + `client_secret`, or `api_key`)
+- `INCORRECT`: one or more required keys are missing (listed in `Missing Keys`)
+- Warning about `settings.toml`: sensitive keys were found in `settings.toml` and should be moved to `.secrets.toml`
 
 ---
 

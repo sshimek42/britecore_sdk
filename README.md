@@ -223,6 +223,15 @@ $env:target_site="production"
 
 See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed setup.
 
+Validate configured sites before first API calls:
+
+```bash
+python -m britecore_libraries.utils.check_site_configs
+```
+
+Validation rule: each site needs `base_url` and either a full OAuth pair
+(`client_id` + `client_secret`) or an `api_key`.
+
 ---
 
 ## What This Package Provides

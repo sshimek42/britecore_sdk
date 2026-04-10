@@ -49,15 +49,20 @@ For a compact version, see `AGENTS.quickstart.md`.
 - Install editable package from repo root:
 
 ```powershell
-
 python -m pip install -e .
+```
 
+```bash
+python -m pip install -e .
 ```
 
 - Minimal smoke check after changes (adjust module names to your edits):
 
 ```powershell
+python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
+```
 
+```bash
 python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
 
 ```

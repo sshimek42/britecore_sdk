@@ -405,3 +405,19 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 - [.github/workflows/tests.yml](../.github/workflows/tests.yml) — Workflow definition
 - [.deepsource.toml](../.deepsource.toml) — DeepSource configuration
 - [pyproject.toml](../pyproject.toml) — pytest and coverage settings
+
+## Bash Equivalents (Common Local Commands)
+
+```bash
+pip install -e ".[dev]"
+pytest tests/ -v --cov=src/britecore_libraries --cov-report=html
+pytest tests/unit -m unit -v
+pytest tests/integration -m integration -v
+coverage report --fail-under=75
+coverage report -m
+ruff check src/britecore_libraries
+black --check src/britecore_libraries
+mypy src/britecore_libraries
+python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
+git status
+```

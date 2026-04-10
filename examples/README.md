@@ -14,14 +14,26 @@ This folder contains runnable usage samples for `britecore_libraries`.
 python examples/basic_api_usage.py
 ```
 
+```bash
+python examples/basic_api_usage.py
+```
+
 Show CLI options:
 
 ```powershell
 python examples/basic_api_usage.py --help
 ```
 
+```bash
+python examples/basic_api_usage.py --help
+```
+
 Optional live read-only API example (requires configured credentials and `target_site`):
 
 ```powershell
+python examples/basic_api_usage.py --live-policy-number "POL001"
+```
+
+```bash
 python examples/basic_api_usage.py --live-policy-number "POL001"
 ```
