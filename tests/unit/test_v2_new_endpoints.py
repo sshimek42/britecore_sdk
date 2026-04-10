@@ -54,14 +54,15 @@ def _run_case(
     """Run a single endpoint test case."""
     module = importlib.reload(importlib.import_module(module_path))
     client = _get_initialized_client(mock_settings)
+    module_client = getattr(module, "API_CLIENT", client)
     mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
     with (
         patch.object(
-            client, "do_request", return_value=mock_response
+            module_client, "do_request", return_value=mock_response
         ) as mock_do_request,
         patch.object(
-            client, "process_result", return_value={"ok": True}
+            module_client, "process_result", return_value={"ok": True}
         ) as mock_process_result,
     ):
         result = getattr(module, function_name)(**call_kwargs)
