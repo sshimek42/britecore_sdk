@@ -15,6 +15,7 @@ from collections.abc import Sequence
 
 
 def run(cmd: Sequence[str], desc: str) -> None:
+    """Execute a CI step and exit immediately if it fails."""
     print(f"\n=== {desc} ===")
     result = subprocess.run(cmd, check=False)
     if result.returncode != 0:
@@ -23,6 +24,7 @@ def run(cmd: Sequence[str], desc: str) -> None:
 
 
 def main() -> None:
+    """Run lint, type-checking, and unit-test steps for CI."""
     # Lint
     run(["ruff", "check", "src", "tests"], "Lint (ruff)")
     run(["black", "--check", "src", "tests"], "Format check (black)")

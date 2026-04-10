@@ -1,16 +1,15 @@
 """Phone number validation and normalization."""
 
 import re
+from functools import lru_cache
 from re import Pattern
 
 from britecore_libraries.constants import DEFAULT_PHONE_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps import get_common_regexes
 
-# Lazy-loaded regex patterns
-_COMPILED_REGEXES: dict[str, Pattern[str]] = {}
 
-
+@lru_cache(maxsize=1)
 def _get_regexes() -> dict[str, Pattern[str]]:
     """
     Retrieve compiled regex patterns for parsing.
@@ -19,10 +18,7 @@ def _get_regexes() -> dict[str, Pattern[str]]:
         dict[str, Pattern[str]]: A dictionary mapping regex pattern names to
         their compiled regular expression objects.
     """
-    global _COMPILED_REGEXES
-    if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES = get_common_regexes()
-    return _COMPILED_REGEXES
+    return get_common_regexes()
 
 
 class PhoneValidator:

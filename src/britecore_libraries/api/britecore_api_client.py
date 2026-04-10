@@ -3,7 +3,7 @@
 import time
 import uuid
 from json import JSONDecodeError, dumps, loads
-from logging import Logger
+from logging import Logger, getLogger
 from typing import Any, NotRequired, TypedDict  # added typing
 
 import urllib3
@@ -15,12 +15,11 @@ from urllib3.exceptions import (
 from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
-from britecore_libraries import logger
 from britecore_libraries.api.britecore_oauth_token_manager import OAuthToken
 from britecore_libraries.config import settings
 from britecore_libraries.exceptions import BritecoreError
 
-LOGGER: Logger = logger
+LOGGER: Logger = getLogger("britecore_libraries")
 
 
 class LoadClientSettings:

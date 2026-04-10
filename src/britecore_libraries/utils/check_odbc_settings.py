@@ -1,23 +1,17 @@
-"""
-Script to check for ODBC settings in .secrets.toml for each site.
-Warns if ODBC settings are present but incomplete.
-"""
+"""Check for per-site ODBC settings in `.secrets.toml`."""
 
-import os
+from pathlib import Path
 
 import toml
 
-CONFIG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "config",
-    ".secrets.toml",
-)
+CONFIG_PATH = Path(__file__).resolve().parents[1] / "config" / ".secrets.toml"
 
 ODBC_KEYS = ["db_conn_string", "db_conn_options"]
 
 
-def check_odbc_settings():
-    if not os.path.exists(CONFIG_PATH):
+def check_odbc_settings() -> bool:
+    """Validate that per-site ODBC settings are either complete or absent."""
+    if not CONFIG_PATH.exists():
         print(f"Config file not found: {CONFIG_PATH}")
         return False
     secrets = toml.load(CONFIG_PATH)
@@ -39,7 +33,8 @@ def check_odbc_settings():
     return True
 
 
-def main():
+def main() -> None:
+    """Run the ODBC settings check script."""
     print("Checking ODBC settings in .secrets.toml...")
     check_odbc_settings()
 

@@ -1,32 +1,25 @@
 """Name validation and normalization utilities."""
 
 import re
+from functools import lru_cache
 from re import Pattern
 
 from britecore_libraries.maps import get_common_regexes
 
-# Lazy-loaded from maps if needed
-_BUSINESS_NAME_REGEX: Pattern | None = None
-_COMPILED_REGEXES: dict[str, Pattern[str]] = {}
 
-
+@lru_cache(maxsize=1)
 def _get_regexes() -> dict[str, Pattern[str]]:
     """Lazy load compiled regexes from maps."""
-    global _COMPILED_REGEXES
-    if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES = get_common_regexes()
-    return _COMPILED_REGEXES
+    return get_common_regexes()
 
 
+@lru_cache(maxsize=1)
 def _get_business_name_regex() -> Pattern[str]:
     """Lazy load business name regex from maps."""
-    global _BUSINESS_NAME_REGEX
-    _get_regexes()
-    regex = _COMPILED_REGEXES.get("reg_business_name")
+    regex = _get_regexes().get("reg_business_name")
     if not isinstance(regex, Pattern):
         raise ValueError("Missing or invalid 'reg_business_name' regex")
-    _BUSINESS_NAME_REGEX = regex
-    return _BUSINESS_NAME_REGEX
+    return regex
 
 
 class NameValidator:

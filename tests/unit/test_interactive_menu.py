@@ -104,6 +104,38 @@ class TestLineMenu:
             "line_name": "Homeowners",
         }
 
+    @pytest.mark.unit
+    def test_select_option_raises_keyboard_interrupt_when_selection_is_none(
+        self, monkeypatch
+    ):
+        """None from questionary.ask maps to KeyboardInterrupt."""
+        fake_questionary = SimpleNamespace(
+            select=MagicMock(
+                return_value=SimpleNamespace(ask=MagicMock(return_value=None))
+            )
+        )
+        monkeypatch.setitem(__import__("sys").modules, "questionary", fake_questionary)
+
+        with pytest.raises(KeyboardInterrupt):
+            interactive_menu._select_option("Date", ["A", "B"])
+
+    @pytest.mark.unit
+    def test_select_option_falls_back_when_questionary_returns_non_string(
+        self, monkeypatch
+    ):
+        """Non-string questionary selections trigger fallback stdin menu flow."""
+        fake_questionary = SimpleNamespace(
+            select=MagicMock(
+                return_value=SimpleNamespace(ask=MagicMock(return_value=123))
+            )
+        )
+        monkeypatch.setitem(__import__("sys").modules, "questionary", fake_questionary)
+        monkeypatch.setattr("builtins.input", lambda _prompt: "1")
+
+        selected = interactive_menu._select_option("Date", ["A", "B"])
+
+        assert selected == "A"
+
 
 class TestLinesExports:
     """Tests for line export wrapper compatibility inputs."""

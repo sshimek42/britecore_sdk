@@ -1,32 +1,19 @@
-"""
-Script to check that all v2 endpoint wrapper docstrings are in sync with the canonical API spec (api_specs/current/britecore.json).
-Warns if the spec file is missing or outdated.
-"""
+"""Check that the canonical API spec file exists and is reasonably recent."""
 
-import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
-SPEC_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "api_specs",
-    "current",
-    "britecore.json",
-)
-
-V2_API_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "api",
-    "api_calls",
-    "v2",
-)
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SPEC_PATH = REPO_ROOT / "api_specs" / "current" / "britecore.json"
 
 
-def check_spec_exists_and_fresh():
-    if not os.path.exists(SPEC_PATH):
+def check_spec_exists_and_fresh() -> bool:
+    """Return True when the canonical API spec exists and is <= 30 days old."""
+    if not SPEC_PATH.exists():
         print(f"WARNING: API spec file missing: {SPEC_PATH}")
         return False
-    mtime = os.path.getmtime(SPEC_PATH)
+    mtime = SPEC_PATH.stat().st_mtime
     dt = datetime.fromtimestamp(mtime)
     age_days = (datetime.now() - dt).days
     if age_days > 30:
@@ -37,7 +24,8 @@ def check_spec_exists_and_fresh():
     return True
 
 
-def main():
+def main() -> None:
+    """Run the API spec freshness check and exit non-zero on failure."""
     print("Checking API spec sync...")
     ok = check_spec_exists_and_fresh()
     if not ok:

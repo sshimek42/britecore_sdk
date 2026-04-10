@@ -1,6 +1,4 @@
-"""
-Script to check that all test data files referenced by tests exist and are valid (basic parse check).
-"""
+"""Check test CSV files referenced by tests are present and parseable."""
 
 import csv
 import glob
@@ -8,8 +6,8 @@ import os
 import sys
 
 
-def check_test_data_files():
-    # Example: look for all CSV files in tests/data/
+def check_test_data_files() -> bool:
+    """Validate CSV test-data files under tests/data using a basic parse pass."""
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_dir = os.path.join(base, "..", "tests", "data")
     if not os.path.exists(data_dir):
@@ -30,7 +28,8 @@ def check_test_data_files():
     return ok
 
 
-def main():
+def main() -> None:
+    """Run test-data validation and exit non-zero when parsing fails."""
     print("Checking test data files...")
     ok = check_test_data_files()
     if not ok:

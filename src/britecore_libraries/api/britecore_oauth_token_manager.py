@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Mapping  # typing added
 from datetime import datetime, timedelta
 from json import loads
@@ -8,8 +9,9 @@ import urllib3
 from urllib3 import BaseHTTPResponse, Retry, Timeout
 from urllib3.util import Url, parse_url
 
-from britecore_libraries import logger
 from britecore_libraries.exceptions import BritecoreError
+
+LOGGER = logging.getLogger("britecore_libraries")
 
 timeout: Timeout = Timeout(10)
 retries: Retry = Retry(total=5, status_forcelist=frozenset({502, 503, 504}))
@@ -61,7 +63,7 @@ class OAuthToken:
         http_header: dict[str, str] = urllib3.make_headers(
             basic_auth=f"{self.client_id}:{self.client_secret}"
         )
-        logger.debug("Requesting token")
+        LOGGER.debug("Requesting token")
         http_result: BaseHTTPResponse = http.request(
             "POST",
             self.url,
@@ -74,11 +76,11 @@ class OAuthToken:
                 "Failed to retrieve OAuth token from endpoint"
             )
         if http_result.status != 200:
-            logger.warning(
+            LOGGER.warning(
                 "OAuth token refresh failed; continuing to use existing token"
             )
             return
-        logger.debug("Received token")
+        LOGGER.debug("Received token")
         http_result_dict: Any = loads(http_result.data)
         access_token = http_result_dict.get("access_token", "")
         if not access_token:
@@ -86,7 +88,7 @@ class OAuthToken:
                 raise BritecoreError.NoTokenReturned(
                     "OAuth endpoint did not return an access token"
                 )
-            logger.warning(
+            LOGGER.warning(
                 "OAuth token refresh response did not include an access token; "
                 "continuing to use existing token"
             )
@@ -108,9 +110,7 @@ class OAuthToken:
         return MappingProxyType(request_headers)
 
     def get_authorization_headers(self) -> Mapping[str, str]:
-        """
-        Returns immutable headers containing a valid Bearer token.
-        """
+        """Return immutable headers containing a valid Bearer token."""
         if self._is_token_expired():
             self._request_new_token()
         return self._build_auth_headers()

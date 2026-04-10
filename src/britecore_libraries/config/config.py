@@ -49,14 +49,13 @@ class LoadClientSettings:
     """
 
     def __init__(self, target_site: str) -> None:
-        """
-        Initialize with a target site. Environment fallback is not allowed.
-        """
+        """Initialize with a target site; environment fallback is not allowed."""
         if not target_site:
             raise BritecoreError.ConfigurationError(
                 "target_site must be specified explicitly; environment fallback is not allowed."
             )
         self.target_site: str = target_site
+        self._warned_hybrid_config = False
 
     def load_config(self) -> Any:
         """
@@ -78,7 +77,7 @@ class LoadClientSettings:
                 with settings.using_env(target_site):
                     # --- Begin hybrid config warning logic ---
                     # Only warn once per process
-                    if not hasattr(self, "_warned_hybrid_config"):
+                    if not self._warned_hybrid_config:
                         required_keys = [
                             "base_url",
                             "client_id",
@@ -86,17 +85,21 @@ class LoadClientSettings:
                             "api_key",
                         ]
                         missing_env_keys = []
-                        used_config_keys = []
                         for key in required_keys:
                             # Dynaconf supports both UPPERCASE and lowercase env vars, check both
                             env_val = os.environ.get(key) or os.environ.get(key.upper())
                             config_val = settings.get(key, default=None)
                             if not env_val and config_val:
                                 missing_env_keys.append(key)
-                                used_config_keys.append(key)
                         if missing_env_keys:
                             LOGGER.warning(
-                                "Hybrid config: The following required keys were missing from environment variables and loaded from config files instead: %s. This means a mix of env and config file values is being used. For full environment-only config, set all required keys in the environment.",
+                                (
+                                    "Hybrid config: The following required keys were missing "
+                                    "from environment variables and loaded from config files "
+                                    "instead: %s. This means a mix of env and config file "
+                                    "values is being used. For full environment-only config, "
+                                    "set all required keys in the environment."
+                                ),
                                 ", ".join(missing_env_keys),
                             )
                         self._warned_hybrid_config = True
