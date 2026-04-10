@@ -68,5 +68,6 @@ jobs:
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report-py${{ matrix.python-version }}
+        name: coverage-report-py${{ matrix.python-version }}-randomized-${{ matrix.randomized }}
         path: htmlcov/
+        overwrite: true
