@@ -174,9 +174,7 @@ def line_menu(
 
 
 def policy_menu(**kwargs: Unpack[RequestParameters]) -> Any:
-    """
-    Interactive menu for listing policies using the policy_helpers utility.
-    """
+    """Interactive menu entry point for listing policies."""
     from britecore_libraries.utils.policy_helpers import get_policies
 
     policies = get_policies(**kwargs)

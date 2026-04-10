@@ -3,16 +3,16 @@
 import logging
 import re
 from ast import literal_eval
+from functools import lru_cache
 from re import Pattern
 from typing import Any, cast
 
-from britecore_libraries import logger
 from britecore_libraries.constants import COMMON_CITY_REPLACEMENT, DEFAULT_ADDRESS_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps import get_common_regexes
 from britecore_libraries.utils.zip_code_lookup import zip_codes
 
-LOGGER: logging.Logger = logger
+LOGGER = logging.getLogger("britecore_libraries")
 FIX_ADDRESS = False
 NO_ADDRESS_CHANGE = "NO CHANGES MADE"
 ADDRESS_CHANGE = "ADDRESS UPDATED"
@@ -84,10 +84,8 @@ VALID_US_STATES: frozenset[str] = frozenset(
     }
 )
 
-# Lazy-loaded regex patterns
-_COMPILED_REGEXES: dict[str | Any, Pattern[str] | Any] = {}
 
-
+@lru_cache(maxsize=1)
 def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
     """
     Retrieves compiled regular expressions used for parsing and processing.
@@ -100,10 +98,7 @@ def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
         Dict: A dictionary containing compiled regular expressions that can be
             used for pattern matching and text processing operations.
     """
-    global _COMPILED_REGEXES
-    if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES = get_common_regexes()
-    return _COMPILED_REGEXES
+    return get_common_regexes()
 
 
 class AddressValidator:
@@ -340,7 +335,8 @@ class AddressValidator:
             str: The validated and normalized city name. If no match is found in the
             lookup table, the original city name is returned after processing.
         """
-        city = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", city)
+        regexes = _get_regexes()
+        city = re.sub(regexes.get("reg_city_state", r""), "", city)
 
         city_lookup = ZIP_CODE_LOOKUP.get_record_by_zip(zipcode)
         city_lookup_value = city_lookup.place_name if city_lookup else ""
@@ -397,7 +393,8 @@ class AddressValidator:
         if zipcode == "00000" or len(zipcode) > 10 or not zipcode.isnumeric():
             raise BritecoreError.InvalidAddress(f"Invalid Zip Code - {zipcode}")
 
-        zipcode = re.sub(_COMPILED_REGEXES.get("reg_zip", r""), "", zipcode)
+        regexes = _get_regexes()
+        zipcode = re.sub(regexes.get("reg_zip", r""), "", zipcode)
 
         if len(zipcode) > 5:
             zipcode = zipcode[:5] + "-" + zipcode[5:]
@@ -427,7 +424,8 @@ class AddressValidator:
             normalization to the state string before lookup.
         """
         state = state.strip().upper()
-        state = re.sub(_COMPILED_REGEXES.get("reg_city_state", r""), "", state)
+        regexes = _get_regexes()
+        state = re.sub(regexes.get("reg_city_state", r""), "", state)
 
         # Reject state codes that are not valid US state/territory abbreviations
         if state and state not in VALID_US_STATES:
@@ -470,9 +468,10 @@ class AddressValidator:
         Returns:
             str: The normalized address string, or empty string if input is empty
         """
+        regexes = _get_regexes()
         street_replacements = cast(
             dict[Pattern[str], str],
-            _COMPILED_REGEXES.get("street_name_replacement", {}),
+            regexes.get("street_name_replacement", {}),
         )
 
         pattern: Pattern[str]
@@ -565,6 +564,7 @@ class AddressValidator:
         Returns:
             str: The normalized address string
         """
+        regexes = _get_regexes()
         address = address.strip().title()
         if address == "":
             return ""
@@ -577,14 +577,14 @@ class AddressValidator:
         address = cls._remove_repeated_punctuation(address)
 
         # Remove illegal characters
-        address = re.sub(_COMPILED_REGEXES.get("reg_address", r""), "", address)
+        address = re.sub(regexes.get("reg_address", r""), "", address)
 
         # Normalize street names
         address = str(cls._normalize_street_name(address))
         address = cls._normalize_street_casing(address)
 
         # Remove business tokens from address lines
-        address = re.sub(_COMPILED_REGEXES.get("reg_address2", r""), "", address)
+        address = re.sub(regexes.get("reg_address2", r""), "", address)
 
         # Collapse multiple spaces
         address = re.sub(r"\s{2,}", " ", address).strip()
@@ -602,9 +602,8 @@ def normalize_business_name(business_name: str) -> str:
     Returns:
         str: Name with standardized capitalization for business suffixes.
     """
-    check_business = re.findall(
-        _COMPILED_REGEXES.get("reg_business_name", ""), business_name
-    )
+    regexes = _get_regexes()
+    check_business = re.findall(regexes.get("reg_business_name", ""), business_name)
     if check_business:
         for each_business in check_business:
             business_name = business_name.replace(
@@ -631,8 +630,9 @@ def fix_apostrophe_capitalization(name: str) -> str:
         str: The processed name string with double apostrophes converted to
              lowercase format.
     """
+    regexes = _get_regexes()
     name = re.sub(
-        _COMPILED_REGEXES.get("reg_double_apostrophe", ""),
+        regexes.get("reg_double_apostrophe", ""),
         lambda mo: mo.group(0).lower(),
         name,
     )

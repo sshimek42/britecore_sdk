@@ -1,6 +1,4 @@
-"""
-Utility functions for policy retrieval and related helpers.
-"""
+"""Utility functions for policy retrieval and related helpers."""
 
 from json import loads
 from typing import Any, Unpack
@@ -16,7 +14,10 @@ def get_policies(**kwargs: Unpack[RequestParameters]) -> Any:
     Calls /api/v2/policies/get_policies and returns the parsed JSON payload data.
 
     Parameters:
-        **kwargs: Additional request parameters for the API client. These may include filters, pagination, or other API-supported options. See interactive_menu.policy_menu for example usage and expected parameters.
+        **kwargs: Additional request parameters for the API client. These may
+            include filters, pagination, or other API-supported options. See
+            ``interactive_menu.policy_menu`` for example usage and expected
+            parameters.
     """
     request_result: BaseHTTPResponse | HTTPResponse | None = api_client.do_request(
         path="/api/v2/policies/get_policies",

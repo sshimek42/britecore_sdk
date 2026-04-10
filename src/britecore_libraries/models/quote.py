@@ -3,21 +3,14 @@
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
-if TYPE_CHECKING:
-    logger: logging.Logger
-else:
-    from britecore_libraries import logger
-
-LOGGER: logging.Logger = logger
+LOGGER = logging.getLogger("britecore_libraries")
 
 
 @dataclass
 class BritecoreQuote:
-    """
-    BriteCore quote model.
-    """
+    """BriteCore quote model."""
 
     number: str
     policy_type_id: str

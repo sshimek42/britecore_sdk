@@ -3,14 +3,8 @@ import logging
 from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    logger: logging.Logger
-else:
-    from britecore_libraries import logger
-
-LOGGER: Logger = logger
+LOGGER: Logger = logging.getLogger("britecore_libraries")
 
 import_file: Path = Path(Path(__file__).parent / "../resources" / "zip_codes.csv")
 

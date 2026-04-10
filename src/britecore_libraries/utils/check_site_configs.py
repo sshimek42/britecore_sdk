@@ -30,6 +30,7 @@ SETTINGS_PATH = os.path.join(
 
 
 def load_secrets(path: str) -> dict:
+    """Load site secrets from TOML, exiting with code 1 when missing."""
     if not os.path.exists(path):
         print(f"Config file not found: {path}")
         sys.exit(1)
@@ -37,6 +38,7 @@ def load_secrets(path: str) -> dict:
 
 
 def check_site(_site: str, config: dict) -> tuple[bool, list[str]]:
+    """Validate one site section and return status with missing required keys."""
     missing = []
     for key in REQUIRED_KEYS:
         if not config.get(key):
@@ -55,6 +57,7 @@ def check_site(_site: str, config: dict) -> tuple[bool, list[str]]:
 
 
 def warn_if_secrets_in_settings(path: str) -> None:
+    """Warn when sensitive keys are found in settings.toml instead of secrets."""
     if not os.path.exists(path):
         return
     settings = toml.load(path)
@@ -77,7 +80,8 @@ def warn_if_secrets_in_settings(path: str) -> None:
         print("Move these to .secrets.toml and remove from settings.toml!")
 
 
-def main():
+def main() -> None:
+    """Check all configured site sections and print a status table."""
     warn_if_secrets_in_settings(SETTINGS_PATH)
     secrets = load_secrets(CONFIG_PATH)
     # Only process keys whose value is a dict (site sections)

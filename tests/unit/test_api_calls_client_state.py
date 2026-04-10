@@ -53,3 +53,32 @@ class TestApiCallsClientState:
         # Access through lazy proxy must reuse seeded global async client.
         assert module.async_api_client.token == "async-ready"
         fake_ctor.assert_called_once()
+
+    @pytest.mark.unit
+    def test_init_api_client_requires_explicit_target_site(self, monkeypatch):
+        """init_api_client rejects empty target_site values."""
+        module = importlib.reload(api_calls_module)
+        monkeypatch.delenv("target_site", raising=False)
+
+        with pytest.raises(module.BritecoreError.ConfigurationError):
+            module.init_api_client(None)
+
+    @pytest.mark.unit
+    def test_init_async_api_client_requires_explicit_target_site(self, monkeypatch):
+        """init_async_api_client rejects empty target_site values."""
+        module = importlib.reload(api_calls_module)
+        monkeypatch.delenv("target_site", raising=False)
+
+        with pytest.raises(module.BritecoreError.ConfigurationError):
+            module.init_async_api_client(None)
+
+    @pytest.mark.unit
+    def test_getters_raise_when_clients_uninitialized(self):
+        """Lazy getters raise config errors until init helpers seed client state."""
+        module = importlib.reload(api_calls_module)
+
+        with pytest.raises(module.BritecoreError.ConfigurationError):
+            module.get_api_client()
+
+        with pytest.raises(module.BritecoreError.ConfigurationError):
+            module.get_async_api_client()

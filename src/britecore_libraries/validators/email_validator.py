@@ -2,24 +2,18 @@
 
 import logging
 import re
+from functools import lru_cache
 from re import Pattern
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from britecore_libraries.constants import DEFAULT_EMAIL_TYPE
 from britecore_libraries.exceptions import BritecoreError
 from britecore_libraries.maps import get_common_regexes
 
-if TYPE_CHECKING:
-    logger: logging.Logger
-else:
-    from britecore_libraries import logger
-
-LOGGER: logging.Logger = logger
-
-# Lazy-loaded regex patterns
-_COMPILED_REGEXES: dict[str, Pattern[str]] = {}
+LOGGER = logging.getLogger("britecore_libraries")
 
 
+@lru_cache(maxsize=1)
 def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
     """
     Retrieves compiled regular expressions used for parsing and validation.
@@ -32,10 +26,7 @@ def _get_regexes() -> dict[str | Any, Pattern[str] | Any]:
         dict[str | Any, Pattern[str] | Any]: A dictionary containing compiled
         regular expressions keyed by their names or identifiers.
     """
-    global _COMPILED_REGEXES
-    if not _COMPILED_REGEXES:
-        _COMPILED_REGEXES = get_common_regexes()
-    return _COMPILED_REGEXES
+    return get_common_regexes()
 
 
 class EmailValidator:
