@@ -13,6 +13,9 @@ exclude_patterns = [
   "docs/**",
   "examples/**",
   "tests/**",
+  "README.md",
+  "TROUBLESHOOTING.md",
+  "ARCHITECTURE.md",
 ]
 
 test_patterns = [
