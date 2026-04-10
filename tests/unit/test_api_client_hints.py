@@ -10,7 +10,9 @@ from britecore_libraries.exceptions import BritecoreError
 
 
 def _initialized_client(mock_settings):
-    with patch("britecore_libraries.api.britecore_api_client.LoadClientSettings") as loader:
+    with patch(
+        "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+    ) as loader:
         loader_instance = MagicMock()
         loader_instance.load_config.return_value = mock_settings
         loader.return_value = loader_instance
@@ -60,4 +62,3 @@ def test_authentication_error_includes_healthcheck_hint():
     message = str(exc_info.value)
     assert "Hint:" in message
     assert "healthcheck" in message.lower()
-

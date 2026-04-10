@@ -230,12 +230,12 @@ class BritecoreAPIClient:
     @staticmethod
     def _timeout_seconds(request_timeout: Any) -> int | float | None:
         """Extract a numeric timeout value from urllib3 timeout objects or scalars."""
-        if isinstance(request_timeout, (int, float)):
+        if isinstance(request_timeout, int | float):
             return request_timeout
         if isinstance(request_timeout, Timeout):
             for attr in ("total", "connect_timeout", "read_timeout"):
                 value = getattr(request_timeout, attr, None)
-                if isinstance(value, (int, float)):
+                if isinstance(value, int | float):
                     return value
         return None
 
