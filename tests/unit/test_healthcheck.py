@@ -120,4 +120,3 @@ def test_format_result_contains_sections() -> None:
     assert "Auth mode: api_key" in text
     assert "Config: OK" in text
     assert "API ping: OK" in text
-

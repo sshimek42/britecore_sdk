@@ -59,6 +59,7 @@ def rebuild_search_index(
         request_result, endpoint="/api/v2/utils/rebuild_search_index"
     )
 
+
 def get_release_info(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve platform release information.
 

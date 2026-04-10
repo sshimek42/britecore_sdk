@@ -102,7 +102,9 @@ def _format_result(result: HealthcheckResult) -> str:
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     """Parse CLI arguments for healthcheck runner."""
-    parser = argparse.ArgumentParser(description="Run SDK configuration/API healthcheck")
+    parser = argparse.ArgumentParser(
+        description="Run SDK configuration/API healthcheck"
+    )
     parser.add_argument("--site", required=True, help="Configured target site name")
     parser.add_argument(
         "--skip-ping",
@@ -122,4 +124,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
