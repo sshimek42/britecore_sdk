@@ -44,6 +44,7 @@ def _get_initialized_client(mock_settings):
         mock_loader_instance = MagicMock()
         mock_loader_instance.load_config.return_value = mock_settings
         mock_loader.return_value = mock_loader_instance
+        api_calls.init_api_client(target_site="test_site")
         return api_calls.get_api_client()
 
 
@@ -51,7 +52,7 @@ def _run_case(
     mock_settings, module_path, function_name, call_kwargs, expected_json, expected_path
 ):
     """Run a single endpoint test case."""
-    module = importlib.import_module(module_path)
+    module = importlib.reload(importlib.import_module(module_path))
     client = _get_initialized_client(mock_settings)
     mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
@@ -927,8 +928,8 @@ class TestNoneOmission:
 
     @pytest.mark.unit
     def test_none_params_omitted(self, env_api_key, mock_settings):
-        module = importlib.import_module(
-            "britecore_libraries.api.api_calls.v2.dashboards"
+        module = importlib.reload(
+            importlib.import_module("britecore_libraries.api.api_calls.v2.dashboards")
         )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {}}')
@@ -946,7 +947,9 @@ class TestNoneOmission:
 
     @pytest.mark.unit
     def test_all_none_sends_empty_body(self, env_api_key, mock_settings):
-        module = importlib.import_module("britecore_libraries.api.api_calls.v2.errors")
+        module = importlib.reload(
+            importlib.import_module("britecore_libraries.api.api_calls.v2.errors")
+        )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {}}')
 
