@@ -85,14 +85,14 @@ The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, a
 
 ## Features
 
-✅ **Complete API coverage** — 374/374 endpoints across v1 and v2  
-✅ **Async-ready** — Cache-aware async wrappers for high-concurrency workflows  
-✅ **Flexible auth** — Automatic API key or OAuth2 token management  
-✅ **Type hints** — Full PEP 561 type information for IDE support  
-✅ **Validators** — Email, phone, address, and name validation utilities  
-✅ **Models** — Domain classes for Contact, Policy, and Quote payloads  
-✅ **Config-first** — Dynaconf-based environment and secrets management  
-✅ **Production-ready** — Stable API, comprehensive tests, security-focused  
+✅ **Complete API coverage** — 374/374 endpoints across v1 and v2
+✅ **Async-ready** — Cache-aware async wrappers for high-concurrency workflows
+✅ **Flexible auth** — Automatic API key or OAuth2 token management
+✅ **Type hints** — Full PEP 561 type information for IDE support
+✅ **Validators** — Email, phone, address, and name validation utilities
+✅ **Models** — Domain classes for Contact, Policy, and Quote payloads
+✅ **Config-first** — Dynaconf-based environment and secrets management
+✅ **Production-ready** — Stable API, comprehensive tests, security-focused
 
 ---
 
