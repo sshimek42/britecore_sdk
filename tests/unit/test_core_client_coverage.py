@@ -587,3 +587,91 @@ class TestInstanceIsolation:
         assert "third" in client_a.base_url
         # client_b must be entirely unaffected
         assert "second" in client_b.base_url
+
+
+# ---------------------------------------------------------------------------
+# Additional targeted tests for uncovered logic
+# ---------------------------------------------------------------------------
+
+
+class TestBritecoreAPIClientAdditional:
+    """Additional targeted tests for BritecoreAPIClient uncovered logic."""
+
+    @pytest.mark.unit
+    def test_init_missing_api_key_and_oauth(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_libraries.exceptions import BritecoreError
+
+        # Simulate missing all credentials
+        class DummySettings:
+            base_url = "https://example.com"
+            client_id = ""
+            client_secret = ""
+            api_key = ""
+            web_retry = 1
+            web_timeout = 1
+            web_timeout_long = 1
+
+        client = BritecoreAPIClient("test_site")
+        client.site_settings = DummySettings()
+        client.base_url = DummySettings.base_url
+        client.use_api_key = True
+        # Should raise for missing api_key
+        with pytest.raises(BritecoreError.BritecoreKeyError):
+            client.init_client()
+
+    @pytest.mark.unit
+    def test_multiple_parameter_verification_priority(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+
+        # Multiple parameters, priority selection
+        param_list = [
+            {"id": None},
+            {"policy_number": "PN123"},
+            {"external_id": "EX456"},
+        ]
+        priority = ["external_id", "policy_number", "id"]
+        result = BritecoreAPIClient.multiple_parameter_verification(
+            param_list, priority
+        )
+        assert result == {"external_id": "EX456"}
+
+    @pytest.mark.unit
+    def test_multiple_parameter_verification_all_missing(self):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+
+        param_list = [{"id": None}, {"policy_number": None}]
+        priority = ["policy_number", "id"]
+        result = BritecoreAPIClient.multiple_parameter_verification(
+            param_list, priority
+        )
+        assert result == {"policy_number": None}
+
+    @pytest.mark.unit
+    def test_do_request_custom_headers_and_timeout(self, mocker):
+        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+
+        # Setup client with dummy settings
+        class DummySettings:
+            base_url = "example.com"
+            client_id = ""
+            client_secret = ""
+            api_key = "APIKEY"
+            web_retry = 1
+            web_timeout = 1
+            web_timeout_long = 1
+
+        client = BritecoreAPIClient("test_site")
+        client.site_settings = DummySettings()
+        client.base_url = "example.com"
+        client.use_api_key = True
+        client.http = mocker.MagicMock()
+        # Simulate a successful response
+        mock_response = mocker.MagicMock()
+        mock_response.status = 200
+        mock_response.data = b'{"success": true, "data": {}}'
+        client.http.request.return_value = mock_response
+        headers = {"X-Test": "1"}
+        resp = client.do_request("/test", request_headers=headers, request_timeout=2)
+        assert resp.status == 200
+        client.http.request.assert_called_once()

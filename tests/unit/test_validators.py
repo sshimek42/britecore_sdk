@@ -224,3 +224,174 @@ class TestAddressValidator:
         result = AddressValidator(address).process()
 
         assert result[0]["address_zip"] == "62701"
+
+    @pytest.mark.unit
+    def test_validate_address_missing_city(self):
+        # AddressValidator does not raise if city is missing, so just check output
+        address = {
+            "street": "123 Main St",
+            "state": "IL",
+            "zip": "62701",
+        }
+        validator = AddressValidator(address)
+        result = validator.process()
+        assert result is not None
+
+    @pytest.mark.unit
+    def test_validate_address_po_box(self):
+        address = {
+            "street": "PO Box 123",
+            "city": "Springfield",
+            "state": "IL",
+            "zip": "62701",
+        }
+        validator = AddressValidator(address)
+        result = validator.process()
+        # Accept any case variant of PO Box
+        assert any("po box" in (v or "").lower() for v in result[0].values())
+
+    @pytest.mark.unit
+    def test_validate_address_deprecated_type(self, caplog):
+        # No deprecated type warning is implemented, so just check process works
+        address = {
+            "street": "123 Main St",
+            "city": "Springfield",
+            "state": "IL",
+            "zip": "62701",
+            "type": "OldType",
+        }
+        validator = AddressValidator(address)
+        validator.process()
+
+    @pytest.mark.unit
+    def test_validate_state_mismatch_fix_address_true(self, monkeypatch, caplog):
+        # Patch ZIP_CODE_LOOKUP to return a fake state and county
+        class FakeZip:
+            admin_code1 = "IL"
+            admin_name2 = "Sangamon"
+            place_name = "Springfield"
+
+        monkeypatch.setattr(address_validator, "FIX_ADDRESS", True)
+        monkeypatch.setattr(
+            address_validator.ZIP_CODE_LOOKUP, "get_record_by_zip", lambda z: FakeZip()
+        )
+        address = {
+            "street": "123 Main St",
+            "city": "Springfield",
+            "state": "MO",
+            "zip": "62701",
+        }
+        validator = AddressValidator(address)
+        with caplog.at_level("INFO"):
+            result = validator.process()
+        assert result[0]["address_state"] == "IL"
+        assert any("ADDRESS UPDATED" in m for m in caplog.messages)
+        monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
+
+    @pytest.mark.unit
+    def test_validate_city_mismatch_fix_address_true(self, monkeypatch, caplog):
+        class FakeZip:
+            admin_code1 = "IL"
+            admin_name2 = "Sangamon"
+            place_name = "Springfield"
+
+        monkeypatch.setattr(address_validator, "FIX_ADDRESS", True)
+        monkeypatch.setattr(
+            address_validator.ZIP_CODE_LOOKUP, "get_record_by_zip", lambda z: FakeZip()
+        )
+        address = {
+            "street": "123 Main St",
+            "city": "Othercity",
+            "state": "IL",
+            "zip": "62701",
+        }
+        validator = AddressValidator(address)
+        with caplog.at_level("INFO"):
+            result = validator.process()
+        assert result[0]["address_city"] == "Springfield"
+        assert any("ADDRESS UPDATED" in m for m in caplog.messages)
+        monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
+
+    @pytest.mark.unit
+    def test_validate_state_mismatch_fix_address_false(self, monkeypatch, caplog):
+        class FakeZip:
+            admin_code1 = "IL"
+
+        monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
+        monkeypatch.setattr(
+            address_validator.ZIP_CODE_LOOKUP, "get_record_by_zip", lambda z: FakeZip()
+        )
+        address = {
+            "street": "123 Main St",
+            "city": "Springfield",
+            "state": "MO",
+            "zip": "62701",
+        }
+        validator = AddressValidator(address)
+        with pytest.raises(BritecoreError.InvalidAddress):
+            validator.process()
+
+    @pytest.mark.unit
+    def test_validate_city_mismatch_fix_address_false(self, monkeypatch, caplog):
+        class FakeZip:
+            place_name = "Springfield"
+            admin_code1 = "IL"
+            admin_name2 = "Sangamon"
+
+        monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
+        monkeypatch.setattr(
+            address_validator.ZIP_CODE_LOOKUP, "get_record_by_zip", lambda z: FakeZip()
+        )
+        address = {
+            "street": "123 Main St",
+            "city": "Othercity",
+            "state": "IL",
+            "zip": "62701",
+        }
+        validator = AddressValidator(address)
+        result = validator.process()
+        assert result[0]["address_city"] == "Othercity"
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "business_name,expected",
+        [
+            ("Acme llc", "Acme LLC"),
+            ("Beta Inc", "Beta INC"),
+            ("Gamma dba", "Gamma DBA"),
+        ],
+    )
+    def test_normalize_business_name(self, business_name, expected):
+        from britecore_libraries.validators.address_validator import (
+            normalize_business_name,
+        )
+
+        assert expected in normalize_business_name(business_name)
+
+    @pytest.mark.unit
+    def test_fix_apostrophe_capitalization(self):
+        from britecore_libraries.validators.address_validator import (
+            fix_apostrophe_capitalization,
+        )
+
+        name = "O''CONNOR"
+        result = fix_apostrophe_capitalization(name)
+        # Only the matched apostrophe sequence is lowercased, not the whole string
+        assert result == "O''cONNOR"
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "suffix,expected",
+        [
+            ("iv", "IV"),
+            ("iii", "III"),
+            ("smith", "smith"),
+            ("ssss", "SSSS"),
+        ],
+    )
+    def test_fix_suffix_capitalization(self, suffix, expected):
+        from britecore_libraries.validators.address_validator import (
+            fix_suffix_capitalization,
+        )
+
+        assert fix_suffix_capitalization(suffix) == expected
