@@ -13,6 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.11', '3.12', '3.13', '3.14']
+        randomized: [false]
+        include:
+          - python-version: '3.11'
+            randomized: true
 
     permissions:
       contents: read
@@ -40,7 +44,11 @@ jobs:
 
     - name: Run tests with pytest
       run: |
-        pytest tests/ -v --cov=src/britecore_libraries --cov-report=term-missing --cov-report=html --cov-report=xml
+        RANDOM_ARGS=""
+        if [ "${{ matrix.randomized }}" = "true" ]; then
+          RANDOM_ARGS="--randomly-seed=${{ github.run_id }}"
+        fi
+        pytest tests/ -v --cov=src/britecore_libraries --cov-report=term-missing --cov-report=html --cov-report=xml $RANDOM_ARGS
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11'
