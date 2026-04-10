@@ -27,6 +27,29 @@ python -m pip install -e ".[dev]"
 
 ```
 
+### Pre-commit hooks
+
+Install Git hooks once per clone:
+
+```powershell
+
+pre-commit install
+
+```
+
+Run hooks manually across the repo:
+
+```powershell
+
+pre-commit run --all-files
+
+```
+
+Notes:
+
+- Python hooks include `ruff`, `ruff-format`, and `black`.
+- Markdown linting runs via `pymarkdown` and only triggers when `*.md` files are changed.
+
 Optional virtual environment:
 
 ```powershell
