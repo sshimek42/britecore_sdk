@@ -30,8 +30,6 @@ def _select_option(title: str, choices: list[str]) -> str:
         if not isinstance(selected, str):
             raise ValueError("Menu selection returned a non-string value")
         return selected
-    except KeyboardInterrupt:
-        raise
     except Exception as err:  # skipcq PYL-W0703
         # PyCharm/IDE runners may not provide a Win32 console buffer for prompt_toolkit.
         LOGGER.debug("Falling back to plain menu input: %s", err)

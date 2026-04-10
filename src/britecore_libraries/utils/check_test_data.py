@@ -5,6 +5,7 @@ Script to check that all test data files referenced by tests exist and are valid
 import csv
 import glob
 import os
+import sys
 
 
 def check_test_data_files():
@@ -33,7 +34,7 @@ def main():
     print("Checking test data files...")
     ok = check_test_data_files()
     if not ok:
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
