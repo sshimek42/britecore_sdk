@@ -72,7 +72,7 @@ def build_parser() -> argparse.ArgumentParser:
     """Build CLI arguments for local demo and optional live lookup."""
     parser = argparse.ArgumentParser(
         description=(
-            "Run local and optional live usage samples for " "britecore_libraries."
+            "Run local and optional live usage samples for britecore_libraries."
         ),
     )
     parser.add_argument(

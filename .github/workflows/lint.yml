@@ -26,6 +26,10 @@ jobs:
           pip install -e ".[dev]"
           pip install ruff
 
+      - name: Run pre-commit hooks
+        run: |
+          python -m pre_commit run --all-files
+
       - name: Run ruff
         run: |
           ruff check src tests
@@ -33,4 +37,3 @@ jobs:
       - name: Run black --check
         run: |
           black --check src tests
-
