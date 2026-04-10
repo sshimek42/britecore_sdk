@@ -239,6 +239,11 @@ class BritecoreAPIClient:
                     return value
         return None
 
+    @staticmethod
+    def _with_hint(message: str, hint: str) -> str:
+        """Append a short, actionable hint to an error message."""
+        return f"{message}\nHint: {hint}"
+
     @classmethod
     def _raise_for_http_status(
         cls,
@@ -251,7 +256,11 @@ class BritecoreAPIClient:
                 "Authentication error - %s - %s", response.status, response.reason
             )
             raise BritecoreError.AuthenticationError(
-                response.reason or "Unauthorized",
+                cls._with_hint(
+                    response.reason or "Unauthorized",
+                    "Verify base_url and auth settings, then run: "
+                    "python -m britecore_libraries.utils.healthcheck --site <site>",
+                ),
                 http_status=response.status,
                 endpoint=endpoint,
             )
@@ -267,13 +276,20 @@ class BritecoreAPIClient:
                     except (ValueError, TypeError):
                         pass
             raise BritecoreError.RateLimitError(
-                response.reason or "Too Many Requests", retry_after=retry_after
+                cls._with_hint(
+                    response.reason or "Too Many Requests",
+                    "Retry with backoff and reduce request burst rate.",
+                ),
+                retry_after=retry_after,
             )
 
         if response.status >= 500:
             LOGGER.error("Server error - %s - %s", response.status, response.reason)
             raise BritecoreError.ServerError(
-                response.reason or "Internal Server Error",
+                cls._with_hint(
+                    response.reason or "Internal Server Error",
+                    "Retry shortly. If persistent, verify endpoint availability.",
+                ),
                 http_status=response.status,
                 endpoint=endpoint,
             )
@@ -281,7 +297,10 @@ class BritecoreAPIClient:
         if response.status == 404:
             LOGGER.error("Not found - %s", response.reason)
             raise BritecoreError.NotFoundError(
-                f"Error - {response.status} - {response.reason}",
+                cls._with_hint(
+                    f"Error - {response.status} - {response.reason}",
+                    "Confirm identifiers and endpoint path values.",
+                ),
                 http_status=response.status,
                 endpoint=endpoint,
             )
@@ -289,7 +308,10 @@ class BritecoreAPIClient:
         if response.status == 409:
             LOGGER.error("Conflict - %s", response.reason)
             raise BritecoreError.ConflictError(
-                f"Error - {response.status} - {response.reason}",
+                cls._with_hint(
+                    f"Error - {response.status} - {response.reason}",
+                    "Check for duplicate or conflicting resource updates.",
+                ),
                 http_status=response.status,
                 endpoint=endpoint,
             )
@@ -297,7 +319,10 @@ class BritecoreAPIClient:
         if response.status in {400, 422}:
             LOGGER.error("Validation error - %s - %s", response.status, response.reason)
             raise BritecoreError.ValidationError(
-                f"Error - {response.status} - {response.reason}",
+                cls._with_hint(
+                    f"Error - {response.status} - {response.reason}",
+                    "Validate request payload fields and required parameters.",
+                ),
                 http_status=response.status,
                 endpoint=endpoint,
             )
@@ -305,7 +330,10 @@ class BritecoreAPIClient:
         if response.status != 200:
             LOGGER.error("Error - %s - %s", response.status, response.reason)
             raise BritecoreError.NoDataReturned(
-                f"Error - {response.status} - {response.reason}",
+                cls._with_hint(
+                    f"Error - {response.status} - {response.reason}",
+                    "Review response status and run healthcheck for baseline validation.",
+                ),
                 http_status=response.status,
                 endpoint=endpoint,
             )
@@ -327,7 +355,12 @@ class BritecoreAPIClient:
 
         if not result:
             LOGGER.error("Error - %s", message)
-            raise BritecoreError.NoDataReturned(f"Error - {message}")
+            raise BritecoreError.NoDataReturned(
+                cls._with_hint(
+                    f"Error - {message}",
+                    "Inspect API response payload and required request parameters.",
+                )
+            )
 
         return json_result.get("data")
 
@@ -360,7 +393,11 @@ class BritecoreAPIClient:
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned(
-                "Error - No response", endpoint=endpoint
+                cls._with_hint(
+                    "Error - No response",
+                    "Check network reachability, base_url, and client initialization.",
+                ),
+                endpoint=endpoint,
             )
         cls._raise_for_http_status(response, endpoint=endpoint)
 
@@ -369,7 +406,10 @@ class BritecoreAPIClient:
         except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
             LOGGER.error("Error parsing API response: %s", parse_error)
             raise BritecoreError.NoDataReturned(
-                f"Error parsing API response: {parse_error}",
+                cls._with_hint(
+                    f"Error parsing API response: {parse_error}",
+                    "Enable debug logging and verify endpoint response content-type.",
+                ),
                 endpoint=endpoint,
             ) from parse_error
 
@@ -476,7 +516,10 @@ class BritecoreAPIClient:
                 timeout_error,
             )
             raise BritecoreError.RequestTimeoutError(
-                str(timeout_error),
+                self._with_hint(
+                    str(timeout_error),
+                    "Increase request_timeout or retry settings for slow endpoints.",
+                ),
                 timeout_seconds=self._timeout_seconds(request_timeout),
             ) from timeout_error
         except (

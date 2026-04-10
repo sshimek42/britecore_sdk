@@ -235,6 +235,20 @@ You can also validate all configured site sections directly:
 python -m britecore_libraries.utils.check_site_configs
 ```
 
+```powershell
+python -m britecore_libraries.utils.check_site_configs
+```
+
+Then run an end-to-end readiness check for a specific site:
+
+```bash
+python -m britecore_libraries.utils.healthcheck --site example_site
+```
+
+```powershell
+python -m britecore_libraries.utils.healthcheck --site example_site
+```
+
 `check_site_configs` validates each site section in
 `src/britecore_libraries/config/.secrets.toml` using this rule:
 

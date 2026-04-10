@@ -229,6 +229,20 @@ Validate configured sites before first API calls:
 python -m britecore_libraries.utils.check_site_configs
 ```
 
+```powershell
+python -m britecore_libraries.utils.check_site_configs
+```
+
+Run an end-user readiness check (config + auth + safe API ping):
+
+```bash
+python -m britecore_libraries.utils.healthcheck --site production
+```
+
+```powershell
+python -m britecore_libraries.utils.healthcheck --site production
+```
+
 Validation rule: each site needs `base_url` and either a full OAuth pair
 (`client_id` + `client_secret`) or an `api_key`.
 

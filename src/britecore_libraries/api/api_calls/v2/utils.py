@@ -58,3 +58,20 @@ def rebuild_search_index(
     return API_CLIENT.process_result(
         request_result, endpoint="/api/v2/utils/rebuild_search_index"
     )
+
+def get_release_info(**kwargs: Unpack[RequestParameters]) -> Any:
+    """Retrieve platform release information.
+
+    This wrapper calls ``/api/v2/utils/get_release_info`` and returns the
+    normalized ``process_result(...)`` payload. ``**kwargs`` accepts
+    ``RequestParameters`` overrides.
+    """
+    LOGGER.debug("Retrieving release info")
+
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path="/api/v2/utils/get_release_info",
+        **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/utils/get_release_info"
+    )
