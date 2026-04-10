@@ -104,12 +104,24 @@ Optional utility notes:
 
 ```powershell
 python -c "import britecore_libraries; print(britecore_libraries.__version__)"
-python -c "from britecore_libraries.api.api_calls import get_api_client; print(type(get_api_client()).__name__)"
+python -c "from britecore_libraries.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
 ```
 
 ```bash
 python -c "import britecore_libraries; print(britecore_libraries.__version__)"
-python -c "from britecore_libraries.api.api_calls import get_api_client; print(type(get_api_client()).__name__)"
+python -c "from britecore_libraries.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
+```
+
+Readiness checks:
+
+```powershell
+python -m britecore_libraries.utils.check_site_configs
+python -m britecore_libraries.utils.healthcheck --site your_site
+```
+
+```bash
+python -m britecore_libraries.utils.check_site_configs
+python -m britecore_libraries.utils.healthcheck --site your_site
 ```
 
 ## First API call
