@@ -26,8 +26,16 @@ def _make_response(
 
 
 def _get_initialized_client(mock_settings):
-    """Return a lazily initialized API client backed by mocked settings."""
-    import britecore_libraries.api.api_calls as api_calls
+    """Return a lazily initialized API client backed by mocked settings.
+
+    Uses ``sys.modules`` directly instead of ``import ... as`` so that the
+    correct module object is retrieved even when a prior test temporarily
+    replaced ``britecore_libraries.api.api_calls`` in sys.modules and the
+    parent-package attribute has not yet been restored.
+    """
+    import sys
+
+    api_calls = sys.modules["britecore_libraries.api.api_calls"]
 
     api_calls._api_client = None
 

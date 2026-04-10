@@ -17,7 +17,27 @@ _DEFERRABLE_SUBMODULES = [
 
 
 def _import_fresh_package(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
-    """Import the package root after clearing selected cached modules."""
+    """Import the package root after clearing selected cached modules.
+
+    When ``britecore_libraries.api.api_calls`` is evicted from *sys.modules*
+    and then reimported, Python's import machinery also sets the
+    ``api_calls`` *attribute* on the parent package object
+    (``britecore_libraries.api``).  ``monkeypatch.delitem`` only restores the
+    ``sys.modules`` dict entry on teardown; it does **not** touch parent-package
+    attributes.  This leaves ``britecore_libraries.api.api_calls`` (accessed via
+    the attribute chain by ``import ... as`` statements) pointing at the
+    freshly-created module even after the monkeypatch is undone.
+
+    We therefore use ``monkeypatch.setattr`` to snapshot the current value of
+    that attribute so it is also properly restored after each test.
+    """
+    # Preserve parent-package attribute for britecore_libraries.api.api_calls
+    # so that attribute-chain imports (``import britecore_libraries.api.api_calls
+    # as X``) resolve to the original module after sys.modules is restored.
+    _api_pkg = sys.modules.get("britecore_libraries.api")
+    if _api_pkg is not None and hasattr(_api_pkg, "api_calls"):
+        monkeypatch.setattr(_api_pkg, "api_calls", _api_pkg.api_calls)
+
     for module_name in _DEFERRABLE_SUBMODULES:
         monkeypatch.delitem(sys.modules, module_name, raising=False)
     return importlib.import_module("britecore_libraries")

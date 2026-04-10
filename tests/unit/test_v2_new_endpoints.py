@@ -35,7 +35,9 @@ def _make_response(
 
 
 def _get_initialized_client(mock_settings):
-    import britecore_libraries.api.api_calls as api_calls
+    import sys
+
+    api_calls = sys.modules["britecore_libraries.api.api_calls"]
 
     api_calls._api_client = None
     with patch(
