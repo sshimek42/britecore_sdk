@@ -1,0 +1,7 @@
+extends: substitution
+message: "Use 'BriteCore' for the product name."
+level: error
+ignorecase: false
+swap:
+  Britecore: BriteCore
+  "Brite Core": BriteCore
