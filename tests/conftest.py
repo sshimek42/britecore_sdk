@@ -147,17 +147,20 @@ def mock_api_client(monkeypatch):
     Autouse fixture to mock Britecore API client initialization and singleton for all tests.
     Prevents ConfigurationError due to missing config and allows API calls to be intercepted.
     """
-    # Patch init_api_client to do nothing and return a MagicMock
+    # Reuse one client mock across tests so modules that cache API_CLIENT at
+    # import-time keep pointing to the same object.
+    if not hasattr(mock_api_client, "_shared_client"):
+        mock_api_client._shared_client = MagicMock(name="api_client")
+
+    shared_client = mock_api_client._shared_client
+    shared_client.reset_mock()
+
     with patch(
-        "britecore_libraries.api.api_calls.init_api_client", return_value=MagicMock()
+        "britecore_libraries.api.api_calls.init_api_client", return_value=shared_client
     ):
-        # Patch api_client singleton to a MagicMock
-        with patch(
-            "britecore_libraries.api.api_calls.api_client", new_callable=MagicMock
-        ) as mock_client:
-            # Patch get_api_client to return the MagicMock
+        with patch("britecore_libraries.api.api_calls.api_client", new=shared_client):
             with patch(
                 "britecore_libraries.api.api_calls.get_api_client",
-                return_value=mock_client,
+                return_value=shared_client,
             ):
-                yield
+                yield shared_client
