@@ -77,9 +77,11 @@ Security patches are provided for:
 1. **Keep dependencies up to date**
 
    ```powershell
-
    pip install --upgrade britecore_libraries
+   ```
 
+   ```bash
+   pip install --upgrade britecore_libraries
    ```
 
 2. **Never commit `.secrets.toml`**
@@ -89,8 +91,11 @@ Security patches are provided for:
 3. **Use environment variables for secrets**
 
    ```powershell
-
    $env:BRITECORE_LIBRARIES_API_KEY = ""
+   ```
+
+   ```bash
+   export BRITECORE_LIBRARIES_API_KEY=""
 
    ```
 

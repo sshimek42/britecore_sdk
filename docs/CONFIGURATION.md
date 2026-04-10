@@ -97,7 +97,6 @@ web_browser = "Edge"
 
 ### Automatic (Recommended)
 
-
 ```python
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
 from britecore_libraries.api.api_calls import get_api_client
@@ -110,7 +109,6 @@ client = get_api_client()
 1. `target_site` argument specifies which config section to load (e.g., `[example_site]`)
 2. Dynaconf merges `settings.toml` + `.secrets.toml` + environment variables
 3. Secrets override public settings
-
 
 ### Via `get_api_client()` (Lazy, Recommended)
 
@@ -229,8 +227,24 @@ menu so line/date/state selection still works.
 
 ## Validation
 
-
 When you call `client.init_client()`, Dynaconf validates required keys. This is only needed for advanced/manual scenarios. For most use cases, prefer `get_api_client()`.
+
+You can also validate all configured site sections directly:
+
+```bash
+python -m britecore_libraries.utils.check_site_configs
+```
+
+`check_site_configs` validates each site section in
+`src/britecore_libraries/config/.secrets.toml` using this rule:
+
+- `base_url` is required
+- auth must be either:
+  - OAuth pair (`client_id` and `client_secret` together), or
+  - API key (`api_key`)
+
+The utility also warns when sensitive keys (`api_key`, `client_id`,
+`client_secret`) are present in `settings.toml`.
 
 **Common errors:**
 
@@ -240,6 +254,7 @@ When you call `client.init_client()`, Dynaconf validates required keys. This is 
 | `BritecoreKeyError` | Missing `client_id`/`client_secret` | Add both for OAuth, or add `api_key` for API key auth |
 | `BritecoreKeyError` | Missing `api_key` | Add `api_key` to `.secrets.toml` |
 | Config not loading | `target_site` not set | Set `$env:target_site` or pass to `BritecoreAPIClient("site_name")` |
+| `INCORRECT` in `check_site_configs` output | Missing required site keys in `.secrets.toml` | Add missing keys shown in `Missing Keys` column |
 
 ## Per-Environment Setup
 

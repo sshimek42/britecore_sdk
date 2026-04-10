@@ -32,6 +32,12 @@ pytest tests/
 
 ```
 
+```bash
+
+pytest tests/
+
+```
+
 ### Unit Tests Only
 
 ```powershell
