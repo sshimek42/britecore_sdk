@@ -15,16 +15,16 @@
 │                    Application Layer                       │
 │          (Your code using BriteCore Libraries)             │
 └──────────────────────────────┬─────────────────────────────┘
-                              │
-                              ▼
+                               │
+                               ▼
 ┌────────────────────────────────────────────────────────────┐
 │                      Domain Layer                          │
 │   • Models         (Contact, Policy, Quote)                │
 │   • Validators     (Email, Phone, Address, Name)           │
 │   • Maps           (Regex patterns, Field mappings)        │
 └──────────────────────────────┬─────────────────────────────┘
-                              │
-                              ▼
+                               │
+                               ▼
 ┌────────────────────────────────────────────────────────────┐
 │                        API Layer                           │
 │   • Endpoints        (current API + async wrappers)        │
@@ -32,8 +32,8 @@
 │   • Async Client     (TTL cache, in-flight dedup)          │
 │   • Auth             (API Key or OAuth2)                   │
 └──────────────────────────────┬─────────────────────────────┘
-                              │
-                              ▼
+                               │
+                               ▼
 ┌────────────────────────────────────────────────────────────┐
 │                  Infrastructure Layer                      │
 │   • Config         (Dynaconf, settings + secrets)          │
@@ -190,9 +190,6 @@ This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `
 - SDK-level control: direct access to retries, pooling, and timeout behavior.
 - Fewer abstraction layers: `requests` is built on top of `urllib3`.
 - Operational consistency: easier to keep transport behavior explicit in a reusable library.
-
-`requests` remains a good choice for application scripts and one-off integrations where
-concise syntax is the main priority.
 
 ---
 
