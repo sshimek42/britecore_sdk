@@ -111,8 +111,11 @@ class LoadClientSettings:
                         ]
                         missing_env_keys = []
                         for key in required_keys:
-                            # Check for BRITECORE_LIBRARIES_{KEY} env var (the configured Dynaconf prefix)
-                            env_val = os.environ.get(f"BRITECORE_LIBRARIES_{key.upper()}")
+                            # required_keys contains lowercase names (e.g. "base_url").
+                            # Dynaconf reads BRITECORE_LIBRARIES_BASE_URL for key "base_url",
+                            # so we uppercase the key to form the expected env var name.
+                            env_key = f"BRITECORE_LIBRARIES_{key.upper()}"
+                            env_val = os.environ.get(env_key)
                             config_val = settings.get(key, default=None)
                             if not env_val and config_val:
                                 missing_env_keys.append(key)

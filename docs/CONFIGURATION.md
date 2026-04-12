@@ -146,11 +146,12 @@ $env:system = "example_site"
 3. `target_site` environment variable
 
 **Role of `target_site`:** `target_site` selects which section of `.secrets.toml` (and
-`settings.toml`) is used to load credentials. When all required credentials are supplied via
+`settings.toml`) is used to load credentials. When **all** required credentials are supplied via
 `BRITECORE_LIBRARIES_*` environment variables, the specific `target_site` value does not affect
 which credentials are loaded — env vars take precedence over TOML values regardless of the
-section name. However, `target_site` is still required for client initialization; you can use any
-non-empty string, or pass it explicitly to `init_api_client()`.
+section name. However, `target_site` is still required for client initialization. If any required
+credential is missing from env vars, the client will fall back to the `.secrets.toml` section
+matching the `target_site` value, so the name must correspond to a real section in that case.
 
 **Priority order for other config values (highest to lowest):**
 
