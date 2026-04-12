@@ -39,19 +39,14 @@ python -m pip install -e .
 API-only profile (recommended):
 
 - If you are only calling BriteCore APIs, stop at the base install above.
-- You do **not** need database/browser utilities for API wrappers.
 
 Optional extras (only if your app explicitly uses those helpers):
 
 ```powershell
-python -m pip install -e ".[database]"   # pyodbc utilities
-python -m pip install -e ".[browser]"    # selenium utilities
 python -m pip install -e ".[all]"        # all optional extras
 ```
 
 ```bash
-python -m pip install -e ".[database]"   # pyodbc utilities
-python -m pip install -e ".[browser]"    # selenium utilities
 python -m pip install -e ".[all]"        # all optional extras
 ```
 
@@ -81,8 +76,8 @@ export system="your_system"
 
 Configure site values in:
 
-- `src/britecore_libraries/config/settings.toml` — default runtime settings (timeouts/retries/browser)
-- `src/britecore_libraries/config/.secrets.toml` — credentials and optional utility keys (`base_url`, `client_id`, `client_secret`, `api_key`, `db_conn_string`, `db_conn_options`, `web_user`, `web_pass`, `web_browser`)
+- `src/britecore_libraries/config/settings.toml` — default runtime settings
+- `src/britecore_libraries/config/.secrets.toml` — credentials (`base_url`, `client_id`, `client_secret`, `api_key`)
 
 Required keys in `.secrets.toml`:
 
@@ -93,12 +88,6 @@ Authentication behavior is automatic:
 
 - API key auth when `client_id` and `client_secret` are blank
 - OAuth auth when both are provided
-
-Optional utility notes:
-
-- ODBC utility config is site-scoped and loaded only when calling `get_cursor(...)`.
-- ODBC config lookup requires explicit `target_site` in the call when you do not pass `conn_string`/`conn_options` directly.
-- Selenium uses flat keys from config (`web_browser`, `web_user`, `web_pass`) and lets `get_driver(browser=...)` override config browser.
 
 ## Smoke checks
 
@@ -135,19 +124,6 @@ client = get_api_client()
 
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
-```
-
-## Optional utility examples
-
-```python
-from britecore_libraries.utils.britecore_odbc import get_cursor
-from britecore_libraries.utils.britecore_selenium import get_driver
-
-# ODBC: load db_conn_string/db_conn_options from [your_site] in .secrets.toml
-cursor = get_cursor(target_site="your_site")
-
-# Selenium: explicit browser overrides configured web_browser
-driver = get_driver(browser="Firefox")
 ```
 
 ## Async cached wrappers

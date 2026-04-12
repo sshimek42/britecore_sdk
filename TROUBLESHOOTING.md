@@ -163,60 +163,6 @@ Or just use environment variables (they override file settings).
 
 ## Runtime Issues
 
-### "target_site is required when loading ODBC settings from config"
-
-**Cause:** `britecore_odbc.get_cursor(...)` was called without explicit
-`target_site` and without explicit `conn_string`/`conn_options`.
-
-**Solution:**
-
-```python
-from britecore_libraries.utils.britecore_odbc import get_cursor
-
-# Config-backed ODBC usage (reads db_conn_* from [production] in .secrets.toml)
-cursor = get_cursor(target_site="production")
-
-# Or bypass config lookup entirely
-cursor = get_cursor(
-    conn_string="Driver={ODBC Driver 17 for SQL Server};Server=...;Database=...;",
-    conn_options={"autocommit": True, "timeout": 30},
-)
-```
-
-Ensure the selected site section in `src/britecore_libraries/config/.secrets.toml`
-contains both:
-
-- `db_conn_string`
-- `db_conn_options` (TOML inline table / dict)
-
----
-
-### "Invalid browser specified" when using Selenium utility
-
-**Cause:** Unsupported `web_browser` config value or unsupported
-`get_driver(browser=...)` value.
-
-Supported values: `Edge`, `Firefox`, `Chrome`, `Opera`, `Safari`
-(case-insensitive).
-
-**Solution:**
-
-```toml
-[production]
-web_browser = "Edge"
-web_user = "selenium_user"
-web_pass = "selenium_password"
-```
-
-```python
-from britecore_libraries.utils.britecore_selenium import get_driver
-
-# Override configured web_browser for this call
-driver = get_driver(browser="Firefox")
-```
-
----
-
 ### "No Windows console found" from `questionary` in PyCharm
 
 **Cause:** Some IDE run consoles on Windows do not expose a native Win32

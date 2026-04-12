@@ -29,7 +29,6 @@ settings.validators.register(
         must_exist=True,
         is_type_of=str,
     ),
-    Validator("web_retry", "web_timeout", "web_timeout_long", is_type_of=int),
 )
 # Only validate site-specific keys when an explicit (non-default) environment
 # is active.  The default environment intentionally omits API credentials, so
@@ -109,54 +108,9 @@ class LoadClientSettings:
                         client_id=settings.get("client_id", default=""),
                         client_secret=settings.get("client_secret", default=""),
                         api_key=settings.get("api_key", default=""),
-                        db_conn_string=settings.get("db_conn_string", default=""),
-                        db_conn_options=settings.get("db_conn_options", default={}),
-                        web_retry=settings.get("web_retry"),
-                        web_timeout=settings.get("web_timeout"),
-                        web_timeout_long=settings.get("web_timeout_long"),
-                        web_browser=settings.get("web_browser", default=""),
                     )
             except Exception as exc:
                 raise BritecoreError.ConfigurationError(
                     f"Failed to load configuration for target_site '{target_site}': {exc}"
                 ) from exc
         return settings
-
-
-def load_database_config(target_site: str) -> tuple[str, dict[str, Any]]:
-    """Load and validate database configuration for ODBC utilities.
-
-    This keeps DB validation opt-in: only code paths that need ODBC call this
-    helper, so API-only consumers are not required to define DB settings.
-    """
-    if not target_site or not target_site.strip():
-        raise BritecoreError.ConfigurationError(
-            "target_site is required to load database configuration"
-        )
-
-    with settings.using_env(target_site):
-        conn_string = settings.get("db_conn_string")
-        conn_options = settings.get("db_conn_options")
-
-    missing_keys: list[str] = []
-    if not conn_string:
-        missing_keys.append("db_conn_string")
-    if conn_options is None:
-        missing_keys.append("db_conn_options")
-
-    if missing_keys:
-        keys = ", ".join(missing_keys)
-        raise BritecoreError.ConfigurationError(
-            f"Missing database configuration key(s) for '{target_site}': {keys}"
-        )
-
-    if not isinstance(conn_string, str):
-        raise BritecoreError.ConfigurationError(
-            f"Invalid type for '{target_site}.db_conn_string': expected str"
-        )
-    if not isinstance(conn_options, dict):
-        raise BritecoreError.ConfigurationError(
-            f"Invalid type for '{target_site}.db_conn_options': expected dict"
-        )
-
-    return conn_string, conn_options
