@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-import britecore_libraries.api.api_calls as api_calls_module
+import britecore_sdk.api.api_calls as api_calls_module
 
 
 class TestApiCallsClientState:

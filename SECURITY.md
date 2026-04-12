@@ -2,7 +2,7 @@
 
 *Last updated: April 7, 2026*
 
-This document describes how `britecore_libraries` handles security vulnerabilities and the expectations for reporting and patching.
+This document describes how `britecore_sdk` handles security vulnerabilities and the expectations for reporting and patching.
 
 ## Reporting a Vulnerability
 
@@ -77,11 +77,11 @@ Security patches are provided for:
 1. **Keep dependencies up to date**
 
    ```powershell
-   pip install --upgrade britecore_libraries
+   pip install --upgrade britecore_sdk
    ```
 
    ```bash
-   pip install --upgrade britecore_libraries
+   pip install --upgrade britecore_sdk
    ```
 
 2. **Never commit `.secrets.toml`**

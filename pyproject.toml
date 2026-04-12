@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "britecore_libraries"
+name = "britecore_sdk"
 version = "1.1.0"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
@@ -40,7 +40,7 @@ interactive = [
     "questionary~=2.1.0",
 ]
 all = [
-    "britecore_libraries[interactive]",
+    "britecore_sdk[interactive]",
 ]
 dev = [
     "pytest>=9.0.3",
@@ -54,7 +54,7 @@ dev = [
     "pre-commit>=4.2.0",
     "pymarkdownlnt>=0.9.32",
     "pip-audit>=2.9.0",
-    "britecore_libraries[all]",
+    "britecore_sdk[all]",
 ]
 docs = [
     "sphinx>=8.2.3,<9.1",
@@ -65,14 +65,14 @@ docs = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-britecore_libraries = ["py.typed", "config/*.toml", "resources/*"]
+britecore_sdk = ["py.typed", "config/*.toml", "resources/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "--cov=src/britecore_libraries --cov-report=html --cov-report=term-missing --strict-markers"
+addopts = "--cov=src/britecore_sdk --cov-report=html --cov-report=term-missing --strict-markers"
 markers = [
     "unit: unit tests",
     "integration: integration tests (mocked transport)",
@@ -81,7 +81,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["src/britecore_libraries"]
+source = ["src/britecore_sdk"]
 omit = [
     "*/tests/*",
     "*/site-packages/*",
@@ -123,5 +123,5 @@ exclude = [
     ".venv/",
     ".*egg-info/",
     "htmlcov/",
-    "src/britecore_libraries/build/",
+    "src/britecore_sdk/build/",
 ]

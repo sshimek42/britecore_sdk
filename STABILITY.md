@@ -2,11 +2,11 @@
 
 *Last updated: April 7, 2026*
 
-This document outlines the stability commitments, support expectations, and versioning practices for `britecore_libraries`.
+This document outlines the stability commitments, support expectations, and versioning practices for `britecore_sdk`.
 
 ## Version Policy
 
-`britecore_libraries` follows [Semantic Versioning](https://semver.org/):
+`britecore_sdk` follows [Semantic Versioning](https://semver.org/):
 
 - **Major version** (e.g., `2.0.0`) — Breaking API changes
 - **Minor version** (e.g., `1.1.0`) — New features, backward compatible

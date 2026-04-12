@@ -8,7 +8,7 @@ Canonical source: this file. `docs/unimplemented_api_stubs.md` includes this con
 ## Status
 
 There are currently **no unimplemented BriteCore API wrappers** in
-`src/britecore_libraries/api/api_calls/v2/`.
+`src/britecore_sdk/api/api_calls/v2/`.
 
 ## How this file is used
 
@@ -19,10 +19,10 @@ Use this lightweight format:
 
 | Domain | Planned module | Planned calls | Status |
 | --- | --- | ---: | --- |
-| `example_domain` | `src/britecore_libraries/api/api_calls/v2/example_domain.py` | 3 | Planned |
+| `example_domain` | `src/britecore_sdk/api/api_calls/v2/example_domain.py` | 3 | Planned |
 
 ## Source of truth
 
-- Endpoint wrappers: `src/britecore_libraries/api/api_calls/v2/`
+- Endpoint wrappers: `src/britecore_sdk/api/api_calls/v2/`
 - Usage and examples: `API.md`
 - Generated API docs: `docs/api_reference.md`

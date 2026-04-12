@@ -7,40 +7,40 @@ from types import ModuleType
 import pytest
 
 _DEFERRABLE_SUBMODULES = [
-    "britecore_libraries",
-    "britecore_libraries.api.api_calls",
-    "britecore_libraries.models",
-    "britecore_libraries.models.contact",
-    "britecore_libraries.validators",
-    "britecore_libraries.validators.address_validator",
+    "britecore_sdk",
+    "britecore_sdk.api.api_calls",
+    "britecore_sdk.models",
+    "britecore_sdk.models.contact",
+    "britecore_sdk.validators",
+    "britecore_sdk.validators.address_validator",
 ]
 
 
 def _import_fresh_package(monkeypatch: pytest.MonkeyPatch) -> ModuleType:
     """Import the package root after clearing selected cached modules.
 
-    When ``britecore_libraries.api.api_calls`` is evicted from *sys.modules*
+    When ``britecore_sdk.api.api_calls`` is evicted from *sys.modules*
     and then reimported, Python's import machinery also sets the
     ``api_calls`` *attribute* on the parent package object
-    (``britecore_libraries.api``).  ``monkeypatch.delitem`` only restores the
+    (``britecore_sdk.api``).  ``monkeypatch.delitem`` only restores the
     ``sys.modules`` dict entry on teardown; it does **not** touch parent-package
-    attributes.  This leaves ``britecore_libraries.api.api_calls`` (accessed via
+    attributes.  This leaves ``britecore_sdk.api.api_calls`` (accessed via
     the attribute chain by ``import ... as`` statements) pointing at the
     freshly-created module even after the monkeypatch is undone.
 
     We therefore use ``monkeypatch.setattr`` to snapshot the current value of
     that attribute so it is also properly restored after each test.
     """
-    # Preserve parent-package attribute for britecore_libraries.api.api_calls
-    # so that attribute-chain imports (``import britecore_libraries.api.api_calls
+    # Preserve parent-package attribute for britecore_sdk.api.api_calls
+    # so that attribute-chain imports (``import britecore_sdk.api.api_calls
     # as X``) resolve to the original module after sys.modules is restored.
-    _api_pkg = sys.modules.get("britecore_libraries.api")
+    _api_pkg = sys.modules.get("britecore_sdk.api")
     if _api_pkg is not None and hasattr(_api_pkg, "api_calls"):
         monkeypatch.setattr(_api_pkg, "api_calls", _api_pkg.api_calls)
 
     for module_name in _DEFERRABLE_SUBMODULES:
         monkeypatch.delitem(sys.modules, module_name, raising=False)
-    return importlib.import_module("britecore_libraries")
+    return importlib.import_module("britecore_sdk")
 
 
 class TestPackageRootExports:
@@ -54,10 +54,10 @@ class TestPackageRootExports:
         """Importing the root package should not eagerly import heavy submodules."""
         package = _import_fresh_package(monkeypatch)
 
-        assert package.logger.name == "britecore_libraries"
-        assert "britecore_libraries.api.api_calls" not in sys.modules
-        assert "britecore_libraries.models" not in sys.modules
-        assert "britecore_libraries.validators" not in sys.modules
+        assert package.logger.name == "britecore_sdk"
+        assert "britecore_sdk.api.api_calls" not in sys.modules
+        assert "britecore_sdk.models" not in sys.modules
+        assert "britecore_sdk.validators" not in sys.modules
 
     @pytest.mark.unit
     def test_root_exports_resolve_on_first_access(
@@ -68,13 +68,13 @@ class TestPackageRootExports:
         package = _import_fresh_package(monkeypatch)
 
         assert package.PhoneValidator.__name__ == "PhoneValidator"
-        assert "britecore_libraries.validators" in sys.modules
+        assert "britecore_sdk.validators" in sys.modules
 
         assert package.BritecoreContact.__name__ == "BritecoreContact"
-        assert "britecore_libraries.models" in sys.modules
+        assert "britecore_sdk.models" in sys.modules
 
         assert callable(package.get_api_client)
-        assert "britecore_libraries.api.api_calls" in sys.modules
+        assert "britecore_sdk.api.api_calls" in sys.modules
 
     @pytest.mark.unit
     def test_root_all_and_dir_include_supported_exports(

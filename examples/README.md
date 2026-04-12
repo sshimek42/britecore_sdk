@@ -1,6 +1,6 @@
 # Examples
 
-This folder contains runnable usage samples for `britecore_libraries`.
+This folder contains runnable usage samples for `britecore_sdk`.
 
 ## Available scripts
 

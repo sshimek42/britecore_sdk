@@ -2,7 +2,7 @@
 
 ## License: Apache License 2.0
 
-**britecore_libraries** is distributed under the [Apache License 2.0](LICENSE).
+**britecore_sdk** is distributed under the [Apache License 2.0](LICENSE).
 
 ### Why Apache 2.0?
 

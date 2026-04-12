@@ -5,13 +5,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 from urllib3.exceptions import TimeoutError as urlTimeoutError
 
-from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.exceptions import BritecoreError
 
 
 def _initialized_client(mock_settings):
     with patch(
-        "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        "britecore_sdk.api.britecore_api_client.LoadClientSettings"
     ) as loader:
         loader_instance = MagicMock()
         loader_instance.load_config.return_value = mock_settings

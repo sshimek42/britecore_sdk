@@ -1,6 +1,6 @@
 ﻿# Configuration Guide
 
-This guide explains how to configure `britecore_libraries` for your environment.
+This guide explains how to configure `britecore_sdk` for your environment.
 
 ## Overview
 
@@ -16,7 +16,7 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 ### Location
 
 ```text
-src/britecore_libraries/config/
+src/britecore_sdk/config/
 |-- sample/
 |   |-- settings.toml  # Sample/template for public settings (tracked in git)
 |   `-- .secrets.toml  # Sample/template for secrets (tracked in git, no real values)
@@ -81,7 +81,7 @@ api_key = "your_real_api_key"
 
 **How to create:**
 
-1. Copy `src/britecore_libraries/config/sample/.secrets.toml` to `src/britecore_libraries/config/.secrets.toml`
+1. Copy `src/britecore_sdk/config/sample/.secrets.toml` to `src/britecore_sdk/config/.secrets.toml`
 2. Replace placeholder values with your real base_url and credentials for each site
 3. **Never commit** `.secrets.toml` (it's already gitignored)
 
@@ -97,7 +97,7 @@ api_key = "your_real_api_key"
 
 ```python
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
-from britecore_libraries.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls import get_api_client
 
 client = get_api_client()
 ```
@@ -111,7 +111,7 @@ client = get_api_client()
 ### Via `get_api_client()` (Lazy, Recommended)
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls import get_api_client
 
 # Lazy initialization -- config is loaded on first use
 client = get_api_client()
@@ -195,25 +195,25 @@ When you call `client.init_client()`, Dynaconf validates required keys. This is 
 You can also validate all configured site sections directly:
 
 ```bash
-python -m britecore_libraries.utils.check_site_configs
+python -m britecore_sdk.utils.check_site_configs
 ```
 
 ```powershell
-python -m britecore_libraries.utils.check_site_configs
+python -m britecore_sdk.utils.check_site_configs
 ```
 
 Then run an end-to-end readiness check for a specific site:
 
 ```bash
-python -m britecore_libraries.utils.healthcheck --site example_site
+python -m britecore_sdk.utils.healthcheck --site example_site
 ```
 
 ```powershell
-python -m britecore_libraries.utils.healthcheck --site example_site
+python -m britecore_sdk.utils.healthcheck --site example_site
 ```
 
 `check_site_configs` validates each site section in
-`src/britecore_libraries/config/.secrets.toml` using this rule:
+`src/britecore_sdk/config/.secrets.toml` using this rule:
 
 - `base_url` is required
 - auth must be either:
@@ -306,19 +306,19 @@ python app.py
 2. Check `.secrets.toml` has the site section with required auth keys:
 
    ```powershell
-   Select-String -Path "src/britecore_libraries/config/.secrets.toml" -Pattern "\[example_site\]"
+   Select-String -Path "src/britecore_sdk/config/.secrets.toml" -Pattern "\[example_site\]"
    ```
 
 3. Check `.secrets.toml` exists and has values:
 
    ```powershell
-   Get-Content "src/britecore_libraries/config/.secrets.toml"
+   Get-Content "src/britecore_sdk/config/.secrets.toml"
    ```
 
 4. Test config loading directly:
 
    ```python
-   from britecore_libraries.config.config import LoadClientSettings
+   from britecore_sdk.config.config import LoadClientSettings
 
    settings = LoadClientSettings("example_site")
    print(settings)  # Should show loaded config
@@ -333,7 +333,7 @@ python app.py
 2. Verify `base_url` matches the BriteCore instance:
 
    ```python
-   from britecore_libraries import get_api_client
+   from britecore_sdk import get_api_client
    client = get_api_client()
    print(client.base_url)  # Should be your BriteCore instance
    ```
@@ -374,7 +374,7 @@ python app.py
 
 ## Private Maps Behavior
 
-Some features in britecore_libraries rely on map files (such as policy, field, or agency maps) located in `src/britecore_libraries/maps/`. These files provide environment-specific mappings and are selected at runtime based on environment variables.
+Some features in britecore_sdk rely on map files (such as policy, field, or agency maps) located in `src/britecore_sdk/maps/`. These files provide environment-specific mappings and are selected at runtime based on environment variables.
 
 - **Map file selection:**
   - The environment variable `system` determines which map file is loaded (e.g., `britecore_policy_name_map.py`).
@@ -393,11 +393,11 @@ Some features in britecore_libraries rely on map files (such as policy, field, o
 
 - **Troubleshooting:**
   - Ensure the correct `system` value is set in your environment.
-  - Verify that the corresponding map file exists in `src/britecore_libraries/maps/`.
+  - Verify that the corresponding map file exists in `src/britecore_sdk/maps/`.
   - If you see errors about missing maps or unset variables, set the required env vars and restart your process.
 
 ## See Also
 
 - [GETTING_STARTED.md](../GETTING_STARTED.md) -- Quick setup guide
 - [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) -- Common errors
-- [src/britecore_libraries/config/config.py](../src/britecore_libraries/config/config.py) -- Config loader implementation
+- [src/britecore_sdk/config/config.py](../src/britecore_sdk/config/config.py) -- Config loader implementation

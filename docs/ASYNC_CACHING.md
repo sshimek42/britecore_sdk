@@ -4,9 +4,9 @@ Use this guide for exact behavior of async `v2` wrappers and cache tuning option
 
 ## Where async wrappers live
 
-- Wrapper exports: `src/britecore_libraries/api/api_calls/v2/__init__.py`
-- Async transport: `src/britecore_libraries/api/britecore_async_api_client.py`
-- Cache primitives: `src/britecore_libraries/api/request_cache.py`
+- Wrapper exports: `src/britecore_sdk/api/api_calls/v2/__init__.py`
+- Async transport: `src/britecore_sdk/api/britecore_async_api_client.py`
+- Cache primitives: `src/britecore_sdk/api/request_cache.py`
 
 ## Default behavior
 
@@ -27,7 +27,7 @@ Mutation wrappers invalidate related read namespaces on successful (`HTTP 200`) 
 ```python
 import asyncio
 
-from britecore_libraries.api.api_calls.v2 import (
+from britecore_sdk.api.api_calls.v2 import (
     acreate_full_quote,
     aget_contact,
     aget_quote,
@@ -89,7 +89,7 @@ policy = await aretrieve_policy(
 The module-level async client instance is shared and lazily initialized:
 
 ```python
-from britecore_libraries.api.api_calls import get_async_api_client
+from britecore_sdk.api.api_calls import get_async_api_client
 
 client = get_async_api_client()
 removed = client.invalidate_cache_namespaces(["quotes", "contacts", "policies"])

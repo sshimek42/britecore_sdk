@@ -97,7 +97,7 @@ Minimum validation command set for API-client or exception changes:
 ```powershell
 python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 python -m pytest tests/unit/test_api_client.py -v
-python -c "import britecore_libraries; from britecore_libraries.api.britecore_api_client import BritecoreAPIClient; print(britecore_libraries.__version__)"
+python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client import BritecoreAPIClient; print(britecore_sdk.__version__)"
 ```
 
 Run targeted tests first:
@@ -126,7 +126,7 @@ Quality gates run in CI:
 
 ## Project-specific coding conventions
 
-- Treat `src/britecore_libraries/` as source of truth; ignore generated artifacts under build and egg-info folders.
+- Treat `src/britecore_sdk/` as source of truth; ignore generated artifacts under build and egg-info folders.
 - For endpoint wrappers, follow existing `v2` module pattern: build payload, call `API_CLIENT.do_request(...)`, return `API_CLIENT.process_result(...)`.
 - Use `RequestParameters` and `**kwargs: Unpack[RequestParameters]` in new endpoint functions where request overrides are supported.
 - Use `API_CLIENT.multiple_parameter_verification(...)` for mutually exclusive identifiers.
@@ -134,7 +134,7 @@ Quality gates run in CI:
 
 ## Repo layout contract
 
-- Edit authored code in `src/britecore_libraries/` and tests in `tests/`; avoid direct edits in generated paths like `build/`, `dist/`, `.venv/`, `htmlcov/`, and `docs/_build/`.
+- Edit authored code in `src/britecore_sdk/` and tests in `tests/`; avoid direct edits in generated paths like `build/`, `dist/`, `.venv/`, `htmlcov/`, and `docs/_build/`.
 - Keep root docs as canonical when mirrored by docs includes (currently `PYTHON_COMPATIBILITY.md` and `UNIMPLEMENTED_API_STUBS.md`), and let `docs/*.md` include those files.
 - Keep dependency/version definitions in `pyproject.toml` as the single source of truth.
 
@@ -148,4 +148,4 @@ Quality gates run in CI:
 
 ## Need help?
 
-If behavior is unclear, compare your change against existing endpoint modules in `src/britecore_libraries/api/api_calls/v2/` and check `AGENTS.md` for current guidance.
+If behavior is unclear, compare your change against existing endpoint modules in `src/britecore_sdk/api/api_calls/v2/` and check `AGENTS.md` for current guidance.

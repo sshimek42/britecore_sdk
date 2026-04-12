@@ -5,8 +5,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from britecore_libraries.api.api_calls.v2 import lines as lines_module
-from britecore_libraries.utils import interactive_menu
+from britecore_sdk.api.api_calls.v2 import lines as lines_module
+from britecore_sdk.utils import interactive_menu
 
 
 class TestLineMenu:
