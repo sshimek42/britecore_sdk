@@ -143,7 +143,7 @@ class TestInitApiClientFallback:
         fake_ctor = MagicMock(return_value=fake_client)
         monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
 
-        result = module.init_api_client(target_site="explicit_site")
+        module.init_api_client(target_site="explicit_site")
 
         fake_ctor.assert_called_once_with("explicit_site")
 
