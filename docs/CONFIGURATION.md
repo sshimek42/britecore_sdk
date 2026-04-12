@@ -17,10 +17,16 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 
 ```text
 src/britecore_libraries/config/
-|-- settings.toml      # Public settings (tracked in git)
-|-- .secrets.toml      # Secrets (gitignored)
+|-- sample/
+|   |-- settings.toml  # Sample/template for public settings (tracked in git)
+|   `-- .secrets.toml  # Sample/template for secrets (tracked in git, no real values)
+|-- settings.toml      # Your public settings (tracked in git)
+|-- .secrets.toml      # Your secrets (gitignored — never commit)
 `-- config.py          # Dynaconf loader
 ```
+
+> **Tip:** Copy the files from `config/sample/` to `config/` as a starting point,
+> then fill in your real values.
 
 ### `settings.toml` (Public)
 
@@ -71,8 +77,8 @@ api_key = "your_real_api_key"
 
 **How to create:**
 
-1. Create `.secrets.toml` in `src/britecore_libraries/config/`
-2. Add base_url and credentials for each site
+1. Copy `src/britecore_libraries/config/sample/.secrets.toml` to `src/britecore_libraries/config/.secrets.toml`
+2. Replace placeholder values with your real base_url and credentials for each site
 3. **Never commit** `.secrets.toml` (it's already gitignored)
 
 **File format:**
