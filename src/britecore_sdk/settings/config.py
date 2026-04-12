@@ -18,7 +18,11 @@ setting_files_full: list[Path] = []
 for each_file in setting_files:
     setting_files_full.append(curr_dir / each_file)
 
-settings = Dynaconf(settings_files=setting_files_full, environments=True)
+settings = Dynaconf(
+    settings_files=setting_files_full,
+    environments=True,
+    envvar_prefix="BRITECORE_SDK",
+)
 
 
 def get_target_site() -> str | None:
@@ -107,8 +111,11 @@ class LoadClientSettings:
                         ]
                         missing_env_keys = []
                         for key in required_keys:
-                            # Dynaconf supports both UPPERCASE and lowercase env vars, check both
-                            env_val = os.environ.get(key) or os.environ.get(key.upper())
+                            # required_keys contains lowercase names (e.g. "base_url").
+                            # Dynaconf reads BRITECORE_SDK_BASE_URL for key "base_url",
+                            # so we uppercase the key to form the expected env var name.
+                            env_key = f"BRITECORE_SDK_{key.upper()}"
+                            env_val = os.environ.get(env_key)
                             config_val = settings.get(key, default=None)
                             if not env_val and config_val:
                                 missing_env_keys.append(key)
@@ -119,7 +126,8 @@ class LoadClientSettings:
                                     "from environment variables and loaded from config files "
                                     "instead: %s. This means a mix of env and config file "
                                     "values is being used. For full environment-only config, "
-                                    "set all required keys in the environment."
+                                    "set all required keys as BRITECORE_SDK_* environment "
+                                    "variables (e.g., BRITECORE_SDK_BASE_URL)."
                                 ),
                                 ", ".join(missing_env_keys),
                             )

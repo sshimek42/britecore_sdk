@@ -136,10 +136,10 @@ client_secret = "..."             # Required (if no API key)
 **Or use environment variables:**
 
 ```powershell
-$env:BRITECORE_LIBRARIES_BASE_URL="https://..."
-$env:BRITECORE_LIBRARIES_API_KEY="..."
-$env:BRITECORE_LIBRARIES_CLIENT_ID="..."
-$env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+$env:BRITECORE_SDK_BASE_URL="https://..."
+$env:BRITECORE_SDK_API_KEY="..."
+$env:BRITECORE_SDK_CLIENT_ID="..."
+$env:BRITECORE_SDK_CLIENT_SECRET="..."
 ```
 
 Validate site sections and key combinations quickly:

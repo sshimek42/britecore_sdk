@@ -225,7 +225,7 @@ src/britecore_sdk/
 ```python
 
 # Dynaconf loads from multiple sources (highest to lowest priority)
-# 1. Environment variables (BRITECORE_LIBRARIES_*)
+# 1. Environment variables (BRITECORE_SDK_*)
 # 2. .secrets.toml (base_url, api_key, client_id, client_secret)
 # 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long)
 # 4. Built-in defaults
@@ -603,11 +603,13 @@ Optional extras:
 # settings.toml contains only urllib3 defaults (no credentials)
 
 # Use environment variables for all credentials
-export BRITECORE_LIBRARIES_BASE_URL="https://your-instance.com"
-export BRITECORE_LIBRARIES_API_KEY="..."
+export BRITECORE_SDK_BASE_URL="https://your-instance.com"
+export BRITECORE_SDK_API_KEY="..."
 # or OAuth:
-export BRITECORE_LIBRARIES_CLIENT_ID="..."
-export BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+export BRITECORE_SDK_CLIENT_ID="..."
+export BRITECORE_SDK_CLIENT_SECRET="..."
+# target_site is required; it selects the .secrets.toml section but any name works when
+# all credentials are set via BRITECORE_SDK_* env vars (env vars take precedence).
 export target_site="production"
 
 ```
@@ -618,11 +620,13 @@ export target_site="production"
 # settings.toml contains only urllib3 defaults (no credentials)
 
 # Use environment variables for all credentials
-$env:BRITECORE_LIBRARIES_BASE_URL="https://your-instance.com"
-$env:BRITECORE_LIBRARIES_API_KEY="..."
+$env:BRITECORE_SDK_BASE_URL="https://your-instance.com"
+$env:BRITECORE_SDK_API_KEY="..."
 # or OAuth:
-$env:BRITECORE_LIBRARIES_CLIENT_ID="..."
-$env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+$env:BRITECORE_SDK_CLIENT_ID="..."
+$env:BRITECORE_SDK_CLIENT_SECRET="..."
+# target_site is required; it selects the .secrets.toml section but any name works when
+# all credentials are set via BRITECORE_SDK_* env vars (env vars take precedence).
 $env:target_site="production"
 
 ```
