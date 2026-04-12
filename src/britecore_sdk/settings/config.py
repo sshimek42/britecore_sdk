@@ -20,6 +20,28 @@ for each_file in setting_files:
 
 settings = Dynaconf(settings_files=setting_files_full, environments=True)
 
+
+def get_target_site() -> str | None:
+    """
+    Return the active target site name from settings or the environment.
+
+    Resolution order (first non-empty value wins):
+
+    1. ``target_site`` key in ``settings.toml`` (under ``[default]`` or a
+       site-specific section).
+    2. ``target_site`` environment variable (backward-compatible fallback).
+
+    Returns:
+        The target site name, or ``None`` if neither source provides one.
+    """
+    # Dynaconf reads TOML values; os.environ fallback preserves backward
+    # compatibility with the historical env-var-only approach.
+    site: str | None = settings.get("target_site", default=None) or os.environ.get(
+        "target_site"
+    )
+    return site or None
+
+
 settings.validators.register(
     Validator(
         "base_url",

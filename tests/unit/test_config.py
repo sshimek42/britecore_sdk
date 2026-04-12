@@ -45,6 +45,109 @@ class TestLoadClientSettings:
             assert result is not None
 
 
+class TestGetTargetSite:
+    """Tests for get_target_site() helper."""
+
+    @pytest.mark.unit
+    def test_returns_none_when_not_set(self, monkeypatch):
+        """Returns None when neither settings.toml nor env provides target_site."""
+        monkeypatch.delenv("target_site", raising=False)
+        with patch("britecore_sdk.settings.config.settings") as mock_cfg:
+            mock_cfg.get.return_value = None
+            from britecore_sdk.settings.config import get_target_site
+
+            assert get_target_site() is None
+
+    @pytest.mark.unit
+    def test_reads_from_settings_toml(self, monkeypatch):
+        """Returns the value from settings.toml when set there."""
+        monkeypatch.delenv("target_site", raising=False)
+        with patch("britecore_sdk.settings.config.settings") as mock_cfg:
+            mock_cfg.get.return_value = "toml_site"
+            from britecore_sdk.settings.config import get_target_site
+
+            result = get_target_site()
+            assert result == "toml_site"
+            mock_cfg.get.assert_called_once_with("target_site", default=None)
+
+    @pytest.mark.unit
+    def test_falls_back_to_env_var(self, monkeypatch):
+        """Falls back to the env var when settings.toml has no target_site."""
+        monkeypatch.setenv("target_site", "env_site")
+        with patch("britecore_sdk.settings.config.settings") as mock_cfg:
+            mock_cfg.get.return_value = None
+            from britecore_sdk.settings.config import get_target_site
+
+            assert get_target_site() == "env_site"
+
+    @pytest.mark.unit
+    def test_settings_toml_takes_precedence_over_env(self, monkeypatch):
+        """settings.toml value wins over the env var."""
+        monkeypatch.setenv("target_site", "env_site")
+        with patch("britecore_sdk.settings.config.settings") as mock_cfg:
+            mock_cfg.get.return_value = "toml_site"
+            from britecore_sdk.settings.config import get_target_site
+
+            assert get_target_site() == "toml_site"
+
+
+class TestInitApiClientFallback:
+    """Tests for init_api_client target_site resolution."""
+
+    @pytest.mark.unit
+    def test_raises_when_no_target_site(self, monkeypatch):
+        """Raises ConfigurationError when no target_site is available from any source."""
+        import importlib
+
+        import britecore_sdk.api.api_calls as api_calls_module
+
+        module = importlib.reload(api_calls_module)
+        monkeypatch.delenv("target_site", raising=False)
+        monkeypatch.setattr(module, "get_target_site", lambda: None)
+
+        with pytest.raises(module.BritecoreError.ConfigurationError):
+            module.init_api_client(None)
+
+    @pytest.mark.unit
+    def test_uses_settings_toml_fallback(self, monkeypatch):
+        """Uses target_site from settings.toml when not passed explicitly."""
+        import importlib
+
+        import britecore_sdk.api.api_calls as api_calls_module
+
+        module = importlib.reload(api_calls_module)
+        monkeypatch.delenv("target_site", raising=False)
+        monkeypatch.setattr(module, "get_target_site", lambda: "toml_site")
+
+        fake_client = MagicMock()
+        fake_ctor = MagicMock(return_value=fake_client)
+        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+
+        result = module.init_api_client()
+
+        fake_ctor.assert_called_once_with("toml_site")
+        fake_client.init_client.assert_called_once()
+        assert result is fake_client
+
+    @pytest.mark.unit
+    def test_explicit_arg_takes_precedence(self, monkeypatch):
+        """Explicit target_site argument takes precedence over settings.toml."""
+        import importlib
+
+        import britecore_sdk.api.api_calls as api_calls_module
+
+        module = importlib.reload(api_calls_module)
+        monkeypatch.setattr(module, "get_target_site", lambda: "toml_site")
+
+        fake_client = MagicMock()
+        fake_ctor = MagicMock(return_value=fake_client)
+        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+
+        result = module.init_api_client(target_site="explicit_site")
+
+        fake_ctor.assert_called_once_with("explicit_site")
+
+
 class TestConfigInitialization:
     """Tests for config module initialization."""
 
@@ -63,3 +166,10 @@ class TestConfigInitialization:
         from britecore_sdk.settings import settings
 
         assert settings is not None
+
+    @pytest.mark.unit
+    def test_get_target_site_exported(self):
+        """get_target_site is exported from the settings package."""
+        from britecore_sdk.settings import get_target_site
+
+        assert callable(get_target_site)

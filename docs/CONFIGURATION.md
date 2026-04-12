@@ -39,6 +39,9 @@ web_timeout = 30        # API request timeout in seconds
 web_retry = 10          # Number of retries for API requests
 web_timeout_long = 60   # Long-running API request timeout in seconds
 
+# Optionally set target_site here to avoid passing it in code or as an env var.
+# target_site = "example_site"
+
 # Site section definitions (no base_url or credentials — those go in .secrets.toml)
 [example_site]
 # Leave empty or add only non-sensitive configuration
@@ -51,6 +54,7 @@ web_timeout_long = 60   # Long-running API request timeout in seconds
 
 - Add new site section headers (credentials go in .secrets.toml)
 - Override default API request settings (`web_timeout`, `web_retry`, `web_timeout_long`)
+- Set `target_site` under `[default]` to avoid passing it in code or as an environment variable
 
 **Never commit:**
 
@@ -117,14 +121,15 @@ from britecore_sdk.api.api_calls import get_api_client
 client = get_api_client()
 ```
 
-Requires `target_site` environment variable (see below).
+Requires `target_site` to be set in `settings.toml`, as an environment variable, or passed
+explicitly to `init_api_client()` before calling `get_api_client()`.
 
 ## Environment Variables
 
-You can override config values with environment variables:
+You can set `target_site` and override config values with environment variables:
 
 ```powershell
-# Set the active site
+# Set the active site (alternative: set target_site in settings.toml [default])
 $env:target_site = "example_site"
 
 # Override a specific setting
@@ -134,7 +139,13 @@ $env:BRITECORE_LIBRARIES_BASE_URL = "custom.britecore.com"
 $env:system = "example_site"
 ```
 
-**Priority order (highest to lowest):**
+**`target_site` resolution order (first non-empty value wins):**
+
+1. Explicit argument passed to `init_api_client(target_site=...)`
+2. `target_site` key in `settings.toml` under `[default]`
+3. `target_site` environment variable
+
+**Priority order for other config values (highest to lowest):**
 
 1. Environment variables (e.g., `BRITECORE_LIBRARIES_*`)
 2. `.secrets.toml` values (all base_url and credentials)
@@ -230,7 +241,7 @@ The utility also warns when sensitive keys (`api_key`, `client_id`,
 | `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `.secrets.toml` site section or set `BRITECORE_LIBRARIES_BASE_URL` |
 | `BritecoreKeyError` | Missing `client_id`/`client_secret` | Add both for OAuth, or add `api_key` for API key auth |
 | `BritecoreKeyError` | Missing `api_key` | Add `api_key` to `.secrets.toml` |
-| Config not loading | `target_site` not set | Set `$env:target_site` or pass to `BritecoreAPIClient("site_name")` |
+| Config not loading | `target_site` not set | Set `target_site` in `settings.toml` `[default]`, set `$env:target_site`, or pass to `init_api_client(target_site="site_name")` |
 | `INCORRECT` in `check_site_configs` output | Missing required site keys in `.secrets.toml` | Add missing keys shown in `Missing Keys` column |
 
 ## Per-Environment Setup
@@ -295,13 +306,28 @@ python app.py
 
 ### "Config not loading" or "Key not found"
 
-1. Verify `target_site` is set:
+1. Verify `target_site` is set via one of these methods:
 
-   ```powershell
-   $env:target_site
-   ```
+   - **`settings.toml`** (recommended for persistent setup):
 
-   Should output your site name (e.g., `example_site`)
+     ```toml
+     [default]
+     target_site = "example_site"
+     ```
+
+   - **Environment variable**:
+
+     ```powershell
+     $env:target_site
+     ```
+
+     Should output your site name (e.g., `example_site`)
+
+   - **Explicit argument** in code:
+
+     ```python
+     init_api_client(target_site="example_site")
+     ```
 
 2. Check `.secrets.toml` has the site section with required auth keys:
 
