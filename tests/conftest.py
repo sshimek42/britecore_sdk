@@ -102,11 +102,11 @@ web_timeout = 5
 web_timeout_long = 50
 web_retry = 3
 
-[wausau]
-base_url = "https://wausau.api.example.com"
-client_id = "wausau_client"
-client_secret = "wausau_secret"
-api_key = "wausau_api_key"
+[test_site]
+base_url = "https://test_site.api.example.com"
+client_id = "test_client"
+client_secret = "test_secret"
+api_key = "test_api_key"
 """
     config_file = tmp_path / "test_config.toml"
     config_file.write_text(config_content)
@@ -116,7 +116,7 @@ api_key = "wausau_api_key"
 @pytest.fixture
 def env_api_key(monkeypatch):
     """Set up environment with API key auth."""
-    monkeypatch.setenv("target_site", "wausau")
+    monkeypatch.setenv("target_site", "test_site")
     monkeypatch.setenv("system", "mips")
     yield
     monkeypatch.delenv("target_site", raising=False)
@@ -126,7 +126,7 @@ def env_api_key(monkeypatch):
 @pytest.fixture
 def env_oauth(monkeypatch):
     """Set up environment with OAuth."""
-    monkeypatch.setenv("target_site", "wausau")
+    monkeypatch.setenv("target_site", "test_site")
     monkeypatch.setenv("system", "spectrum_v1")
     yield
     monkeypatch.delenv("target_site", raising=False)
