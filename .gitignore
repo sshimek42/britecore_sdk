@@ -182,8 +182,8 @@ venv1/
 .mypy_cache/
 .ruff_cache/
 # Configuration and secrets
-src/britecore_libraries/config/.secrets.toml
-src/britecore_libraries/config/settings.toml
+src/britecore_sdk/settings/.secrets.toml
+src/britecore_sdk/settings/settings.toml
 
 # Sensitive mapping data (do not commit real map payloads)
 src/britecore_libraries/maps/*_map.py

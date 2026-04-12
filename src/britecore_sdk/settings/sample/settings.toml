@@ -1,4 +1,4 @@
-# Sample settings.toml — copy to src/britecore_sdk/config/settings.toml and customize.
+# Sample settings.toml — copy to src/britecore_sdk/settings/settings.toml and customize.
 #
 # This file contains default non-secret runtime settings.
 # NEVER add credentials, base_url, api_key, client_id, or client_secret here.
