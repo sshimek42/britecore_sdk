@@ -7,6 +7,7 @@ from britecore_sdk.api.britecore_api_client import (
 )
 from britecore_sdk.api.britecore_async_api_client import AsyncBritecoreAPIClient
 from britecore_sdk.exceptions import BritecoreError
+from britecore_sdk.settings import get_target_site
 
 
 def _set_module_client_state(name: str, client: object) -> None:
@@ -19,8 +20,9 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
     Initializes and returns a configured Britecore API client instance.
 
     This function creates a new BritecoreAPIClient object using the specified target site
-    and initializes the client connection. The target site can be provided as an argument
-    or will default to the value of the 'target_site' environment variable.
+    and initializes the client connection. The target site can be provided as an argument,
+    or it will be resolved from ``settings.toml`` (``target_site`` key under ``[default]``)
+    or the ``target_site`` environment variable, in that order.
 
     Calling this function also sets the module-level ``_api_client`` so that the
     lazy proxy (``api_client``) used by endpoint wrappers resolves to this instance
@@ -28,17 +30,20 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
 
     Args:
         target_site: The target site URL or identifier for the Britecore API.
-                     Defaults to the value of the 'target_site' environment variable.
+                     If omitted, resolved from ``settings.toml`` or the
+                     ``target_site`` environment variable.
 
     Returns:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
-    if not target_site:
+    resolved = target_site or get_target_site()
+    if not resolved:
         raise BritecoreError.ConfigurationError(
-            "target_site must be specified explicitly; environment fallback is not allowed."
+            "target_site must be specified: pass it explicitly, set it in settings.toml "
+            "under [default], or export the 'target_site' environment variable."
         )
-    client: BritecoreAPIClient = BritecoreAPIClient(target_site)
+    client: BritecoreAPIClient = BritecoreAPIClient(resolved)
     client.init_client()
     _set_module_client_state("_api_client", client)
     return client
@@ -47,14 +52,20 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
 def init_async_api_client(target_site: str | None = None) -> AsyncBritecoreAPIClient:
     """Initialize and return a lazy async API client wrapper.
 
+    The target site can be provided as an argument, or it will be resolved from
+    ``settings.toml`` (``target_site`` key under ``[default]``) or the
+    ``target_site`` environment variable, in that order.
+
     Also sets the module-level ``_async_api_client`` so the lazy proxy resolves
     to this instance rather than re-initialising without a site on first use.
     """
-    if not target_site:
+    resolved = target_site or get_target_site()
+    if not resolved:
         raise BritecoreError.ConfigurationError(
-            "target_site must be specified explicitly; environment fallback is not allowed."
+            "target_site must be specified: pass it explicitly, set it in settings.toml "
+            "under [default], or export the 'target_site' environment variable."
         )
-    client = AsyncBritecoreAPIClient(target_site)
+    client = AsyncBritecoreAPIClient(resolved)
     _set_module_client_state("_async_api_client", client)
     return client
 

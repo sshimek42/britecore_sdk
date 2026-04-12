@@ -22,7 +22,26 @@ pip install britecore_sdk
 
 ### 2. Configure
 
-Set environment variables or create `src/britecore_sdk/settings/.secrets.toml`:
+Set `target_site` and credentials via `settings.toml`/`.secrets.toml` or environment variables.
+
+**Recommended: `settings.toml` + `.secrets.toml`**
+
+In `src/britecore_sdk/settings/settings.toml`:
+
+```toml
+[default]
+target_site = "production"
+```
+
+In `src/britecore_sdk/settings/.secrets.toml`:
+
+```toml
+[production]
+base_url = "https://your-britecore-instance.com"
+api_key = "your_api_key_here"
+```
+
+**Alternative: Environment variables**
 
 **Linux/macOS (bash):**
 
