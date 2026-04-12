@@ -36,17 +36,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-database = [
-    "pyodbc~=5.3.0",
-]
-browser = [
-    "selenium~=4.43.0",
-]
 interactive = [
     "questionary~=2.1.0",
 ]
 all = [
-    "britecore_libraries[database,browser,interactive]",
+    "britecore_libraries[interactive]",
 ]
 dev = [
     "pytest>=9.0.3",

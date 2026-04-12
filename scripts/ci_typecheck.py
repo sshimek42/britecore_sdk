@@ -45,8 +45,6 @@ def main() -> None:
             "src/britecore_libraries/maps/__init__.py",
             "src/britecore_libraries/models",
             "src/britecore_libraries/validators",
-            "src/britecore_libraries/utils/britecore_odbc.py",
-            "src/britecore_libraries/utils/britecore_selenium.py",
         ],
         "Type check (mypy)",
     )

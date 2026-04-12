@@ -37,7 +37,7 @@
 ┌────────────────────────────────────────────────────────────┐
 │                  Infrastructure Layer                      │
 │   • Config         (Dynaconf, settings + secrets)          │
-│   • Utilities      (ODBC, Selenium, Menus)                 │
+│   • Utilities      (Menus)                                 │
 │   • Transport      (urllib3, OAuth token)                  │
 └────────────────────────────────────────────────────────────┘
 
@@ -207,16 +207,11 @@ concise syntax is the main priority.
 src/britecore_libraries/
 ├── config/
 │   ├── config.py            # Dynaconf settings loader + LoadClientSettings
-│   ├── settings.toml        # Default runtime settings (timeouts/retries/browser)
+│   ├── settings.toml        # Default runtime settings
 │   ├── .secrets.toml        # All credentials: base_url, api_key, client_id,
-│   │                        # client_secret; optional utility keys:
-│   │                        # db_conn_string/db_conn_options,
-│   │                        # web_user/web_pass/web_browser
-│   │                        # — gitignored, never committed
+│   │                        # client_secret — gitignored, never committed
 │   └── __init__.py
 ├── utils/
-│   ├── britecore_odbc.py    # Database connections (optional: pyodbc)
-│   ├── britecore_selenium.py # Browser automation (optional: selenium)
 │   ├── interactive_menu.py  # CLI menu helpers (optional: questionary)
 │   ├── zip_code_lookup.py   # ZIP code CSV lookup
 │   └── __init__.py
@@ -232,7 +227,7 @@ src/britecore_libraries/
 # Dynaconf loads from multiple sources (highest to lowest priority)
 # 1. Environment variables (BRITECORE_LIBRARIES_*)
 # 2. .secrets.toml (base_url, api_key, client_id, client_secret)
-# 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long/web_browser)
+# 3. settings.toml (site section headers)
 # 4. Built-in defaults
 
 from britecore_libraries.config.config import LoadClientSettings
@@ -242,21 +237,12 @@ site_config = loader.load_config()
 
 site_config.base_url          # From .secrets.toml or env var
 site_config.api_key           # From .secrets.toml or env var
-site_config.web_timeout       # From settings.toml
-site_config.web_retry         # From settings.toml
-site_config.db_conn_string    # Optional ODBC connection string (site-scoped)
-site_config.db_conn_options   # Optional ODBC connection options (site-scoped)
-site_config.web_browser       # Optional Selenium default browser (site-scoped)
 
 ```
 
 Utility-specific validation boundaries:
 
 - API client initialization validates auth/base_url keys for API usage.
-- ODBC utility validates `db_conn_string` and `db_conn_options` only when
-  `get_cursor(..., target_site="...")` performs config-backed DB resolution.
-- Selenium utility validates browser names in `get_driver(...)` (explicit
-  argument overrides configured `web_browser`).
 
 ---
 
@@ -364,8 +350,7 @@ BritecoreError (namespace class)
     ├── BritecoreKeyError       # Required config key missing
     ├── NoSiteError             # target_site not configured
     ├── MissingParameter        # Required API parameter missing
-    ├── ConflictingParameters   # Mutually exclusive params supplied
-    └── DatabaseConnectionError # pyodbc connection failure
+    └── ConflictingParameters   # Mutually exclusive params supplied
 
 ```
 
@@ -577,8 +562,6 @@ Core (always installed):
   dynaconf         # Configuration management
 
 Optional extras:
-  pyodbc           # Database access ([database])
-  selenium         # Browser automation ([browser])
   questionary      # Interactive CLI menus ([interactive])
 
 ```

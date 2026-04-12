@@ -1,8 +1,7 @@
-"""Unit tests for utility modules (odbc, selenium, interactive_menu).
+"""Unit tests for utility modules (interactive_menu, zip_code_lookup).
 
 These tests focus on validating module structure and functionality that can be
-tested without requiring external configuration or resources. ODBC and Selenium
-modules require environment-specific setup and are tested pragmatically here.
+tested without requiring external configuration or resources.
 Interactive menu tests verify API structure and documentation.
 """
 
@@ -31,33 +30,6 @@ class TestZipCodeLookup:
 
 class TestUtilityModuleStructure:
     """Tests for utility module structure (handles config load issues gracefully)."""
-
-    @pytest.mark.unit
-    def test_odbc_module_structure(self):
-        """Test that ODBC module has expected structure if it can be imported."""
-        try:
-            # Attempt to inspect module without importing all code
-            import britecore_libraries.utils.britecore_odbc as odbc_module
-
-            # If import succeeds, verify key functions exist
-            assert (
-                hasattr(odbc_module, "get_cursor") or True
-            )  # May fail if config missing
-            assert hasattr(odbc_module, "close_cursor") or True
-        except (ImportError, AttributeError):
-            # Config issues are acceptable - this module depends on db configuration
-            pytest.skip("ODBC module requires database configuration")
-
-    @pytest.mark.unit
-    def test_selenium_module_structure(self):
-        """Test that Selenium module has expected structure if it can be imported."""
-        try:
-            import britecore_libraries.utils.britecore_selenium as selenium_module
-
-            # Verify module exists
-            assert selenium_module is not None
-        except (ImportError, AttributeError):
-            pytest.skip("Selenium module requires web configuration")
 
     @pytest.mark.unit
     def test_interactive_menu_module_can_be_imported(self):
