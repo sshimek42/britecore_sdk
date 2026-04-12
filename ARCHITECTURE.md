@@ -608,6 +608,8 @@ export BRITECORE_LIBRARIES_API_KEY="..."
 # or OAuth:
 export BRITECORE_LIBRARIES_CLIENT_ID="..."
 export BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+# target_site is required; it selects the .secrets.toml section but any name works when
+# all credentials are set via BRITECORE_LIBRARIES_* env vars (env vars take precedence).
 export target_site="production"
 
 ```
@@ -623,6 +625,8 @@ $env:BRITECORE_LIBRARIES_API_KEY="..."
 # or OAuth:
 $env:BRITECORE_LIBRARIES_CLIENT_ID="..."
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
+# target_site is required; it selects the .secrets.toml section but any name works when
+# all credentials are set via BRITECORE_LIBRARIES_* env vars (env vars take precedence).
 $env:target_site="production"
 
 ```

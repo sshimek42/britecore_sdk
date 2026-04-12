@@ -43,12 +43,18 @@ api_key = "your_api_key_here"
 
 **Alternative: Environment variables**
 
+> **Note:** `target_site` is always required by the client. When credentials are set via
+> `BRITECORE_LIBRARIES_*` environment variables, `target_site` is still required but its value
+> does not affect which credentials are loaded — env vars take precedence over `.secrets.toml`
+> values regardless of the site name. You can use any non-empty string, or omit it if you set
+> `target_site` in `settings.toml` or pass it explicitly to `init_api_client()`.
+
 **Linux/macOS (bash):**
 
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 export BRITECORE_LIBRARIES_API_KEY="your_api_key_here"
-export target_site="production"
+export target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
 ```
 
 **Windows (PowerShell):**
@@ -56,7 +62,7 @@ export target_site="production"
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 $env:BRITECORE_LIBRARIES_API_KEY="your_api_key_here"
-$env:target_site="production"
+$env:target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
 ```
 
 Or for OAuth:
@@ -67,7 +73,7 @@ Or for OAuth:
 export BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
-export target_site="production"
+export target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
 ```
 
 **Windows (PowerShell):**
@@ -76,7 +82,7 @@ export target_site="production"
 $env:BRITECORE_LIBRARIES_BASE_URL="https://your-britecore-instance.com"
 $env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
-$env:target_site="production"
+$env:target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
 ```
 
 ### 3. Use
@@ -202,6 +208,12 @@ client_secret = "your_staging_client_secret"
 
 **Environment variables** (override file config):
 
+> **Note on `target_site` with env vars:** `target_site` selects which section of `.secrets.toml`
+> to use for credentials. When **all** required credentials are supplied via `BRITECORE_LIBRARIES_*`
+> environment variables, the specific `target_site` value does not affect which credentials are
+> loaded — env vars take precedence regardless. However, `target_site` is still required for client
+> initialization (any non-empty string works, or you can pass it explicitly to `init_api_client()`).
+
 API key authentication:
 
 **Linux/macOS (bash):**
@@ -209,7 +221,7 @@ API key authentication:
 ```bash
 export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 export BRITECORE_LIBRARIES_API_KEY="your_api_key"
-export target_site="production"
+export target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
 ```
 
 **Windows (PowerShell):**
@@ -217,7 +229,7 @@ export target_site="production"
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 $env:BRITECORE_LIBRARIES_API_KEY="your_api_key"
-$env:target_site="production"
+$env:target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
 ```
 
 Or OAuth authentication:
@@ -228,7 +240,7 @@ Or OAuth authentication:
 export BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 export BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
 export BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
-export target_site="production"
+export target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
 ```
 
 **Windows (PowerShell):**
@@ -236,9 +248,8 @@ export target_site="production"
 ```powershell
 $env:BRITECORE_LIBRARIES_BASE_URL="https://api.britecore.example.com"
 $env:BRITECORE_LIBRARIES_CLIENT_ID="your_client_id"
-
 $env:BRITECORE_LIBRARIES_CLIENT_SECRET="your_client_secret"
-$env:target_site="production"
+$env:target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
 ```
 
 See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed setup.
