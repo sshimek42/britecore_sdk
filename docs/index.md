@@ -1,4 +1,4 @@
-# britecore_libraries documentation
+# britecore_sdk documentation
 
 This site hosts generated API docs and key project guides.
 

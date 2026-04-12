@@ -2,7 +2,7 @@
 
 import pytest
 
-from britecore_libraries.models import BritecoreContact, BritecorePolicy, BritecoreQuote
+from britecore_sdk.models import BritecoreContact, BritecorePolicy, BritecoreQuote
 
 
 class TestBritecoreContact:

@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `britecore_libraries` are documented here.
+All notable changes to `britecore_sdk` are documented here.
 
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 Version numbers follow [Semantic Versioning](https://semver.org/).
@@ -87,15 +87,15 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- `src/britecore_libraries/py.typed` marker (PEP 561) — downstream mypy users
+- `src/britecore_sdk/py.typed` marker (PEP 561) — downstream mypy users
   now get inline type information automatically.
-- `src/britecore_libraries/api/types.py` — shared `TypedDict` response shapes
+- `src/britecore_sdk/api/types.py` — shared `TypedDict` response shapes
   (`BritecoreResponse`, `PolicyData`, `ContactData`, `QuoteData`,
   `InvoiceData`, `RevisionData`, `AddressData`, `PhoneData`, `EmailData`).
 - `get_api_client` and `get_async_api_client` are now exported from the
-  top-level `britecore_libraries` namespace.
+  top-level `britecore_sdk` namespace.
 - v2 `__init__.py` now re-exports all 30 sync domain modules so IDEs can
-  discover them via `from britecore_libraries.api.api_calls.v2 import <module>`.
+  discover them via `from britecore_sdk.api.api_calls.v2 import <module>`.
 - Full implementations for all previously-stubbed v2 API domains:
   `attachments` (11), `custom_ui` (4), `dashboards` (8), `data` (2),
   `errors` (1), `intacct` (5), `nightly_jobs` (4), `notifications` (2),
@@ -111,7 +111,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   runs ruff, black, mypy, and pytest with a 60% coverage gate.
 - `docs/MAP_FILES.md` — policy and sample structures for sensitive
   `*_map.py` files that must not be committed to version control.
-- `maps/__init__.py` map export pattern: `britecore_libraries.maps`
+- `maps/__init__.py` map export pattern: `britecore_sdk.maps`
   re-exports `agency`, `policy_map`, `britecore_policy_type_map`,
   `field_map_to_britecore`, `field_map_to_named_insured`, and
   `field_map_to_risk_location`.
@@ -121,7 +121,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - `pyodbc`, `selenium`, and `pyinputplus` moved from hard dependencies to
   optional extras (`[database]`, `[browser]`, `[interactive]`). Existing
   consumers who use these utilities should add the relevant extra:
-  `pip install "britecore_libraries[database]"`.
+  `pip install "britecore_sdk[database]"`.
 - **`sclogging` dependency removed.** `base_logger.py` has been rewritten
   to use Python's built-in `logging` module. The `SCLogger` singleton class
   is gone; `get_logger()` now returns a standard `logging.Logger` directly.

@@ -9,7 +9,7 @@
 
 ## Installation Issues
 
-### "ModuleNotFoundError: No module named 'britecore_libraries'"
+### "ModuleNotFoundError: No module named 'britecore_sdk'"
 
 **Cause:** Package not installed in current environment
 
@@ -23,7 +23,7 @@ pip install -e .
 pip install -e ".[dev]"
 
 # Verify installation
-python -c "import britecore_libraries; print(britecore_libraries.__version__)"
+python -c "import britecore_sdk; print(britecore_sdk.__version__)"
 ```
 
 ---
@@ -99,7 +99,7 @@ python -c "import os; print(os.environ.get('target_site'))"
 
 **Solution:**
 
-Check `src/britecore_libraries/config/.secrets.toml`:
+Check `src/britecore_sdk/config/.secrets.toml`:
 
 ```toml
 [production]
@@ -126,7 +126,7 @@ $env:BRITECORE_LIBRARIES_CLIENT_SECRET="..."
 Validate site sections and key combinations quickly:
 
 ```powershell
-python -m britecore_libraries.utils.check_site_configs
+python -m britecore_sdk.utils.check_site_configs
 ```
 
 Interpretation:
@@ -143,7 +143,7 @@ Interpretation:
 
 **Solution:**
 
-Create `src/britecore_libraries/config/.secrets.toml`:
+Create `src/britecore_sdk/config/.secrets.toml`:
 
 ```toml
 [production]
@@ -187,7 +187,7 @@ run console.
 
 ```python
 # Check credentials in config
-from britecore_libraries.config import settings
+from britecore_sdk.config import settings
 print(f"Client ID: {settings.client_id}")
 print(f"Base URL: {settings.base_url}")
 print(f"Token endpoint: {settings.base_url}/api/auth/oauth2/token")
@@ -211,9 +211,9 @@ except Exception as e:
 **Solution:**
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+from britecore_sdk.exceptions import BritecoreError
 
 client = get_api_client()
 try:
@@ -233,7 +233,7 @@ except BritecoreError.NoDataReturned as e:
 SDK exceptions can be caught via the common base class:
 
 ```python
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.exceptions import BritecoreError
 
 try:
     ...
@@ -250,7 +250,7 @@ except BritecoreError.Base as exc:
 **Solution:**
 
 ```python
-from britecore_libraries.validators import PhoneValidator
+from britecore_sdk.validators import PhoneValidator
 
 # Valid formats (will be normalized to 10 digits)
 valid_phones = [
@@ -272,7 +272,7 @@ print(result)  # Normalized to: 5551234567
 **Solution:**
 
 ```python
-from britecore_libraries.validators import EmailValidator
+from britecore_sdk.validators import EmailValidator
 
 # Must be valid email format
 valid_emails = [
@@ -307,7 +307,7 @@ if TYPE_CHECKING:
 
 ---
 
-### "Cannot import name 'X' from 'britecore_libraries'"
+### "Cannot import name 'X' from 'britecore_sdk'"
 
 **Cause:** Module or function doesn't exist or not exported
 
@@ -315,15 +315,15 @@ if TYPE_CHECKING:
 
 ```python
 # Check what's available
-import britecore_libraries
-print(dir(britecore_libraries))
+import britecore_sdk
+print(dir(britecore_sdk))
 
 # Check __all__ in module
-from britecore_libraries.models import __all__
+from britecore_sdk.models import __all__
 print(__all__)
 
 # Look at actual exports
-from britecore_libraries.models import *
+from britecore_sdk.models import *
 ```
 
 ---
@@ -354,7 +354,7 @@ python -m pytest tests/ -v
 from unittest.mock import patch, MagicMock
 
 # Use correct patch target
-with patch("britecore_libraries.api.api_calls.API_CLIENT") as mock:
+with patch("britecore_sdk.api.api_calls.API_CLIENT") as mock:
     # Now use the mock
     mock.do_request.return_value = ...
 ```
@@ -372,7 +372,7 @@ with patch("britecore_libraries.api.api_calls.API_CLIENT") as mock:
 pip install -e ".[dev]"
 
 # Run with coverage
-python -m pytest tests/ --cov=src/britecore_libraries --cov-report=html
+python -m pytest tests/ --cov=src/britecore_sdk --cov-report=html
 
 # View report
 Invoke-Item htmlcov/index.html
@@ -388,7 +388,7 @@ Invoke-Item htmlcov/index.html
 
 ```powershell
 # Run from project root
-cd britecore_libraries
+cd britecore_sdk
 python -m pytest tests/ -v
 
 # NOT from tests/ directory
@@ -405,8 +405,8 @@ python -m pytest tests/ -v
 **Solution:**
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 from urllib3 import Timeout
 
 client = get_api_client()
@@ -426,8 +426,8 @@ policy = policies.retrieve_policy(
 **Solution:**
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 from urllib3 import Retry
 
 client = get_api_client()
@@ -478,8 +478,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 # Now all debug messages will print
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 policy = policies.retrieve_policy(policy_number="POL001")
@@ -493,7 +493,7 @@ policy = policies.retrieve_policy(policy_number="POL001")
 ### Check These First
 
 1. **Environment Variables:** `echo $env:target_site`
-2. **Config File:** `Get-Content src/britecore_libraries/config/settings.toml`
+2. **Config File:** `Get-Content src/britecore_sdk/config/settings.toml`
 3. **Python Version:** `python --version` (should be 3.11+)
 4. **Package Installation:** `pip show britecore-libraries`
 5. **Test Suite:** `python -m pytest tests/unit/test_maps.py -v`
@@ -510,7 +510,7 @@ policy = policies.retrieve_policy(policy_number="POL001")
 
 ## Private Maps Behavior
 
-Some features in britecore_libraries rely on map files (such as policy, field, or agency maps) located in `src/britecore_libraries/maps/`. These files provide environment-specific mappings and are selected at runtime based on environment variables.
+Some features in britecore_sdk rely on map files (such as policy, field, or agency maps) located in `src/britecore_sdk/maps/`. These files provide environment-specific mappings and are selected at runtime based on environment variables.
 
 - **Map file selection:**
   - The environment variable `system` determines which map file is loaded (e.g., `britecore_policy_name_map.py`).
@@ -529,7 +529,7 @@ Some features in britecore_libraries rely on map files (such as policy, field, o
 
 - **Troubleshooting:**
   - Ensure the correct `system` value is set in your environment.
-  - Verify that the corresponding map file exists in `src/britecore_libraries/maps/`.
+  - Verify that the corresponding map file exists in `src/britecore_sdk/maps/`.
   - If you see errors about missing maps or unset variables, set the required env vars and restart your process.
 
 ---

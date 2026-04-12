@@ -1,1 +1,1 @@
-"""Test suite for britecore_libraries."""
+"""Test suite for britecore_sdk."""

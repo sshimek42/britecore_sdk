@@ -37,9 +37,9 @@ jobs:
     - name: Lint with flake8 (optional)
       run: |
         # Stop the build if there are Python syntax errors or undefined names
-        python -m flake8 src/britecore_libraries --count --select=E9,F63,F7,F82 --show-source --statistics || true
+        python -m flake8 src/britecore_sdk --count --select=E9,F63,F7,F82 --show-source --statistics || true
         # Exit-zero treats all errors as warnings
-        python -m flake8 src/britecore_libraries --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || true
+        python -m flake8 src/britecore_sdk --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics || true
       continue-on-error: true
 
     - name: Run tests with pytest
@@ -48,7 +48,7 @@ jobs:
         if [ "${{ matrix.randomized }}" = "true" ]; then
           RANDOM_ARGS="--randomly-seed=${{ github.run_id }}"
         fi
-        pytest tests/ -v --cov=src/britecore_libraries --cov-report=term-missing --cov-report=html --cov-report=xml $RANDOM_ARGS
+        pytest tests/ -v --cov=src/britecore_sdk --cov-report=term-missing --cov-report=html --cov-report=xml $RANDOM_ARGS
 
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11'

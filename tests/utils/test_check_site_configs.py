@@ -7,7 +7,7 @@ import pytest
 UTIL_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
     "src",
-    "britecore_libraries",
+    "britecore_sdk",
     "utils",
     "check_site_configs.py",
 )

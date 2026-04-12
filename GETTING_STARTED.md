@@ -76,8 +76,8 @@ export system="your_system"
 
 Configure site values in:
 
-- `src/britecore_libraries/config/settings.toml` — default runtime settings
-- `src/britecore_libraries/config/.secrets.toml` — credentials (`base_url`, `client_id`, `client_secret`, `api_key`)
+- `src/britecore_sdk/config/settings.toml` — default runtime settings
+- `src/britecore_sdk/config/.secrets.toml` — credentials (`base_url`, `client_id`, `client_secret`, `api_key`)
 
 Required keys in `.secrets.toml`:
 
@@ -92,32 +92,32 @@ Authentication behavior is automatic:
 ## Smoke checks
 
 ```powershell
-python -c "import britecore_libraries; print(britecore_libraries.__version__)"
-python -c "from britecore_libraries.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
+python -c "import britecore_sdk; print(britecore_sdk.__version__)"
+python -c "from britecore_sdk.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
 ```
 
 ```bash
-python -c "import britecore_libraries; print(britecore_libraries.__version__)"
-python -c "from britecore_libraries.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
+python -c "import britecore_sdk; print(britecore_sdk.__version__)"
+python -c "from britecore_sdk.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
 ```
 
 Readiness checks:
 
 ```powershell
-python -m britecore_libraries.utils.check_site_configs
-python -m britecore_libraries.utils.healthcheck --site your_site
+python -m britecore_sdk.utils.check_site_configs
+python -m britecore_sdk.utils.healthcheck --site your_site
 ```
 
 ```bash
-python -m britecore_libraries.utils.check_site_configs
-python -m britecore_libraries.utils.healthcheck --site your_site
+python -m britecore_sdk.utils.check_site_configs
+python -m britecore_sdk.utils.healthcheck --site your_site
 ```
 
 ## First API call
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
 client = get_api_client()
@@ -128,7 +128,7 @@ print(result)
 
 ## Async cached wrappers
 
-Use async wrappers from `britecore_libraries.api.api_calls.v2` for non-blocking API calls.
+Use async wrappers from `britecore_sdk.api.api_calls.v2` for non-blocking API calls.
 Read wrappers are cache-aware by default and mutation wrappers invalidate related namespaces.
 For exact behavior, supported cache kwargs, and invalidation examples, use
 [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
@@ -136,8 +136,8 @@ For exact behavior, supported cache kwargs, and invalidation examples, use
 ```python
 import asyncio
 
-from britecore_libraries.api.api_calls import init_async_api_client
-from britecore_libraries.api.api_calls.v2 import aget_quote
+from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls.v2 import aget_quote
 
 async def main() -> None:
     # Explicitly initialize the shared async client for your configured site (rarely needed; see docs for lazy pattern).

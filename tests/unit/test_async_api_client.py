@@ -7,12 +7,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from britecore_libraries.api import (
+from britecore_sdk.api import (
     AsyncBritecoreAPIClient,
     RequestCache,
     build_cache_key,
 )
-from britecore_libraries.api.britecore_api_client import (
+from britecore_sdk.api.britecore_api_client import (
     BritecoreAPIClient,
     RequestParameters,
 )

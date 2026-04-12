@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from britecore_libraries.utils import zip_code_lookup
-from britecore_libraries.utils.zip_code_lookup import ZipCodeLookup, load_zip_codes
+from britecore_sdk.utils import zip_code_lookup
+from britecore_sdk.utils.zip_code_lookup import ZipCodeLookup, load_zip_codes
 
 
 @pytest.mark.unit

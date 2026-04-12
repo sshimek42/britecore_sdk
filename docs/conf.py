@@ -1,4 +1,4 @@
-"""Sphinx configuration for britecore_libraries."""
+"""Sphinx configuration for britecore_sdk."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
 sys.path.insert(0, str(SRC))
 
-project = "britecore_libraries"
-copyright = "2026, britecore_libraries contributors"
-author = "britecore_libraries contributors"
+project = "britecore_sdk"
+copyright = "2026, britecore_sdk contributors"
+author = "britecore_sdk contributors"
 
 # Read package version from pyproject.toml without importing runtime modules.
 try:

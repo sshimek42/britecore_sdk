@@ -1,6 +1,6 @@
 # CI/CD and Coverage Guide
 
-This guide explains the continuous integration (CI) pipeline and code coverage reporting setup for `britecore_libraries`.
+This guide explains the continuous integration (CI) pipeline and code coverage reporting setup for `britecore_sdk`.
 
 ## Overview
 
@@ -38,7 +38,7 @@ The project uses:
 
 ```yaml
 - name: Run tests with pytest
-  run: pytest tests/ -v --cov=src/britecore_libraries --cov-report=xml
+  run: pytest tests/ -v --cov=src/britecore_sdk --cov-report=xml
 
 - name: Upload coverage to Codecov
   if: matrix.python-version == '3.11'
@@ -129,7 +129,7 @@ enabled = true
 1. **Connect GitHub repo to DeepSource:**
    - Go to [app.deepsource.com](https://app.deepsource.com)
    - Link your GitHub account
-   - Add `sshimek42/britecore_libraries`
+   - Add `sshimek42/britecore_sdk`
 
 2. **Add `DEEPSOURCE_DSN` secret to GitHub:**
    - In DeepSource → **Settings → Integrations → Reporting**
@@ -180,7 +180,7 @@ enabled = true
 **Access:**
 
 - GitHub PR → Codecov check → "View report on Codecov"
-- Or: `https://app.codecov.io/gh/sshimek42/britecore_libraries`
+- Or: `https://app.codecov.io/gh/sshimek42/britecore_sdk`
 
 **Useful for:**
 
@@ -197,7 +197,7 @@ enabled = true
 **Access:**
 
 - GitHub PR → DeepSource check → Link to run
-- Or: `https://app.deepsource.com/gh/sshimek42/britecore_libraries`
+- Or: `https://app.deepsource.com/gh/sshimek42/britecore_sdk`
 
 **Useful for:**
 
@@ -210,7 +210,7 @@ enabled = true
 After running tests locally:
 
 ```powershell
-pytest tests/ --cov=src/britecore_libraries --cov-report=html
+pytest tests/ --cov=src/britecore_sdk --cov-report=html
 open htmlcov/index.html
 ```
 
@@ -222,7 +222,7 @@ From `pyproject.toml`:
 
 ```toml
 [tool.pytest.ini_options]
-addopts = "--cov=src/britecore_libraries --cov-report=html --cov-report=term-missing --strict-markers"
+addopts = "--cov=src/britecore_sdk --cov-report=html --cov-report=term-missing --strict-markers"
 ```
 
 **Coverage gate:**
@@ -239,8 +239,8 @@ From `.github/workflows/tests.yml`:
 
 **Modules with higher expectations:**
 
-- `src/britecore_libraries/config/` — 90%+
-- `src/britecore_libraries/api/britecore_api_client.py` — 80%+
+- `src/britecore_sdk/config/` — 90%+
+- `src/britecore_sdk/api/britecore_api_client.py` — 80%+
 - Core validators — 85%+
 
 ## Local Testing and Coverage
@@ -254,7 +254,7 @@ pip install -e ".[dev]"
 ### Run All Tests
 
 ```powershell
-pytest tests/ -v --cov=src/britecore_libraries --cov-report=html
+pytest tests/ -v --cov=src/britecore_sdk --cov-report=html
 ```
 
 ### Run Specific Test Category
@@ -273,20 +273,20 @@ pytest tests/ -m slow -v
 ### Check Coverage for Specific Module
 
 ```powershell
-coverage report src/britecore_libraries/api/britecore_api_client.py
+coverage report src/britecore_sdk/api/britecore_api_client.py
 ```
 
 ### Run Linters Locally
 
 ```powershell
 # Ruff
-ruff check src/britecore_libraries
+ruff check src/britecore_sdk
 
 # Black (check only)
-black --check src/britecore_libraries
+black --check src/britecore_sdk
 
 # MyPy
-mypy src/britecore_libraries
+mypy src/britecore_sdk
 ```
 
 ## Troubleshooting CI
@@ -328,7 +328,7 @@ mypy src/britecore_libraries
 
 ```powershell
 # Run tests locally and verify coverage.xml
-pytest tests/ --cov=src/britecore_libraries --cov-report=xml
+pytest tests/ --cov=src/britecore_sdk --cov-report=xml
 ls coverage.xml  # Should exist
 
 # Check DeepSource config syntax
@@ -362,7 +362,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 1. **Run tests locally:**
 
    ```powershell
-   pytest tests/ --cov=src/britecore_libraries
+   pytest tests/ --cov=src/britecore_sdk
    ```
 
 2. **Check coverage:**
@@ -376,7 +376,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
    ```powershell
    black --check src/
    ruff check src/
-   mypy src/britecore_libraries/api/britecore_api_client.py
+   mypy src/britecore_sdk/api/britecore_api_client.py
    ```
 
 4. **Verify no uncommitted secrets:**
@@ -410,14 +410,14 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 
 ```bash
 pip install -e ".[dev]"
-pytest tests/ -v --cov=src/britecore_libraries --cov-report=html
+pytest tests/ -v --cov=src/britecore_sdk --cov-report=html
 pytest tests/unit -m unit -v
 pytest tests/integration -m integration -v
 coverage report --fail-under=75
 coverage report -m
-ruff check src/britecore_libraries
-black --check src/britecore_libraries
-mypy src/britecore_libraries
+ruff check src/britecore_sdk
+black --check src/britecore_sdk
+mypy src/britecore_sdk
 python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 git status
 ```
