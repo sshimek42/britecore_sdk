@@ -122,8 +122,6 @@ The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, a
 pip install britecore_libraries
 
 # With optional extras
-pip install britecore_libraries[database]    # pyodbc support
-pip install britecore_libraries[browser]     # Selenium support
 pip install britecore_libraries[all]         # All extras
 pip install britecore_libraries[dev]         # Development (tests, linting, type checking)
 ```
@@ -137,10 +135,6 @@ Create `src/britecore_libraries/config/settings.toml` (public runtime defaults) 
 ```toml
 # Default runtime configuration
 [default]
-web_timeout = 30
-web_retry = 10
-web_timeout_long = 60
-web_browser = "Edge"
 
 # Site definitions (endpoints only, no credentials)
 [production]
@@ -265,44 +259,7 @@ Validation rule: each site needs `base_url` and either a full OAuth pair
 
 ### Optional Extras
 
-- **ODBC:** Database connectivity helpers (`pyodbc`)
-- **Selenium:** Browser automation support (`selenium`)
 - **Interactive:** Menu-driven CLI utilities (`questionary`)
-
-### Optional Utility Config
-
-Optional utility keys are read from site sections in
-`src/britecore_libraries/config/.secrets.toml`.
-
-```toml
-[production]
-# API auth keys
-base_url = "https://api.britecore.example.com"
-api_key = "..."
-
-# Optional ODBC keys
-db_conn_string = "Driver={ODBC Driver 17 for SQL Server};Server=...;Database=...;"
-db_conn_options = { autocommit = true, timeout = 30 }
-
-# Optional Selenium keys
-web_user = "selenium_user"
-web_pass = "selenium_password"
-web_browser = "Edge"
-```
-
-ODBC helpers require an explicit site when loading DB config from Dynaconf:
-
-```python
-from britecore_libraries.utils.britecore_odbc import get_cursor
-
-cursor = get_cursor(target_site="production")
-```
-
-Selenium browser selection precedence:
-
-- `get_driver(browser=...)` argument (if passed)
-- `web_browser` from config
-- default `Edge`
 
 ---
 
