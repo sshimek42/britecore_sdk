@@ -19,6 +19,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - `examples/basic_api_usage.py` — runnable example demonstrating OAuth and
   API key initialization flows.
 
+### Removed
+
+- Removed `utils/britecore_odbc.py` (pyodbc wrapper) and `utils/britecore_selenium.py`
+  (Selenium wrapper) — database connectivity and browser automation are out of scope
+  for an API client library. Consumers requiring these capabilities should use
+  `pyodbc` and `selenium` directly.
+- Removed `utils/check_odbc_settings.py` helper script (no longer needed).
+- Removed `database` and `browser` optional dependency extras from `pyproject.toml`.
+- Removed `BritecoreError.DatabaseConnectionError` exception (only used by the removed
+  ODBC wrapper).
+- Removed `load_database_config` from `config/config.py`.
+- Removed Selenium config keys (`web_retry`, `web_timeout`, `web_timeout_long`,
+  `web_browser`) and ODBC config keys (`db_conn_string`, `db_conn_options`) from
+  `LoadClientSettings.load_config`.
+
 ### Changed
 
 - **Code quality improvements:**
