@@ -45,9 +45,12 @@ api_key = "your_api_key_here"
 
 > **Note:** `target_site` is always required by the client. When credentials are set via
 > `BRITECORE_LIBRARIES_*` environment variables, `target_site` is still required but its value
-> does not affect which credentials are loaded — env vars take precedence over `.secrets.toml`
-> values regardless of the site name. You can use any non-empty string, or omit it if you set
-> `target_site` in `settings.toml` or pass it explicitly to `init_api_client()`.
+> does not affect which credentials are loaded when **all** required credentials are supplied as
+> env vars — they take precedence over `.secrets.toml` values regardless of the site name. If any
+> required credential is missing from env vars, the client falls back to the `.secrets.toml`
+> section matching the `target_site` value, so the name must correspond to a real section in that
+> case. You can also pass `target_site` explicitly to `init_api_client()` instead of setting it
+> as an env var.
 
 **Linux/macOS (bash):**
 
@@ -211,8 +214,9 @@ client_secret = "your_staging_client_secret"
 > **Note on `target_site` with env vars:** `target_site` selects which section of `.secrets.toml`
 > to use for credentials. When **all** required credentials are supplied via `BRITECORE_LIBRARIES_*`
 > environment variables, the specific `target_site` value does not affect which credentials are
-> loaded — env vars take precedence regardless. However, `target_site` is still required for client
-> initialization (any non-empty string works, or you can pass it explicitly to `init_api_client()`).
+> loaded — env vars take precedence regardless. If any credential is missing from env vars, the
+> client falls back to the `.secrets.toml` section matching `target_site`. Either way, `target_site`
+> is required for client initialization.
 
 API key authentication:
 
