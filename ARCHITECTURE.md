@@ -230,7 +230,7 @@ src/britecore_sdk/
 # 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long)
 # 4. Built-in defaults
 
-from britecore_sdk.config.config import LoadClientSettings
+from britecore_sdk.settings.config import LoadClientSettings
 
 loader = LoadClientSettings("my_site")
 site_config = loader.load_config()

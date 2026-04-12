@@ -99,7 +99,7 @@ python -c "import os; print(os.environ.get('target_site'))"
 
 **Solution:**
 
-Check `src/britecore_sdk/config/.secrets.toml`:
+Check `src/britecore_sdk/settings/.secrets.toml`:
 
 ```toml
 [production]
@@ -143,7 +143,7 @@ Interpretation:
 
 **Solution:**
 
-Create `src/britecore_sdk/config/.secrets.toml`:
+Create `src/britecore_sdk/settings/.secrets.toml`:
 
 ```toml
 [production]
@@ -187,7 +187,7 @@ run console.
 
 ```python
 # Check credentials in config
-from britecore_sdk.config import settings
+from britecore_sdk.settings import settings
 print(f"Client ID: {settings.client_id}")
 print(f"Base URL: {settings.base_url}")
 print(f"Token endpoint: {settings.base_url}/api/auth/oauth2/token")
@@ -493,7 +493,7 @@ policy = policies.retrieve_policy(policy_number="POL001")
 ### Check These First
 
 1. **Environment Variables:** `echo $env:target_site`
-2. **Config File:** `Get-Content src/britecore_sdk/config/settings.toml`
+2. **Config File:** `Get-Content src/britecore_sdk/settings/settings.toml`
 3. **Python Version:** `python --version` (should be 3.11+)
 4. **Package Installation:** `pip show britecore-libraries`
 5. **Test Suite:** `python -m pytest tests/unit/test_maps.py -v`

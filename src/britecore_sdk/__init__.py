@@ -103,7 +103,7 @@ if os.environ.get("BRITECORE_ENV") == "development":
     try:
         from britecore_sdk.utils import check_site_configs
 
-        settings_path = Path(__file__).resolve().parent / "config" / "settings.toml"
+        settings_path = Path(__file__).resolve().parent / "settings" / "settings.toml"
         check_site_configs.warn_if_secrets_in_settings(str(settings_path))
     except Exception:
         pass  # Do not block startup
