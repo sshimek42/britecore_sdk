@@ -54,7 +54,7 @@ Starting from `1.0.0` the library follows **semantic versioning**:
 
 ### What counts as "public API"?
 
-- All symbols exported in `britecore_libraries.__all__`
+- All symbols exported in `britecore_sdk.__all__`
 - All functions in `api/api_calls/v2/` with documented signatures
 - `BritecoreAPIClient.do_request()`, `.process_result()`, `.init_client()`
 - `BritecoreError` exception hierarchy

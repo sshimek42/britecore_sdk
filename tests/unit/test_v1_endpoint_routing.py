@@ -18,11 +18,11 @@ def _make_response(
 
 
 def _get_initialized_client(mock_settings):
-    import britecore_libraries.api.api_calls as api_calls
+    import britecore_sdk.api.api_calls as api_calls
 
     api_calls._api_client = None
     with patch(
-        "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        "britecore_sdk.api.britecore_api_client.LoadClientSettings"
     ) as mock_loader:
         mock_loader_instance = MagicMock()
         mock_loader_instance.load_config.return_value = mock_settings
@@ -34,13 +34,13 @@ def _get_initialized_client(mock_settings):
 @pytest.mark.unit
 def test_v1_custom_ui_endpoint_path(env_api_key, mock_settings):
     """Verify the v1 custom UI wrapper targets the canonical endpoint path."""
-    from britecore_libraries.api.api_calls.v1 import custom_ui
+    from britecore_sdk.api.api_calls.v1 import custom_ui
 
     _get_initialized_client(mock_settings)
     _make_response()
 
     with patch(
-        "britecore_libraries.api.api_calls.v1.custom_ui.createurloverride",
+        "britecore_sdk.api.api_calls.v1.custom_ui.createurloverride",
         return_value={"ok": True},
     ) as mock_create:
         result = custom_ui.createurloverride(json_obj={"url": "/demo"})
@@ -52,13 +52,13 @@ def test_v1_custom_ui_endpoint_path(env_api_key, mock_settings):
 @pytest.mark.unit
 def test_v1_printing_endpoint_path(env_api_key, mock_settings):
     """Verify the v1 printing wrapper targets the canonical endpoint path."""
-    from britecore_libraries.api.api_calls.v1 import printing
+    from britecore_sdk.api.api_calls.v1 import printing
 
     _get_initialized_client(mock_settings)
     _make_response()
 
     with patch(
-        "britecore_libraries.api.api_calls.v1.printing.getattachment",
+        "britecore_sdk.api.api_calls.v1.printing.getattachment",
         return_value={"ok": True},
     ) as mock_get:
         result = printing.getattachment(json_dict={"attachment_id": "A-1"})
@@ -70,13 +70,13 @@ def test_v1_printing_endpoint_path(env_api_key, mock_settings):
 @pytest.mark.unit
 def test_v1_payments_endpoint_path(env_api_key, mock_settings):
     """Verify the v1 payments wrapper targets the canonical endpoint path."""
-    from britecore_libraries.api.api_calls.v1 import payments
+    from britecore_sdk.api.api_calls.v1 import payments
 
     _get_initialized_client(mock_settings)
     _make_response()
 
     with patch(
-        "britecore_libraries.api.api_calls.v1.payments.makemanualpolicypayment",
+        "britecore_sdk.api.api_calls.v1.payments.makemanualpolicypayment",
         return_value={"ok": True},
     ) as mock_make:
         result = payments.makemanualpolicypayment(
@@ -92,7 +92,7 @@ def test_v1_payments_endpoint_path(env_api_key, mock_settings):
 @pytest.mark.unit
 def test_v1_wrapper_docstrings_are_spec_aligned():
     """Verify the v1 wrapper docstrings still reflect the documented API behavior."""
-    from britecore_libraries.api.api_calls.v1 import custom_ui, payments, printing
+    from britecore_sdk.api.api_calls.v1 import custom_ui, payments, printing
 
     assert "external URL override" in inspect.getdoc(custom_ui.createurloverride)
     assert "already been collected" in inspect.getdoc(payments.makemanualpolicypayment)

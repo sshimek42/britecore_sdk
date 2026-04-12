@@ -2,9 +2,9 @@
 
 import pytest
 
-from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.utils.zip_code_lookup import ZipCodeLookup
-from britecore_libraries.validators import (
+from britecore_sdk.exceptions import BritecoreError
+from britecore_sdk.utils.zip_code_lookup import ZipCodeLookup
+from britecore_sdk.validators import (
     AddressValidator,
     EmailValidator,
     NameValidator,
@@ -362,7 +362,7 @@ class TestAddressValidator:
         ],
     )
     def test_normalize_business_name(self, business_name, expected):
-        from britecore_libraries.validators.address_validator import (
+        from britecore_sdk.validators.address_validator import (
             normalize_business_name,
         )
 
@@ -370,7 +370,7 @@ class TestAddressValidator:
 
     @pytest.mark.unit
     def test_fix_apostrophe_capitalization(self):
-        from britecore_libraries.validators.address_validator import (
+        from britecore_sdk.validators.address_validator import (
             fix_apostrophe_capitalization,
         )
 
@@ -390,7 +390,7 @@ class TestAddressValidator:
         ],
     )
     def test_fix_suffix_capitalization(self, suffix, expected):
-        from britecore_libraries.validators.address_validator import (
+        from britecore_sdk.validators.address_validator import (
             fix_suffix_capitalization,
         )
 

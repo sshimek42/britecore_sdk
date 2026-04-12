@@ -16,7 +16,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from urllib3 import BaseHTTPResponse
 
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.exceptions import BritecoreError
 
 # ---------------------------------------------------------------------------
 # Helpers (mirrors test_v2_endpoints.py)
@@ -37,11 +37,11 @@ def _make_response(
 def _get_initialized_client(mock_settings):
     import sys
 
-    api_calls = sys.modules["britecore_libraries.api.api_calls"]
+    api_calls = sys.modules["britecore_sdk.api.api_calls"]
 
     api_calls._api_client = None
     with patch(
-        "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+        "britecore_sdk.api.britecore_api_client.LoadClientSettings"
     ) as mock_loader:
         mock_loader_instance = MagicMock()
         mock_loader_instance.load_config.return_value = mock_settings
@@ -169,7 +169,7 @@ class TestAttachmentsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.attachments",
+            "britecore_sdk.api.api_calls.v2.attachments",
             function_name,
             call_kwargs,
             expected_json,
@@ -272,7 +272,7 @@ class TestDashboardsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.dashboards",
+            "britecore_sdk.api.api_calls.v2.dashboards",
             function_name,
             call_kwargs,
             expected_json,
@@ -316,7 +316,7 @@ class TestDataEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.data",
+            "britecore_sdk.api.api_calls.v2.data",
             function_name,
             call_kwargs,
             expected_json,
@@ -354,7 +354,7 @@ class TestErrorsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.errors",
+            "britecore_sdk.api.api_calls.v2.errors",
             function_name,
             call_kwargs,
             expected_json,
@@ -412,7 +412,7 @@ class TestIntacctEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.intacct",
+            "britecore_sdk.api.api_calls.v2.intacct",
             function_name,
             call_kwargs,
             expected_json,
@@ -469,7 +469,7 @@ class TestNightlyJobsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.nightly_jobs",
+            "britecore_sdk.api.api_calls.v2.nightly_jobs",
             function_name,
             call_kwargs,
             expected_json,
@@ -504,7 +504,7 @@ class TestNotificationsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.notifications",
+            "britecore_sdk.api.api_calls.v2.notifications",
             function_name,
             call_kwargs,
             expected_json,
@@ -543,7 +543,7 @@ class TestReturnPremiumEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.return_premium",
+            "britecore_sdk.api.api_calls.v2.return_premium",
             function_name,
             call_kwargs,
             expected_json,
@@ -587,7 +587,7 @@ class TestSearchEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.search",
+            "britecore_sdk.api.api_calls.v2.search",
             function_name,
             call_kwargs,
             expected_json,
@@ -676,7 +676,7 @@ class TestSettingsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.settings",
+            "britecore_sdk.api.api_calls.v2.settings",
             function_name,
             call_kwargs,
             expected_json,
@@ -745,7 +745,7 @@ class TestSignaturesEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.signatures",
+            "britecore_sdk.api.api_calls.v2.signatures",
             function_name,
             call_kwargs,
             expected_json,
@@ -784,7 +784,7 @@ class TestUploadsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.uploads",
+            "britecore_sdk.api.api_calls.v2.uploads",
             function_name,
             call_kwargs,
             expected_json,
@@ -913,7 +913,7 @@ class TestVendorsEndpoints:
     ):
         _run_case(
             mock_settings,
-            "britecore_libraries.api.api_calls.v2.vendors",
+            "britecore_sdk.api.api_calls.v2.vendors",
             function_name,
             call_kwargs,
             expected_json,
@@ -932,7 +932,7 @@ class TestNoneOmission:
     @pytest.mark.unit
     def test_none_params_omitted(self, env_api_key, mock_settings):
         module = importlib.reload(
-            importlib.import_module("britecore_libraries.api.api_calls.v2.dashboards")
+            importlib.import_module("britecore_sdk.api.api_calls.v2.dashboards")
         )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {}}')
@@ -951,7 +951,7 @@ class TestNoneOmission:
     @pytest.mark.unit
     def test_all_none_sends_empty_body(self, env_api_key, mock_settings):
         module = importlib.reload(
-            importlib.import_module("britecore_libraries.api.api_calls.v2.errors")
+            importlib.import_module("britecore_sdk.api.api_calls.v2.errors")
         )
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {}}')
@@ -976,7 +976,7 @@ class TestNoneOmission:
 class TestContactsGetContactsByIds:
     @pytest.mark.unit
     def test_get_contacts_by_ids_success(self, mock_settings):
-        from britecore_libraries.api.api_calls.v2 import contacts
+        from britecore_sdk.api.api_calls.v2 import contacts
 
         contact_ids = ["C1", "C2"]
         expected_data = {
@@ -1005,7 +1005,7 @@ class TestContactsGetContactsByIds:
     @pytest.mark.unit
     @pytest.mark.parametrize("bad_ids", [None, [], "notalist"])
     def test_get_contacts_by_ids_invalid(self, bad_ids):
-        from britecore_libraries.api.api_calls.v2 import contacts
+        from britecore_sdk.api.api_calls.v2 import contacts
 
         with pytest.raises(BritecoreError.MissingParameter):
             contacts.get_contacts_by_ids(bad_ids)

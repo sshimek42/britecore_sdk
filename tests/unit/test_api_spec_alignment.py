@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-API_CALLS_ROOT = REPO_ROOT / "src" / "britecore_libraries" / "api" / "api_calls"
+API_CALLS_ROOT = REPO_ROOT / "src" / "britecore_sdk" / "api" / "api_calls"
 SPEC_PATH = REPO_ROOT / "api_specs" / "current" / "britecore.json"
 
 # Baseline known contract drift between wrappers and api_specs/current/britecore.json.

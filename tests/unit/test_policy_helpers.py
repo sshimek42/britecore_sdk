@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from britecore_libraries.utils import policy_helpers
+from britecore_sdk.utils import policy_helpers
 
 
 class _ResponseWithData:

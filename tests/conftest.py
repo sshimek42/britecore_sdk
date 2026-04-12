@@ -156,11 +156,11 @@ def mock_api_client(monkeypatch):
     shared_client.reset_mock()
 
     with patch(
-        "britecore_libraries.api.api_calls.init_api_client", return_value=shared_client
+        "britecore_sdk.api.api_calls.init_api_client", return_value=shared_client
     ):
-        with patch("britecore_libraries.api.api_calls.api_client", new=shared_client):
+        with patch("britecore_sdk.api.api_calls.api_client", new=shared_client):
             with patch(
-                "britecore_libraries.api.api_calls.get_api_client",
+                "britecore_sdk.api.api_calls.get_api_client",
                 return_value=shared_client,
             ):
                 yield shared_client

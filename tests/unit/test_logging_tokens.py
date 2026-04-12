@@ -7,7 +7,7 @@ import logging
 import re
 from pathlib import Path
 
-from britecore_libraries.api.api_calls.v2 import async_contacts, contacts, deliverables
+from britecore_sdk.api.api_calls.v2 import async_contacts, contacts, deliverables
 
 TOKEN_PATTERN = re.compile(r"%[fbs](?:\.[^%\n]+)?%")
 
@@ -15,7 +15,7 @@ TOKEN_PATTERN = re.compile(r"%[fbs](?:\.[^%\n]+)?%")
 def test_no_legacy_logging_tokens_in_source_tree() -> None:
     """Source files under src should not contain legacy SCLogging token markup."""
     repo_root = Path(__file__).resolve().parents[2]
-    source_root = repo_root / "src" / "britecore_libraries"
+    source_root = repo_root / "src" / "britecore_sdk"
 
     offending: list[str] = []
     excluded_parts = {"build", "dist", "env"}
@@ -58,7 +58,7 @@ def test_runtime_logs_do_not_emit_legacy_tokens(caplog) -> None:
     deliverables.API_CLIENT = DummySyncClient()
 
     try:
-        with caplog.at_level(logging.DEBUG, logger="britecore_libraries"):
+        with caplog.at_level(logging.DEBUG, logger="britecore_sdk"):
             contacts.new_contact(name="Jane Doe", address=[{"line1": "x"}])
             deliverables.get_attachment("file-1")
             asyncio.run(

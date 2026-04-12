@@ -17,9 +17,9 @@ External API docs are available at [https://api.britecore.com/](https://api.brit
 Files under `api_specs/legacy/` are archival reference material for historical
 research and backlog planning, not the default support contract for the current SDK.
 
-The SDK surfaces wrappers under `src/britecore_libraries/api/api_calls/v2/`.
+The SDK surfaces wrappers under `src/britecore_sdk/api/api_calls/v2/`.
 Endpoints without a `v2` equivalent are available in
-`src/britecore_libraries/api/api_calls/v1/`.
+`src/britecore_sdk/api/api_calls/v1/`.
 
 For known wrapper/spec drift currently tracked in tests, see
 `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
@@ -33,16 +33,16 @@ See also:
 ## Quick import pattern
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls import get_api_client
 # Import the domain module (recommended)
-from britecore_libraries.api.api_calls.v2 import policies, contacts, quotes
+from britecore_sdk.api.api_calls.v2 import policies, contacts, quotes
 
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
 client = get_api_client()
 result = policies.retrieve_policy(policy_number="POL-001")
 ```
 
-Domain modules are importable from `britecore_libraries.api.api_calls.v2`.
+Domain modules are importable from `britecore_sdk.api.api_calls.v2`.
 The API client initializes lazily on first request; use `get_api_client()` for explicit control when needed. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 
 ---
@@ -66,8 +66,8 @@ headers = {"Authorization": "Bearer <access_token>"}
 ### Standard Request
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 response = policies.retrieve_policy(
@@ -102,9 +102,9 @@ Some wrappers may return payloads shaped by `v1` API behavior where no `v2` equi
 
 Canonical guide: [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md)
 
-Async wrappers are exported from `src/britecore_libraries/api/api_calls/v2/__init__.py`.
+Async wrappers are exported from `src/britecore_sdk/api/api_calls/v2/__init__.py`.
 These wrappers call `AsyncBritecoreAPIClient.ado_request(...)` and use in-memory TTL caching
-from `src/britecore_libraries/api/request_cache.py`.
+from `src/britecore_sdk/api/request_cache.py`.
 
 - Use this section as a quick pointer; implementation-level async cache behavior is documented in [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
 - Read wrappers in async `v2` are cache-aware by default, and mutation wrappers invalidate related cache namespaces on successful requests.
@@ -114,7 +114,7 @@ from `src/britecore_libraries/api/request_cache.py`.
 
 ## Implemented Endpoints
 
-Use module-level wrappers under `britecore_libraries.api.api_calls.v2`.
+Use module-level wrappers under `britecore_sdk.api.api_calls.v2`.
 Current domains include:
 
 - `accounting`, `attachments`, `billing`, `claims`, `commissions`, `contacts`
@@ -123,7 +123,7 @@ Current domains include:
 - `policies`, `quotes`, `reports`, `return_premium`, `search`, `settings`
 - `signatures`, `uploads`, `utils`, `vendors`
 
-`v1`-only endpoint modules (import from `britecore_libraries.api.api_calls.v1`):
+`v1`-only endpoint modules (import from `britecore_sdk.api.api_calls.v1`):
 
 - `custom_ui`
 - `printing`
@@ -132,8 +132,8 @@ Current domains include:
 ### Representative examples
 
 ```python
-from britecore_libraries.api.api_calls import init_api_client
-from britecore_libraries.api.api_calls.v2 import (
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import (
     policies,
     contacts,
     quotes,
@@ -181,7 +181,7 @@ Retry and timeout defaults come from config keys loaded by
 - `web_timeout_long`
 - `web_retry` (urllib3 retry configuration)
 
-See `src/britecore_libraries/config/settings.toml` for current shipped defaults.
+See `src/britecore_sdk/config/settings.toml` for current shipped defaults.
 
 `request_retries` should be used for idempotent/retry-safe operations only.
 
@@ -190,9 +190,9 @@ See `src/britecore_libraries/config/settings.toml` for current shipped defaults.
 ## Error Handling
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.exceptions import BritecoreError
+from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 try:
@@ -217,9 +217,9 @@ The API implements rate limiting. If you receive 429 status:
 
 ```python
 import time
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.exceptions import BritecoreError
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.exceptions import BritecoreError
+from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 max_retries = 3
@@ -243,8 +243,8 @@ for attempt in range(max_retries):
 Some endpoints expose explicit pagination fields:
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import accounting
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import accounting
 
 client = get_api_client()
 page_1 = accounting.get_invoices(policy_id="uuid", page_number=1, page_size=25)
@@ -258,9 +258,9 @@ page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
 Many wrappers support optional filters and ordering fields:
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
-from britecore_libraries import logger
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+from britecore_sdk import logger
 
 client = get_api_client()
 risks = policies.retrieve_risks(
@@ -279,9 +279,9 @@ risks = policies.retrieve_risks(
 For bulk operations, use loops rather than batch endpoints (most don't exist):
 
 ```python
-from britecore_libraries import logger
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk import logger
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 policy_numbers = ["POL001", "POL002", "POL003"]
@@ -302,9 +302,9 @@ for policy_number in policy_numbers:
 ```python
 from datetime import datetime
 
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.models import BritecorePolicy
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.models import BritecorePolicy
+from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 policy_model = BritecorePolicy(policy_number="POL001", effective_date=datetime.now(), policy_type_id="type_1")
@@ -322,9 +322,9 @@ response, revision_id = policies.create_policy(
 ## Using with Validators
 
 ```python
-from britecore_libraries.validators import EmailValidator, PhoneValidator
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import contacts
+from britecore_sdk.validators import EmailValidator, PhoneValidator
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import contacts
 
 client = get_api_client()
 email = EmailValidator.normalize_email("test@example.com")
@@ -349,8 +349,8 @@ For workflows that return progress/status fields, poll retrieval endpoints:
 
 ```python
 import time
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import reports
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import reports
 
 client = get_api_client()
 report_id = "report_uuid"
@@ -381,6 +381,6 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 ## Documentation Freshness
 
 - Last verified: `2026-04-07`
-- Verified against: `api_specs/current/britecore.json`, `src/britecore_libraries/api/api_calls/v1/`, and `src/britecore_libraries/api/api_calls/v2/`
+- Verified against: `api_specs/current/britecore.json`, `src/britecore_sdk/api/api_calls/v1/`, and `src/britecore_sdk/api/api_calls/v2/`
 - Known wrapper/spec drift is tracked in `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
-- Use module-level docs in `src/britecore_libraries/api/api_calls/v1/` and `src/britecore_libraries/api/api_calls/v2/` as the source of truth for current wrapper names.
+- Use module-level docs in `src/britecore_sdk/api/api_calls/v1/` and `src/britecore_sdk/api/api_calls/v2/` as the source of truth for current wrapper names.

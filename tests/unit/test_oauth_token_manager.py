@@ -5,8 +5,8 @@ from unittest.mock import patch
 
 import pytest
 
-from britecore_libraries.api.britecore_oauth_token_manager import OAuthToken
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.api.britecore_oauth_token_manager import OAuthToken
+from britecore_sdk.exceptions import BritecoreError
 
 
 class TestOAuthTokenInit:
@@ -72,7 +72,7 @@ class TestOAuthTokenRequest:
     """Tests for token request and refresh."""
 
     @pytest.mark.unit
-    @patch("britecore_libraries.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
     def test_request_new_token_success(self, mock_http, mock_oauth_response):
         """Test successful new token request."""
         mock_http.request.return_value = mock_oauth_response
@@ -84,7 +84,7 @@ class TestOAuthTokenRequest:
         assert token.token_time > datetime.now()
 
     @pytest.mark.unit
-    @patch("britecore_libraries.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
     def test_request_new_token_failure_no_existing_token(
         self, mock_http, mock_oauth_response_error
     ):
@@ -97,7 +97,7 @@ class TestOAuthTokenRequest:
             token._request_new_token()
 
     @pytest.mark.unit
-    @patch("britecore_libraries.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
     def test_request_new_token_failure_with_existing_token(
         self, mock_http, mock_oauth_response_error
     ):
@@ -130,7 +130,7 @@ class TestOAuthTokenHeaders:
         assert headers["Content-Type"] == "application/json"
 
     @pytest.mark.unit
-    @patch("britecore_libraries.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
     def test_get_authorization_headers_triggers_refresh(
         self, mock_http, mock_oauth_response
     ):
@@ -145,7 +145,7 @@ class TestOAuthTokenHeaders:
         mock_http.request.assert_called_once()
 
     @pytest.mark.unit
-    @patch("britecore_libraries.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
     def test_get_authorization_headers_no_refresh_if_valid(self, mock_http):
         """Test that get_authorization_headers doesn't refresh valid token."""
         token = OAuthToken("client_id", "client_secret", "https://api.example.com")
