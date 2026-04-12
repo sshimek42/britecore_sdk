@@ -39,7 +39,7 @@ def get_target_site() -> str | None:
     site: str | None = settings.get("target_site", default=None) or os.environ.get(
         "target_site"
     )
-    return site or None
+    return site
 
 
 settings.validators.register(
