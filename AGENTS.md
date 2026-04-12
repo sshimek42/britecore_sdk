@@ -40,7 +40,7 @@ For a compact version, see `AGENTS.quickstart.md`.
 - Runtime config is Dynaconf-based in `src/britecore_libraries/config/config.py`, loading `config/.secrets.toml` + `config/settings.toml`.
 - Required site keys are validated (`base_url`, `client_id`, `client_secret`, `api_key`) for configured environments.
 - Important env vars used directly by code: `target_site` (client init) and `system` (regex map selection in `maps/britecore_policy_name_map.py`).
-- External integrations: `urllib3` (HTTP), OAuth2 token endpoint `/api/auth/oauth2/token`, `pyodbc` in `utils/britecore_odbc.py`, Selenium helpers in `utils/britecore_selenium.py`, CSV-backed zip lookup in `utils/zip_code_lookup.py`.
+- External integrations: `urllib3` (HTTP), OAuth2 token endpoint `/api/auth/oauth2/token`, CSV-backed zip lookup in `utils/zip_code_lookup.py`.
 
 ## Developer workflow in this repo
 

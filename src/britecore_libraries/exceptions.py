@@ -197,9 +197,3 @@ class BritecoreError:
             if self.endpoint:
                 parts.append(f"Endpoint: {self.endpoint}")
             return "\n".join(parts)
-
-    class DatabaseConnectionError(Base):
-        """Raised when a database connection fails."""
-
-        def __str__(self) -> str:
-            return f"Database connection error - {self.message}"
