@@ -71,9 +71,20 @@ pip install -e .
 
 ### "No target_site assigned"
 
-**Cause:** Missing environment variable
+**Cause:** `target_site` has not been provided through any of the supported mechanisms.
 
-**Solution:**
+**Solution (choose one):**
+
+**Option 1 — `settings.toml` (recommended for persistent setup):**
+
+Add `target_site` under the `[default]` section of `src/britecore_sdk/settings/settings.toml`:
+
+```toml
+[default]
+target_site = "your_site"
+```
+
+**Option 2 — Environment variable:**
 
 ```powershell
 # Set environment variable
@@ -89,6 +100,14 @@ export target_site="your_site"
 
 # Verify
 python -c "import os; print(os.environ.get('target_site'))"
+```
+
+**Option 3 — Explicit argument in code:**
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+client = init_api_client(target_site="your_site")
 ```
 
 ---
