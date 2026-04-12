@@ -128,7 +128,14 @@ pip install britecore_libraries[dev]         # Development (tests, linting, type
 
 ### Configuration
 
-Create `src/britecore_libraries/config/settings.toml` (public runtime defaults) and `.secrets.toml` (gitignored secrets):
+Copy the sample files from `src/britecore_libraries/config/sample/` to `src/britecore_libraries/config/` and fill in your real values:
+
+```bash
+cp src/britecore_libraries/config/sample/settings.toml src/britecore_libraries/config/settings.toml
+cp src/britecore_libraries/config/sample/.secrets.toml src/britecore_libraries/config/.secrets.toml
+```
+
+Then edit both files — `settings.toml` holds public runtime defaults and `.secrets.toml` (gitignored) holds your secrets:
 
 **settings.toml** (example):
 
