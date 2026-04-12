@@ -9,7 +9,6 @@ SCRIPTS = [
     "check_site_configs.py",
     "check_api_spec_sync.py",
     "check_test_data.py",
-    "check_odbc_settings.py",
 ]
 
 UTILS_DIR = __file__.replace("run_all_checks.py", "")

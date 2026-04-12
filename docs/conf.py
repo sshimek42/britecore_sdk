@@ -47,9 +47,7 @@ autodoc_typehints = "description"
 autodoc_mock_imports = [
     "dynaconf",
     "pyinputplus",
-    "pyodbc",
     "sclogging",
-    "selenium",
     "urllib3",
 ]
 
