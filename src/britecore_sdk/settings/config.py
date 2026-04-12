@@ -18,7 +18,11 @@ setting_files_full: list[Path] = []
 for each_file in setting_files:
     setting_files_full.append(curr_dir / each_file)
 
-settings = Dynaconf(settings_files=setting_files_full, environments=True)
+settings = Dynaconf(
+    settings_files=setting_files_full,
+    environments=True,
+    envvar_prefix="BRITECORE_LIBRARIES",
+)
 
 
 def get_target_site() -> str | None:
@@ -107,8 +111,8 @@ class LoadClientSettings:
                         ]
                         missing_env_keys = []
                         for key in required_keys:
-                            # Dynaconf supports both UPPERCASE and lowercase env vars, check both
-                            env_val = os.environ.get(key) or os.environ.get(key.upper())
+                            # Check for BRITECORE_LIBRARIES_{KEY} env var (the configured Dynaconf prefix)
+                            env_val = os.environ.get(f"BRITECORE_LIBRARIES_{key.upper()}")
                             config_val = settings.get(key, default=None)
                             if not env_val and config_val:
                                 missing_env_keys.append(key)
@@ -119,7 +123,8 @@ class LoadClientSettings:
                                     "from environment variables and loaded from config files "
                                     "instead: %s. This means a mix of env and config file "
                                     "values is being used. For full environment-only config, "
-                                    "set all required keys in the environment."
+                                    "set all required keys as BRITECORE_LIBRARIES_* environment "
+                                    "variables (e.g., BRITECORE_LIBRARIES_BASE_URL)."
                                 ),
                                 ", ".join(missing_env_keys),
                             )
