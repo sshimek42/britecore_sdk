@@ -861,9 +861,7 @@ class TestAccountingEndpoints:
         expected_json,
         expected_path,
     ):
-        module = importlib.import_module(
-            "britecore_sdk.api.api_calls.v2.accounting"
-        )
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.accounting")
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
@@ -899,9 +897,7 @@ class TestCommissionsEndpoints:
         expected_json,
         expected_path,
     ):
-        module = importlib.import_module(
-            "britecore_sdk.api.api_calls.v2.commissions"
-        )
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.commissions")
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
@@ -937,9 +933,7 @@ class TestPaymentsEndpoints:
         expected_json,
         expected_path,
     ):
-        module = importlib.import_module(
-            "britecore_sdk.api.api_calls.v2.payments"
-        )
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.payments")
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
