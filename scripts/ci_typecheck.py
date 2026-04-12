@@ -41,7 +41,7 @@ def main() -> None:
             "src/britecore_sdk/api/types.py",
             "src/britecore_sdk/api/api_calls/v1",
             "src/britecore_sdk/api/api_calls/v2",
-            "src/britecore_sdk/config/config.py",
+            "src/britecore_sdk/settings/config.py",
             "src/britecore_sdk/maps/__init__.py",
             "src/britecore_sdk/models",
             "src/britecore_sdk/validators",

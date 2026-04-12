@@ -181,7 +181,7 @@ Retry and timeout defaults come from config keys loaded by
 - `web_timeout_long`
 - `web_retry` (urllib3 retry configuration)
 
-See `src/britecore_sdk/config/settings.toml` for current shipped defaults.
+See `src/britecore_sdk/settings/settings.toml` for current shipped defaults.
 
 `request_retries` should be used for idempotent/retry-safe operations only.
 

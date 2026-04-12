@@ -16,7 +16,7 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 ### Location
 
 ```text
-src/britecore_sdk/config/
+src/britecore_sdk/settings/
 |-- sample/
 |   |-- settings.toml  # Sample/template for public settings (tracked in git)
 |   `-- .secrets.toml  # Sample/template for secrets (tracked in git, no real values)
@@ -25,7 +25,7 @@ src/britecore_sdk/config/
 `-- config.py          # Dynaconf loader
 ```
 
-> **Tip:** Copy the files from `config/sample/` to `config/` as a starting point,
+> **Tip:** Copy the files from `settings/sample/` to `settings/` as a starting point,
 > then fill in your real values.
 
 ### `settings.toml` (Public)
@@ -81,7 +81,7 @@ api_key = "your_real_api_key"
 
 **How to create:**
 
-1. Copy `src/britecore_sdk/config/sample/.secrets.toml` to `src/britecore_sdk/config/.secrets.toml`
+1. Copy `src/britecore_sdk/settings/sample/.secrets.toml` to `src/britecore_sdk/settings/.secrets.toml`
 2. Replace placeholder values with your real base_url and credentials for each site
 3. **Never commit** `.secrets.toml` (it's already gitignored)
 
@@ -213,7 +213,7 @@ python -m britecore_sdk.utils.healthcheck --site example_site
 ```
 
 `check_site_configs` validates each site section in
-`src/britecore_sdk/config/.secrets.toml` using this rule:
+`src/britecore_sdk/settings/.secrets.toml` using this rule:
 
 - `base_url` is required
 - auth must be either:
@@ -306,19 +306,19 @@ python app.py
 2. Check `.secrets.toml` has the site section with required auth keys:
 
    ```powershell
-   Select-String -Path "src/britecore_sdk/config/.secrets.toml" -Pattern "\[example_site\]"
+   Select-String -Path "src/britecore_sdk/settings/.secrets.toml" -Pattern "\[example_site\]"
    ```
 
 3. Check `.secrets.toml` exists and has values:
 
    ```powershell
-   Get-Content "src/britecore_sdk/config/.secrets.toml"
+   Get-Content "src/britecore_sdk/settings/.secrets.toml"
    ```
 
 4. Test config loading directly:
 
    ```python
-   from britecore_sdk.config.config import LoadClientSettings
+   from britecore_sdk.settings.config import LoadClientSettings
 
    settings = LoadClientSettings("example_site")
    print(settings)  # Should show loaded config
@@ -400,4 +400,4 @@ Some features in britecore_sdk rely on map files (such as policy, field, or agen
 
 - [GETTING_STARTED.md](../GETTING_STARTED.md) -- Quick setup guide
 - [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) -- Common errors
-- [src/britecore_sdk/config/config.py](../src/britecore_sdk/config/config.py) -- Config loader implementation
+- [src/britecore_sdk/settings/config.py](../src/britecore_sdk/settings/config.py) -- Config loader implementation
