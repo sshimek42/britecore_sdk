@@ -7,6 +7,9 @@
 # See docs/CONFIGURATION.md for full details.
 
 [default]
+web_timeout = 30
+web_retry = 10
+web_timeout_long = 60
 
 # Add a section header for each site you configure.
 # Leave the body empty, or add only non-sensitive settings.

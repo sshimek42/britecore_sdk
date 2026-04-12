@@ -35,6 +35,9 @@ Contains default non-secret runtime settings (no credentials):
 ```toml
 # Default runtime configuration (applies to all sites unless overridden)
 [default]
+web_timeout = 30        # API request timeout in seconds
+web_retry = 10          # Number of retries for API requests
+web_timeout_long = 60   # Long-running API request timeout in seconds
 
 # Site section definitions (no base_url or credentials — those go in .secrets.toml)
 [example_site]
@@ -47,6 +50,7 @@ Contains default non-secret runtime settings (no credentials):
 **When to edit:**
 
 - Add new site section headers (credentials go in .secrets.toml)
+- Override default API request settings (`web_timeout`, `web_retry`, `web_timeout_long`)
 
 **Never commit:**
 
