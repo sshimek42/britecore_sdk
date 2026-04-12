@@ -91,11 +91,11 @@ Security patches are provided for:
 3. **Use environment variables for secrets**
 
    ```powershell
-   $env:BRITECORE_LIBRARIES_API_KEY = ""
+   $env:BRITECORE_SDK_API_KEY = ""
    ```
 
    ```bash
-   export BRITECORE_LIBRARIES_API_KEY=""
+   export BRITECORE_SDK_API_KEY=""
 
    ```
 
