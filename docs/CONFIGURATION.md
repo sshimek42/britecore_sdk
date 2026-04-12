@@ -132,8 +132,8 @@ You can set `target_site` and override config values with environment variables:
 # Set the active site (alternative: set target_site in settings.toml [default])
 $env:target_site = "example_site"
 
-# Override a specific setting (BRITECORE_LIBRARIES_* env vars take precedence over .secrets.toml)
-$env:BRITECORE_LIBRARIES_BASE_URL = "custom.britecore.com"
+# Override a specific setting (BRITECORE_SDK_* env vars take precedence over .secrets.toml)
+$env:BRITECORE_SDK_BASE_URL = "custom.britecore.com"
 
 # System selection (for regex maps, if applicable)
 $env:system = "example_site"
@@ -147,7 +147,7 @@ $env:system = "example_site"
 
 **Role of `target_site`:** `target_site` selects which section of `.secrets.toml` (and
 `settings.toml`) is used to load credentials. When **all** required credentials are supplied via
-`BRITECORE_LIBRARIES_*` environment variables, the specific `target_site` value does not affect
+`BRITECORE_SDK_*` environment variables, the specific `target_site` value does not affect
 which credentials are loaded — env vars take precedence over TOML values regardless of the
 section name. However, `target_site` is still required for client initialization. If any required
 credential is missing from env vars, the client will fall back to the `.secrets.toml` section
@@ -155,7 +155,7 @@ matching the `target_site` value, so the name must correspond to a real section 
 
 **Priority order for other config values (highest to lowest):**
 
-1. Environment variables (e.g., `BRITECORE_LIBRARIES_*`)
+1. Environment variables (e.g., `BRITECORE_SDK_*`)
 2. `.secrets.toml` values (all base_url and credentials)
 3. `settings.toml` values (urllib3 defaults and site definitions)
 4. Built-in defaults
@@ -246,7 +246,7 @@ The utility also warns when sensitive keys (`api_key`, `client_id`,
 
 | Error | Cause | Fix |
 | ----- | ----- | --- |
-| `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `.secrets.toml` site section or set `BRITECORE_LIBRARIES_BASE_URL` |
+| `BritecoreKeyError` | Missing `base_url` | Add `base_url` to `.secrets.toml` site section or set `BRITECORE_SDK_BASE_URL` |
 | `BritecoreKeyError` | Missing `client_id`/`client_secret` | Add both for OAuth, or add `api_key` for API key auth |
 | `BritecoreKeyError` | Missing `api_key` | Add `api_key` to `.secrets.toml` |
 | Config not loading | `target_site` not set | Set `target_site` in `settings.toml` `[default]`, set `$env:target_site`, or pass to `init_api_client(target_site="site_name")` |
@@ -281,8 +281,8 @@ Store credentials as **GitHub repository secrets**:
 
 ```yaml
 env:
-  BRITECORE_LIBRARIES_BASE_URL: ${{ secrets.BRITECORE_BASE_URL }}
-  BRITECORE_LIBRARIES_API_KEY: ${{ secrets.BRITECORE_API_KEY }}
+  BRITECORE_SDK_BASE_URL: ${{ secrets.BRITECORE_BASE_URL }}
+  BRITECORE_SDK_API_KEY: ${{ secrets.BRITECORE_API_KEY }}
   target_site: example_site_test  # required; selects .secrets.toml section (any name works when all creds are in env vars)
 ```
 
@@ -292,9 +292,9 @@ Use environment variables or a secrets management system (e.g., AWS Secrets Mana
 
 ```powershell
 # Before app startup
-$env:BRITECORE_LIBRARIES_BASE_URL = "prod.britecore.com"
-$env:BRITECORE_LIBRARIES_CLIENT_ID = "prod_client_id"
-$env:BRITECORE_LIBRARIES_CLIENT_SECRET = "prod_client_secret"
+$env:BRITECORE_SDK_BASE_URL = "prod.britecore.com"
+$env:BRITECORE_SDK_CLIENT_ID = "prod_client_id"
+$env:BRITECORE_SDK_CLIENT_SECRET = "prod_client_secret"
 $env:target_site = "example_site"  # required; value only matters if .secrets.toml is also used
 
 # Then start your application
@@ -304,9 +304,9 @@ python app.py
 #### API-only deployment checklist
 
 - Install base package only (`pip install -e .`); do not install optional extras unless needed.
-- Set `target_site` to a configured site section in `settings.toml`/`.secrets.toml`, or any non-empty string when all credentials are supplied via `BRITECORE_LIBRARIES_*` env vars.
-- Set `BRITECORE_LIBRARIES_BASE_URL` for the target BriteCore instance.
-- Choose one auth mode: either set `BRITECORE_LIBRARIES_API_KEY`, or set both `BRITECORE_LIBRARIES_CLIENT_ID` and `BRITECORE_LIBRARIES_CLIENT_SECRET`.
+- Set `target_site` to a configured site section in `settings.toml`/`.secrets.toml`, or any non-empty string when all credentials are supplied via `BRITECORE_SDK_*` env vars.
+- Set `BRITECORE_SDK_BASE_URL` for the target BriteCore instance.
+- Choose one auth mode: either set `BRITECORE_SDK_API_KEY`, or set both `BRITECORE_SDK_CLIENT_ID` and `BRITECORE_SDK_CLIENT_SECRET`.
 - Store production secrets in a secrets manager (Vault, AWS Secrets Manager, etc.), not in committed files.
 - Verify startup with a minimal init check (`get_api_client()`) before serving traffic. Use `BritecoreAPIClient(...).init_client()` only for advanced/manual scenarios.
 
