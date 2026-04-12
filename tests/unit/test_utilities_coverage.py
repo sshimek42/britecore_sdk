@@ -16,14 +16,14 @@ class TestZipCodeLookup:
     @pytest.mark.unit
     def test_zip_lookup_module_loads(self):
         """Test that zip_code_lookup module loads successfully."""
-        from britecore_libraries.utils import zip_code_lookup
+        from britecore_sdk.utils import zip_code_lookup
 
         assert zip_code_lookup is not None
 
     @pytest.mark.unit
     def test_zip_lookup_has_load_zip_codes(self):
         """Test that zip_code_lookup has load_zip_codes function."""
-        from britecore_libraries.utils.zip_code_lookup import load_zip_codes
+        from britecore_sdk.utils.zip_code_lookup import load_zip_codes
 
         assert callable(load_zip_codes)
 
@@ -35,7 +35,7 @@ class TestUtilityModuleStructure:
     def test_interactive_menu_module_can_be_imported(self):
         """Test that interactive_menu module can be imported and has expected attrs."""
         try:
-            from britecore_libraries.utils.interactive_menu import (
+            from britecore_sdk.utils.interactive_menu import (
                 API_CLIENT,
                 LOGGER,
                 line_menu,
@@ -54,14 +54,14 @@ class TestInteractiveMenu:
     @pytest.mark.unit
     def test_line_menu_function_exists(self):
         """Test that line_menu function exists and is callable."""
-        from britecore_libraries.utils.interactive_menu import line_menu
+        from britecore_sdk.utils.interactive_menu import line_menu
 
         assert callable(line_menu)
 
     @pytest.mark.unit
     def test_line_menu_has_comprehensive_documentation(self):
         """Test that line_menu function has complete documentation."""
-        from britecore_libraries.utils.interactive_menu import line_menu
+        from britecore_sdk.utils.interactive_menu import line_menu
 
         assert line_menu.__doc__ is not None
         doc_lower = line_menu.__doc__.lower()
@@ -74,14 +74,14 @@ class TestInteractiveMenu:
     @pytest.mark.unit
     def test_interactive_menu_module_loads(self):
         """Test that interactive_menu module loads successfully."""
-        from britecore_libraries.utils import interactive_menu
+        from britecore_sdk.utils import interactive_menu
 
         assert interactive_menu is not None
 
     @pytest.mark.unit
     def test_interactive_menu_has_logger(self):
         """Test that interactive_menu has LOGGER attribute."""
-        from britecore_libraries.utils.interactive_menu import LOGGER
+        from britecore_sdk.utils.interactive_menu import LOGGER
 
         assert LOGGER is not None
         assert hasattr(LOGGER, "info")
@@ -91,14 +91,14 @@ class TestInteractiveMenu:
     @pytest.mark.unit
     def test_interactive_menu_has_api_client(self):
         """Test that interactive_menu has API_CLIENT attribute."""
-        from britecore_libraries.utils.interactive_menu import API_CLIENT
+        from britecore_sdk.utils.interactive_menu import API_CLIENT
 
         assert API_CLIENT is not None
 
     @pytest.mark.unit
     def test_line_menu_source_has_nested_print_menu(self):
         """Test that line_menu defines print_menu nested function."""
-        from britecore_libraries.utils.interactive_menu import line_menu
+        from britecore_sdk.utils.interactive_menu import line_menu
 
         source = inspect.getsource(line_menu)
         assert "def print_menu(" in source
@@ -109,7 +109,7 @@ class TestInteractiveMenu:
     @pytest.mark.unit
     def test_line_menu_makes_three_api_calls(self):
         """Test that line_menu structure includes three API endpoint calls."""
-        from britecore_libraries.utils.interactive_menu import line_menu
+        from britecore_sdk.utils.interactive_menu import line_menu
 
         source = inspect.getsource(line_menu)
         # Verify the three API paths are referenced
@@ -120,7 +120,7 @@ class TestInteractiveMenu:
     @pytest.mark.unit
     def test_line_menu_returns_expected_dict_structure(self):
         """Test that line_menu return type annotation is a dict."""
-        from britecore_libraries.utils.interactive_menu import line_menu
+        from britecore_sdk.utils.interactive_menu import line_menu
 
         # Check return annotation from function signature
         sig = inspect.signature(line_menu)
@@ -135,18 +135,18 @@ class TestUtilityModuleImports:
     @pytest.mark.unit
     def test_can_import_zip_code_lookup(self):
         """Test that zip_code_lookup can be imported."""
-        from britecore_libraries.utils import zip_code_lookup
+        from britecore_sdk.utils import zip_code_lookup
 
         assert zip_code_lookup is not None
 
     @pytest.mark.unit
     def test_interactive_menu_source_imports_required_modules(self):
         """Test that interactive_menu properly imports dependencies."""
-        from britecore_libraries.utils import interactive_menu
+        from britecore_sdk.utils import interactive_menu
 
         source = inspect.getsource(interactive_menu)
         # Verify key imports
-        assert "from britecore_libraries import logger" in source
-        assert "from britecore_libraries.api" in source
+        assert "from britecore_sdk import logger" in source
+        assert "from britecore_sdk.api" in source
         assert "RequestParameters" in source
         assert "api_client" in source

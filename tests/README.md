@@ -1,6 +1,6 @@
 # Test Suite for BriteCore Libraries
 
-This directory contains comprehensive tests for the britecore_libraries package.
+This directory contains comprehensive tests for the britecore_sdk package.
 
 ## Structure
 
@@ -58,7 +58,7 @@ pytest tests/integration -m integration
 
 ```powershell
 
-pytest tests/ --cov=src/britecore_libraries --cov-report=html
+pytest tests/ --cov=src/britecore_sdk --cov-report=html
 
 ```
 

@@ -13,7 +13,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from britecore_libraries.api.britecore_api_client import (
+from britecore_sdk.api.britecore_api_client import (
     BritecoreAPIClient,
     LoadClientSettings,
 )

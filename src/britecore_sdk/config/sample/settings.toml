@@ -1,0 +1,21 @@
+# Sample settings.toml — copy to src/britecore_sdk/config/settings.toml and customize.
+#
+# This file contains default non-secret runtime settings.
+# NEVER add credentials, base_url, api_key, client_id, or client_secret here.
+# Those belong exclusively in .secrets.toml (which is gitignored).
+#
+# See docs/CONFIGURATION.md for full details.
+
+[default]
+web_timeout = 30
+web_retry = 10
+web_timeout_long = 60
+
+
+# Add a section header for each site you configure.
+# Leave the body empty, or add only non-sensitive settings.
+[example_site]
+# No credentials here — add them to .secrets.toml instead.
+
+[example_site_test]
+# No credentials here — add them to .secrets.toml instead.

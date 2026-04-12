@@ -55,7 +55,7 @@
 
 ```text
 
-src/britecore_libraries/
+src/britecore_sdk/
 ├── models/
 │   ├── contact.py     # BritecoreContact class
 │   ├── policy.py      # BritecorePolicy class
@@ -108,7 +108,7 @@ validated = contact.process_contact()
 
 ```text
 
-src/britecore_libraries/api/
+src/britecore_sdk/api/
 ├── britecore_api_client.py              # Main sync API client
 ├── britecore_async_api_client.py        # Async facade with TTL cache
 ├── britecore_oauth_token_manager.py     # OAuth2 token handling
@@ -204,7 +204,7 @@ concise syntax is the main priority.
 
 ```text
 
-src/britecore_libraries/
+src/britecore_sdk/
 ├── config/
 │   ├── config.py            # Dynaconf settings loader + LoadClientSettings
 │   ├── settings.toml        # Default runtime settings (API timeouts/retries)
@@ -230,7 +230,7 @@ src/britecore_libraries/
 # 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long)
 # 4. Built-in defaults
 
-from britecore_libraries.config.config import LoadClientSettings
+from britecore_sdk.config.config import LoadClientSettings
 
 loader = LoadClientSettings("my_site")
 site_config = loader.load_config()
@@ -304,7 +304,7 @@ else:
 
 ```python
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
-from britecore_libraries.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls import get_api_client
 
 client = get_api_client()
 # Now safe to import without config; initializes on first method call
@@ -361,10 +361,10 @@ BritecoreError (namespace class)
 
 ```python
 
-from britecore_libraries.api.api_calls import init_api_client
-from britecore_libraries.api.api_calls.v2 import policies
-from britecore_libraries import logger
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+from britecore_sdk import logger
+from britecore_sdk.exceptions import BritecoreError
 
 # API returns:
 {
@@ -378,7 +378,7 @@ from britecore_libraries.exceptions import BritecoreError
 BritecoreError.NoDataReturned("Policy not found")
 
 # Caller handles specific types:
-from britecore_libraries.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls import get_api_client
 
 client = get_api_client()
 try:
@@ -634,10 +634,10 @@ $env:target_site="production"
 import logging
 
 # Module-level control
-logging.getLogger("britecore_libraries").setLevel(logging.DEBUG)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 
 # Standard Python logging — no custom formatting tokens
-from britecore_libraries import logger
+from britecore_sdk import logger
 logger.debug("Detailed info")
 logger.info("Important events")
 logger.error("Errors with context")
@@ -664,7 +664,7 @@ logger.error("Errors with context")
 ## Documentation Freshness
 
 - Last verified: `2026-04-07`
-- Verified against: `src/britecore_libraries/` directory structure and `exceptions.py`
+- Verified against: `src/britecore_sdk/` directory structure and `exceptions.py`
 
 ---
 

@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from britecore_libraries.utils import run_all_checks
+from britecore_sdk.utils import run_all_checks
 
 
 @pytest.mark.unit

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from britecore_libraries.utils import check_test_data
+from britecore_sdk.utils import check_test_data
 
 
 @pytest.mark.unit

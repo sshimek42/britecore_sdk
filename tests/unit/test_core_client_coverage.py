@@ -16,7 +16,7 @@ from urllib3.exceptions import (
 from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Timeout
 
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.exceptions import BritecoreError
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -47,14 +47,14 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_none_response_raises_no_data_returned(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         with pytest.raises(BritecoreError.NoDataReturned):
             BritecoreAPIClient.process_result(None)
 
     @pytest.mark.unit
     def test_401_raises_authentication_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=401, reason="Unauthorized")
         with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
@@ -63,7 +63,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_403_raises_authentication_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=403, reason="Forbidden")
         with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
@@ -72,7 +72,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_authentication_error_str_includes_status(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=401, reason="Unauthorized")
         with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
@@ -81,7 +81,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_429_raises_rate_limit_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=429, reason="Too Many Requests")
         with pytest.raises(BritecoreError.RateLimitError):
@@ -89,7 +89,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_429_with_retry_after_header_populates_attribute(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(
             b"", status=429, reason="Too Many Requests", headers={"Retry-After": "30"}
@@ -100,7 +100,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_500_raises_server_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=500, reason="Internal Server Error")
         with pytest.raises(BritecoreError.ServerError) as exc_info:
@@ -109,7 +109,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_503_raises_server_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=503, reason="Service Unavailable")
         with pytest.raises(BritecoreError.ServerError) as exc_info:
@@ -118,7 +118,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_server_error_str_includes_status(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=502, reason="Bad Gateway")
         with pytest.raises(BritecoreError.ServerError) as exc_info:
@@ -127,7 +127,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_404_raises_no_data_returned(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=404, reason="Not Found")
         with pytest.raises(BritecoreError.NoDataReturned):
@@ -135,7 +135,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_404_raises_not_found_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=404, reason="Not Found")
         with pytest.raises(BritecoreError.NotFoundError):
@@ -143,7 +143,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_409_raises_conflict_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=409, reason="Conflict")
         with pytest.raises(BritecoreError.ConflictError):
@@ -151,7 +151,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_422_raises_validation_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"", status=422, reason="Unprocessable Entity")
         with pytest.raises(BritecoreError.ValidationError):
@@ -159,7 +159,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_200_success_false_raises_no_data_returned(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(
             b'{"success": false, "message": "Quota exceeded"}', status=200
@@ -169,7 +169,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_200_success_true_returns_data(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b'{"success": true, "data": {"id": "ABC"}}', status=200)
         result = BritecoreAPIClient.process_result(resp)
@@ -177,7 +177,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_200_empty_data_returns_none_with_warning(self):
-        from britecore_libraries.api import britecore_api_client as client_mod
+        from britecore_sdk.api import britecore_api_client as client_mod
 
         resp = _make_response(b'{"success": true, "data": null}', status=200)
         with patch.object(client_mod.LOGGER, "warning") as mock_warning:
@@ -187,7 +187,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_messages_key_used_as_fallback_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(
             b'{"success": false, "messages": "Validation failed"}', status=200
@@ -198,7 +198,7 @@ class TestProcessResultStatusCodes:
 
     @pytest.mark.unit
     def test_malformed_json_raises_no_data_returned(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         resp = _make_response(b"not-json", status=200)
         with pytest.raises(BritecoreError.NoDataReturned):
@@ -207,7 +207,7 @@ class TestProcessResultStatusCodes:
     @pytest.mark.unit
     def test_logs_flag_triggers_debug_log(self):
         """When logs=True, LOGGER.debug is called with the data payload."""
-        from britecore_libraries.api import britecore_api_client as client_mod
+        from britecore_sdk.api import britecore_api_client as client_mod
 
         resp = _make_response(b'{"success": true, "data": {"id": "X"}}')
         with patch.object(client_mod.LOGGER, "debug") as mock_debug:
@@ -224,10 +224,10 @@ class TestDoRequestExceptionMapping:
     """Tests for network error → exception mapping in do_request."""
 
     def _initialized_client(self, mock_settings):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         with patch(
-            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = mock_settings
@@ -449,7 +449,7 @@ class TestInitClientConfigErrors:
     def test_missing_base_url_raises_britecore_key_error(self, env_api_key):
         from types import SimpleNamespace
 
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         bad_settings = SimpleNamespace(
             base_url="",
@@ -462,7 +462,7 @@ class TestInitClientConfigErrors:
             web_browser="",
         )
         with patch(
-            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
             mock_loader.return_value.load_config.return_value = bad_settings
             client = BritecoreAPIClient("test_site")
@@ -472,7 +472,7 @@ class TestInitClientConfigErrors:
 
     @pytest.mark.unit
     def test_no_site_raises_value_error(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         with pytest.raises(ValueError):
             BritecoreAPIClient(None)
@@ -481,7 +481,7 @@ class TestInitClientConfigErrors:
     def test_defaults_applied_when_timeout_missing(self, env_api_key, mock_settings):
         from types import SimpleNamespace
 
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         settings_no_timeout = SimpleNamespace(
             base_url="example.com",
@@ -494,7 +494,7 @@ class TestInitClientConfigErrors:
             web_browser="",
         )
         with patch(
-            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
             mock_loader.return_value.load_config.return_value = settings_no_timeout
             client = BritecoreAPIClient("test_site")
@@ -528,10 +528,10 @@ class TestInstanceIsolation:
 
     @pytest.mark.unit
     def test_two_clients_hold_independent_base_urls(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         with patch(
-            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
             mock_loader.return_value.load_config.side_effect = [
                 self._make_settings("alpha.example.com"),
@@ -548,11 +548,11 @@ class TestInstanceIsolation:
 
     @pytest.mark.unit
     def test_two_clients_hold_independent_http_pools(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         settings = self._make_settings("example.com")
         with patch(
-            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
             mock_loader.return_value.load_config.return_value = settings
             client_a = BritecoreAPIClient("site_a")
@@ -564,10 +564,10 @@ class TestInstanceIsolation:
 
     @pytest.mark.unit
     def test_reinitializing_one_client_does_not_affect_other(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         with patch(
-            "britecore_libraries.api.britecore_api_client.LoadClientSettings"
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
         ) as mock_loader:
             mock_loader.return_value.load_config.side_effect = [
                 self._make_settings("first.example.com"),
@@ -599,8 +599,8 @@ class TestBritecoreAPIClientAdditional:
 
     @pytest.mark.unit
     def test_init_missing_api_key_and_oauth(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         # Simulate missing all credentials
         class DummySettings:
@@ -622,7 +622,7 @@ class TestBritecoreAPIClientAdditional:
 
     @pytest.mark.unit
     def test_multiple_parameter_verification_priority(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         # Multiple parameters, priority selection
         param_list = [
@@ -638,7 +638,7 @@ class TestBritecoreAPIClientAdditional:
 
     @pytest.mark.unit
     def test_multiple_parameter_verification_all_missing(self):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         param_list = [{"id": None}, {"policy_number": None}]
         priority = ["policy_number", "id"]
@@ -649,7 +649,7 @@ class TestBritecoreAPIClientAdditional:
 
     @pytest.mark.unit
     def test_do_request_custom_headers_and_timeout(self, mocker):
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         # Setup client with dummy settings
         class DummySettings:

@@ -2,7 +2,7 @@
 
 import pytest
 
-from britecore_libraries.exceptions import BritecoreError
+from britecore_sdk.exceptions import BritecoreError
 
 
 class TestBritecoreExceptions:
@@ -114,22 +114,22 @@ class TestClassesModuleRemoval:
         """Importing from classes raises ImportError with migration guidance."""
         import sys
 
-        if "britecore_libraries.classes" in sys.modules:
-            del sys.modules["britecore_libraries.classes"]
+        if "britecore_sdk.classes" in sys.modules:
+            del sys.modules["britecore_sdk.classes"]
 
         with pytest.raises(ImportError, match="has been removed"):
-            from britecore_libraries.classes import BritecoreContact  # noqa: F401
+            from britecore_sdk.classes import BritecoreContact  # noqa: F401
 
     @pytest.mark.unit
     def test_classes_import_error_mentions_replacement_modules(self):
         """Import error message points users to models/validators imports."""
         import sys
 
-        if "britecore_libraries.classes" in sys.modules:
-            del sys.modules["britecore_libraries.classes"]
+        if "britecore_sdk.classes" in sys.modules:
+            del sys.modules["britecore_sdk.classes"]
 
         with pytest.raises(ImportError) as exc_info:
-            from britecore_libraries.classes import BritecoreContact  # noqa: F401
+            from britecore_sdk.classes import BritecoreContact  # noqa: F401
 
         message = str(exc_info.value).lower()
         assert "models" in message

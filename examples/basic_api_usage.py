@@ -1,4 +1,4 @@
-"""Basic usage sample for britecore_libraries.
+"""Basic usage sample for britecore_sdk.
 
 This script is safe by default:
 - It demonstrates local model/validator usage without network calls.
@@ -10,15 +10,15 @@ from __future__ import annotations
 import argparse
 from pprint import pprint
 
-import britecore_libraries
-from britecore_libraries.models.contact import BritecoreContact
-from britecore_libraries.validators.email_validator import EmailValidator
-from britecore_libraries.validators.name_validator import NameValidator
+import britecore_sdk
+from britecore_sdk.models.contact import BritecoreContact
+from britecore_sdk.validators.email_validator import EmailValidator
+from britecore_sdk.validators.name_validator import NameValidator
 
 
 def run_local_demo() -> None:
     """Run local-only examples that do not require API credentials."""
-    print(f"britecore_libraries version: {britecore_libraries.__version__}")
+    print(f"britecore_sdk version: {britecore_sdk.__version__}")
 
     normalized_name = NameValidator.normalize_business_name("acme llc")
     normalized_email = EmailValidator.validate_email("USER@EXAMPLE.COM")
@@ -49,8 +49,8 @@ def run_live_policy_lookup(policy_number: str) -> None:
 
     This requires valid local configuration and credentials.
     """
-    from britecore_libraries.api.api_calls import init_api_client
-    from britecore_libraries.api.api_calls.v2 import policies
+    from britecore_sdk.api.api_calls import init_api_client
+    from britecore_sdk.api.api_calls.v2 import policies
 
     print(f"\nRunning live retrieve_policy call for policy_number={policy_number!r}...")
     # Uses target_site from environment; pass a site string here if you prefer explicit site selection.
@@ -72,7 +72,7 @@ def build_parser() -> argparse.ArgumentParser:
     """Build CLI arguments for local demo and optional live lookup."""
     parser = argparse.ArgumentParser(
         description=(
-            "Run local and optional live usage samples for britecore_libraries."
+            "Run local and optional live usage samples for britecore_sdk."
         ),
     )
     parser.add_argument(

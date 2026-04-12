@@ -29,11 +29,11 @@ class TestQuotesEndpoints:
     @pytest.mark.integration
     def test_create_full_quote(self):
         """create_full_quote returns (data_dict, quote_id) on success."""
-        with patch("britecore_libraries.api.api_calls.v2.quotes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.quotes.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"id": "q-123", "number": "Q001"}
 
-            from britecore_libraries.api.api_calls.v2.quotes import create_full_quote
+            from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
 
             result, quote_id = create_full_quote(
                 {"number": "Q001", "policy_type_id": "pt-1"}
@@ -49,11 +49,11 @@ class TestQuotesEndpoints:
     @pytest.mark.integration
     def test_create_full_quote_no_data_returns_none_tuple(self):
         """create_full_quote returns (None, None) when process_result gives falsy."""
-        with patch("britecore_libraries.api.api_calls.v2.quotes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.quotes.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = None
 
-            from britecore_libraries.api.api_calls.v2.quotes import create_full_quote
+            from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
 
             result, quote_id = create_full_quote({"policy_type_id": "pt-1"})
 
@@ -63,11 +63,11 @@ class TestQuotesEndpoints:
     @pytest.mark.integration
     def test_create_full_quote_returns_tuple_type(self):
         """create_full_quote always returns a 2-tuple."""
-        with patch("britecore_libraries.api.api_calls.v2.quotes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.quotes.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"id": "q-xyz"}
 
-            from britecore_libraries.api.api_calls.v2.quotes import create_full_quote
+            from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
 
             result = create_full_quote({"policy_type_id": "pt-1"})
             assert isinstance(result, tuple)
@@ -76,11 +76,11 @@ class TestQuotesEndpoints:
     @pytest.mark.integration
     def test_get_quote(self):
         """get_quote forwards the id and returns API data."""
-        with patch("britecore_libraries.api.api_calls.v2.quotes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.quotes.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"id": "q-999", "number": "Q999"}
 
-            from britecore_libraries.api.api_calls.v2.quotes import get_quote
+            from britecore_sdk.api.api_calls.v2.quotes import get_quote
 
             result = get_quote("q-999")
 
@@ -91,13 +91,13 @@ class TestQuotesEndpoints:
     @pytest.mark.integration
     def test_get_quote_api_error_propagates(self):
         """get_quote propagates NoDataReturned from process_result."""
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.exceptions import BritecoreError
 
-        with patch("britecore_libraries.api.api_calls.v2.quotes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.quotes.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.side_effect = BritecoreError.NoDataReturned("Not found")
 
-            from britecore_libraries.api.api_calls.v2.quotes import get_quote
+            from britecore_sdk.api.api_calls.v2.quotes import get_quote
 
             with pytest.raises(BritecoreError.NoDataReturned):
                 get_quote("missing-id")
@@ -114,7 +114,7 @@ class TestPoliciesEndpoints:
     @pytest.mark.integration
     def test_retrieve_policy_by_number(self):
         """retrieve_policy resolves the policy_number parameter."""
-        with patch("britecore_libraries.api.api_calls.v2.policies.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.policies.API_CLIENT") as mock:
             mock.multiple_parameter_verification.return_value = {
                 "policy_number": "POL001"
             }
@@ -124,7 +124,7 @@ class TestPoliciesEndpoints:
                 "policy_number": "POL001",
             }
 
-            from britecore_libraries.api.api_calls.v2.policies import retrieve_policy
+            from britecore_sdk.api.api_calls.v2.policies import retrieve_policy
 
             result = retrieve_policy(policy_number="POL001")
 
@@ -133,12 +133,12 @@ class TestPoliciesEndpoints:
     @pytest.mark.integration
     def test_retrieve_policy_by_id(self):
         """retrieve_policy resolves the policy_id parameter."""
-        with patch("britecore_libraries.api.api_calls.v2.policies.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.policies.API_CLIENT") as mock:
             mock.multiple_parameter_verification.return_value = {"policy_id": "pol-42"}
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"id": "pol-42"}
 
-            from britecore_libraries.api.api_calls.v2.policies import retrieve_policy
+            from britecore_sdk.api.api_calls.v2.policies import retrieve_policy
 
             result = retrieve_policy(policy_id="pol-42")
 
@@ -147,7 +147,7 @@ class TestPoliciesEndpoints:
     @pytest.mark.integration
     def test_add_line_item_success(self):
         """add_line_item returns True on success."""
-        with patch("britecore_libraries.api.api_calls.v2.policies.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.policies.API_CLIENT") as mock:
             mock.json_dict_builder.return_value = {
                 "revision_id": "rev-1",
                 "item_id": "itm-1",
@@ -155,7 +155,7 @@ class TestPoliciesEndpoints:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"added_items": ["itm-1"]}
 
-            from britecore_libraries.api.api_calls.v2.policies import add_line_item
+            from britecore_sdk.api.api_calls.v2.policies import add_line_item
 
             result = add_line_item("rev-1", "itm-1")
             assert result is True
@@ -164,7 +164,7 @@ class TestPoliciesEndpoints:
     def test_retrieve_policy_ids_extracts_revision_and_property(self):
         """retrieve_policy_ids returns (revision_id, primary_property_id)."""
         with patch(
-            "britecore_libraries.api.api_calls.v2.policies.retrieve_policy"
+            "britecore_sdk.api.api_calls.v2.policies.retrieve_policy"
         ) as mock:
             mock.return_value = {
                 "active_revision": {
@@ -173,7 +173,7 @@ class TestPoliciesEndpoints:
                 }
             }
 
-            from britecore_libraries.api.api_calls.v2.policies import (
+            from britecore_sdk.api.api_calls.v2.policies import (
                 retrieve_policy_ids,
             )
 
@@ -194,11 +194,11 @@ class TestContactsV2Endpoints:
     @pytest.mark.integration
     def test_get_contact_by_id(self):
         """get_contact returns contact data for a given ID."""
-        with patch("britecore_libraries.api.api_calls.v2.contacts.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.contacts.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"id": "c-1", "name": "Jane Doe"}
 
-            from britecore_libraries.api.api_calls.v2.contacts import get_contact
+            from britecore_sdk.api.api_calls.v2.contacts import get_contact
 
             result = get_contact("c-1")
 
@@ -208,14 +208,14 @@ class TestContactsV2Endpoints:
     @pytest.mark.integration
     def test_new_contact_returns_id(self):
         """new_contact returns (contact_data, contact_id) on success."""
-        with patch("britecore_libraries.api.api_calls.v2.contacts.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.contacts.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {
                 "contact_id": "c-new-1",
                 "name": "John Smith",
             }
 
-            from britecore_libraries.api.api_calls.v2.contacts import new_contact
+            from britecore_sdk.api.api_calls.v2.contacts import new_contact
 
             contact_data, contact_id = new_contact(
                 name="John Smith",
@@ -236,11 +236,11 @@ class TestContactsV2Endpoints:
     @pytest.mark.integration
     def test_new_contact_missing_contact_id_key(self):
         """new_contact returns (None, None) when contact_id key is absent from response."""
-        with patch("britecore_libraries.api.api_calls.v2.contacts.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.contacts.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"name": "No ID Here"}
 
-            from britecore_libraries.api.api_calls.v2.contacts import new_contact
+            from britecore_sdk.api.api_calls.v2.contacts import new_contact
 
             result, contact_id = new_contact(name="No ID Here", address=[{}])
             # When contact_id key is missing the function logs an error and returns (None, None)
@@ -259,11 +259,11 @@ class TestClaimsEndpoints:
     @pytest.mark.integration
     def test_get_claim_success(self):
         """get_claim sends claim_id and returns claim data."""
-        with patch("britecore_libraries.api.api_calls.v2.claims.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.claims.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"claim_id": "clm-1", "status": "open"}
 
-            from britecore_libraries.api.api_calls.v2.claims import get_claim
+            from britecore_sdk.api.api_calls.v2.claims import get_claim
 
             result = get_claim("clm-1")
 
@@ -275,15 +275,15 @@ class TestClaimsEndpoints:
     @pytest.mark.integration
     def test_get_claim_not_found_raises(self):
         """get_claim propagates NoDataReturned when process_result raises."""
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.exceptions import BritecoreError
 
-        with patch("britecore_libraries.api.api_calls.v2.claims.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.claims.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.side_effect = BritecoreError.NoDataReturned(
                 "Claim not found"
             )
 
-            from britecore_libraries.api.api_calls.v2.claims import get_claim
+            from britecore_sdk.api.api_calls.v2.claims import get_claim
 
             with pytest.raises(BritecoreError.NoDataReturned, match="Claim not found"):
                 get_claim("missing")
@@ -302,10 +302,10 @@ class TestDeliverablesEndpoints:
         """list_attachments sends correct path and returns attachment list."""
         with (
             patch(
-                "britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT"
+                "britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT"
             ) as mock,
             patch(
-                "britecore_libraries.api.api_calls.v2.deliverables.api_client"
+                "britecore_sdk.api.api_calls.v2.deliverables.api_client"
             ) as mock_module,
         ):
             mock.do_request.return_value = MagicMock()
@@ -314,7 +314,7 @@ class TestDeliverablesEndpoints:
                 "policy_id": "pol-5"
             }
 
-            from britecore_libraries.api.api_calls.v2.deliverables import (
+            from britecore_sdk.api.api_calls.v2.deliverables import (
                 list_attachments,
             )
 
@@ -330,7 +330,7 @@ class TestDeliverablesEndpoints:
     def test_get_attachment_success(self):
         """get_attachment sends file_id and returns attachment data."""
         with patch(
-            "britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT"
+            "britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT"
         ) as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {
@@ -338,7 +338,7 @@ class TestDeliverablesEndpoints:
                 "url": "https://cdn.example.com/f-99.pdf",
             }
 
-            from britecore_libraries.api.api_calls.v2.deliverables import get_attachment
+            from britecore_sdk.api.api_calls.v2.deliverables import get_attachment
 
             result = get_attachment("f-99")
 
@@ -349,12 +349,12 @@ class TestDeliverablesEndpoints:
     def test_get_edeliverables_sends_date_range(self):
         """get_edeliverables sends correct date range payload."""
         with patch(
-            "britecore_libraries.api.api_calls.v2.deliverables.API_CLIENT"
+            "britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT"
         ) as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = [{"deliverable_id": "ed-1"}]
 
-            from britecore_libraries.api.api_calls.v2.deliverables import (
+            from britecore_sdk.api.api_calls.v2.deliverables import (
                 get_edeliverables,
             )
 
@@ -379,10 +379,10 @@ class TestInspectionsEndpoints:
         """update_inspection_dates resolves policy_number and sends dates."""
         with (
             patch(
-                "britecore_libraries.api.api_calls.v2.inspections.API_CLIENT"
+                "britecore_sdk.api.api_calls.v2.inspections.API_CLIENT"
             ) as mock,
             patch(
-                "britecore_libraries.api.api_calls.v2.inspections.api_client"
+                "britecore_sdk.api.api_calls.v2.inspections.api_client"
             ) as mock_module,
         ):
             mock_module.multiple_parameter_verification.return_value = {
@@ -391,7 +391,7 @@ class TestInspectionsEndpoints:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"updated": True}
 
-            from britecore_libraries.api.api_calls.v2.inspections import (
+            from britecore_sdk.api.api_calls.v2.inspections import (
                 update_inspection_dates,
             )
 
@@ -418,7 +418,7 @@ class TestInsuredEndpoints:
     @pytest.mark.integration
     def test_get_property_information_and_photos(self):
         """get_property_information_and_photos sends property_id and returns data."""
-        with patch("britecore_libraries.api.api_calls.v2.insured.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.insured.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {
                 "property_id": "prop-1",
@@ -426,7 +426,7 @@ class TestInsuredEndpoints:
                 "photos": [],
             }
 
-            from britecore_libraries.api.api_calls.v2.insured import (
+            from britecore_sdk.api.api_calls.v2.insured import (
                 get_property_information_and_photos,
             )
 
@@ -440,15 +440,15 @@ class TestInsuredEndpoints:
     @pytest.mark.integration
     def test_get_property_information_propagates_error(self):
         """get_property_information_and_photos propagates NoDataReturned."""
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.exceptions import BritecoreError
 
-        with patch("britecore_libraries.api.api_calls.v2.insured.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.insured.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.side_effect = BritecoreError.NoDataReturned(
                 "Property not found"
             )
 
-            from britecore_libraries.api.api_calls.v2.insured import (
+            from britecore_sdk.api.api_calls.v2.insured import (
                 get_property_information_and_photos,
             )
 
@@ -473,12 +473,12 @@ class TestNotesEndpoints:
             {"records": [{"id": "n-1", "text": "Note A"}]}
         ).encode()
 
-        with patch("britecore_libraries.api.api_calls.v2.notes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.notes.API_CLIENT") as mock:
             mock_resp = MagicMock()
             mock_resp.data = raw_payload
             mock.do_request.return_value = mock_resp
 
-            from britecore_libraries.api.api_calls.v2.notes import retrieve_notes
+            from britecore_sdk.api.api_calls.v2.notes import retrieve_notes
 
             result = retrieve_notes("entity-id-1")
 
@@ -488,10 +488,10 @@ class TestNotesEndpoints:
     @pytest.mark.integration
     def test_retrieve_notes_returns_empty_on_no_response(self):
         """retrieve_notes returns [] when do_request returns None."""
-        with patch("britecore_libraries.api.api_calls.v2.notes.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.notes.API_CLIENT") as mock:
             mock.do_request.return_value = None
 
-            from britecore_libraries.api.api_calls.v2.notes import retrieve_notes
+            from britecore_sdk.api.api_calls.v2.notes import retrieve_notes
 
             result = retrieve_notes("entity-id-1")
             assert result == []
@@ -508,11 +508,11 @@ class TestReportsEndpoints:
     @pytest.mark.integration
     def test_list_files_success(self):
         """list_files sends report_id and returns processed result."""
-        with patch("britecore_libraries.api.api_calls.v2.reports.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.reports.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = [{"file": "report_q1.pdf"}]
 
-            from britecore_libraries.api.api_calls.v2.reports import list_files
+            from britecore_sdk.api.api_calls.v2.reports import list_files
 
             result = list_files("rpt-1")
 
@@ -531,15 +531,15 @@ class TestReportsEndpoints:
     @pytest.mark.integration
     def test_list_files_error_propagates(self):
         """list_files propagates NoDataReturned from process_result."""
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.exceptions import BritecoreError
 
-        with patch("britecore_libraries.api.api_calls.v2.reports.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v2.reports.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.side_effect = BritecoreError.NoDataReturned(
                 "Report not found"
             )
 
-            from britecore_libraries.api.api_calls.v2.reports import list_files
+            from britecore_sdk.api.api_calls.v2.reports import list_files
 
             with pytest.raises(BritecoreError.NoDataReturned):
                 list_files("missing-report")
@@ -560,12 +560,12 @@ class TestContactsV1Endpoints:
 
         raw = json_mod.dumps({"records": [{"id": "cv1-1", "name": "John"}]}).encode()
 
-        with patch("britecore_libraries.api.api_calls.v1.contacts.API_CLIENT") as mock:
+        with patch("britecore_sdk.api.api_calls.v1.contacts.API_CLIENT") as mock:
             mock_resp = MagicMock()
             mock_resp.data = raw
             mock.do_request.return_value = mock_resp
 
-            from britecore_libraries.api.api_calls.v1.contacts import (
+            from britecore_sdk.api.api_calls.v1.contacts import (
                 retrieve_contact_list,
             )
 
@@ -586,8 +586,8 @@ class TestHTTPErrorHandling:
     @pytest.mark.integration
     def test_401_raises_authentication_error(self):
         """process_result raises AuthenticationError on HTTP 401."""
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         resp = MagicMock()
         resp.status = 401
@@ -599,8 +599,8 @@ class TestHTTPErrorHandling:
     @pytest.mark.integration
     def test_403_raises_authentication_error(self):
         """process_result raises AuthenticationError on HTTP 403."""
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         resp = MagicMock()
         resp.status = 403
@@ -612,8 +612,8 @@ class TestHTTPErrorHandling:
     @pytest.mark.integration
     def test_429_raises_rate_limit_error_with_retry_after(self):
         """process_result raises RateLimitError on HTTP 429, parsing Retry-After."""
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         resp = MagicMock()
         resp.status = 429
@@ -628,8 +628,8 @@ class TestHTTPErrorHandling:
     @pytest.mark.integration
     def test_500_raises_server_error(self):
         """process_result raises ServerError on HTTP 500."""
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         resp = MagicMock()
         resp.status = 500
@@ -641,8 +641,8 @@ class TestHTTPErrorHandling:
     @pytest.mark.integration
     def test_none_response_raises_no_data_returned(self):
         """process_result raises NoDataReturned when response is None."""
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         with pytest.raises(BritecoreError.NoDataReturned):
             BritecoreAPIClient.process_result(None)
@@ -652,8 +652,8 @@ class TestHTTPErrorHandling:
         """process_result raises NoDataReturned when success=false in body."""
         import json as json_mod
 
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         resp = MagicMock()
         resp.status = 200
@@ -676,7 +676,7 @@ class TestStructuredTracing:
     @pytest.mark.integration
     def test_do_request_logs_request_id_arrows(self):
         """do_request emits [<id>] → and [<id>] ← DEBUG log calls."""
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         client = BritecoreAPIClient.__new__(BritecoreAPIClient)
         client.use_api_key = True
@@ -692,7 +692,7 @@ class TestStructuredTracing:
         client.http.request.return_value = ok_resp
 
         with patch(
-            "britecore_libraries.api.britecore_api_client.LOGGER"
+            "britecore_sdk.api.britecore_api_client.LOGGER"
         ) as mock_logger:
             client.do_request(path="/api/v2/test/endpoint", json={"x": 1})
 
@@ -706,8 +706,8 @@ class TestStructuredTracing:
         """do_request logs error with timeout info before re-raising."""
         from urllib3.exceptions import TimeoutError as Urllib3Timeout
 
-        from britecore_libraries.api.britecore_api_client import BritecoreAPIClient
-        from britecore_libraries.exceptions import BritecoreError
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
 
         client = BritecoreAPIClient.__new__(BritecoreAPIClient)
         client.use_api_key = True
@@ -720,7 +720,7 @@ class TestStructuredTracing:
         client.http.request.side_effect = Urllib3Timeout("timed out")
 
         with (
-            patch("britecore_libraries.api.britecore_api_client.LOGGER") as mock_logger,
+            patch("britecore_sdk.api.britecore_api_client.LOGGER") as mock_logger,
             pytest.raises(BritecoreError.RequestTimeoutError),
         ):
             client.do_request(path="/api/v2/test/slow", json={"x": 1})
@@ -746,7 +746,7 @@ class TestLiveSandboxQuotes:
         """Verify the client can initialise against the sandbox URL."""
         import os
 
-        from britecore_libraries.api.api_calls import init_api_client
+        from britecore_sdk.api.api_calls import init_api_client
 
         client = init_api_client(os.environ["BRITECORE_SANDBOX_URL"])
         assert client is not None

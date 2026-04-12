@@ -1,4 +1,4 @@
-# britecore_libraries
+# britecore_sdk
 
 A professional **Python SDK for the BriteCore API** — complete endpoint coverage, async support, OAuth/API key authentication, and type hints.
 
@@ -17,12 +17,12 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 ### 1. Install
 
 ```bash
-pip install britecore_libraries
+pip install britecore_sdk
 ```
 
 ### 2. Configure
 
-Set environment variables or create `src/britecore_libraries/config/.secrets.toml`:
+Set environment variables or create `src/britecore_sdk/config/.secrets.toml`:
 
 **Linux/macOS (bash):**
 
@@ -63,8 +63,8 @@ $env:target_site="production"
 ### 3. Use
 
 ```python
-from britecore_libraries.api.api_calls import get_api_client
-from britecore_libraries.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
 
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
 client = get_api_client()
@@ -119,20 +119,20 @@ The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, a
 
 ```bash
 # Base install (API client + wrappers)
-pip install britecore_libraries
+pip install britecore_sdk
 
 # With optional extras
-pip install britecore_libraries[all]         # All extras
-pip install britecore_libraries[dev]         # Development (tests, linting, type checking)
+pip install britecore_sdk[all]         # All extras
+pip install britecore_sdk[dev]         # Development (tests, linting, type checking)
 ```
 
 ### Configuration
 
-Copy the sample files from `src/britecore_libraries/config/sample/` to `src/britecore_libraries/config/` and fill in your real values:
+Copy the sample files from `src/britecore_sdk/config/sample/` to `src/britecore_sdk/config/` and fill in your real values:
 
 ```bash
-cp src/britecore_libraries/config/sample/settings.toml src/britecore_libraries/config/settings.toml
-cp src/britecore_libraries/config/sample/.secrets.toml src/britecore_libraries/config/.secrets.toml
+cp src/britecore_sdk/config/sample/settings.toml src/britecore_sdk/config/settings.toml
+cp src/britecore_sdk/config/sample/.secrets.toml src/britecore_sdk/config/.secrets.toml
 ```
 
 Then edit both files — `settings.toml` holds public runtime defaults and `.secrets.toml` (gitignored) holds your secrets:
@@ -227,21 +227,21 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CO
 Validate configured sites before first API calls:
 
 ```bash
-python -m britecore_libraries.utils.check_site_configs
+python -m britecore_sdk.utils.check_site_configs
 ```
 
 ```powershell
-python -m britecore_libraries.utils.check_site_configs
+python -m britecore_sdk.utils.check_site_configs
 ```
 
 Run an end-user readiness check (config + auth + safe API ping):
 
 ```bash
-python -m britecore_libraries.utils.healthcheck --site production
+python -m britecore_sdk.utils.healthcheck --site production
 ```
 
 ```powershell
-python -m britecore_libraries.utils.healthcheck --site production
+python -m britecore_sdk.utils.healthcheck --site production
 ```
 
 Validation rule: each site needs `base_url` and either a full OAuth pair
@@ -276,7 +276,7 @@ The `v2` package exports async-aware wrappers (e.g., `aget_quote`, `aget_contact
 
 ```python
 import asyncio
-from britecore_libraries.api.api_calls.v2 import async_policies
+from britecore_sdk.api.api_calls.v2 import async_policies
 
 async def main():
     policy = await async_policies.aretrieve_policy(policy_number="POL001")
@@ -316,7 +316,7 @@ pytest tests/unit/test_api_client.py tests/unit/test_core_client_coverage.py -v
 ```bash
 ruff check src/
 black --check src/
-mypy src/britecore_libraries/api/britecore_api_client.py
+mypy src/britecore_sdk/api/britecore_api_client.py
 ```
 
 ### Contributing
@@ -332,7 +332,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **`BritecoreAPIClient`** — Core HTTP transport and response processing
 - **Endpoint modules** — Build request JSON → call `do_request()` → return `process_result()`
 - **Auth modes** — Automatic: API key (when `client_id`/`client_secret` blank) or OAuth2 (when both provided)
-- **Config** — Dynaconf-based in `src/britecore_libraries/config/` with environment variable overrides
+- **Config** — Dynaconf-based in `src/britecore_sdk/config/` with environment variable overrides
 - **Lazy initialization** — API client initializes on first use to avoid import-time failures (see "About API Client Initialization" above)
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
@@ -341,7 +341,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
 
 ## Support & Links
 
-- **Issues & feedback:** [GitHub Issues](https://github.com/sshimek42/britecore_libraries/issues)
+- **Issues & feedback:** [GitHub Issues](https://github.com/sshimek42/britecore_sdk/issues)
 - **Security concerns:** See [SECURITY.md](SECURITY.md)
 - **Roadmap & stability:** See [STABILITY.md](STABILITY.md)
 - **External API docs:** [api.britecore.com](https://api.britecore.com/) (supplemental reference)

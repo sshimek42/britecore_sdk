@@ -10,14 +10,14 @@ class TestGetCommonRegexes:
 
     @pytest.mark.unit
     def test_returns_dict_of_patterns(self):
-        from britecore_libraries.maps import get_common_regexes
+        from britecore_sdk.maps import get_common_regexes
 
         result = get_common_regexes()
         assert isinstance(result, dict)
 
     @pytest.mark.unit
     def test_contains_expected_keys(self):
-        from britecore_libraries.maps import get_common_regexes
+        from britecore_sdk.maps import get_common_regexes
 
         result = get_common_regexes()
         for key in (
@@ -37,14 +37,14 @@ class TestGetCommonRegexes:
     def test_does_not_require_system_env(self, monkeypatch):
         """get_common_regexes must work without any system env var."""
         monkeypatch.delenv("system", raising=False)
-        from britecore_libraries.maps import get_common_regexes
+        from britecore_sdk.maps import get_common_regexes
 
         result = get_common_regexes()
         assert "reg_name" in result
 
     @pytest.mark.unit
     def test_patterns_are_compiled(self):
-        from britecore_libraries.maps import get_common_regexes
+        from britecore_sdk.maps import get_common_regexes
 
         result = get_common_regexes()
         for key, val in result.items():
@@ -61,7 +61,7 @@ class TestLoadRegexes:
     def test_load_regexes_with_system_env(self, monkeypatch):
         """load_regexes reads system from env var when no arg supplied."""
         monkeypatch.setenv("system", "mips")
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes()
         assert isinstance(compiled_regexes, dict)
@@ -73,7 +73,7 @@ class TestLoadRegexes:
     @pytest.mark.unit
     def test_load_regexes_with_system_arg(self):
         """load_regexes accepts system= kwarg without env var."""
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         compiled_regexes, naming_groups = load_regexes(system="spectrum_v1")
         assert isinstance(compiled_regexes, dict)
@@ -85,7 +85,7 @@ class TestLoadRegexes:
         """Injected overrides replace the corresponding common key."""
         import re as _re
 
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         custom = {"search_name_single": _re.compile(r"custom_pattern")}
         compiled, _ = load_regexes(
@@ -98,7 +98,7 @@ class TestLoadRegexes:
     @pytest.mark.unit
     def test_load_regexes_accepts_naming_groups(self):
         """Injected naming_groups are returned as-is."""
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         groups = {"multi": {"last_name_1": 1, "first_name_1": 2}}
         _, returned_groups = load_regexes(system="mips", naming_groups=groups)
@@ -108,7 +108,7 @@ class TestLoadRegexes:
     def test_load_regexes_unknown_system_returns_common(self, monkeypatch):
         """Unknown system returns common regexes; KeyError is raised by
         the caller (RegexMappings), not by load_regexes itself."""
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         compiled, groups = load_regexes(
             system="unknown_system",
@@ -122,7 +122,7 @@ class TestLoadRegexes:
     def test_load_regexes_raises_when_system_not_set(self, monkeypatch):
         """load_regexes raises ValueError when no system is provided at all."""
         monkeypatch.delenv("system", raising=False)
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         with pytest.raises(ValueError, match="system"):
             load_regexes()
@@ -133,19 +133,19 @@ class TestMapsPublicExports:
 
     @pytest.mark.unit
     def test_load_regexes_exported(self):
-        from britecore_libraries.maps import load_regexes
+        from britecore_sdk.maps import load_regexes
 
         assert callable(load_regexes)
 
     @pytest.mark.unit
     def test_get_common_regexes_exported(self):
-        from britecore_libraries.maps import get_common_regexes
+        from britecore_sdk.maps import get_common_regexes
 
         assert callable(get_common_regexes)
 
     @pytest.mark.unit
     def test_all_exports_present(self):
-        import britecore_libraries.maps as maps_mod
+        import britecore_sdk.maps as maps_mod
 
         for name in maps_mod.__all__:
             assert hasattr(maps_mod, name), f"__all__ entry missing from module: {name}"
