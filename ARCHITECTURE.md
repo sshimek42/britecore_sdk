@@ -37,7 +37,7 @@
 ┌────────────────────────────────────────────────────────────┐
 │                  Infrastructure Layer                      │
 │   • Config         (Dynaconf, settings + secrets)          │
-│   • Utilities      (Menus)                 │
+│   • Utilities      (Menus)                                 │
 │   • Transport      (urllib3, OAuth token)                  │
 └────────────────────────────────────────────────────────────┘
 

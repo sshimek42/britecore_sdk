@@ -46,7 +46,6 @@ autodoc_typehints = "description"
 # Keep docs build stable in isolated CI environments.
 autodoc_mock_imports = [
     "dynaconf",
-    "pyinputplus",
     "sclogging",
     "urllib3",
 ]
