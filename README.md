@@ -22,7 +22,7 @@ pip install britecore_sdk
 
 ### 2. Configure
 
-Set environment variables or create `src/britecore_sdk/config/.secrets.toml`:
+Set environment variables or create `src/britecore_sdk/settings/.secrets.toml`:
 
 **Linux/macOS (bash):**
 
@@ -128,11 +128,11 @@ pip install britecore_sdk[dev]         # Development (tests, linting, type check
 
 ### Configuration
 
-Copy the sample files from `src/britecore_sdk/config/sample/` to `src/britecore_sdk/config/` and fill in your real values:
+Copy the sample files from `src/britecore_sdk/settings/sample/` to `src/britecore_sdk/settings/` and fill in your real values:
 
 ```bash
-cp src/britecore_sdk/config/sample/settings.toml src/britecore_sdk/config/settings.toml
-cp src/britecore_sdk/config/sample/.secrets.toml src/britecore_sdk/config/.secrets.toml
+cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
+cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.secrets.toml
 ```
 
 Then edit both files — `settings.toml` holds public runtime defaults and `.secrets.toml` (gitignored) holds your secrets:
@@ -332,7 +332,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **`BritecoreAPIClient`** — Core HTTP transport and response processing
 - **Endpoint modules** — Build request JSON → call `do_request()` → return `process_result()`
 - **Auth modes** — Automatic: API key (when `client_id`/`client_secret` blank) or OAuth2 (when both provided)
-- **Config** — Dynaconf-based in `src/britecore_sdk/config/` with environment variable overrides
+- **Config** — Dynaconf-based in `src/britecore_sdk/settings/` with environment variable overrides
 - **Lazy initialization** — API client initializes on first use to avoid import-time failures (see "About API Client Initialization" above)
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.

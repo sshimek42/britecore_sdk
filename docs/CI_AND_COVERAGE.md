@@ -239,7 +239,7 @@ From `.github/workflows/tests.yml`:
 
 **Modules with higher expectations:**
 
-- `src/britecore_sdk/config/` — 90%+
+- `src/britecore_sdk/settings/` — 90%+
 - `src/britecore_sdk/api/britecore_api_client.py` — 80%+
 - Core validators — 85%+
 

@@ -76,8 +76,8 @@ export system="your_system"
 
 Configure site values in:
 
-- `src/britecore_sdk/config/settings.toml` — default runtime settings
-- `src/britecore_sdk/config/.secrets.toml` — credentials (`base_url`, `client_id`, `client_secret`, `api_key`)
+- `src/britecore_sdk/settings/settings.toml` — default runtime settings
+- `src/britecore_sdk/settings/.secrets.toml` — credentials (`base_url`, `client_id`, `client_secret`, `api_key`)
 
 Required keys in `.secrets.toml`:
 
