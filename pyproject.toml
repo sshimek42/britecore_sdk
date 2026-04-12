@@ -65,7 +65,7 @@ docs = [
 where = ["src"]
 
 [tool.setuptools.package-data]
-britecore_sdk = ["py.typed", "config/*.toml", "resources/*"]
+britecore_sdk = ["py.typed", "settings/*.toml", "resources/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
