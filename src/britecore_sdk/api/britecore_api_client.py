@@ -16,8 +16,8 @@ from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_sdk.api.britecore_oauth_token_manager import OAuthToken
-from britecore_sdk.settings import settings
 from britecore_sdk.exceptions import BritecoreError
+from britecore_sdk.settings import settings
 
 LOGGER: Logger = getLogger("britecore_sdk")
 
