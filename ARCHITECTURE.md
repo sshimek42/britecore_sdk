@@ -207,7 +207,7 @@ concise syntax is the main priority.
 src/britecore_libraries/
 ├── config/
 │   ├── config.py            # Dynaconf settings loader + LoadClientSettings
-│   ├── settings.toml        # Default runtime settings
+│   ├── settings.toml        # Default runtime settings (API timeouts/retries)
 │   ├── .secrets.toml        # All credentials: base_url, api_key, client_id,
 │   │                        # client_secret — gitignored, never committed
 │   └── __init__.py
@@ -227,7 +227,7 @@ src/britecore_libraries/
 # Dynaconf loads from multiple sources (highest to lowest priority)
 # 1. Environment variables (BRITECORE_LIBRARIES_*)
 # 2. .secrets.toml (base_url, api_key, client_id, client_secret)
-# 3. settings.toml (site section headers)
+# 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long)
 # 4. Built-in defaults
 
 from britecore_libraries.config.config import LoadClientSettings
@@ -237,6 +237,9 @@ site_config = loader.load_config()
 
 site_config.base_url          # From .secrets.toml or env var
 site_config.api_key           # From .secrets.toml or env var
+site_config.web_timeout       # From settings.toml (API request timeout)
+site_config.web_retry         # From settings.toml (API request retries)
+site_config.web_timeout_long  # From settings.toml (long API request timeout)
 
 ```
 
