@@ -163,9 +163,7 @@ class TestPoliciesEndpoints:
     @pytest.mark.integration
     def test_retrieve_policy_ids_extracts_revision_and_property(self):
         """retrieve_policy_ids returns (revision_id, primary_property_id)."""
-        with patch(
-            "britecore_sdk.api.api_calls.v2.policies.retrieve_policy"
-        ) as mock:
+        with patch("britecore_sdk.api.api_calls.v2.policies.retrieve_policy") as mock:
             mock.return_value = {
                 "active_revision": {
                     "id": "rev-99",
@@ -301,9 +299,7 @@ class TestDeliverablesEndpoints:
     def test_list_attachments_by_policy(self):
         """list_attachments sends correct path and returns attachment list."""
         with (
-            patch(
-                "britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT"
-            ) as mock,
+            patch("britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT") as mock,
             patch(
                 "britecore_sdk.api.api_calls.v2.deliverables.api_client"
             ) as mock_module,
@@ -329,9 +325,7 @@ class TestDeliverablesEndpoints:
     @pytest.mark.integration
     def test_get_attachment_success(self):
         """get_attachment sends file_id and returns attachment data."""
-        with patch(
-            "britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT"
-        ) as mock:
+        with patch("britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {
                 "file_id": "f-99",
@@ -348,9 +342,7 @@ class TestDeliverablesEndpoints:
     @pytest.mark.integration
     def test_get_edeliverables_sends_date_range(self):
         """get_edeliverables sends correct date range payload."""
-        with patch(
-            "britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT"
-        ) as mock:
+        with patch("britecore_sdk.api.api_calls.v2.deliverables.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = [{"deliverable_id": "ed-1"}]
 
@@ -378,9 +370,7 @@ class TestInspectionsEndpoints:
     def test_update_inspection_dates_by_policy_number(self):
         """update_inspection_dates resolves policy_number and sends dates."""
         with (
-            patch(
-                "britecore_sdk.api.api_calls.v2.inspections.API_CLIENT"
-            ) as mock,
+            patch("britecore_sdk.api.api_calls.v2.inspections.API_CLIENT") as mock,
             patch(
                 "britecore_sdk.api.api_calls.v2.inspections.api_client"
             ) as mock_module,
@@ -691,9 +681,7 @@ class TestStructuredTracing:
         client.http = MagicMock()
         client.http.request.return_value = ok_resp
 
-        with patch(
-            "britecore_sdk.api.britecore_api_client.LOGGER"
-        ) as mock_logger:
+        with patch("britecore_sdk.api.britecore_api_client.LOGGER") as mock_logger:
             client.do_request(path="/api/v2/test/endpoint", json={"x": 1})
 
         debug_calls = [str(call) for call in mock_logger.debug.call_args_list]
