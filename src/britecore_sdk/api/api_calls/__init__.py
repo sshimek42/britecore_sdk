@@ -10,19 +10,20 @@ from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import get_target_site
 
 
+_TARGET_SITE_UNSET = object()
+
+
 def _set_module_client_state(name: str, client: object) -> None:
     """Set module-level client state without using global statements."""
     globals()[name] = client
 
 
-def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
+def init_api_client(target_site: str | None | object = _TARGET_SITE_UNSET) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
 
     This function creates a new BritecoreAPIClient object using the specified target site
-    and initializes the client connection. The target site can be provided as an argument,
-    or it will be resolved from ``settings.toml`` (``target_site`` key under ``[default]``)
-    or the ``target_site`` environment variable, in that order.
+    and initializes the client connection.
 
     Calling this function also sets the module-level ``_api_client`` so that the
     lazy proxy (``api_client``) used by endpoint wrappers resolves to this instance
@@ -30,18 +31,19 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
 
     Args:
         target_site: The target site URL or identifier for the Britecore API.
-                     If omitted, resolved from ``settings.toml`` or the
-                     ``target_site`` environment variable.
+                     If omitted, this is resolved from settings via
+                     ``get_target_site()``. Passing ``None`` or an empty value
+                     explicitly is treated as invalid input.
 
     Returns:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
-    resolved = target_site or get_target_site()
+    resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
     if not resolved:
         raise BritecoreError.ConfigurationError(
-            "target_site must be specified: pass it explicitly, set it in settings.toml "
-            "under [default], or export the 'target_site' environment variable."
+            "target_site must be specified: pass a non-empty value, or omit the argument "
+            "to use configured fallback resolution."
         )
     client: BritecoreAPIClient = BritecoreAPIClient(resolved)
     client.init_client()
@@ -49,21 +51,22 @@ def init_api_client(target_site: str | None = None) -> BritecoreAPIClient:
     return client
 
 
-def init_async_api_client(target_site: str | None = None) -> AsyncBritecoreAPIClient:
+def init_async_api_client(
+    target_site: str | None | object = _TARGET_SITE_UNSET,
+) -> AsyncBritecoreAPIClient:
     """Initialize and return a lazy async API client wrapper.
 
-    The target site can be provided as an argument, or it will be resolved from
-    ``settings.toml`` (``target_site`` key under ``[default]``) or the
-    ``target_site`` environment variable, in that order.
+    The target site may be provided explicitly. If omitted, it is resolved
+    from settings via ``get_target_site()``.
 
     Also sets the module-level ``_async_api_client`` so the lazy proxy resolves
     to this instance rather than re-initialising without a site on first use.
     """
-    resolved = target_site or get_target_site()
+    resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
     if not resolved:
         raise BritecoreError.ConfigurationError(
-            "target_site must be specified: pass it explicitly, set it in settings.toml "
-            "under [default], or export the 'target_site' environment variable."
+            "target_site must be specified: pass a non-empty value, or omit the argument "
+            "to use configured fallback resolution."
         )
     client = AsyncBritecoreAPIClient(resolved)
     _set_module_client_state("_async_api_client", client)
