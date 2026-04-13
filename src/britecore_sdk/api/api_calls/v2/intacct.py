@@ -21,12 +21,12 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def _build_payload(**fields: Any) -> dict[str, Any]:
+def build_payload(**fields: Any) -> dict[str, Any]:
     """Build a JSON payload, omitting keys whose value is ``None``."""
     return {key: value for key, value in fields.items() if value is not None}
 
 
-def _post(
+def post(
     path: str,
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
@@ -50,7 +50,7 @@ def get_intacct_vendor_info(
     the normalized ``process_result(...)`` payload for the configured Intacct
     vendor integration. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post("/api/v2/intacct/get_intacct_vendor_info", {}, **kwargs)
+    return post("/api/v2/intacct/get_intacct_vendor_info", {}, **kwargs)
 
 
 def get_unexported_claim_transactions_xml(
@@ -63,7 +63,7 @@ def get_unexported_claim_transactions_xml(
     transactions awaiting export. ``**kwargs`` accepts ``RequestParameters``
     overrides.
     """
-    return _post("/api/v2/intacct/get_unexported_claim_transactions_xml", {}, **kwargs)
+    return post("/api/v2/intacct/get_unexported_claim_transactions_xml", {}, **kwargs)
 
 
 def get_unexported_return_premiums_xml(
@@ -76,7 +76,7 @@ def get_unexported_return_premiums_xml(
     premiums awaiting export. ``**kwargs`` accepts ``RequestParameters``
     overrides.
     """
-    return _post("/api/v2/intacct/get_unexported_return_premiums_xml", {}, **kwargs)
+    return post("/api/v2/intacct/get_unexported_return_premiums_xml", {}, **kwargs)
 
 
 def post_claim_transactions(
@@ -89,9 +89,9 @@ def post_claim_transactions(
     and returns the normalized ``process_result(...)`` payload for the posting
     operation. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/intacct/post_claim_transactions",
-        _build_payload(payload=payload),
+        build_payload(payload=payload),
         **kwargs,
     )
 
@@ -106,9 +106,9 @@ def post_return_premiums(
     and returns the normalized ``process_result(...)`` payload for the posting
     operation. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/intacct/post_return_premiums",
-        _build_payload(payload=payload),
+        build_payload(payload=payload),
         **kwargs,
     )
 

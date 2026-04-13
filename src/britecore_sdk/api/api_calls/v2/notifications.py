@@ -21,7 +21,7 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def _post(
+def post(
     path: str,
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
@@ -45,7 +45,7 @@ def acknowledge(
     normalized ``process_result(...)`` payload confirming acknowledgement.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post("/api/v2/notifications/acknowledge", {}, **kwargs)
+    return post("/api/v2/notifications/acknowledge", {}, **kwargs)
 
 
 def current(
@@ -57,7 +57,7 @@ def current(
     normalized ``process_result(...)`` payload for the active notification set.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post("/api/v2/notifications/current", {}, **kwargs)
+    return post("/api/v2/notifications/current", {}, **kwargs)
 
 
 __all__ = [

@@ -18,8 +18,8 @@ from britecore_sdk.api.api_calls import (
 from britecore_sdk.exceptions import BritecoreError
 
 LOGGER: Logger = logger
-
 API_CLIENT: BritecoreAPIClient = api_client
+
 
 
 def list_attachments(

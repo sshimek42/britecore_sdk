@@ -4,41 +4,10 @@ This module provides wrappers for dashboard metrics, report URLs, transaction
 reports, and loss-run validation in the BriteCore v2 dashboards API.
 """
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload, omitting keys whose value is ``None``."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a dashboards request and normalize the response."""
-    LOGGER.debug("Calling dashboards endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload if payload is not None else {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 
 def get_agency_experience_data(
@@ -53,9 +22,9 @@ def get_agency_experience_data(
     normalized ``process_result(...)`` payload for the requested dashboard
     metrics. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_agency_experience_data",
-        _build_payload(contact_id=contact_id, to_date=to_date),
+        build_payload(contact_id=contact_id, to_date=to_date),
         **kwargs,
     )
 
@@ -71,9 +40,9 @@ def get_csr_data(
     ``process_result(...)`` payload for the CSR dashboard metrics.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_csr_data",
-        _build_payload(contact_id=contact_id),
+        build_payload(contact_id=contact_id),
         **kwargs,
     )
 
@@ -90,9 +59,9 @@ def get_loss_ratio_chart(
     ``process_result(...)`` payload for the loss ratio visualization.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_loss_ratio_chart",
-        _build_payload(contact_id=contact_id, to_date=to_date),
+        build_payload(contact_id=contact_id, to_date=to_date),
         **kwargs,
     )
 
@@ -109,9 +78,9 @@ def get_policy_count_data(
     ``process_result(...)`` payload for the requested policy-count metrics.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_policy_count_data",
-        _build_payload(contact_id=contact_id, to_date=to_date),
+        build_payload(contact_id=contact_id, to_date=to_date),
         **kwargs,
     )
 
@@ -128,9 +97,9 @@ def get_premium_data(
     ``process_result(...)`` payload for the requested premium metrics.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_premium_data",
-        _build_payload(contact_id=contact_id, to_date=to_date),
+        build_payload(contact_id=contact_id, to_date=to_date),
         **kwargs,
     )
 
@@ -149,9 +118,9 @@ def get_report_url(
     ``process_result(...)`` payload containing the generated report URL or
     related metadata. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_report_url",
-        _build_payload(
+        build_payload(
             contact_id=contact_id,
             from_date=from_date,
             payment_types=payment_types,
@@ -178,9 +147,9 @@ def get_transaction_report(
     ``process_result(...)`` payload for the transaction report. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/get_transaction_report",
-        _build_payload(
+        build_payload(
             contact_id=contact_id,
             from_date=from_date,
             page=page,
@@ -205,9 +174,9 @@ def validate_loss_run(
     ``process_result(...)`` payload for the validation request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/dashboards/validate_loss_run",
-        _build_payload(contact_id=contact_id, policy_number=policy_number),
+        build_payload(contact_id=contact_id, policy_number=policy_number),
         **kwargs,
     )
 

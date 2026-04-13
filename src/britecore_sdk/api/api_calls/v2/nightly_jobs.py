@@ -21,12 +21,12 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def _build_payload(**fields: Any) -> dict[str, Any]:
+def build_payload(**fields: Any) -> dict[str, Any]:
     """Build a JSON payload, omitting keys whose value is ``None``."""
     return {key: value for key, value in fields.items() if value is not None}
 
 
-def _post(
+def post(
     path: str,
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
@@ -53,9 +53,9 @@ def process_auto_pays(
     ``process_result(...)`` payload for the nightly job run. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/nightly_jobs/process_auto_pays",
-        _build_payload(on_date=on_date, policy_number=policy_number),
+        build_payload(on_date=on_date, policy_number=policy_number),
         **kwargs,
     )
 
@@ -72,9 +72,9 @@ def process_cancellation_pending_or_non_renewals(
     returns the normalized ``process_result(...)`` payload for the nightly job
     run. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/nightly_jobs/process_cancellation_pending_or_non_renewals",
-        _build_payload(on_date=on_date, policy_number=policy_number),
+        build_payload(on_date=on_date, policy_number=policy_number),
         **kwargs,
     )
 
@@ -91,9 +91,9 @@ def process_non_pays_and_cancellations(
     normalized ``process_result(...)`` payload for the nightly job run.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/nightly_jobs/process_non_pays_and_cancellations",
-        _build_payload(on_date=on_date, policy_number=policy_number),
+        build_payload(on_date=on_date, policy_number=policy_number),
         **kwargs,
     )
 
@@ -110,9 +110,9 @@ def process_renewals(
     ``process_result(...)`` payload for the nightly job run. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/nightly_jobs/process_renewals",
-        _build_payload(policy_number=policy_number, renew_date=renew_date),
+        build_payload(policy_number=policy_number, renew_date=renew_date),
         **kwargs,
     )
 

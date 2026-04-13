@@ -18,7 +18,6 @@ from britecore_sdk.api.api_calls import (
 from britecore_sdk.models.contact import ROLETYPES
 
 LOGGER: Logger = logger
-
 API_CLIENT: BritecoreAPIClient = api_client
 
 

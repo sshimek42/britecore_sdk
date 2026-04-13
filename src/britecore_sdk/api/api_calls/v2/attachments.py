@@ -5,41 +5,10 @@ listing, uploads, moves, renames, and removals in the BriteCore v2
 attachments API.
 """
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload, omitting keys whose value is ``None``."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send an attachments request and normalize the response."""
-    LOGGER.debug("Calling attachments endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload if payload is not None else {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 
 def create_folder_in_user_folder(
@@ -56,9 +25,9 @@ def create_folder_in_user_folder(
     normalized ``process_result(...)`` payload for the folder-creation request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/create_folder_in_user_folder",
-        _build_payload(
+        build_payload(
             folder_name=folder_name,
             parent_folder_id=parent_folder_id,
             reference_id=reference_id,
@@ -78,9 +47,9 @@ def delete_photo(
     returns the normalized ``process_result(...)`` payload for the delete
     request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/delete_photo",
-        _build_payload(file_id=file_id),
+        build_payload(file_id=file_id),
         **kwargs,
     )
 
@@ -102,9 +71,9 @@ def get_attachments_file_list(
     normalized ``process_result(...)`` payload for the file-list request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/get_attachments_file_list",
-        _build_payload(
+        build_payload(
             ascending=ascending,
             folder_id=folder_id,
             include_forms=include_forms,
@@ -127,9 +96,9 @@ def get_file_metadata(
     and returns the normalized ``process_result(...)`` payload for the file
     metadata request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/get_file_metadata",
-        _build_payload(file_id=file_id),
+        build_payload(file_id=file_id),
         **kwargs,
     )
 
@@ -145,9 +114,9 @@ def get_resource_photos(
     ``process_result(...)`` payload for the photo lookup. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/get_resource_photos",
-        _build_payload(reference_id=reference_id),
+        build_payload(reference_id=reference_id),
         **kwargs,
     )
 
@@ -164,9 +133,9 @@ def move_user_file(
     ``process_result(...)`` payload for the move request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/move_user_file",
-        _build_payload(file_id=file_id, to_folder_id=to_folder_id),
+        build_payload(file_id=file_id, to_folder_id=to_folder_id),
         **kwargs,
     )
 
@@ -182,9 +151,9 @@ def remove_attachments(
     ``process_result(...)`` payload for the removal request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/remove_attachments",
-        _build_payload(attachment_ids=attachment_ids),
+        build_payload(attachment_ids=attachment_ids),
         **kwargs,
     )
 
@@ -201,9 +170,9 @@ def rename_user_file(
     ``process_result(...)`` payload for the rename request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/rename_user_file",
-        _build_payload(file_id=file_id, file_name=file_name),
+        build_payload(file_id=file_id, file_name=file_name),
         **kwargs,
     )
 
@@ -227,9 +196,9 @@ def retrieve_attachments(
     normalized ``process_result(...)`` payload for the attachment query.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/retrieve_attachments",
-        _build_payload(
+        build_payload(
             ascending=ascending,
             folder_id=folder_id,
             list_view=list_view,
@@ -261,9 +230,9 @@ def upload_attachment_to_user_folder(
     normalized ``process_result(...)`` payload for the upload request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/upload_attachment_to_user_folder",
-        _build_payload(
+        build_payload(
             file_data_base64=file_data_base64,
             file_name=file_name,
             file_type=file_type,
@@ -292,9 +261,9 @@ def upload_attachment_unified(
     and returns the normalized ``process_result(...)`` payload for the upload
     request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/attachments/upload_attachment_unified",
-        _build_payload(
+        build_payload(
             file_data_base64=file_data_base64,
             file_name=file_name,
             file_type=file_type,
