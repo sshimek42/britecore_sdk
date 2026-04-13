@@ -285,6 +285,114 @@ LINES_ENDPOINT_CASES = [
 ]
 
 
+INSURED_ENDPOINT_CASES = [
+    (
+        "get_property_information_and_photos",
+        {"property_id": "PROP-1"},
+        {"property_id": "PROP-1"},
+        "/api/v2/insured/get_property_information_and_photos",
+    ),
+    (
+        "new_claim_information",
+        {"property_id": "PROP-1", "policy_id": "POL-1"},
+        {"property_id": "PROP-1", "policy_id": "POL-1"},
+        "/api/v2/insured/new_claim_information",
+    ),
+    (
+        "set_photo_as_insurred_preferred",
+        {"file_id": "FILE-1", "reference_id": "REF-1"},
+        {"file_id": "FILE-1", "reference_id": "REF-1"},
+        "/api/v2/insured/set_photo_as_insurred_preferred",
+    ),
+    (
+        "update_claim",
+        {"payload": {"claim_id": "CLM-1", "status": "open"}},
+        {"claim_id": "CLM-1", "status": "open"},
+        "/api/v2/insured/update_claim",
+    ),
+    (
+        "get_primary_carrier",
+        {},
+        {},
+        "/api/v2/insured/get_primary_carrier",
+    ),
+    (
+        "retrieve_contact_information",
+        {"payload": {"contact_id": "C-1"}},
+        {"contact_id": "C-1"},
+        "/api/v2/insured/retrieve_contact_information",
+    ),
+    (
+        "change_billing_schedule",
+        {
+            "policy_id": "POL-1",
+            "billing_schedule_id": "BS-1",
+            "policy_term_id": "TERM-1",
+        },
+        {
+            "policy_id": "POL-1",
+            "billing_schedule_id": "BS-1",
+            "policy_term_id": "TERM-1",
+        },
+        "/api/v2/insured/change_billing_schedule",
+    ),
+    (
+        "set_file_metadata",
+        {"file_id": "FILE-1", "metadata": {"caption": "front"}},
+        {"file_id": "FILE-1", "metadata": {"caption": "front"}},
+        "/api/v2/insured/set_file_metadata",
+    ),
+    (
+        "update_contact_information",
+        {"payload": {"contact_id": "C-1", "email": "user@example.com"}},
+        {"contact_id": "C-1", "email": "user@example.com"},
+        "/api/v2/insured/update_contact_information",
+    ),
+    (
+        "set_photo_caption",
+        {"file_id": "FILE-1", "caption": "Front Elevation"},
+        {"file_id": "FILE-1", "caption": "Front Elevation"},
+        "/api/v2/insured/set_photo_caption",
+    ),
+    (
+        "get_complete_contact_information",
+        {"payload": {"contact_id": "C-2"}},
+        {"contact_id": "C-2"},
+        "/api/v2/insured/get_complete_contact_information",
+    ),
+    (
+        "upload_property_or_claim_photo",
+        {"payload": {"reference_id": "REF-2", "content_type": "image/jpeg"}},
+        {"reference_id": "REF-2", "content_type": "image/jpeg"},
+        "/api/v2/insured/upload_property_or_claim_photo",
+    ),
+    (
+        "get_agent_and_agencies_from_contact",
+        {"contact_id": "C-3"},
+        {"contact_id": "C-3"},
+        "/api/v2/insured/get_agent_and_agencies_from_contact",
+    ),
+    (
+        "submit_claim",
+        {"claim_id": "CLM-9"},
+        {"claim_id": "CLM-9"},
+        "/api/v2/insured/submit_claim",
+    ),
+    (
+        "is_email_available",
+        {"email": "user@example.com", "contact_id": "C-4"},
+        {"email": "user@example.com", "contact_id": "C-4"},
+        "/api/v2/insured/is_email_available",
+    ),
+    (
+        "update_contact_email_notices_flag",
+        {"contact_id": "C-4", "enabled": True},
+        {"contact_id": "C-4", "enabled": True},
+        "/api/v2/insured/update_contact_email_notices_flag",
+    ),
+]
+
+
 NOTES_ENDPOINT_CASES = [
     (
         "new_note",
@@ -1198,6 +1306,44 @@ class TestLinesEndpoints:
         )
 
 
+class TestInsuredEndpoints:
+    """Tests for insured-related endpoint wrappers."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("function_name", "call_kwargs", "expected_json", "expected_path"),
+        INSURED_ENDPOINT_CASES,
+    )
+    def test_insured_wrapper_requests(
+        self,
+        env_api_key,
+        mock_settings,
+        function_name,
+        call_kwargs,
+        expected_json,
+        expected_path,
+    ):
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.insured")
+        client = _get_initialized_client(mock_settings)
+        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
+
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
+            result = getattr(module, function_name)(**call_kwargs)
+
+        assert result == {"ok": True}
+        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
+        mock_process_result.assert_called_once_with(
+            mock_response, endpoint=expected_path
+        )
+
+
 class TestNotesEndpoints:
     """Tests for notes-related endpoint wrappers."""
 
@@ -1401,6 +1547,7 @@ __all__ = [
     "TestCommissionsEndpoints",
     "TestClaimsEndpoints",
     "TestLinesEndpoints",
+    "TestInsuredEndpoints",
     "TestNotesEndpoints",
     "TestReportsEndpoints",
     "TestPaymentsEndpoints",
