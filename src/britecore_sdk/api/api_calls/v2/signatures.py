@@ -4,41 +4,10 @@ This module provides wrappers for DocuSign authentication, configuration,
 signature retrieval, envelope recreation, and envelope status updates.
 """
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload, omitting keys whose value is ``None``."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a signatures request and normalize the response."""
-    LOGGER.debug("Calling signatures endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload if payload is not None else {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 
 def docusign_auth(
@@ -52,9 +21,9 @@ def docusign_auth(
     authentication workflow. ``**kwargs`` accepts ``RequestParameters``
     overrides.
     """
-    return _post(
+    return post(
         "/api/v2/signatures/docusign_auth",
-        _build_payload(action=action),
+        build_payload(action=action),
         **kwargs,
     )
 
@@ -70,9 +39,9 @@ def docusign_config(
     ``process_result(...)`` payload for the DocuSign configuration record.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/signatures/docusign_config",
-        _build_payload(data=data),
+        build_payload(data=data),
         **kwargs,
     )
 
@@ -87,9 +56,9 @@ def get_signatures(
     and returns the normalized ``process_result(...)`` payload for the matching
     signature records. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/signatures/get_signatures",
-        _build_payload(revision_id=revision_id),
+        build_payload(revision_id=revision_id),
         **kwargs,
     )
 
@@ -105,9 +74,9 @@ def recreate_envelope(
     ``process_result(...)`` payload for the recreated envelope.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/signatures/recreate_envelope",
-        _build_payload(revision_id=revision_id),
+        build_payload(revision_id=revision_id),
         **kwargs,
     )
 
@@ -125,9 +94,9 @@ def update_signatures(
     ``process_result(...)`` payload for the update request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/signatures/update_signatures",
-        _build_payload(envelope_id=envelope_id, signers=signers, status=status),
+        build_payload(envelope_id=envelope_id, signers=signers, status=status),
         **kwargs,
     )
 
@@ -152,7 +121,7 @@ def void_envelope(
         payload["revisionId"] = revision_id
     if void_reason is not None:
         payload["voidReason"] = void_reason
-    return _post("/api/v2/signatures/void_envelope", payload, **kwargs)
+    return post("/api/v2/signatures/void_envelope", payload, **kwargs)
 
 
 __all__ = [

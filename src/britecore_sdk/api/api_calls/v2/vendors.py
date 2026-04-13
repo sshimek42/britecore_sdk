@@ -4,41 +4,10 @@ This module provides wrappers for third-party vendor integrations including
 IVANS, NxTech, Munich Re, AON, Value360, WTW, Invoice Cloud, and MVR services.
 """
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload, omitting keys whose value is ``None``."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a vendors request and normalize the response."""
-    LOGGER.debug("Calling vendors endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload if payload is not None else {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 
 def build_ivans_manual_claim(
@@ -53,9 +22,9 @@ def build_ivans_manual_claim(
     ``process_result(...)`` payload for the IVANS build request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/build_ivans_manual_claim",
-        _build_payload(data_list=data_list, file_date=file_date),
+        build_payload(data_list=data_list, file_date=file_date),
         **kwargs,
     )
 
@@ -72,9 +41,9 @@ def build_nxtech_initial_load(
     ``process_result(...)`` payload for the build request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/build_nxtech_initial_load",
-        _build_payload(contact_id=contact_id, file_date=file_date),
+        build_payload(contact_id=contact_id, file_date=file_date),
         **kwargs,
     )
 
@@ -91,9 +60,9 @@ def build_nxtech_manual_transactions(
     normalized ``process_result(...)`` payload for the build request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/build_nxtech_manual_transactions",
-        _build_payload(data_list=data_list, file_date=file_date),
+        build_payload(data_list=data_list, file_date=file_date),
         **kwargs,
     )
 
@@ -109,9 +78,9 @@ def commercial_munichre_indepth_eligibility(
     normalized ``process_result(...)`` payload for the eligibility request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/commercial_munichre_indepth_eligibility",
-        _build_payload(property_id=property_id),
+        build_payload(property_id=property_id),
         **kwargs,
     )
 
@@ -128,9 +97,9 @@ def fetch_motor_vehicle_report_for_drivers(
     normalized ``process_result(...)`` payload for the MVR request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/fetch_motor_vehicle_report_for_drivers",
-        _build_payload(drivers=drivers, store_no_hit=store_no_hit),
+        build_payload(drivers=drivers, store_no_hit=store_no_hit),
         **kwargs,
     )
 
@@ -147,9 +116,9 @@ def get_aon_cat_score(
     ``process_result(...)`` payload for the CAT score request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/get_aon_cat_score",
-        _build_payload(geocoding_service=geocoding_service, risk_id=risk_id),
+        build_payload(geocoding_service=geocoding_service, risk_id=risk_id),
         **kwargs,
     )
 
@@ -165,9 +134,9 @@ def get_prefill_services_data(
     ``process_result(...)`` payload for the prefill request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/get_prefill_services_data",
-        _build_payload(property_id=property_id),
+        build_payload(property_id=property_id),
         **kwargs,
     )
 
@@ -184,9 +153,9 @@ def get_value360_token(
     ``process_result(...)`` payload for the token request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/get_value360_token",
-        _build_payload(home_type=home_type, property_id=property_id),
+        build_payload(home_type=home_type, property_id=property_id),
         **kwargs,
     )
 
@@ -205,7 +174,7 @@ def get_wtw_score(
     payload: dict[str, Any] = {}
     if property_descriptor is not None:
         payload["property"] = property_descriptor
-    return _post("/api/v2/vendors/get_wtw_score", payload, **kwargs)
+    return post("/api/v2/vendors/get_wtw_score", payload, **kwargs)
 
 
 def invoice_cloud_autopay_enroll(
@@ -220,9 +189,9 @@ def invoice_cloud_autopay_enroll(
     normalized ``process_result(...)`` payload for the enrollment update.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/invoice_cloud_autopay_enroll",
-        _build_payload(enable=enable, policy_number=policy_number),
+        build_payload(enable=enable, policy_number=policy_number),
         **kwargs,
     )
 
@@ -238,9 +207,9 @@ def invoice_cloud_autopay_is_enrolled(
     normalized ``process_result(...)`` payload for the enrollment lookup.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/invoice_cloud_autopay_is_enrolled",
-        _build_payload(policy_number=policy_number),
+        build_payload(policy_number=policy_number),
         **kwargs,
     )
 
@@ -257,9 +226,9 @@ def invoice_cloud_suppress_insured_deliverable_printings(
     and returns the normalized ``process_result(...)`` payload for the update
     request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/invoice_cloud_suppress_insured_deliverable_printings",
-        _build_payload(enable=enable, policy_number=policy_number),
+        build_payload(enable=enable, policy_number=policy_number),
         **kwargs,
     )
 
@@ -276,9 +245,9 @@ def ivans_edocs_build(
     ``process_result(...)`` payload for the eDocs build request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/ivans_edocs_build",
-        _build_payload(date_cursor=date_cursor, file_ids=file_ids),
+        build_payload(date_cursor=date_cursor, file_ids=file_ids),
         **kwargs,
     )
 
@@ -295,9 +264,9 @@ def ivans_file_upload(
     ``process_result(...)`` payload for the upload request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/ivans_file_upload",
-        _build_payload(file_name=file_name, ivans_type=ivans_type),
+        build_payload(file_name=file_name, ivans_type=ivans_type),
         **kwargs,
     )
 
@@ -313,9 +282,9 @@ def munichre_indepth_eligibility(
     ``process_result(...)`` payload for the eligibility request. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/munichre_indepth_eligibility",
-        _build_payload(property_id=property_id),
+        build_payload(property_id=property_id),
         **kwargs,
     )
 
@@ -332,9 +301,9 @@ def update_value360_replacement_cost_value(
     normalized ``process_result(...)`` payload for the update request.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/vendors/update_value360_replacement_cost_value",
-        _build_payload(report_id=report_id, result=result),
+        build_payload(report_id=report_id, result=result),
         **kwargs,
     )
 
