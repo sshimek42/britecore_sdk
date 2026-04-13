@@ -107,7 +107,7 @@ class EmailValidator:
 
         # Validate format
         email_pattern = regexes.get("reg_email")
-        if not isinstance(email_pattern, (str, Pattern)):
+        if not isinstance(email_pattern, str | Pattern):
             return ""
         email_match = re.match(email_pattern, email)
 

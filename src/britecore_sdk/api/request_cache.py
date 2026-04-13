@@ -21,7 +21,7 @@ def _canonicalize(value: Any) -> Any:
     """Return a JSON-serializable structure with stable ordering."""
     if isinstance(value, Mapping):
         return {str(key): _canonicalize(value[key]) for key in sorted(value.keys())}
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, list | tuple):
         return [_canonicalize(item) for item in value]
     if isinstance(value, set):
         return sorted(_canonicalize(item) for item in value)

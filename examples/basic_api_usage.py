@@ -71,9 +71,7 @@ def run_live_policy_lookup(policy_number: str) -> None:
 def build_parser() -> argparse.ArgumentParser:
     """Build CLI arguments for local demo and optional live lookup."""
     parser = argparse.ArgumentParser(
-        description=(
-            "Run local and optional live usage samples for britecore_sdk."
-        ),
+        description=("Run local and optional live usage samples for britecore_sdk."),
     )
     parser.add_argument(
         "--live-policy-number",
