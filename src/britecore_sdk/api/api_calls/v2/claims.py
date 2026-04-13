@@ -5,7 +5,7 @@ BriteCore v2 claims API.
 """
 
 from logging import Logger
-from typing import Any, Unpack
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -21,6 +21,26 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build request payloads while omitting ``None`` values."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Send a claims request and return normalized data."""
+    LOGGER.debug("Calling claims endpoint %s", path)
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path=path,
+        json=payload or {},
+        **kwargs,
+    )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
 def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve claim details by claim identifier.
 
@@ -28,11 +48,78 @@ def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     returns the normalized ``process_result(...)`` payload for the matching
     claim record. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    LOGGER.debug("Getting claim information")
-    claim_search: dict[str, str] = {"claim_id": claim_id}
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/claims/get_claim", json=claim_search, **kwargs
+    return _post(
+        "/api/v2/claims/get_claim",
+        _build_payload(claim_id=claim_id),
+        **kwargs,
     )
-    return API_CLIENT.process_result(
-        request_result, endpoint="/api/v2/claims/get_claim"
+
+
+def export_claim_payments(
+    claim_ids: list[str] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Export claim payments for one or more claim identifiers."""
+    return _post(
+        "/api/v2/claims/export_claim_payments",
+        _build_payload(claim_ids=claim_ids),
+        **kwargs,
     )
+
+
+def get_all_catastrophes(**kwargs: Unpack[RequestParameters]) -> Any:
+    """Retrieve all catastrophe records available to the claims domain."""
+    return _post("/api/v2/claims/get_all_catastrophes", **kwargs)
+
+
+def get_all_perils(**kwargs: Unpack[RequestParameters]) -> Any:
+    """Retrieve all peril records available to the claims domain."""
+    return _post("/api/v2/claims/get_all_perils", **kwargs)
+
+
+def get_claim_contacts(
+    claim_id: str | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve contacts associated with a claim."""
+    return _post(
+        "/api/v2/claims/get_claim_contacts",
+        _build_payload(claim_id=claim_id),
+        **kwargs,
+    )
+
+
+def get_claim_payments(
+    claim_id: str | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve payment records associated with a claim."""
+    return _post(
+        "/api/v2/claims/get_claim_payments",
+        _build_payload(claim_id=claim_id),
+        **kwargs,
+    )
+
+
+def update_claim(
+    claim_id: str | None = None,
+    claim: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Update claim fields for the provided claim identifier."""
+    return _post(
+        "/api/v2/claims/update_claim",
+        _build_payload(claim_id=claim_id, claim=claim),
+        **kwargs,
+    )
+
+
+__all__ = [
+    "export_claim_payments",
+    "get_all_catastrophes",
+    "get_all_perils",
+    "get_claim",
+    "get_claim_contacts",
+    "get_claim_payments",
+    "update_claim",
+]
