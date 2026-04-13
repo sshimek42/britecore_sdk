@@ -4,41 +4,10 @@ This module provides wrappers for settings, ZIP override, PDF engine, and
 system-tag endpoints in the BriteCore v2 settings API.
 """
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload, omitting keys whose value is ``None``."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a settings request and normalize the response."""
-    LOGGER.debug("Calling settings endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload if payload is not None else {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 
 def add_city_to_zip_override(
@@ -55,9 +24,9 @@ def add_city_to_zip_override(
     ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/add_city_to_zip_override",
-        _build_payload(
+        build_payload(
             city=city,
             county=county,
             state_abbreviation=state_abbreviation,
@@ -80,9 +49,9 @@ def add_counties_to_state(
     ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/add_counties_to_state",
-        _build_payload(counties=counties, country=country, state=state),
+        build_payload(counties=counties, country=country, state=state),
         **kwargs,
     )
 
@@ -100,9 +69,9 @@ def add_county_to_zip_override(
     ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/add_county_to_zip_override",
-        _build_payload(
+        build_payload(
             county=county,
             state_abbreviation=state_abbreviation,
             zip_code=zip_code,
@@ -118,7 +87,7 @@ def get_pdf_engine(**kwargs: Unpack[RequestParameters]) -> Any:
     normalized ``process_result(...)`` payload for the configured PDF engine.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post("/api/v2/settings/get_pdf_engine", {}, **kwargs)
+    return post("/api/v2/settings/get_pdf_engine", {}, **kwargs)
 
 
 def get_setting_value(
@@ -133,9 +102,9 @@ def get_setting_value(
     ``process_result(...)`` payload for the requested setting. ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/get_setting_value",
-        _build_payload(option=option, section=section),
+        build_payload(option=option, section=section),
         **kwargs,
     )
 
@@ -147,7 +116,7 @@ def get_system_tags_list(**kwargs: Unpack[RequestParameters]) -> Any:
     the normalized ``process_result(...)`` payload for the available system
     tags. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post("/api/v2/settings/get_system_tags_list", {}, **kwargs)
+    return post("/api/v2/settings/get_system_tags_list", {}, **kwargs)
 
 
 def retrieve_credit_permission_prompt(**kwargs: Unpack[RequestParameters]) -> Any:
@@ -157,7 +126,7 @@ def retrieve_credit_permission_prompt(**kwargs: Unpack[RequestParameters]) -> An
     and returns the normalized ``process_result(...)`` payload for the prompt
     text shown to users. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post("/api/v2/settings/retrieve_credit_permission_prompt", {}, **kwargs)
+    return post("/api/v2/settings/retrieve_credit_permission_prompt", {}, **kwargs)
 
 
 def retrieve_property_valuation_availability(
@@ -173,9 +142,9 @@ def retrieve_property_valuation_availability(
     the normalized ``process_result(...)`` payload describing valuation
     availability. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/retrieve_property_valuation_availability",
-        _build_payload(
+        build_payload(
             chosen_role=chosen_role,
             is_app=is_app,
             revision_id=revision_id,
@@ -195,9 +164,9 @@ def retrieve_system_tags(
     ``process_result(...)`` payload for the matching tags. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/retrieve_system_tags",
-        _build_payload(level=level),
+        build_payload(level=level),
         **kwargs,
     )
 
@@ -212,9 +181,9 @@ def set_pdf_engine(
     returns the normalized ``process_result(...)`` payload for the update
     request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/set_pdf_engine",
-        _build_payload(engine=engine),
+        build_payload(engine=engine),
         **kwargs,
     )
 
@@ -232,9 +201,9 @@ def set_setting_value(
     ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/settings/set_setting_value",
-        _build_payload(option=option, section=section, value=value),
+        build_payload(option=option, section=section, value=value),
         **kwargs,
     )
 

@@ -21,12 +21,12 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def _build_payload(**fields: Any) -> dict[str, Any]:
+def build_payload(**fields: Any) -> dict[str, Any]:
     """Build a JSON payload, omitting keys whose value is ``None``."""
     return {key: value for key, value in fields.items() if value is not None}
 
 
-def _post(
+def post(
     path: str,
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
@@ -51,9 +51,9 @@ def attach_file_to_policy(
     and returns the normalized ``process_result(...)`` payload for the
     attachment request. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/uploads/attach_file_to_policy",
-        _build_payload(payload=payload),
+        build_payload(payload=payload),
         **kwargs,
     )
 
