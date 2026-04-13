@@ -1,28 +1,40 @@
-"""Utility functions for policy retrieval and related helpers."""
+"""Deprecated helpers for policy retrieval.
 
-from json import loads
+.. deprecated::
+    Import ``get_policies`` from
+    ``britecore_sdk.api.api_calls.v2.policies`` instead.
+    This module will be removed in a future release.
+"""
+
+import warnings
 from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk.api.api_calls import RequestParameters, api_client
+from britecore_sdk.api.api_calls import RequestParameters
 
 
 def get_policies(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve policies using the v2 API endpoint.
 
-    Calls /api/v2/policies/get_policies and returns the parsed JSON payload data.
+    .. deprecated::
+        Use ``britecore_sdk.api.api_calls.v2.policies.get_policies`` instead.
+        This shim will be removed in a future release.
 
     Parameters:
-        **kwargs: Additional request parameters for the API client. These may
-            include filters, pagination, or other API-supported options. See
-            ``interactive_menu.policy_menu`` for example usage and expected
-            parameters.
+        **kwargs: Optional filters and request parameters forwarded to
+            ``britecore_sdk.api.api_calls.v2.policies.get_policies``.
+
+    Returns:
+        Normalized ``process_result(...)`` payload with pagination metadata
+        and a ``policies`` list of policy objects.
     """
-    request_result: BaseHTTPResponse | HTTPResponse | None = api_client.do_request(
-        path="/api/v2/policies/get_policies",
-        **kwargs,
+    warnings.warn(
+        "britecore_sdk.utils.policy_helpers.get_policies is deprecated. "
+        "Use britecore_sdk.api.api_calls.v2.policies.get_policies instead.",
+        DeprecationWarning,
+        stacklevel=2,
     )
-    if request_result is None or not hasattr(request_result, "data"):
-        raise RuntimeError("No response from get_policies API")
-    return loads(request_result.data.decode("utf-8"))
+    from britecore_sdk.api.api_calls.v2.policies import (
+        get_policies as _get_policies,
+    )
+
+    return _get_policies(**kwargs)

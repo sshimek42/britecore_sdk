@@ -19,7 +19,7 @@ For a compact version, see `AGENTS.quickstart.md`.
 - API module client access is lazy in `src/britecore_sdk/api/api_calls/__init__.py`: `api_client` is a proxy and initializes through `get_api_client()` on first use.
 - Auth mode is selected in `BritecoreAPIClient.init_client()`: API key if `client_id`/`client_secret` are blank, otherwise OAuth via `OAuthToken` (`src/britecore_sdk/api/britecore_oauth_token_manager.py`).
 - Domain shaping is separate from transport: models in `src/britecore_sdk/models/` and validators in `src/britecore_sdk/validators/` prepare payloads, API modules send them.
-- Legacy compatibility layer exists in `src/britecore_sdk/classes/__init__.py` and emits `DeprecationWarning`; prefer imports from `models`/`validators`.
+- Legacy compatibility layer exists in `src/britecore_sdk/classes/__init__.py` and raises `ImportError` directing consumers to `models`/`validators`; prefer imports from `models`/`validators`.
 
 ## API module pattern (copy this when adding endpoints)
 

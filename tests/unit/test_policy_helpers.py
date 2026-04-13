@@ -1,76 +1,60 @@
-"""Unit tests for policy helper utilities."""
+"""Unit tests for the deprecated policy_helpers shim."""
 
-import json
+import warnings
+from unittest.mock import patch
 
 import pytest
 
 from britecore_sdk.utils import policy_helpers
 
 
-class _ResponseWithData:
-    def __init__(self, payload: bytes) -> None:
-        self.data = payload
+@pytest.mark.unit
+def test_get_policies_emits_deprecation_warning():
+    """Calling policy_helpers.get_policies() always emits DeprecationWarning."""
+    fake_result = {"policies": [], "total_pages": 0}
+    with patch(
+        "britecore_sdk.api.api_calls.v2.policies.get_policies",
+        return_value=fake_result,
+    ):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            result = policy_helpers.get_policies()
 
-
-class _ClientStub:
-    def __init__(self, response):
-        self.response = response
-        self.calls = []
-
-    def do_request(self, **kwargs):
-        self.calls.append(kwargs)
-        return self.response
+    assert any(
+        issubclass(w.category, DeprecationWarning) for w in caught
+    ), "Expected DeprecationWarning but none was raised"
+    assert result == fake_result
 
 
 @pytest.mark.unit
-def test_get_policies_returns_decoded_payload_and_forwards_kwargs(monkeypatch):
-    expected = {"success": True, "data": [{"policy_id": "P-123"}]}
-    client = _ClientStub(_ResponseWithData(json.dumps(expected).encode("utf-8")))
-    monkeypatch.setattr(policy_helpers, "api_client", client)
+def test_get_policies_delegates_to_v2_policies():
+    """Deprecated shim forwards all kwargs to v2/policies.get_policies."""
+    fake_result = {"policies": [{"policyNumber": "POL-1"}], "total_pages": 1}
+    with patch(
+        "britecore_sdk.api.api_calls.v2.policies.get_policies",
+        return_value=fake_result,
+    ) as mock_v2:
+        with warnings.catch_warnings(record=True):
+            warnings.simplefilter("always")
+            result = policy_helpers.get_policies(page_number=1, page_size=10)
 
-    result = policy_helpers.get_policies(timeout=5, headers={"X-Test": "1"})
-
-    assert result == expected
-    assert client.calls == [
-        {
-            "path": "/api/v2/policies/get_policies",
-            "timeout": 5,
-            "headers": {"X-Test": "1"},
-        }
-    ]
+    mock_v2.assert_called_once_with(page_number=1, page_size=10)
+    assert result == fake_result
 
 
 @pytest.mark.unit
-def test_get_policies_raises_runtime_error_when_response_is_none(monkeypatch):
-    client = _ClientStub(None)
-    monkeypatch.setattr(policy_helpers, "api_client", client)
+def test_get_policies_warning_message_mentions_v2_path():
+    """DeprecationWarning message points callers to the v2/policies module."""
+    with patch(
+        "britecore_sdk.api.api_calls.v2.policies.get_policies",
+        return_value={},
+    ):
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            policy_helpers.get_policies()
 
-    with pytest.raises(RuntimeError, match="No response from get_policies API"):
-        policy_helpers.get_policies()
-
-
-@pytest.mark.unit
-def test_get_policies_raises_runtime_error_when_response_missing_data(monkeypatch):
-    client = _ClientStub(object())
-    monkeypatch.setattr(policy_helpers, "api_client", client)
-
-    with pytest.raises(RuntimeError, match="No response from get_policies API"):
-        policy_helpers.get_policies()
-
-
-@pytest.mark.unit
-def test_get_policies_raises_json_decode_error_on_invalid_payload(monkeypatch):
-    client = _ClientStub(_ResponseWithData(b"{not-json"))
-    monkeypatch.setattr(policy_helpers, "api_client", client)
-
-    with pytest.raises(json.JSONDecodeError):
-        policy_helpers.get_policies()
-
-
-@pytest.mark.unit
-def test_get_policies_raises_unicode_decode_error_on_non_utf8_payload(monkeypatch):
-    client = _ClientStub(_ResponseWithData(b"\xff\xfe\xfa"))
-    monkeypatch.setattr(policy_helpers, "api_client", client)
-
-    with pytest.raises(UnicodeDecodeError):
-        policy_helpers.get_policies()
+    dep_warnings = [w for w in caught if issubclass(w.category, DeprecationWarning)]
+    assert dep_warnings, "No DeprecationWarning emitted"
+    assert "v2.policies" in str(dep_warnings[0].message).lower() or (
+        "api_calls" in str(dep_warnings[0].message)
+    )
