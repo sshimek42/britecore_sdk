@@ -163,6 +163,52 @@ ACCOUNTING_ENDPOINT_CASES = [
 ]
 
 
+CLAIMS_ENDPOINT_CASES = [
+    (
+        "get_claim",
+        {"claim_id": "CLM-1"},
+        {"claim_id": "CLM-1"},
+        "/api/v2/claims/get_claim",
+    ),
+    (
+        "export_claim_payments",
+        {"claim_ids": ["CLM-1", "CLM-2"]},
+        {"claim_ids": ["CLM-1", "CLM-2"]},
+        "/api/v2/claims/export_claim_payments",
+    ),
+    (
+        "get_all_catastrophes",
+        {},
+        {},
+        "/api/v2/claims/get_all_catastrophes",
+    ),
+    (
+        "get_all_perils",
+        {},
+        {},
+        "/api/v2/claims/get_all_perils",
+    ),
+    (
+        "get_claim_contacts",
+        {"claim_id": "CLM-9"},
+        {"claim_id": "CLM-9"},
+        "/api/v2/claims/get_claim_contacts",
+    ),
+    (
+        "get_claim_payments",
+        {"claim_id": "CLM-9"},
+        {"claim_id": "CLM-9"},
+        "/api/v2/claims/get_claim_payments",
+    ),
+    (
+        "update_claim",
+        {"claim_id": "CLM-9", "claim": {"status": "closed"}},
+        {"claim_id": "CLM-9", "claim": {"status": "closed"}},
+        "/api/v2/claims/update_claim",
+    ),
+]
+
+
 COMMISSIONS_ENDPOINT_CASES = [
     (
         "delete_batch_payments",
@@ -916,6 +962,42 @@ class TestCommissionsEndpoints:
         mock_process_result.assert_called_once_with(mock_response)
 
 
+class TestClaimsEndpoints:
+    """Tests for claims-related endpoint wrappers."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("function_name", "call_kwargs", "expected_json", "expected_path"),
+        CLAIMS_ENDPOINT_CASES,
+    )
+    def test_claims_wrapper_requests(
+        self,
+        env_api_key,
+        mock_settings,
+        function_name,
+        call_kwargs,
+        expected_json,
+        expected_path,
+    ):
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.claims")
+        client = _get_initialized_client(mock_settings)
+        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
+
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
+            result = getattr(module, function_name)(**call_kwargs)
+
+        assert result == {"ok": True}
+        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
+        mock_process_result.assert_called_once_with(mock_response)
+
+
 class TestPaymentsEndpoints:
     """Tests for payment-related endpoint wrappers."""
 
@@ -1045,6 +1127,7 @@ __all__ = [
     "TestAccountingEndpoints",
     "TestBillingEndpoints",
     "TestCommissionsEndpoints",
+    "TestClaimsEndpoints",
     "TestPaymentsEndpoints",
     "TestEndpointErrorHandling",
 ]
