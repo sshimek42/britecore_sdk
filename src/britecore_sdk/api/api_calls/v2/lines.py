@@ -11,7 +11,7 @@ For interactive menu functionality, see britecore_sdk.utils.interactive_menu.
 
 from json import loads
 from logging import Logger
-from typing import Any, Unpack
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -25,6 +25,36 @@ from britecore_sdk.api.api_calls import (
 LOGGER: Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload while omitting ``None`` values."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Send a lines request and return normalized data."""
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path=path,
+        json=payload or {},
+        **kwargs,
+    )
+    return API_CLIENT.process_result(cast(Any, request_result), endpoint=path)
+
+
+def _effective_date_payload(
+    *, effective_date_id: str | None = None, effective_date: str | None = None
+) -> dict[str, str | None]:
+    """Resolve effective-date parameters using existing priority rules."""
+    if effective_date_id:
+        return {"effective_date_id": effective_date_id}
+    if effective_date:
+        return {"effective_date": effective_date}
+    return {}
 
 
 def get_export_line_file(
@@ -178,4 +208,111 @@ def list_policy_types(
 
     return API_CLIENT.process_result(
         request_result, endpoint="/api/v2/lines/list_policy_types"
+    )
+
+
+def find_effective_date(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Find the matching effective-date identifier for a provided date context."""
+    return _post("/api/v2/lines/find_effective_date", payload, **kwargs)
+
+
+def retrieve_effective_date(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve effective-date details for the provided identifiers."""
+    return _post("/api/v2/lines/retrieve_effective_date", payload, **kwargs)
+
+
+def create_builderdiff_mapping(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Create a builderdiff mapping record for line migration workflows."""
+    return _post("/api/v2/lines/create_builderdiff_mapping", payload, **kwargs)
+
+
+def copy_underwriting_rules(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Copy underwriting rules between source and destination contexts."""
+    return _post("/api/v2/lines/copy_underwriting_rules", payload, **kwargs)
+
+
+def delete_builderdiff_mapping(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Delete an existing builderdiff mapping record."""
+    return _post("/api/v2/lines/delete_builderdiff_mapping", payload, **kwargs)
+
+
+def copy_line_items(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Copy line items from one line definition to another."""
+    return _post("/api/v2/lines/copy_line_items", payload, **kwargs)
+
+
+def get_policies_with_line_item(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Return policies that reference a specific line item."""
+    return _post("/api/v2/lines/get_policies_with_line_item", payload, **kwargs)
+
+
+def retrieve_policy_type(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve policy-type metadata for a policy type identifier."""
+    return _post("/api/v2/lines/retrieve_policy_type", payload, **kwargs)
+
+
+def delete_line_item(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Delete a line item from a line configuration."""
+    return _post("/api/v2/lines/delete_line_item", payload, **kwargs)
+
+
+def import_line(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Import a line definition payload into the lines module."""
+    return _post("/api/v2/lines/import_line", payload, **kwargs)
+
+
+def copy_policy_type(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Copy a policy type definition to a new target context."""
+    return _post("/api/v2/lines/copy_policy_type", payload, **kwargs)
+
+
+def get_all_policy_types(
+    location_id: str,
+    effective_date_id: str | None = None,
+    effective_date: str | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """List all policy types for a location and effective-date context."""
+    policy_types_json = _effective_date_payload(
+        effective_date_id=effective_date_id,
+        effective_date=effective_date,
+    )
+    policy_types_json.update({"location_id": location_id})
+    return _post(
+        "/api/v2/lines/get_all_policy_types",
+        _build_payload(**policy_types_json),
+        **kwargs,
     )

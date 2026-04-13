@@ -209,6 +209,82 @@ CLAIMS_ENDPOINT_CASES = [
 ]
 
 
+LINES_ENDPOINT_CASES = [
+    (
+        "find_effective_date",
+        {"payload": {"effective_date": "2026-01-01"}},
+        {"effective_date": "2026-01-01"},
+        "/api/v2/lines/find_effective_date",
+    ),
+    (
+        "retrieve_effective_date",
+        {"payload": {"effective_date_id": "ED-1"}},
+        {"effective_date_id": "ED-1"},
+        "/api/v2/lines/retrieve_effective_date",
+    ),
+    (
+        "create_builderdiff_mapping",
+        {"payload": {"line_id": "LINE-1", "mapping": {"a": "b"}}},
+        {"line_id": "LINE-1", "mapping": {"a": "b"}},
+        "/api/v2/lines/create_builderdiff_mapping",
+    ),
+    (
+        "copy_underwriting_rules",
+        {"payload": {"source_line_id": "LINE-1", "target_line_id": "LINE-2"}},
+        {"source_line_id": "LINE-1", "target_line_id": "LINE-2"},
+        "/api/v2/lines/copy_underwriting_rules",
+    ),
+    (
+        "delete_builderdiff_mapping",
+        {"payload": {"mapping_id": "MAP-1"}},
+        {"mapping_id": "MAP-1"},
+        "/api/v2/lines/delete_builderdiff_mapping",
+    ),
+    (
+        "copy_line_items",
+        {"payload": {"source_line_id": "LINE-1", "target_line_id": "LINE-2"}},
+        {"source_line_id": "LINE-1", "target_line_id": "LINE-2"},
+        "/api/v2/lines/copy_line_items",
+    ),
+    (
+        "get_policies_with_line_item",
+        {"payload": {"line_item_id": "LI-1"}},
+        {"line_item_id": "LI-1"},
+        "/api/v2/lines/get_policies_with_line_item",
+    ),
+    (
+        "retrieve_policy_type",
+        {"payload": {"policy_type_id": "PT-1"}},
+        {"policy_type_id": "PT-1"},
+        "/api/v2/lines/retrieve_policy_type",
+    ),
+    (
+        "delete_line_item",
+        {"payload": {"line_item_id": "LI-2"}},
+        {"line_item_id": "LI-2"},
+        "/api/v2/lines/delete_line_item",
+    ),
+    (
+        "import_line",
+        {"payload": {"line_json": {"name": "Workers Comp"}}},
+        {"line_json": {"name": "Workers Comp"}},
+        "/api/v2/lines/import_line",
+    ),
+    (
+        "copy_policy_type",
+        {"payload": {"source_policy_type_id": "PT-1", "name": "PT Copy"}},
+        {"source_policy_type_id": "PT-1", "name": "PT Copy"},
+        "/api/v2/lines/copy_policy_type",
+    ),
+    (
+        "get_all_policy_types",
+        {"location_id": "LOC-1", "effective_date_id": "ED-1"},
+        {"effective_date_id": "ED-1", "location_id": "LOC-1"},
+        "/api/v2/lines/get_all_policy_types",
+    ),
+]
+
+
 NOTES_ENDPOINT_CASES = [
     (
         "new_note",
@@ -1084,6 +1160,44 @@ class TestClaimsEndpoints:
         mock_process_result.assert_called_once_with(mock_response)
 
 
+class TestLinesEndpoints:
+    """Tests for lines-related endpoint wrappers."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("function_name", "call_kwargs", "expected_json", "expected_path"),
+        LINES_ENDPOINT_CASES,
+    )
+    def test_lines_wrapper_requests(
+        self,
+        env_api_key,
+        mock_settings,
+        function_name,
+        call_kwargs,
+        expected_json,
+        expected_path,
+    ):
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.lines")
+        client = _get_initialized_client(mock_settings)
+        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
+
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
+            result = getattr(module, function_name)(**call_kwargs)
+
+        assert result == {"ok": True}
+        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
+        mock_process_result.assert_called_once_with(
+            mock_response, endpoint=expected_path
+        )
+
+
 class TestNotesEndpoints:
     """Tests for notes-related endpoint wrappers."""
 
@@ -1286,6 +1400,7 @@ __all__ = [
     "TestBillingEndpoints",
     "TestCommissionsEndpoints",
     "TestClaimsEndpoints",
+    "TestLinesEndpoints",
     "TestNotesEndpoints",
     "TestReportsEndpoints",
     "TestPaymentsEndpoints",
