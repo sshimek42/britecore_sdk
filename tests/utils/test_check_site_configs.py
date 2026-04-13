@@ -155,7 +155,9 @@ def test_get_auth_mode(config, expected_auth):
 
 
 def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
-    monkeypatch.setattr(check_site_configs, "warn_if_secrets_in_settings", lambda _: None)
+    monkeypatch.setattr(
+        check_site_configs, "warn_if_secrets_in_settings", lambda _: None
+    )
     monkeypatch.setattr(
         check_site_configs,
         "load_secrets",
@@ -171,4 +173,3 @@ def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
     output = capsys.readouterr().out
     assert "OAuth" in output
     assert "https://prod.example.com" in output
-
