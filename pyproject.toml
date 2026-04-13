@@ -68,18 +68,6 @@ where = ["src"]
 [tool.setuptools.package-data]
 britecore_sdk = ["py.typed", "settings/*.toml", "resources/*"]
 
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = "--cov=src/britecore_sdk --cov-report=html --cov-report=term-missing --strict-markers"
-markers = [
-    "unit: unit tests",
-    "integration: integration tests (mocked transport)",
-    "sandbox: live sandbox tests (requires BRITECORE_INTEGRATION_TESTS=true)",
-    "slow: slow tests",
-]
 
 [tool.coverage.run]
 source = ["src/britecore_sdk"]
