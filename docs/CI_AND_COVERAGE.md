@@ -192,7 +192,14 @@ enabled = true
 
 **Purpose:** Integrated coverage analysis (alongside static analysis)
 
-**What's uploaded:** `coverage.xml` via `deepsourcelabs/test-coverage-action`
+**What's uploaded:** `coverage.deepsource.xml` (a path-rewritten copy of `coverage.xml`) via `deepsourcelabs/test-coverage-action`
+
+**Why a separate file?**
+
+pytest-cov with `--cov=src/britecore_sdk` produces `coverage.xml` with package-relative paths
+(e.g., `__init__.py`, `api/britecore_api_client.py`). DeepSource requires repo-relative paths
+(e.g., `src/britecore_sdk/__init__.py`) to map files back to VCS. The CI step
+"Rewrite coverage paths for DeepSource" patches all `filename` attributes before upload.
 
 **Access:**
 
@@ -204,6 +211,14 @@ enabled = true
 - Flagging uncovered code paths in PRs
 - Setting baseline coverage requirements
 - Visualizing coverage + issues together
+
+**Troubleshooting "files not present in VCS" warning:**
+
+If DeepSource reports coverage files not found in VCS, check that:
+
+1. The "Rewrite coverage paths for DeepSource" CI step ran (only on `python-version == '3.11' && randomized == false`).
+2. `coverage.deepsource.xml` was generated — if not, the DeepSource step falls back to an empty report.
+3. `coverage.xml` exists in the repo root after the pytest step.
 
 ### Local Coverage Reports
 
@@ -222,7 +237,7 @@ From `pytest.ini`:
 
 ```ini
 [pytest]
-addopts = "--cov=src/britecore_sdk --cov-report=html --cov-report=term-missing --strict-markers"
+addopts = --cov=src/britecore_sdk --cov-report=html --cov-report=term-missing --strict-markers
 ```
 
 **Coverage gate:**

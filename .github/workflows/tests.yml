@@ -50,6 +50,23 @@ jobs:
         fi
         pytest tests/ -v --cov=src/britecore_sdk --cov-report=term-missing --cov-report=html --cov-report=xml $RANDOM_ARGS
 
+    - name: Rewrite coverage paths for DeepSource
+      if: matrix.python-version == '3.11' && matrix.randomized == false
+      run: |
+        python - <<'PY'
+        import xml.etree.ElementTree as ET
+
+        tree = ET.parse("coverage.xml")
+        root = tree.getroot()
+
+        for cls in root.findall(".//class"):
+          filename = cls.attrib.get("filename", "")
+          if filename and not filename.startswith("src/"):
+            cls.set("filename", f"src/britecore_sdk/{filename}")
+
+        tree.write("coverage.deepsource.xml", encoding="utf-8", xml_declaration=True)
+        PY
+
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11'
       uses: codecov/codecov-action@v4
@@ -77,5 +94,5 @@ jobs:
       uses: deepsourcelabs/test-coverage-action@master
       with:
         key: python
-        coverage-file: coverage.xml
+        coverage-file: coverage.deepsource.xml
         dsn: ${{ secrets.DEEPSOURCE_DSN }}
