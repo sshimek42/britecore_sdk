@@ -112,10 +112,9 @@ def test_spec_paths_have_wrappers_report_only() -> None:
 
     strict_mode = os.getenv("BRITECORE_STRICT_SPEC_COVERAGE", "").strip() == "1"
     if strict_mode:
-        assert (
-            not uncovered
-        ), "Spec endpoints without wrapper implementations:\n" + _format_path_list(
+        msg = "Spec endpoints without wrapper implementations:\n" + _format_path_list(
             uncovered
         )
+        assert not uncovered, msg
 
     assert True

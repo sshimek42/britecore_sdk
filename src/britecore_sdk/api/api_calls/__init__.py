@@ -9,7 +9,6 @@ from britecore_sdk.api.britecore_async_api_client import AsyncBritecoreAPIClient
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import get_target_site
 
-
 _TARGET_SITE_UNSET = object()
 
 
@@ -18,7 +17,9 @@ def _set_module_client_state(name: str, client: object) -> None:
     globals()[name] = client
 
 
-def init_api_client(target_site: str | None | object = _TARGET_SITE_UNSET) -> BritecoreAPIClient:
+def init_api_client(
+    target_site: str | None | object = _TARGET_SITE_UNSET,
+) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
 

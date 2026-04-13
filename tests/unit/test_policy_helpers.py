@@ -20,9 +20,8 @@ def test_get_policies_emits_deprecation_warning():
             warnings.simplefilter("always")
             result = policy_helpers.get_policies()
 
-    assert any(
-        issubclass(w.category, DeprecationWarning) for w in caught
-    ), "Expected DeprecationWarning but none was raised"
+    has_deprecation = any(issubclass(w.category, DeprecationWarning) for w in caught)
+    assert has_deprecation, "Expected DeprecationWarning but none was raised"
     assert result == fake_result
 
 
