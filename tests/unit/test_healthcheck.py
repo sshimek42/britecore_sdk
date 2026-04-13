@@ -45,6 +45,37 @@ def test_run_healthcheck_skip_ping_success() -> None:
 
 
 @pytest.mark.unit
+def test_run_healthcheck_resolves_site_when_omitted() -> None:
+    """Healthcheck resolves target site from settings when parameter is omitted."""
+    with (
+        patch(
+            "britecore_sdk.utils.healthcheck.get_target_site",
+            return_value="resolved-site",
+        ),
+        patch("britecore_sdk.utils.healthcheck.init_api_client") as mock_init,
+    ):
+        client = mock_init.return_value
+        client.use_api_key = True
+        result = run_healthcheck(ping=False)
+
+    assert result.ok is True
+    assert result.site == "resolved-site"
+    mock_init.assert_called_once_with(target_site="resolved-site")
+
+
+@pytest.mark.unit
+def test_run_healthcheck_fails_when_no_site_available() -> None:
+    """Healthcheck fails fast when no explicit or configured target site exists."""
+    with patch("britecore_sdk.utils.healthcheck.get_target_site", return_value=None):
+        result = run_healthcheck(ping=False)
+
+    assert result.ok is False
+    assert result.site == "<unset>"
+    assert result.config_ok is False
+    assert "No target site" in result.message
+
+
+@pytest.mark.unit
 def test_run_healthcheck_ping_failure() -> None:
     """Healthcheck reports API failure when ping call raises SDK error."""
     with (
