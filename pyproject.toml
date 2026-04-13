@@ -53,7 +53,7 @@ dev = [
     "mypy>=1.17.0",
     "pre-commit>=4.2.0",
     "pymarkdownlnt>=0.9.36",
-    "pip-audit>=2.9.0",
+    "pip-audit>=2.10.0",
     "britecore_sdk[all]",
 ]
 docs = [
