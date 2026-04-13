@@ -31,7 +31,7 @@ The project uses:
 
 1. Run tests on **Python 3.11, 3.12, 3.13, 3.14** (full matrix)
 2. Collect coverage from all runs
-3. Upload coverage to **Codecov** and **DeepSource** (from Python 3.11 only)
+3. Upload coverage to **Codecov** and **DeepSource** (from Python 3.11, non-randomized run)
 4. Generate coverage HTML report
 
 **Key steps:**
@@ -44,19 +44,19 @@ The project uses:
   if: matrix.python-version == '3.11'
   uses: codecov/codecov-action@v4
 
-- name: Upload coverage to DeepSource
-  if: matrix.python-version == '3.11'
-  run: |
-    curl https://deepsource.io/cli | sh
-    ./bin/deepsource report --analyzer test-coverage --key python --value-file ./coverage.xml
-  env:
-    DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
+- name: Report test coverage to DeepSource
+  if: matrix.python-version == '3.11' && matrix.randomized == false
+  uses: deepsourcelabs/test-coverage-action@master
+  with:
+    key: python
+    coverage-file: coverage.xml
+    dsn: ${{ secrets.DEEPSOURCE_DSN }}
 ```
 
-**Why Python 3.11 only for uploads?**
+**Why one canonical upload only?**
 
 - Tests run on all versions for compatibility
-- But uploading the same report 4 times creates noise
+- But uploading from every matrix leg creates duplicate/noisy reports
 - 3.11 is the minimum supported version, so it's canonical
 
 ### `lint.yml` — Code Quality
@@ -192,7 +192,7 @@ enabled = true
 
 **Purpose:** Integrated coverage analysis (alongside static analysis)
 
-**What's uploaded:** `coverage.xml` via DeepSource CLI
+**What's uploaded:** `coverage.xml` via `deepsourcelabs/test-coverage-action`
 
 **Access:**
 
@@ -218,10 +218,10 @@ This creates a **local HTML report** showing line-by-line coverage.
 
 ## Test Coverage Targets
 
-From `pyproject.toml`:
+From `pytest.ini`:
 
-```toml
-[tool.pytest.ini_options]
+```ini
+[pytest]
 addopts = "--cov=src/britecore_sdk --cov-report=html --cov-report=term-missing --strict-markers"
 ```
 
@@ -404,7 +404,8 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 - [tests/README.md](../tests/README.md) — Test suite guide
 - [.github/workflows/tests.yml](../.github/workflows/tests.yml) — Workflow definition
 - [.deepsource.toml](../.deepsource.toml) — DeepSource configuration
-- [pyproject.toml](../pyproject.toml) — pytest and coverage settings
+- [pytest.ini](../pytest.ini) — pytest defaults (test discovery, markers, coverage addopts)
+- [pyproject.toml](../pyproject.toml) — coverage, lint, formatter, and mypy settings
 
 ## Bash Equivalents (Common Local Commands)
 
