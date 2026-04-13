@@ -1,10 +1,6 @@
-"""BriteCore v2 Reports API endpoint wrappers.
+"""BriteCore v2 Reports API endpoint wrappers."""
 
-This module provides wrappers for report listing, report retrieval, and
-report-file lookups in the BriteCore v2 reports API.
-"""
-
-from typing import Any, Unpack
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
 
@@ -17,6 +13,25 @@ from britecore_sdk.api.api_calls import (
 API_CLIENT: BritecoreAPIClient = api_client
 
 
+def _build_payload(**fields: Any) -> dict[str, Any]:
+    """Build a JSON payload while omitting ``None`` fields."""
+    return {key: value for key, value in fields.items() if value is not None}
+
+
+def _post(
+    path: str,
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Send a reports request and normalize the response."""
+    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path=path,
+        json=payload or {},
+        **kwargs,
+    )
+    return API_CLIENT.process_result(cast(Any, result_request))
+
+
 def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """List files associated with a report.
 
@@ -24,15 +39,9 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     returns the normalized ``process_result(...)`` payload for the matching
     report files. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    list_json: dict[str, str] = {"report_id": report_id}
-
-    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        "/api/v2/reports/list_files",
-        json=list_json,
-        **kwargs,
+    return _post(
+        "/api/v2/reports/list_files", _build_payload(report_id=report_id), **kwargs
     )
-
-    return API_CLIENT.process_result(result_request)
 
 
 def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
@@ -42,13 +51,7 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
     normalized ``process_result(...)`` payload for the report list.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    required_json = None
-
-    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        "/api/v2/reports/retrieve_reports", json=required_json, **kwargs
-    )
-
-    return API_CLIENT.process_result(result_request)
+    return _post("/api/v2/reports/retrieve_reports", **kwargs)
 
 
 def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -58,10 +61,114 @@ def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     returns the normalized ``process_result(...)`` payload for the matching
     report. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    report_json: dict[str, str] = {"report_id": report_id}
-
-    result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        "/api/v2/reports/retrieve_report", json=report_json, **kwargs
+    return _post(
+        "/api/v2/reports/retrieve_report",
+        _build_payload(report_id=report_id),
+        **kwargs,
     )
 
-    return API_CLIENT.process_result(result_request)
+
+def fetch_prepared_yml(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve prepared YML content for report processing."""
+    return _post("/api/v2/reports/fetch_prepared_yml", payload, **kwargs)
+
+
+def delete_report(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Delete a report definition."""
+    return _post("/api/v2/reports/delete_report", payload, **kwargs)
+
+
+def rename_report_category(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Rename an existing report category."""
+    return _post("/api/v2/reports/rename_report_category", payload, **kwargs)
+
+
+def data_frame_preview(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Preview a report data frame."""
+    return _post("/api/v2/reports/data_frame_preview", payload, **kwargs)
+
+
+def upload_file(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Upload a file used by report processing."""
+    return _post("/api/v2/reports/upload_file", payload, **kwargs)
+
+
+def list_df_caches(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """List available dataframe cache entries."""
+    return _post("/api/v2/reports/list_df_caches", payload, **kwargs)
+
+
+def create_report_category(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Create a new report category."""
+    return _post("/api/v2/reports/create_report_category", payload, **kwargs)
+
+
+def delete_report_category(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Delete an existing report category."""
+    return _post("/api/v2/reports/delete_report_category", payload, **kwargs)
+
+
+def delete_file(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Delete a report-related file."""
+    return _post("/api/v2/reports/delete_file", payload, **kwargs)
+
+
+def get_s3_token(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Retrieve an S3 upload token for report files."""
+    return _post("/api/v2/reports/get_s3_token", payload, **kwargs)
+
+
+def list_df_cache_files(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """List files attached to a dataframe cache record."""
+    return _post("/api/v2/reports/list_df_cache_files", payload, **kwargs)
+
+
+__all__ = [
+    "create_report_category",
+    "data_frame_preview",
+    "delete_file",
+    "delete_report",
+    "delete_report_category",
+    "fetch_prepared_yml",
+    "get_s3_token",
+    "list_df_cache_files",
+    "list_df_caches",
+    "list_files",
+    "rename_report_category",
+    "retrieve_report",
+    "retrieve_reports",
+    "upload_file",
+]

@@ -6,7 +6,7 @@ Provides:
 
 from json import loads
 from logging import Logger
-from typing import Any, Unpack
+from typing import Any, Unpack, cast
 
 from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
@@ -21,6 +21,37 @@ from britecore_sdk.api.api_calls import (
 LOGGER: Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _post(
+    path: str,
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Send a notes request and normalize the response."""
+    LOGGER.debug("Calling notes endpoint %s", path)
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path=path,
+        json=payload or {},
+        **kwargs,
+    )
+    return API_CLIENT.process_result(cast(Any, request_result))
+
+
+def new_note(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Create a new note record for an entity."""
+    return _post("/api/v2/notes/newNote", payload=payload, **kwargs)
+
+
+def store_note(
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Persist updates for an existing note record."""
+    return _post("/api/v2/notes/storeNote", payload=payload, **kwargs)
 
 
 def retrieve_notes(
@@ -74,3 +105,6 @@ def retrieve_notes(
         return loads(request_result.data.decode("utf-8"))["records"]
     except KeyError:
         return []
+
+
+__all__ = ["new_note", "retrieve_notes", "store_note"]

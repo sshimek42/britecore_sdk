@@ -209,6 +209,92 @@ CLAIMS_ENDPOINT_CASES = [
 ]
 
 
+NOTES_ENDPOINT_CASES = [
+    (
+        "new_note",
+        {"payload": {"id": "POL-1", "note": "new"}},
+        {"id": "POL-1", "note": "new"},
+        "/api/v2/notes/newNote",
+    ),
+    (
+        "store_note",
+        {"payload": {"note_id": "N-1", "note": "updated"}},
+        {"note_id": "N-1", "note": "updated"},
+        "/api/v2/notes/storeNote",
+    ),
+]
+
+
+REPORTS_ENDPOINT_CASES = [
+    (
+        "fetch_prepared_yml",
+        {"payload": {"report_id": "R-1"}},
+        {"report_id": "R-1"},
+        "/api/v2/reports/fetch_prepared_yml",
+    ),
+    (
+        "delete_report",
+        {"payload": {"report_id": "R-1"}},
+        {"report_id": "R-1"},
+        "/api/v2/reports/delete_report",
+    ),
+    (
+        "rename_report_category",
+        {"payload": {"category_id": "CAT-1", "name": "Updated"}},
+        {"category_id": "CAT-1", "name": "Updated"},
+        "/api/v2/reports/rename_report_category",
+    ),
+    (
+        "data_frame_preview",
+        {"payload": {"query": "select * from report"}},
+        {"query": "select * from report"},
+        "/api/v2/reports/data_frame_preview",
+    ),
+    (
+        "upload_file",
+        {"payload": {"file_name": "demo.csv"}},
+        {"file_name": "demo.csv"},
+        "/api/v2/reports/upload_file",
+    ),
+    (
+        "list_df_caches",
+        {},
+        {},
+        "/api/v2/reports/list_df_caches",
+    ),
+    (
+        "create_report_category",
+        {"payload": {"name": "Loss Runs"}},
+        {"name": "Loss Runs"},
+        "/api/v2/reports/create_report_category",
+    ),
+    (
+        "delete_report_category",
+        {"payload": {"category_id": "CAT-1"}},
+        {"category_id": "CAT-1"},
+        "/api/v2/reports/delete_report_category",
+    ),
+    (
+        "delete_file",
+        {"payload": {"file_id": "F-1"}},
+        {"file_id": "F-1"},
+        "/api/v2/reports/delete_file",
+    ),
+    (
+        "get_s3_token",
+        {},
+        {},
+        "/api/v2/reports/get_s3_token",
+    ),
+    (
+        "list_df_cache_files",
+        {"payload": {"cache_id": "CACHE-1"}},
+        {"cache_id": "CACHE-1"},
+        "/api/v2/reports/list_df_cache_files",
+    ),
+]
+
+
 COMMISSIONS_ENDPOINT_CASES = [
     (
         "delete_batch_payments",
@@ -998,6 +1084,78 @@ class TestClaimsEndpoints:
         mock_process_result.assert_called_once_with(mock_response)
 
 
+class TestNotesEndpoints:
+    """Tests for notes-related endpoint wrappers."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("function_name", "call_kwargs", "expected_json", "expected_path"),
+        NOTES_ENDPOINT_CASES,
+    )
+    def test_notes_wrapper_requests(
+        self,
+        env_api_key,
+        mock_settings,
+        function_name,
+        call_kwargs,
+        expected_json,
+        expected_path,
+    ):
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.notes")
+        client = _get_initialized_client(mock_settings)
+        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
+
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
+            result = getattr(module, function_name)(**call_kwargs)
+
+        assert result == {"ok": True}
+        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
+        mock_process_result.assert_called_once_with(mock_response)
+
+
+class TestReportsEndpoints:
+    """Tests for reports-related endpoint wrappers."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("function_name", "call_kwargs", "expected_json", "expected_path"),
+        REPORTS_ENDPOINT_CASES,
+    )
+    def test_reports_wrapper_requests(
+        self,
+        env_api_key,
+        mock_settings,
+        function_name,
+        call_kwargs,
+        expected_json,
+        expected_path,
+    ):
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.reports")
+        client = _get_initialized_client(mock_settings)
+        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
+
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
+            result = getattr(module, function_name)(**call_kwargs)
+
+        assert result == {"ok": True}
+        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
+        mock_process_result.assert_called_once_with(mock_response)
+
+
 class TestPaymentsEndpoints:
     """Tests for payment-related endpoint wrappers."""
 
@@ -1128,6 +1286,8 @@ __all__ = [
     "TestBillingEndpoints",
     "TestCommissionsEndpoints",
     "TestClaimsEndpoints",
+    "TestNotesEndpoints",
+    "TestReportsEndpoints",
     "TestPaymentsEndpoints",
     "TestEndpointErrorHandling",
 ]
