@@ -174,10 +174,47 @@ def line_menu(
 
 
 def policy_menu(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Interactive menu entry point for listing policies."""
-    from britecore_sdk.utils.policy_helpers import get_policies
+    """Interactive menu for selecting a policy from the retrieved policy list.
 
-    policies = get_policies(**kwargs)
-    # Example: print or select from policies as needed
-    # For now, just return the list
-    return policies
+    Retrieves policies via ``/api/v2/policies/get_policies`` and presents an
+    interactive menu so the user can select a policy by its policy number.
+    Returns the selected policy object, or ``None`` when no policies are
+    returned.
+
+    Parameters:
+        **kwargs: Request parameters forwarded to
+            ``britecore_sdk.api.api_calls.v2.policies.get_policies``
+            (filters, pagination, timeout, etc.).
+
+    Returns:
+        The selected policy ``dict`` from the API response, or ``None`` if
+        the API returns no policies.
+
+    Uses questionary when available and falls back to plain stdin input when
+    a console backend is unavailable (for example in some IDE run consoles).
+    """
+    from britecore_sdk.api.api_calls.v2 import policies as _policies
+
+    result = _policies.get_policies(**kwargs)
+    policy_list: list[Any] = (
+        result.get("policies", []) if isinstance(result, dict) else []
+    )
+
+    if not policy_list:
+        LOGGER.warning("No policies returned from API")
+        return None
+
+    policy_labels: list[str] = [
+        str(p.get("policyNumber") or p.get("policy_number") or p) for p in policy_list
+    ]
+
+    selected_label = _select_option("Policy", policy_labels)
+    return next(
+        (
+            p
+            for p in policy_list
+            if str(p.get("policyNumber") or p.get("policy_number") or p)
+            == selected_label
+        ),
+        None,
+    )

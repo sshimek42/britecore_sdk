@@ -1,7 +1,7 @@
 """Unit tests for interactive line menu utilities."""
 
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -158,3 +158,51 @@ class TestLinesExports:
         )
 
         assert result == {"ok": True}
+
+
+class TestPolicyMenu:
+    """Tests for policy_menu interactive selection."""
+
+    @pytest.mark.unit
+    def test_policy_menu_returns_selected_policy(self, monkeypatch):
+        """policy_menu returns the policy dict matching the user's selection."""
+        fake_policies = [
+            {"policyNumber": "POL-001", "status": "active"},
+            {"policyNumber": "POL-002", "status": "cancelled"},
+        ]
+        fake_result = {"policies": fake_policies, "total_pages": 1}
+
+        with patch(
+            "britecore_sdk.api.api_calls.v2.policies.get_policies",
+            return_value=fake_result,
+        ):
+            monkeypatch.setattr(
+                interactive_menu,
+                "_select_option",
+                lambda title, choices: "POL-002",
+            )
+            result = interactive_menu.policy_menu()
+
+        assert result == {"policyNumber": "POL-002", "status": "cancelled"}
+
+    @pytest.mark.unit
+    def test_policy_menu_returns_none_when_no_policies(self, monkeypatch):
+        """policy_menu returns None when the API returns an empty list."""
+        with patch(
+            "britecore_sdk.api.api_calls.v2.policies.get_policies",
+            return_value={"policies": [], "total_pages": 0},
+        ):
+            result = interactive_menu.policy_menu()
+
+        assert result is None
+
+    @pytest.mark.unit
+    def test_policy_menu_returns_none_when_result_is_not_dict(self, monkeypatch):
+        """policy_menu handles a non-dict API result gracefully."""
+        with patch(
+            "britecore_sdk.api.api_calls.v2.policies.get_policies",
+            return_value=None,
+        ):
+            result = interactive_menu.policy_menu()
+
+        assert result is None

@@ -641,3 +641,51 @@ def retrieve_policy_snapshot(
     )
 
     return API_CLIENT.process_result(result_request)
+
+
+def get_policies(
+    contact_id: str | None = None,
+    from_date: str | None = None,
+    to_date: str | None = None,
+    sorting_order: Literal["asc", "desc"] | None = None,
+    page_number: int | None = None,
+    page_size: int | None = None,
+    include_policy_photo: bool | None = None,
+    include_canceled: bool | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """List policies with optional filtering and pagination.
+
+    Calls ``/api/v2/policies/get_policies`` and returns the normalized
+    ``process_result(...)`` payload containing paginated policy records.
+
+    Parameters:
+        contact_id: Filter policies by contact identifier.
+        from_date: Filter policies where ``date_added > from_date`` (ISO date
+            string, e.g. ``"2024-01-01"``).
+        to_date: Filter policies where ``date_added < to_date`` (ISO date
+            string).
+        sorting_order: Sort direction for results; ``"asc"`` or ``"desc"``.
+        page_number: Page number to retrieve, starting from ``1``.
+        page_size: Number of records per page; must be ``> 0``.
+        include_policy_photo: When ``True``, includes policy photo in each
+            record (increases response payload size significantly).
+        include_canceled: When ``True``, includes cancelled policies in
+            results.
+        **kwargs: Additional ``RequestParameters`` overrides (timeout,
+            headers, etc.).
+
+    Returns:
+        Normalized ``process_result(...)`` payload with pagination metadata
+        and a ``policies`` list of policy objects.
+    """
+    local_env: dict[str, Any] = locals()
+    request_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path="/api/v2/policies/get_policies",
+        json=request_json,
+        **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result, endpoint="/api/v2/policies/get_policies"
+    )

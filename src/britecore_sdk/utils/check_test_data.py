@@ -1,23 +1,22 @@
 """Check test CSV files referenced by tests are present and parseable."""
 
 import csv
-import glob
-import os
 import sys
+from pathlib import Path
 
 
 def check_test_data_files() -> bool:
     """Validate CSV test-data files under tests/data using a basic parse pass."""
-    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_dir = os.path.join(base, "..", "tests", "data")
-    if not os.path.exists(data_dir):
+    base = Path(__file__).resolve().parent.parent.parent.parent
+    data_dir = base / "tests" / "data"
+    if not data_dir.exists():
         print(f"No test data directory found: {data_dir}")
         return True
-    all_csv = glob.glob(os.path.join(data_dir, "*.csv"))
+    all_csv = list(data_dir.glob("*.csv"))
     ok = True
     for csv_file in all_csv:
         try:
-            with open(csv_file, newline="") as f:
+            with csv_file.open(newline="") as f:
                 reader = csv.reader(f)
                 next(reader)  # Try reading header
         except Exception as e:
