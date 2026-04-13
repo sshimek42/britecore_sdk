@@ -16,6 +16,7 @@ from britecore_sdk.api.britecore_api_client import (
     BritecoreAPIClient,
     RequestParameters,
 )
+from britecore_sdk.api.request_cache import _canonicalize
 
 
 def _make_response(
@@ -83,6 +84,53 @@ class TestRequestCacheHelpers:
             "dedupe_in_flight",
         ):
             assert field_name in annotations
+
+    @pytest.mark.unit
+    def test_canonicalize_handles_list_and_tuple(self):
+        """_canonicalize should recurse into lists and tuples."""
+        assert _canonicalize([3, 1, 2]) == [3, 1, 2]
+        assert _canonicalize((1, "a")) == [1, "a"]
+
+    @pytest.mark.unit
+    def test_canonicalize_handles_set(self):
+        """_canonicalize should sort set members into a stable list."""
+        result = _canonicalize({3, 1, 2})
+        assert result == [1, 2, 3]
+
+    @pytest.mark.unit
+    def test_cache_set_ignores_non_positive_ttl(self):
+        """set() with ttl_seconds <= 0 must not store an entry."""
+        cache = RequestCache()
+        cache.set("key", "value", ttl_seconds=0)
+        assert cache.get("key") is None
+
+    @pytest.mark.unit
+    def test_invalidate_namespace_empty_string_returns_zero(self):
+        """invalidate_namespace('') should be a no-op returning 0."""
+        cache = RequestCache()
+        cache.set("k", "v", ttl_seconds=60, namespace="ns")
+        assert cache.invalidate_namespace("") == 0
+
+    @pytest.mark.unit
+    def test_cache_clear_removes_all_entries(self):
+        """clear() must empty the cache regardless of TTL."""
+        cache = RequestCache()
+        cache.set("a", 1, ttl_seconds=60)
+        cache.set("b", 2, ttl_seconds=60)
+        cache.clear()
+        assert cache.get("a") is None
+        assert cache.get("b") is None
+
+    @pytest.mark.unit
+    def test_prune_expired_removes_and_counts_expired_entries(self):
+        """prune_expired() must remove stale entries and return the count."""
+        cache = RequestCache()
+        cache.set("old", "stale", ttl_seconds=60)
+        cache.set("fresh", "ok", ttl_seconds=60)
+        cache._entries["old"].expires_at = datetime.now(UTC) - timedelta(seconds=1)
+        removed = cache.prune_expired()
+        assert removed == 1
+        assert cache.get("fresh") == "ok"
 
 
 class TestAsyncBritecoreAPIClient:

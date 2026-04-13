@@ -1,5 +1,7 @@
 """Unit tests for validators."""
 
+from unittest.mock import patch
+
 import pytest
 
 from britecore_sdk.exceptions import BritecoreError
@@ -96,6 +98,26 @@ class TestEmailValidator:
         result = validator.process()
 
         assert result is not None
+
+    @pytest.mark.unit
+    def test_validate_email_classmethod_valid(self):
+        """validate_email returns True for a well-formed address."""
+        assert EmailValidator.validate_email("user@example.com") is True
+
+    @pytest.mark.unit
+    def test_validate_email_classmethod_invalid(self):
+        """validate_email returns False for a malformed address."""
+        assert EmailValidator.validate_email("not-an-email") is False
+
+    @pytest.mark.unit
+    def test_normalize_email_returns_empty_when_pattern_not_regex(self):
+        """normalize_email returns '' when reg_email is not a str or Pattern."""
+        with patch(
+            "britecore_sdk.validators.email_validator._get_regexes",
+            return_value={"reg_email": 12345},
+        ):
+            result = EmailValidator.normalize_email("test@example.com")
+        assert result == ""
 
 
 class TestPhoneValidator:
