@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "dynaconf~=3.2.13",
-    "typing_extensions>=4.6.0",
+    "typing_extensions>=4.15.0",
     "urllib3~=2.6.3",
     "toml>=0.10.2,<1.0.0",  # Added for utils/check_site_configs.py and utils/check_odbc_settings.py (Python 3.11+ compatible)
 ]
