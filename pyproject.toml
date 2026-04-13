@@ -52,7 +52,7 @@ dev = [
     "ruff>=0.12.0",
     "mypy>=1.17.0",
     "pre-commit>=4.2.0",
-    "pymarkdownlnt>=0.9.32",
+    "pymarkdownlnt>=0.9.36",
     "pip-audit>=2.9.0",
     "britecore_sdk[all]",
 ]
