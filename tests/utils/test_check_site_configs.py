@@ -117,8 +117,8 @@ def test_main_prints_status_table_and_filters_non_site_sections(monkeypatch, cap
     def fake_load(path):
         calls.append(("load", path))
         return {
-            "site_ok": {"base_url": "https://example", "api_key": "token"},
-            "site_bad": {"base_url": "https://example"},
+            "site_ok": {"base_url": "https://example.com", "api_key": "token"},
+            "site_bad": {"base_url": "https://example.com"},
             "_meta": "ignore-me",
         }
 
@@ -132,6 +132,43 @@ def test_main_prints_status_table_and_filters_non_site_sections(monkeypatch, cap
     assert calls[1] == ("load", check_site_configs.CONFIG_PATH)
     assert "Checking API config for 2 site(s)" in output
     assert "Site" in output and "Status" in output and "Missing Keys" in output
+    assert "Auth" in output and "URL" in output
     assert "site_ok" in output and "OK" in output
+    assert "API Key" in output
+    assert "https://example.com" in output
     assert "site_bad" in output and "INCORRECT" in output
     assert "client_id, client_secret, api_key" in output
+
+
+@pytest.mark.parametrize(
+    ("config", "expected_auth"),
+    [
+        ({"client_id": "id", "client_secret": "secret"}, "OAuth"),
+        ({"client_id": "id", "client_secret": "secret", "api_key": "k"}, "OAuth"),
+        ({"api_key": "key"}, "API Key"),
+        ({"base_url": "https://x"}, "-"),
+        ({}, "-"),
+    ],
+)
+def test_get_auth_mode(config, expected_auth):
+    assert check_site_configs.get_auth_mode(config) == expected_auth
+
+
+def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
+    monkeypatch.setattr(check_site_configs, "warn_if_secrets_in_settings", lambda _: None)
+    monkeypatch.setattr(
+        check_site_configs,
+        "load_secrets",
+        lambda _: {
+            "prod": {
+                "base_url": "https://prod.example.com",
+                "client_id": "cid",
+                "client_secret": "csecret",
+            }
+        },
+    )
+    check_site_configs.main()
+    output = capsys.readouterr().out
+    assert "OAuth" in output
+    assert "https://prod.example.com" in output
+

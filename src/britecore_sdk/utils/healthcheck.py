@@ -9,6 +9,7 @@ from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import utils as v2_utils
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 from britecore_sdk.exceptions import BritecoreError
+from britecore_sdk.settings import get_target_site
 
 PING_PATH = "/api/v2/utils/get_release_info"
 
@@ -30,22 +31,39 @@ def _detect_auth_mode(client: BritecoreAPIClient) -> str:
     return "api_key" if client.use_api_key else "oauth"
 
 
-def run_healthcheck(target_site: str, ping: bool = True) -> HealthcheckResult:
+def run_healthcheck(
+    target_site: str | None = None, ping: bool = True
+) -> HealthcheckResult:
     """Run configuration/auth checks and optional safe API ping.
 
     Args:
-        target_site: Configured site section to validate.
+        target_site: Configured site section to validate. If omitted, resolves from
+            settings/env using ``get_target_site()``.
         ping: Whether to call a safe read-only endpoint.
 
     Returns:
         HealthcheckResult: Structured validation status.
     """
+    resolved_site = target_site or get_target_site()
+    if not resolved_site:
+        return HealthcheckResult(
+            ok=False,
+            site="<unset>",
+            auth_mode="unknown",
+            config_ok=False,
+            api_ok=False,
+            message=(
+                "No target site was provided and none was resolved from settings/env. "
+                "Pass --site or set target_site in settings.toml."
+            ),
+        )
+
     try:
-        client = init_api_client(target_site=target_site)
+        client = init_api_client(target_site=resolved_site)
     except BritecoreError.Base as exc:
         return HealthcheckResult(
             ok=False,
-            site=target_site,
+            site=resolved_site,
             auth_mode="unknown",
             config_ok=False,
             api_ok=False,
@@ -57,7 +75,7 @@ def run_healthcheck(target_site: str, ping: bool = True) -> HealthcheckResult:
     if not ping:
         return HealthcheckResult(
             ok=True,
-            site=target_site,
+            site=resolved_site,
             auth_mode=auth_mode,
             config_ok=True,
             api_ok=True,
@@ -69,7 +87,7 @@ def run_healthcheck(target_site: str, ping: bool = True) -> HealthcheckResult:
     except BritecoreError.Base as exc:
         return HealthcheckResult(
             ok=False,
-            site=target_site,
+            site=resolved_site,
             auth_mode=auth_mode,
             config_ok=True,
             api_ok=False,
@@ -78,7 +96,7 @@ def run_healthcheck(target_site: str, ping: bool = True) -> HealthcheckResult:
 
     return HealthcheckResult(
         ok=True,
-        site=target_site,
+        site=resolved_site,
         auth_mode=auth_mode,
         config_ok=True,
         api_ok=True,
@@ -105,7 +123,11 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run SDK configuration/API healthcheck"
     )
-    parser.add_argument("--site", required=True, help="Configured target site name")
+    parser.add_argument(
+        "--site",
+        required=False,
+        help="Configured target site name (optional if target_site is set in settings)",
+    )
     parser.add_argument(
         "--skip-ping",
         action="store_true",

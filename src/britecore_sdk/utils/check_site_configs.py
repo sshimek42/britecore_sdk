@@ -4,11 +4,12 @@ Utility to check configured sites in .secrets.toml for required API keys.
 Usage:
     python -m britecore_sdk.utils.check_site_configs
 
-Outputs a table of sites and whether they are correctly configured for API access.
+Outputs a table of sites showing status, auth mode, URL, and any missing keys.
 """
 
 import os
 import sys
+from pathlib import Path
 
 import toml
 
@@ -17,16 +18,9 @@ OAUTH_KEYS = ["client_id", "client_secret"]
 API_KEY = "api_key"
 FORBIDDEN_KEYS = ["api_key", "client_id", "client_secret"]
 
-CONFIG_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "config",
-    ".secrets.toml",
-)
-SETTINGS_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "config",
-    "settings.toml",
-)
+BASE_DIR = Path(__file__).resolve().parent.parent
+CONFIG_PATH: str = str(BASE_DIR / "settings" / ".secrets.toml")
+SETTINGS_PATH: str = str(BASE_DIR / "settings" / "settings.toml")
 
 
 def load_secrets(path: str) -> dict:
@@ -35,6 +29,23 @@ def load_secrets(path: str) -> dict:
         print(f"Config file not found: {path}")
         sys.exit(1)
     return toml.load(path)
+
+
+def get_auth_mode(config: dict) -> str:
+    """Return the auth mode that would be selected for this site config.
+
+    Returns:
+        ``"OAuth"``   – both ``client_id`` and ``client_secret`` are present.
+        ``"API Key"`` – ``api_key`` is present (and OAuth keys are absent/incomplete).
+        ``"-"``       – neither auth option is fully configured.
+    """
+    has_oauth = all(config.get(k) for k in OAUTH_KEYS)
+    has_api_key = bool(config.get(API_KEY))
+    if has_oauth:
+        return "OAuth"
+    if has_api_key:
+        return "API Key"
+    return "-"
 
 
 def check_site(_site: str, config: dict) -> tuple[bool, list[str]]:
@@ -87,12 +98,15 @@ def main() -> None:
     # Only process keys whose value is a dict (site sections)
     site_sections = {k: v for k, v in secrets.items() if isinstance(v, dict)}
     print(f"Checking API config for {len(site_sections)} site(s) in {CONFIG_PATH}...\n")
-    print(f"{'Site':<20} {'Status':<10} Missing Keys")
-    print("-" * 60)
+    print(f"{'Site':<20} {'Status':<11} {'Auth':<9} {'URL':<45} Missing Keys")
+    print("-" * 100)
     for site, config in site_sections.items():
         ok, missing = check_site(site, config)
         status = "OK" if ok else "INCORRECT"
-        print(f"{site:<20} {status:<10} {', '.join(missing) if missing else ''}")
+        auth = get_auth_mode(config)
+        url = config.get("base_url", "")
+        missing_str = ", ".join(missing) if missing else ""
+        print(f"{site:<20} {status:<11} {auth:<9} {url:<45} {missing_str}")
 
 
 if __name__ == "__main__":

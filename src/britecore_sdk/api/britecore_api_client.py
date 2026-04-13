@@ -259,7 +259,8 @@ class BritecoreAPIClient:
                 cls._with_hint(
                     response.reason or "Unauthorized",
                     "Verify base_url and auth settings, then run: "
-                    "python -m britecore_sdk.utils.healthcheck --site <site>",
+                    "python -m britecore_sdk.utils.healthcheck "
+                    "(or add --site <site> to override).",
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
