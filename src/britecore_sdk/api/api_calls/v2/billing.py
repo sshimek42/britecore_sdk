@@ -1,40 +1,9 @@
 """BriteCore v2 Billing API endpoint wrappers."""
 
-from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
-
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import (
-    BritecoreAPIClient,
-    RequestParameters,
-    api_client,
-)
-
-LOGGER: Logger = logger
-
-API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _build_payload(**fields: Any) -> dict[str, Any]:
-    """Build a JSON payload while preserving explicit ``False`` values."""
-    return {key: value for key, value in fields.items() if value is not None}
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a billing request and normalize the response."""
-    LOGGER.debug("Calling billing endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload or {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
+from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 
 def get_installments_preview(
@@ -51,9 +20,9 @@ def get_installments_preview(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
     include ``RequestParameters`` overrides such as timeout, retry, or headers.
     """
-    return _post(
+    return post(
         "/api/v2/billing/get_installments_preview",
-        _build_payload(
+        build_payload(
             billing_schedule_ids=billing_schedule_ids,
             effective_date=effective_date,
             premium=premium,
@@ -78,9 +47,9 @@ def get_installments_preview_mid_term(
     preview how a mid-term revision affects installments. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/billing/get_installments_preview_mid_term",
-        _build_payload(
+        build_payload(
             billing_schedule_ids=billing_schedule_ids,
             payment_method=payment_method,
             revision_effective_date=revision_effective_date,
@@ -105,9 +74,9 @@ def get_renewal_installments_preview(
     the API. Returns the normalized ``process_result(...)`` payload, and
     ``**kwargs`` may supply ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/billing/get_renewal_installments_preview",
-        _build_payload(
+        build_payload(
             billing_schedule_ids=billing_schedule_ids,
             effective_date=effective_date,
             premium=premium,
@@ -127,9 +96,9 @@ def rating_factors(
     be calculated or retrieved. Returns the normalized ``process_result(...)``
     payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/billing/rating_factors",
-        _build_payload(policy_id=policy_id),
+        build_payload(policy_id=policy_id),
         **kwargs,
     )
 

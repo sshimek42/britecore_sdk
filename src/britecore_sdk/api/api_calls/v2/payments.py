@@ -21,12 +21,12 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def _build_payload(**fields: Any) -> dict[str, Any]:
+def build_payload(**fields: Any) -> dict[str, Any]:
     """Build a JSON payload while preserving explicit ``False`` and empty lists."""
     return {key: value for key, value in fields.items() if value is not None}
 
 
-def _post(
+def post(
     path: str,
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
@@ -69,9 +69,9 @@ def add_payment_method(
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
 
-    return _post(
+    return post(
         "/api/v2/payments/add_payment_method",
-        _build_payload(
+        build_payload(
             card_expires_mm=card_expires_mm,
             ach_bank=ach_bank,
             customer_profile_id=customer_profile_id,
@@ -107,9 +107,9 @@ def apply_selected_payments(
     normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/apply_selected_payments",
-        _build_payload(
+        build_payload(
             print_deposit_receipt=print_deposit_receipt,
             payment_ids=payment_ids,
         ),
@@ -131,9 +131,9 @@ def change_payment_method(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
     include ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/change_payment_method",
-        _build_payload(
+        build_payload(
             auto_payment_method_id=auto_payment_method_id,
             auto_pay_days_before=auto_pay_days_before,
             contact_id=contact_id,
@@ -158,9 +158,9 @@ def change_payment_method_single(
     fields to update a single recurring payment setup. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/change_payment_method_single",
-        _build_payload(
+        build_payload(
             auto_pay_days_before=auto_pay_days_before,
             contact_id=contact_id,
             policy_term_id=policy_term_id,
@@ -182,9 +182,9 @@ def create_payment_batch(
     used by later entry workflows. Returns the normalized ``process_result(...)``
     payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/create_payment_batch",
-        _build_payload(data=data),
+        build_payload(data=data),
         **kwargs,
     )
 
@@ -199,9 +199,9 @@ def create_payment_entries(
     import or application. Returns the normalized ``process_result(...)``
     payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/create_payment_entries",
-        _build_payload(entries=entries),
+        build_payload(entries=entries),
         **kwargs,
     )
 
@@ -216,9 +216,9 @@ def delete_payment_batch(
     normalized ``process_result(...)`` payload, and ``**kwargs`` may include
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/delete_payment_batch",
-        _build_payload(batch_id=batch_id),
+        build_payload(batch_id=batch_id),
         **kwargs,
     )
 
@@ -233,9 +233,9 @@ def delete_payment_entries(
     database. Returns the normalized ``process_result(...)`` payload, and
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/delete_payment_entries",
-        _build_payload(entry_ids=entry_ids),
+        build_payload(entry_ids=entry_ids),
         **kwargs,
     )
 
@@ -250,9 +250,9 @@ def get_payment_method_info(
     tied to that method. Returns the normalized ``process_result(...)`` payload,
     and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/get_payment_method_info",
-        _build_payload(payment_method_id=payment_method_id),
+        build_payload(payment_method_id=payment_method_id),
         **kwargs,
     )
 
@@ -268,9 +268,9 @@ def get_unpaid_invoices_by_date(
     billing information. Returns the normalized ``process_result(...)`` payload,
     and ``**kwargs`` may include ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/get_unpaid_invoices_by_date",
-        _build_payload(due_date=due_date, bill_date=bill_date),
+        build_payload(due_date=due_date, bill_date=bill_date),
         **kwargs,
     )
 
@@ -287,9 +287,9 @@ def import_payment_entries(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/import_payment_entries",
-        _build_payload(
+        build_payload(
             entry_ids=entry_ids,
             bypass_duplicates_check=bypass_duplicates_check,
         ),
@@ -310,9 +310,9 @@ def make_payment_by_contact_and_payment_method(
     ``payment_amount`` to charge the stored method. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/make_payment_by_contact_and_payment_method",
-        _build_payload(
+        build_payload(
             policy_id=policy_id,
             payment_amount=payment_amount,
             contact_id=contact_id,
@@ -339,9 +339,9 @@ def make_payment_by_invoice_or_policy(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/make_payment_by_invoice_or_policy",
-        _build_payload(
+        build_payload(
             payment_date=payment_date,
             policy_number=policy_number,
             amount=amount,
@@ -370,9 +370,9 @@ def mark_payment_nsf(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/mark_payment_nsf",
-        _build_payload(
+        build_payload(
             payment_date=payment_date,
             confirmation_number=confirmation_number,
             policy_number=policy_number,
@@ -394,9 +394,9 @@ def remove_payment_method(
     referenced by policy billing. Returns the normalized ``process_result(...)``
     payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/remove_payment_method",
-        _build_payload(payment_method_id=payment_method_id),
+        build_payload(payment_method_id=payment_method_id),
         **kwargs,
     )
 
@@ -411,9 +411,9 @@ def retrieve_account_payoff_amount(
     the account balance. Returns the normalized ``process_result(...)`` payload,
     and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_account_payoff_amount",
-        _build_payload(policy_number=policy_number),
+        build_payload(policy_number=policy_number),
         **kwargs,
     )
 
@@ -429,9 +429,9 @@ def retrieve_convenience_fee(
     enabled payment processor would charge. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_convenience_fee",
-        _build_payload(payment_amount=payment_amount, account_type=account_type),
+        build_payload(payment_amount=payment_amount, account_type=account_type),
         **kwargs,
     )
 
@@ -446,9 +446,9 @@ def retrieve_payment(
     normalized ``process_result(...)`` payload, and ``**kwargs`` may include
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_payment",
-        _build_payload(payment_id=payment_id),
+        build_payload(payment_id=payment_id),
         **kwargs,
     )
 
@@ -463,9 +463,9 @@ def retrieve_payment_batch_entries(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_payment_batch_entries",
-        _build_payload(batch_id=batch_id),
+        build_payload(batch_id=batch_id),
         **kwargs,
     )
 
@@ -480,9 +480,9 @@ def retrieve_payment_batches(
     entry data. Returns the normalized ``process_result(...)`` payload, and
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_payment_batches",
-        _build_payload(load_entries=load_entries),
+        build_payload(load_entries=load_entries),
         **kwargs,
     )
 
@@ -497,9 +497,9 @@ def retrieve_payment_entries(
     the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_payment_entries",
-        _build_payload(entry_ids=entry_ids),
+        build_payload(entry_ids=entry_ids),
         **kwargs,
     )
 
@@ -515,9 +515,9 @@ def retrieve_payment_methods(
     payment methods that match the request. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_payment_methods",
-        _build_payload(contact_ids=contact_ids, exp_less_than=exp_less_than),
+        build_payload(contact_ids=contact_ids, exp_less_than=exp_less_than),
         **kwargs,
     )
 
@@ -534,9 +534,9 @@ def retrieve_policy_billing_information(
     response to billing-only fields with ``billing_only``. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_policy_billing_information",
-        _build_payload(
+        build_payload(
             policy_term_id=policy_term_id,
             billing_only=billing_only,
             policy_id=policy_id,
@@ -555,9 +555,9 @@ def retrieve_sweep_payment_list(
     date. Returns the normalized ``process_result(...)`` payload, and ``**kwargs``
     accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_sweep_payment_list",
-        _build_payload(procdate=procdate),
+        build_payload(procdate=procdate),
         **kwargs,
     )
 
@@ -572,9 +572,9 @@ def retrieve_updated_invoice_balance(
     Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
     include ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/retrieve_updated_invoice_balance",
-        _build_payload(invoice_id=invoice_id),
+        build_payload(invoice_id=invoice_id),
         **kwargs,
     )
 
@@ -590,9 +590,9 @@ def update_payment_batch(
     should be updated. Returns the normalized ``process_result(...)`` payload,
     and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/update_payment_batch",
-        _build_payload(batch_id=batch_id, data=data),
+        build_payload(batch_id=batch_id, data=data),
         **kwargs,
     )
 
@@ -607,9 +607,9 @@ def update_payment_entries(
     database. Returns the normalized ``process_result(...)`` payload, and
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/update_payment_entries",
-        _build_payload(entries=entries),
+        build_payload(entries=entries),
         **kwargs,
     )
 
@@ -625,9 +625,9 @@ def update_sweep_payments_complete(
     for a processing date. Returns the normalized ``process_result(...)``
     payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return _post(
+    return post(
         "/api/v2/payments/update_sweep_payments_complete",
-        _build_payload(procdate=procdate, payment_ids=payment_ids),
+        build_payload(procdate=procdate, payment_ids=payment_ids),
         **kwargs,
     )
 

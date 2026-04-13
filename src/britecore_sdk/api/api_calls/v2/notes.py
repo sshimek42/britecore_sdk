@@ -6,7 +6,7 @@ Provides:
 
 from json import loads
 from logging import Logger
-from typing import Any, Unpack, cast
+from typing import Any, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
@@ -17,33 +17,18 @@ from britecore_sdk.api.api_calls import (
     api_client,
     web_timeout_long,
 )
+from britecore_sdk.api.api_calls.v2._common import post as common_post
 
 LOGGER: Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    """Send a notes request and normalize the response."""
-    LOGGER.debug("Calling notes endpoint %s", path)
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path=path,
-        json=payload or {},
-        **kwargs,
-    )
-    return API_CLIENT.process_result(cast(Any, request_result))
-
 
 def new_note(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a new note record for an entity."""
-    return _post("/api/v2/notes/newNote", payload=payload, **kwargs)
+    return common_post("/api/v2/notes/newNote", payload=payload, **kwargs)
 
 
 def store_note(
@@ -51,7 +36,7 @@ def store_note(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Persist updates for an existing note record."""
-    return _post("/api/v2/notes/storeNote", payload=payload, **kwargs)
+    return common_post("/api/v2/notes/storeNote", payload=payload, **kwargs)
 
 
 def retrieve_notes(

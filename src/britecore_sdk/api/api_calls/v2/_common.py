@@ -33,4 +33,3 @@ def post(
     if include_endpoint:
         return client.process_result(cast(Any, request_result), endpoint=path)
     return client.process_result(cast(Any, request_result))
-

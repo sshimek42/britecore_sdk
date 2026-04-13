@@ -21,12 +21,12 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-def _build_payload(**fields: Any) -> dict[str, Any]:
+def build_payload(**fields: Any) -> dict[str, Any]:
     """Build a JSON payload, omitting keys whose value is ``None``."""
     return {key: value for key, value in fields.items() if value is not None}
 
 
-def _post(
+def post(
     path: str,
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
@@ -55,7 +55,7 @@ def exportreturnpremium(
     payload: dict[str, Any] = {}
     if return_premium_id is not None:
         payload["returnPremiumId"] = return_premium_id
-    return _post(
+    return post(
         "/api/v2/return_premium/exportReturnPremium",
         payload,
         **kwargs,
