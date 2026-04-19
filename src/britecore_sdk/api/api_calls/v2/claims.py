@@ -6,8 +6,13 @@ BriteCore v2 claims API.
 
 from typing import Any, Unpack
 
-from britecore_sdk.api.api_calls import BritecoreAPIClient, RequestParameters, api_client
-from britecore_sdk.api.api_calls.v2._common import build_payload, post as common_post
+from britecore_sdk.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+from britecore_sdk.api.api_calls.v2._common import build_payload
+from britecore_sdk.api.api_calls.v2._common import post as common_post
 
 API_CLIENT: BritecoreAPIClient = api_client
 
