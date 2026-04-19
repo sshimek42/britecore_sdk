@@ -6,6 +6,7 @@ import asyncio
 import logging
 import re
 from pathlib import Path
+from typing import Any, cast
 
 from britecore_sdk.api.api_calls.v2 import async_contacts, contacts, deliverables
 
@@ -53,9 +54,9 @@ def test_runtime_logs_do_not_emit_legacy_tokens(caplog) -> None:
     async_client_original = async_contacts.API_CLIENT
     deliverables_client_original = deliverables.API_CLIENT
 
-    contacts.API_CLIENT = DummySyncClient()
-    async_contacts.API_CLIENT = DummyAsyncClient()
-    deliverables.API_CLIENT = DummySyncClient()
+    contacts.API_CLIENT = cast(Any, DummySyncClient())
+    async_contacts.API_CLIENT = cast(Any, DummyAsyncClient())
+    deliverables.API_CLIENT = cast(Any, DummySyncClient())
 
     try:
         with caplog.at_level(logging.DEBUG, logger="britecore_sdk"):

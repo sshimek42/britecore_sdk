@@ -11,7 +11,7 @@ import os
 import sys
 from pathlib import Path
 
-import toml
+import toml  # type: ignore[import-untyped]
 
 REQUIRED_KEYS = ["base_url"]
 OAUTH_KEYS = ["client_id", "client_secret"]

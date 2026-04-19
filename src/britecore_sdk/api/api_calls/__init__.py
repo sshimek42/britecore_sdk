@@ -41,7 +41,7 @@ def init_api_client(
 
     """
     resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
-    if not resolved:
+    if not isinstance(resolved, str) or not resolved:
         raise BritecoreError.ConfigurationError(
             "target_site must be specified: pass a non-empty value, or omit the argument "
             "to use configured fallback resolution."
@@ -64,7 +64,7 @@ def init_async_api_client(
     to this instance rather than re-initialising without a site on first use.
     """
     resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
-    if not resolved:
+    if not isinstance(resolved, str) or not resolved:
         raise BritecoreError.ConfigurationError(
             "target_site must be specified: pass a non-empty value, or omit the argument "
             "to use configured fallback resolution."
