@@ -6,8 +6,13 @@ associated photos from the BriteCore v2 insured API.
 
 from typing import Any, Unpack
 
-from britecore_sdk.api.api_calls import BritecoreAPIClient, RequestParameters, api_client
-from britecore_sdk.api.api_calls.v2._common import build_payload, post as common_post
+from britecore_sdk.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+from britecore_sdk.api.api_calls.v2._common import build_payload
+from britecore_sdk.api.api_calls.v2._common import post as common_post
 
 API_CLIENT: BritecoreAPIClient = api_client
 
@@ -15,9 +20,17 @@ API_CLIENT: BritecoreAPIClient = api_client
 def _post(
     path: str,
     payload: dict[str, Any] | None = None,
+    *,
+    include_endpoint: bool = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    return common_post(path, payload, client=API_CLIENT, **kwargs)
+    return common_post(
+        path,
+        payload,
+        include_endpoint=include_endpoint,
+        client=API_CLIENT,
+        **kwargs,
+    )
 
 
 def get_property_information_and_photos(
