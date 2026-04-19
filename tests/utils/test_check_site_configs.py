@@ -13,6 +13,8 @@ UTIL_PATH = os.path.join(
 )
 
 spec = importlib.util.spec_from_file_location("check_site_configs", UTIL_PATH)
+assert spec is not None
+assert spec.loader is not None
 check_site_configs = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(check_site_configs)
 
