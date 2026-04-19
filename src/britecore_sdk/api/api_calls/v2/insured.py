@@ -95,7 +95,9 @@ def update_claim(
 def get_primary_carrier(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve the primary carrier metadata."""
     return _post(
-        "/api/v2/insured/get_primary_carrier", include_endpoint=True, **kwargs
+        "/api/v2/insured/get_primary_carrier",
+        include_endpoint=True,
+        **kwargs,
     )
 
 
