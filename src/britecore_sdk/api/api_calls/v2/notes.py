@@ -23,6 +23,7 @@ LOGGER: Logger = logger
 
 API_CLIENT: BritecoreAPIClient = api_client
 
+
 def new_note(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
