@@ -481,7 +481,7 @@ class TestNightlyJobsEndpoints:
 # notifications
 # ---------------------------------------------------------------------------
 
-NOTIFICATIONS_CASES = [
+NOTIFICATIONS_CASES: list[tuple[str, dict[str, str], dict[str, str], str]] = [
     ("acknowledge", {}, {}, "/api/v2/notifications/acknowledge"),
     ("current", {}, {}, "/api/v2/notifications/current"),
 ]
