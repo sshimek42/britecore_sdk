@@ -58,7 +58,7 @@ dev = [
     "britecore_sdk[all]",
 ]
 docs = [
-    "sphinx>=8.2.3,<9.1",
+    "sphinx>=9.0.4,<9.1",
     "myst-parser>=5.0.0",
 ]
 
