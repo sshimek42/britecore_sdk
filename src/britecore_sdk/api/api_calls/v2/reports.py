@@ -2,11 +2,27 @@
 
 from typing import Any, Unpack
 
-from britecore_sdk.api.api_calls import RequestParameters
+from britecore_sdk.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
 from britecore_sdk.api.api_calls.v2._common import (
     build_payload as common_build_payload,
+)
+from britecore_sdk.api.api_calls.v2._common import (
     post as common_post,
 )
+
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _post(
+    path: str,
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    return common_post(path, payload, client=API_CLIENT, **kwargs)
 
 
 def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -16,7 +32,7 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     returns the normalized ``process_result(...)`` payload for the matching
     report files. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return common_post(
+    return _post(
         "/api/v2/reports/list_files",
         common_build_payload(report_id=report_id),
         **kwargs,
@@ -30,7 +46,7 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
     normalized ``process_result(...)`` payload for the report list.
     ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return common_post("/api/v2/reports/retrieve_reports", **kwargs)
+    return _post("/api/v2/reports/retrieve_reports", **kwargs)
 
 
 def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -40,7 +56,7 @@ def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     returns the normalized ``process_result(...)`` payload for the matching
     report. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return common_post(
+    return _post(
         "/api/v2/reports/retrieve_report",
         common_build_payload(report_id=report_id),
         **kwargs,
@@ -52,7 +68,7 @@ def fetch_prepared_yml(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve prepared YML content for report processing."""
-    return common_post(
+    return _post(
         "/api/v2/reports/fetch_prepared_yml",
         payload,
         **kwargs,
@@ -64,7 +80,7 @@ def delete_report(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete a report definition."""
-    return common_post("/api/v2/reports/delete_report", payload, **kwargs)
+    return _post("/api/v2/reports/delete_report", payload, **kwargs)
 
 
 def rename_report_category(
@@ -72,7 +88,7 @@ def rename_report_category(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Rename an existing report category."""
-    return common_post(
+    return _post(
         "/api/v2/reports/rename_report_category",
         payload,
         **kwargs,
@@ -84,7 +100,7 @@ def data_frame_preview(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Preview a report data frame."""
-    return common_post(
+    return _post(
         "/api/v2/reports/data_frame_preview",
         payload,
         **kwargs,
@@ -96,7 +112,7 @@ def upload_file(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Upload a file used by report processing."""
-    return common_post("/api/v2/reports/upload_file", payload, **kwargs)
+    return _post("/api/v2/reports/upload_file", payload, **kwargs)
 
 
 def list_df_caches(
@@ -104,7 +120,7 @@ def list_df_caches(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """List available dataframe cache entries."""
-    return common_post(
+    return _post(
         "/api/v2/reports/list_df_caches",
         payload,
         **kwargs,
@@ -116,7 +132,7 @@ def create_report_category(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a new report category."""
-    return common_post(
+    return _post(
         "/api/v2/reports/create_report_category",
         payload,
         **kwargs,
@@ -128,7 +144,7 @@ def delete_report_category(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete an existing report category."""
-    return common_post(
+    return _post(
         "/api/v2/reports/delete_report_category",
         payload,
         **kwargs,
@@ -140,7 +156,7 @@ def delete_file(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete a report-related file."""
-    return common_post("/api/v2/reports/delete_file", payload, **kwargs)
+    return _post("/api/v2/reports/delete_file", payload, **kwargs)
 
 
 def get_s3_token(
@@ -148,7 +164,7 @@ def get_s3_token(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve an S3 upload token for report files."""
-    return common_post("/api/v2/reports/get_s3_token", payload, **kwargs)
+    return _post("/api/v2/reports/get_s3_token", payload, **kwargs)
 
 
 def list_df_cache_files(
@@ -156,7 +172,7 @@ def list_df_cache_files(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """List files attached to a dataframe cache record."""
-    return common_post(
+    return _post(
         "/api/v2/reports/list_df_cache_files",
         payload,
         **kwargs,

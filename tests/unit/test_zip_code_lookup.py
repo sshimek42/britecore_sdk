@@ -27,7 +27,9 @@ def test_load_zip_codes_from_csv(
 
     assert isinstance(lookup, ZipCodeLookup)
     assert lookup.get_zip_by_state_city("IL", "Springfield") == "62701"
-    assert lookup.get_record_by_zip("53202").admin_name2 == "Milwaukee"
+    record = lookup.get_record_by_zip("53202")
+    assert record is not None
+    assert record.admin_name2 == "Milwaukee"
 
 
 @pytest.mark.unit

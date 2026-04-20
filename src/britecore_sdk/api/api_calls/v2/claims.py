@@ -6,9 +6,23 @@ BriteCore v2 claims API.
 
 from typing import Any, Unpack
 
-from britecore_sdk.api.api_calls import RequestParameters
-from britecore_sdk.api.api_calls.v2._common import build_payload, post
+from britecore_sdk.api.api_calls import (
+    BritecoreAPIClient,
+    RequestParameters,
+    api_client,
+)
+from britecore_sdk.api.api_calls.v2._common import build_payload
+from britecore_sdk.api.api_calls.v2._common import post as common_post
 
+API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _post(
+    path: str,
+    payload: dict[str, Any] | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    return common_post(path, payload, client=API_CLIENT, **kwargs)
 
 
 def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
@@ -18,7 +32,7 @@ def get_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     returns the normalized ``process_result(...)`` payload for the matching
     claim record. ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-    return post(
+    return _post(
         "/api/v2/claims/get_claim",
         build_payload(claim_id=claim_id),
         **kwargs,
@@ -30,7 +44,7 @@ def export_claim_payments(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Export claim payments for one or more claim identifiers."""
-    return post(
+    return _post(
         "/api/v2/claims/export_claim_payments",
         build_payload(claim_ids=claim_ids),
         **kwargs,
@@ -39,12 +53,12 @@ def export_claim_payments(
 
 def get_all_catastrophes(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve all catastrophe records available to the claims domain."""
-    return post("/api/v2/claims/get_all_catastrophes", **kwargs)
+    return _post("/api/v2/claims/get_all_catastrophes", **kwargs)
 
 
 def get_all_perils(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve all peril records available to the claims domain."""
-    return post("/api/v2/claims/get_all_perils", **kwargs)
+    return _post("/api/v2/claims/get_all_perils", **kwargs)
 
 
 def get_claim_contacts(
@@ -52,7 +66,7 @@ def get_claim_contacts(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve contacts associated with a claim."""
-    return post(
+    return _post(
         "/api/v2/claims/get_claim_contacts",
         build_payload(claim_id=claim_id),
         **kwargs,
@@ -64,7 +78,7 @@ def get_claim_payments(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve payment records associated with a claim."""
-    return post(
+    return _post(
         "/api/v2/claims/get_claim_payments",
         build_payload(claim_id=claim_id),
         **kwargs,
@@ -77,7 +91,7 @@ def update_claim(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update claim fields for the provided claim identifier."""
-    return post(
+    return _post(
         "/api/v2/claims/update_claim",
         build_payload(claim_id=claim_id, claim=claim),
         **kwargs,
