@@ -36,7 +36,6 @@ def retrieve_policy(
     policy_number: str | None = None,
     policy_id: str | None = None,
     revision_state: str | None = None,
-    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve policy information by revision, policy ID, or policy number.
@@ -52,10 +51,9 @@ def retrieve_policy(
     verification_list: list[dict[str, str | None]] = [
         {"policy_number": policy_number},
         {"policy_id": policy_id},
-        {"revision_id": revision_id},
     ]
 
-    priority_list: list[str] = ["revision_id", "policy_id", "policy_number"]
+    priority_list: list[str] = ["policy_id", "policy_number"]
 
     policy_request_json: dict[str, str | None] = (
         API_CLIENT.multiple_parameter_verification(verification_list, priority_list)
