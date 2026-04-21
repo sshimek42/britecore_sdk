@@ -21,7 +21,6 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-
 def list_attachments(
     policy_id: str | None = None,
     revision_id: str | None = None,
