@@ -28,7 +28,6 @@ LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
 
 
-
 def _effective_date_payload(
     *, effective_date_id: str | None = None, effective_date: str | None = None
 ) -> dict[str, str | None]:
