@@ -512,6 +512,26 @@ class TestDoRequestExceptionMapping:
         assert data["authorization_header_source"] == "caller-provided"
         assert data["headers"]["Authorization"] == "***redacted***"
 
+    @pytest.mark.unit
+    def test_do_request_handles_missing_default_dry_run_attr(self):
+        """Regression: __new__-constructed clients should default dry-run state safely."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = BritecoreAPIClient.__new__(BritecoreAPIClient)
+        client.use_api_key = True
+        client.web_timeout = 5
+        client.web_retry = 3
+        client.base_url = "https://api.example.com"
+        client.site_settings = MagicMock()
+        client.site_settings.api_key = "test-key"
+
+        response = _make_response(b'{"success": true, "data": {"ok": true}}')
+        client.http = MagicMock()
+        client.http.request.return_value = response
+
+        result = client.do_request(path="/api/v2/test", json={"x": 1})
+        assert result is response
+
 
 # ---------------------------------------------------------------------------
 # New exception types — standalone unit tests
