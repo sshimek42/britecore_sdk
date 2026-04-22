@@ -687,6 +687,60 @@ class TestInitClientConfigErrors:
         assert client.web_timeout_long == 50
         assert client.web_retry == 5
 
+    @pytest.mark.unit
+    def test_init_client_logs_debug_auth_mode_api_key(self, env_api_key):
+        from types import SimpleNamespace
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        api_key_settings = SimpleNamespace(
+            base_url="example.com",
+            client_id="",
+            client_secret="",
+            api_key="key",
+            web_retry=3,
+            web_timeout=5,
+            web_timeout_long=50,
+            web_browser="",
+        )
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader.return_value.load_config.return_value = api_key_settings
+            client = BritecoreAPIClient("test_site")
+            with patch(
+                "britecore_sdk.api.britecore_api_client.LOGGER.debug"
+            ) as mock_debug:
+                client.init_client()
+        mock_debug.assert_any_call("Auth mode selected during init_client: api_key")
+
+    @pytest.mark.unit
+    def test_init_client_logs_debug_auth_mode_oauth(self, env_api_key):
+        from types import SimpleNamespace
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        oauth_settings = SimpleNamespace(
+            base_url="example.com",
+            client_id="client",
+            client_secret="secret",
+            api_key="key",
+            web_retry=3,
+            web_timeout=5,
+            web_timeout_long=50,
+            web_browser="",
+        )
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader.return_value.load_config.return_value = oauth_settings
+            client = BritecoreAPIClient("test_site")
+            with patch(
+                "britecore_sdk.api.britecore_api_client.LOGGER.debug"
+            ) as mock_debug:
+                client.init_client()
+        mock_debug.assert_any_call("Auth mode selected during init_client: oauth")
+
 
 # ---------------------------------------------------------------------------
 # Instance isolation — two clients must not share state

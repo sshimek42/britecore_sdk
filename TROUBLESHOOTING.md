@@ -548,8 +548,10 @@ except ssl.SSLError as e:
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 
 # Now all debug messages will print, including [req_id] → METHOD /path traces
+# and init-time auth-mode selection (oauth vs api_key).
 from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 

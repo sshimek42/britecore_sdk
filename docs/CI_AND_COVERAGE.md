@@ -246,11 +246,16 @@ From `.github/workflows/tests.yml`:
 
 ```yaml
 - name: Generate coverage report
-  run: coverage report --fail-under=75
-  continue-on-error: true
+  run: coverage report --fail-under=72
 ```
 
-**Current target:** 75% coverage
+**Current enforced baseline:** 72% coverage
+
+**Ratchet policy:**
+
+- Do not decrease `--fail-under` once raised.
+- Raise by +1 to +2 only when test additions make the increase sustainable.
+- Near-term target is to move from 72% to 75%, then continue stepping upward.
 
 **Modules with higher expectations:**
 
@@ -355,7 +360,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 1. **Check if coverage gate is enforced:**
 
    ```powershell
-   coverage report --fail-under=75
+   coverage report --fail-under=72
    ```
 
 2. **Add tests for uncovered code:**
@@ -383,7 +388,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 2. **Check coverage:**
 
    ```powershell
-   coverage report --fail-under=75
+   coverage report --fail-under=72
    ```
 
 3. **Lint:**
@@ -410,7 +415,7 @@ python -c "import tomllib; tomllib.loads(open('.deepsource.toml').read())"
 ### Merging
 
 - All CI checks must pass (tests, lint, DeepSource)
-- Coverage must be >= 75%
+- Coverage must be >= 72% (current baseline; ratcheted upward over time)
 - At least one approval from maintainer
 - Commits should be squashed or well-organized
 
@@ -429,7 +434,7 @@ pip install -e ".[dev]"
 pytest tests/ -v --cov=src/britecore_sdk --cov-report=html
 pytest tests/unit -m unit -v
 pytest tests/integration -m integration -v
-coverage report --fail-under=75
+coverage report --fail-under=72
 coverage report -m
 ruff check src/britecore_sdk
 black --check src/britecore_sdk
