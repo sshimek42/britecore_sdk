@@ -205,6 +205,38 @@ class TestAsyncPoliciesEndpoints:
             "snapshot",
         ]
 
+    @pytest.mark.unit
+    def test_aretrieve_policy_passes_through_dry_run_kwargs(self):
+        """Async policy wrapper should forward dry-run kwargs to the async client."""
+        response = MagicMock()
+        mock_sync_client = MagicMock()
+        mock_sync_client.web_timeout_long = 99
+        mock_sync_client.multiple_parameter_verification.return_value = {
+            "policy_id": "policy_123"
+        }
+
+        with patch(
+            "britecore_sdk.api.api_calls.v2.async_policies.API_CLIENT"
+        ) as mock_client:
+            mock_client.aget_client = AsyncMock(return_value=mock_sync_client)
+            mock_client.ado_request = AsyncMock(return_value=response)
+            mock_client.aprocess_result = AsyncMock(return_value={"dry_run": True})
+
+            from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+            result = asyncio.run(
+                aretrieve_policy(
+                    policy_id="policy_123",
+                    dry_run=True,
+                    dry_run_include_sensitive_headers=True,
+                )
+            )
+
+        assert result["dry_run"] is True
+        call = mock_client.ado_request.await_args
+        assert call.kwargs["dry_run"] is True
+        assert call.kwargs["dry_run_include_sensitive_headers"] is True
+
 
 class TestAsyncV2Exports:
     """Tests for async v2 package exports."""

@@ -193,6 +193,22 @@ except AuthenticationError as e:
     print(f"Auth error: {e}")
 ```
 
+### Dry-run flow testing without a live request (new in v1.1)
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+# Inherit dry-run for all requests made through this client.
+# For OAuth sites, this skips token acquisition unless you explicitly pass headers.
+init_api_client(default_dry_run=True)
+
+result = policies.retrieve_policy(policy_number="POL001")
+print(result["dry_run"])        # True
+print(result["auth_skipped"])   # True for OAuth dry-run without caller auth headers
+print(result["headers"])        # Redacted by default
+```
+
 ## Async cached wrappers
 
 Use async wrappers from `britecore_sdk.api.api_calls.v2` for non-blocking API calls.
@@ -211,6 +227,25 @@ async def main() -> None:
     init_async_api_client("your_site")
     quote = await aget_quote("quote_123")
     print(quote)
+
+asyncio.run(main())
+```
+
+Async dry-run flow testing is also supported:
+
+```python
+import asyncio
+
+from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+
+async def main() -> None:
+    init_async_api_client(default_dry_run=True)
+    preview = await aretrieve_policy(policy_number="POL001")
+    print(preview["dry_run"])
+    print(preview["auth_skipped"])
+
 
 asyncio.run(main())
 ```

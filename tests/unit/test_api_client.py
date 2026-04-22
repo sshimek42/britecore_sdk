@@ -137,6 +137,23 @@ class TestBritecoreAPIClientInit:
             assert client.web_timeout == 5
             assert client.web_timeout_long == 50
 
+    @pytest.mark.unit
+    def test_init_client_can_enable_default_dry_run(self, env_api_key, mock_settings):
+        """Test that init_client stores a client-level default dry-run setting."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site")
+            client.init_client(default_dry_run=True)
+
+            assert client.default_dry_run is True
+
 
 class TestBritecoreAPIClientProcessResult:
     """Tests for process_result method."""

@@ -168,7 +168,7 @@ response = API_CLIENT.do_request(
     json=request,
     request_timeout=5,
     request_retries=3,
-    # dry_run=True  ← log only, no network call (v1.1+)
+    # dry_run=True  ← synthetic success payload, no network call (v1.1+)
 )
 
 # 3. Process response
@@ -185,6 +185,8 @@ data = API_CLIENT.process_result(response)
   bearer token header for OAuth mode
 - `X-SDK-Request-ID` header automatically attached to every outbound request
   for server-side correlation tracing
+- client-level dry-run default available via `init_client(default_dry_run=True)`;
+  OAuth dry-run skips token acquisition unless headers are explicitly supplied
 
 ### Context Manager (v1.1+)
 

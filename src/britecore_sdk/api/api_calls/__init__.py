@@ -19,6 +19,8 @@ def _set_module_client_state(name: str, client: object) -> None:
 
 def init_api_client(
     target_site: str | None | object = _TARGET_SITE_UNSET,
+    *,
+    default_dry_run: bool = False,
 ) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
@@ -35,6 +37,8 @@ def init_api_client(
                      If omitted, this is resolved from settings via
                      ``get_target_site()``. Passing ``None`` or an empty value
                      explicitly is treated as invalid input.
+        default_dry_run: When ``True``, requests made through this client inherit
+                         dry-run behavior unless explicitly overridden per call.
 
     Returns:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
@@ -47,13 +51,15 @@ def init_api_client(
             "to use configured fallback resolution."
         )
     client: BritecoreAPIClient = BritecoreAPIClient(resolved)
-    client.init_client()
+    client.init_client(default_dry_run=default_dry_run)
     _set_module_client_state("_api_client", client)
     return client
 
 
 def init_async_api_client(
     target_site: str | None | object = _TARGET_SITE_UNSET,
+    *,
+    default_dry_run: bool = False,
 ) -> AsyncBritecoreAPIClient:
     """Initialize and return a lazy async API client wrapper.
 
@@ -62,6 +68,11 @@ def init_async_api_client(
 
     Also sets the module-level ``_async_api_client`` so the lazy proxy resolves
     to this instance rather than re-initialising without a site on first use.
+
+    Args:
+        target_site: Explicit target site name. If omitted, resolve from settings.
+        default_dry_run: When ``True``, async requests inherit dry-run behavior
+            unless explicitly overridden per call.
     """
     resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
     if not isinstance(resolved, str) or not resolved:
@@ -69,7 +80,7 @@ def init_async_api_client(
             "target_site must be specified: pass a non-empty value, or omit the argument "
             "to use configured fallback resolution."
         )
-    client = AsyncBritecoreAPIClient(resolved)
+    client = AsyncBritecoreAPIClient(resolved, default_dry_run=default_dry_run)
     _set_module_client_state("_async_api_client", client)
     return client
 
