@@ -133,7 +133,7 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 ✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
 ✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
 ✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
-✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(default_dry_run=True)`
+✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
 
 ---
 

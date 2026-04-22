@@ -8,8 +8,8 @@ guidance, examples, and broader endpoint notes, see the repository-level
 
 - `BritecoreAPIClient` — context manager (`__enter__`/`__exit__`), `__repr__`, `init_client()` returns `Self`
 - `do_request(..., dry_run=True)` — synthetic dry-run response with redacted headers by default
-- `init_api_client(default_dry_run=True)` / `init_client(default_dry_run=True)` — client-level dry-run defaults
-- `init_async_api_client(default_dry_run=True)` / `AsyncBritecoreAPIClient.ado_request(..., dry_run=True)` — async dry-run parity with cache bypass
+- `init_api_client(client_dry_run=True)` / `init_client(client_dry_run=True)` — client-level dry-run defaults
+- `init_async_api_client(client_dry_run=True)` / `AsyncBritecoreAPIClient.ado_request(..., dry_run=True)` — async dry-run parity with cache bypass
 - `reset_api_client()` — clears module-level client (test isolation)
 - `HealthcheckResult.__bool__` — truthiness from `.ok`
 - Flat exception aliases in `britecore_sdk.exceptions` and top-level package

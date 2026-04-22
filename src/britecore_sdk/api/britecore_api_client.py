@@ -137,10 +137,10 @@ class BritecoreAPIClient:
         self.bad_url_error: str | None = None
         self.enable_timers: bool | None = None
         self.site_settings: Any = None
-        self.default_dry_run: bool = False
+        self.client_dry_run: bool = False
         self.target_site = target_site
 
-    def init_client(self, *, default_dry_run: bool = False) -> Self:
+    def init_client(self, *, client_dry_run: bool = False) -> Self:
         """
         Initializes the Britecore API client with configuration settings and HTTP components.
 
@@ -155,7 +155,7 @@ class BritecoreAPIClient:
                 client = BritecoreAPIClient("my_site").init_client()
 
         Args:
-            default_dry_run: When ``True``, requests inherit dry-run behavior unless a
+            client_dry_run: When ``True``, requests inherit dry-run behavior unless a
                 specific call passes ``dry_run=False``. This is useful for testing SDK
                 wrapper flow and payload shaping without sending requests.
 
@@ -170,7 +170,7 @@ class BritecoreAPIClient:
                 "target_site must be specified explicitly; environment fallback is not allowed."
             )
         self.site_settings = LoadClientSettings(target_site).load_config()
-        self.default_dry_run = default_dry_run
+        self.client_dry_run = client_dry_run
 
         self.enable_timers = True
         self.bad_url_error = "Invalid URL"
@@ -573,7 +573,7 @@ class BritecoreAPIClient:
             method (Optional[str]): The HTTP method to use for the request, defaults to "POST".
             dry_run (bool | None): If ``True``, log the full request details and return a
                 synthetic successful response without sending the request. If ``None``,
-                inherit the client's ``default_dry_run`` setting.
+                inherit the client's ``client_dry_run`` setting.
             dry_run_include_sensitive_headers (bool): If ``True``, include unredacted
                 headers in dry-run logs/response. Defaults to ``False`` for safety.
 
@@ -590,8 +590,8 @@ class BritecoreAPIClient:
         if request_retries is None:
             request_retries = self.web_retry
 
-        client_default_dry_run = bool(getattr(self, "default_dry_run", False))
-        effective_dry_run = client_default_dry_run if dry_run is None else dry_run
+        client_level_dry_run = bool(getattr(self, "client_dry_run", False))
+        effective_dry_run = client_level_dry_run if dry_run is None else dry_run
 
         resolved_request_headers: dict[str, Any] = dict(request_headers or {})
         auth_mode = "api_key" if self.use_api_key else "oauth"

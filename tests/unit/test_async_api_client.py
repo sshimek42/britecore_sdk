@@ -154,22 +154,22 @@ class TestAsyncBritecoreAPIClient:
 
         assert isinstance(client, BritecoreAPIClient)
         assert client.target_site == "test_site"
-        mock_init.assert_called_once_with(client, default_dry_run=False)
+        mock_init.assert_called_once_with(client, client_dry_run=False)
 
     @pytest.mark.unit
-    def test_aget_client_forwards_default_dry_run_to_sync_client(self):
+    def test_aget_client_forwards_client_dry_run_to_sync_client(self):
         """aget_client should seed the sync client with the async dry-run default."""
         with patch.object(
             BritecoreAPIClient, "init_client", autospec=True
         ) as mock_init:
             adapter = AsyncBritecoreAPIClient(
                 target_site="test_site",
-                default_dry_run=True,
+                client_dry_run=True,
             )
             client = asyncio.run(adapter.aget_client())
 
         assert isinstance(client, BritecoreAPIClient)
-        mock_init.assert_called_once_with(client, default_dry_run=True)
+        mock_init.assert_called_once_with(client, client_dry_run=True)
 
     @pytest.mark.unit
     def test_ado_request_returns_cached_response_on_second_call(self):
@@ -202,10 +202,10 @@ class TestAsyncBritecoreAPIClient:
         mock_request.assert_called_once()
 
     @pytest.mark.unit
-    def test_ado_request_inherits_client_default_dry_run_and_bypasses_cache(self):
+    def test_ado_request_inherits_client_dry_run_and_bypasses_cache(self):
         """Default async dry-run should skip cache reads/writes and return synthetic payloads."""
         client = BritecoreAPIClient("test_site")
-        client.default_dry_run = True
+        client.client_dry_run = True
         client.base_url = "https://example.com"
         client.use_api_key = True
 
@@ -243,11 +243,11 @@ class TestAsyncBritecoreAPIClient:
         assert first_payload["request_id"] != second_payload["request_id"]
 
     @pytest.mark.unit
-    def test_ado_request_explicit_false_overrides_default_dry_run(self):
+    def test_ado_request_explicit_false_overrides_client_dry_run(self):
         """Per-call dry_run=False should disable inherited async dry-run."""
         response = _make_response()
         client = BritecoreAPIClient("test_site")
-        client.default_dry_run = True
+        client.client_dry_run = True
         adapter = AsyncBritecoreAPIClient(client=client)
 
         with patch.object(
@@ -397,7 +397,7 @@ class TestAsyncBritecoreAPIClient:
         ) as mock_loader:
             mock_loader.return_value.load_config.return_value = mock_settings_oauth
             adapter = AsyncBritecoreAPIClient(
-                target_site="test_site", default_dry_run=True
+                target_site="test_site", client_dry_run=True
             )
             client = asyncio.run(adapter.aget_client())
 

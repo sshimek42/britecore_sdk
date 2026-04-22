@@ -573,7 +573,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 # Set client-level dry-run once for a scratch script / test flow.
 # For OAuth sites, this skips token acquisition unless you pass headers explicitly.
-init_api_client(default_dry_run=True)
+init_api_client(client_dry_run=True)
 
 # Logs full URL, headers, and body; no network call made.
 preview = policies.retrieve_policy(policy_number="POL001")
@@ -656,5 +656,5 @@ Some features in britecore_sdk rely on map files (such as policy, field, or agen
 
 - **API client initialization failures** usually indicate missing `target_site` or site config. The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 - **To swap sites or isolate tests,** call `reset_api_client()` before calling `init_api_client("new_site")`.
-- **To debug without sending a real request,** pass `dry_run=True` to any endpoint wrapper call, or initialize once with `init_api_client(default_dry_run=True)` for a whole scratch script/test flow.
+- **To debug without sending a real request,** pass `dry_run=True` to any endpoint wrapper call, or initialize once with `init_api_client(client_dry_run=True)` for a whole scratch script/test flow.
 - **CLI commands** (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are available after `pip install`; fall back to `python -m britecore_sdk.utils.<module>` otherwise.

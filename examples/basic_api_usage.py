@@ -81,7 +81,7 @@ def run_dry_run_policy_lookup(policy_number: str) -> None:
     print(
         f"\nRunning dry-run retrieve_policy call for policy_number={policy_number!r}..."
     )
-    init_api_client(default_dry_run=True)
+    init_api_client(client_dry_run=True)
     result = policies.retrieve_policy(policy_number=policy_number)
     print("Dry-run preview:")
     pprint(result)

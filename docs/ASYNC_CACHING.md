@@ -98,7 +98,7 @@ from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
 
 
 async def main() -> None:
-    init_async_api_client(default_dry_run=True)
+    init_async_api_client(client_dry_run=True)
     preview = await aretrieve_policy(policy_number="POL001")
     print(preview["dry_run"])
     print(preview["auth_skipped"])
