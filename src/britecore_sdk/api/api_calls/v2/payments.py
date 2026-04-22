@@ -63,12 +63,10 @@ def add_payment_method(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Add a payment method for a contact.
-
     The payload may include card or ACH details, contact linkage, vendor metadata,
     and billing address fields for the stored method. Returns the normalized
     ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
     """
-
     return post(
         "/api/v2/payments/add_payment_method",
         build_payload(
