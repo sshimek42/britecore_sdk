@@ -1,6 +1,6 @@
 # System Architecture
 
-*Last updated: April 8, 2026*
+*Last updated: April 22, 2026*
 *Document type: Living design reference*
 
 **BriteCore Libraries** - Technical design and component overview
@@ -167,7 +167,8 @@ response = API_CLIENT.do_request(
     path="/api/v2/policies/retrieve_policy",
     json=request,
     request_timeout=5,
-    request_retries=3
+    request_retries=3,
+    # dry_run=True  ← log only, no network call (v1.1+)
 )
 
 # 3. Process response
@@ -182,6 +183,28 @@ data = API_CLIENT.process_result(response)
 - retries: `web_retry` (default 3 with urllib3 backoff)
 - authentication: API key injected into request payload for API-key mode,
   bearer token header for OAuth mode
+- `X-SDK-Request-ID` header automatically attached to every outbound request
+  for server-side correlation tracing
+
+### Context Manager (v1.1+)
+
+`BritecoreAPIClient` supports the context-manager protocol. The `urllib3.PoolManager`
+is closed automatically on `__exit__`:
+
+```python
+with BritecoreAPIClient("site").init_client() as client:
+    # use client
+    pass
+# PoolManager closed here
+```
+
+`init_client()` returns `Self`, enabling fluent one-liner construction:
+
+```python
+client = BritecoreAPIClient("site").init_client()
+print(repr(client))
+# BritecoreAPIClient(site='site', base_url='https://...', auth='oauth', initialized=True)
+```
 
 ### HTTP Transport Choice
 
@@ -352,6 +375,20 @@ BritecoreError (namespace class)
     ├── MissingParameter        # Required API parameter missing
     └── ConflictingParameters   # Mutually exclusive params supplied
 
+```
+
+**Flat aliases (v1.1+):** Every exception class is also importable directly without
+the `BritecoreError.` prefix:
+
+```python
+# Verbose (still works):
+from britecore_sdk.exceptions import BritecoreError
+except BritecoreError.NotFoundError: ...
+
+# Flat (v1.1+, shorter):
+from britecore_sdk import NotFoundError, AuthenticationError
+from britecore_sdk.exceptions import NotFoundError  # full set available here
+except NotFoundError: ...
 ```
 
 ### Error Response Handling

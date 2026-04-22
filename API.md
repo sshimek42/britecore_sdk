@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: April 7, 2026*
+*Last updated: April 22, 2026*
 *Document type: Living reference guide*
 
 **BriteCore Libraries** - API endpoint reference
@@ -40,6 +40,22 @@ from britecore_sdk.api.api_calls.v2 import policies, contacts, quotes
 # Recommended: Use the lazy-initialized client (auto-loads config on first use)
 client = get_api_client()
 result = policies.retrieve_policy(policy_number="POL-001")
+```
+
+### Fluent one-liner + context manager (v1.1+)
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.api.api_calls.v2 import policies
+
+# init_client() returns Self, so construction + init can be one line
+with BritecoreAPIClient("your_site").init_client() as client:
+    result = policies.retrieve_policy(policy_number="POL-001")
+# PoolManager closed automatically
+
+# Inspect the client at any time
+print(repr(client))
+# BritecoreAPIClient(site='your_site', base_url='https://...', auth='oauth', initialized=True)
 ```
 
 Domain modules are importable from `britecore_sdk.api.api_calls.v2`.
@@ -189,6 +205,8 @@ See `src/britecore_sdk/settings/settings.toml` for current shipped defaults.
 
 ## Error Handling
 
+### Using nested exception classes (original pattern)
+
 ```python
 from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.exceptions import BritecoreError
@@ -208,6 +226,50 @@ except BritecoreError.Base as e:
 except Exception as e:
     print(f"Unexpected error: {e}")
 ```
+
+### Using flat exception aliases (v1.1+ — shorter imports)
+
+```python
+from britecore_sdk import NotFoundError, AuthenticationError, RateLimitError
+from britecore_sdk.api.api_calls.v2 import policies
+
+try:
+    policy = policies.retrieve_policy(policy_number="INVALID")
+except NotFoundError as e:
+    print(f"Not found: {e}")
+except AuthenticationError as e:
+    print(f"Auth error: {e}")
+except RateLimitError as e:
+    print(f"Rate limit hit: {e}")
+```
+
+Available top-level aliases: `AuthenticationError`, `ConfigurationError`,
+`NotFoundError`, `RateLimitError`, `RequestTimeoutError`, `ServerError`,
+`ValidationError`. The full set (including `NoDataReturned`, `NoTokenReturned`,
+`BritecoreKeyError`, etc.) is available from `britecore_sdk.exceptions`.
+
+---
+
+## Debug / Dry-Run Mode (v1.1+)
+
+Pass `dry_run=True` to `do_request` (or any endpoint wrapper that forwards `**kwargs`) to
+log the full request details — URL, method, headers, body — **without** sending anything to
+the server. The call returns `None`.
+
+```python
+import logging
+logging.basicConfig(level=logging.INFO)
+
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+client = get_api_client()
+# Inspect what would be sent — no network call made
+policies.retrieve_policy(policy_number="POL001", dry_run=True)
+# INFO [abc12345] DRY-RUN POST https://...  body={"policy_number": "POL001"}  headers={...}
+```
+
+`dry_run` is part of `RequestParameters` so it is accepted by every v2 endpoint wrapper.
 
 ---
 
@@ -380,7 +442,7 @@ See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.
 
 ## Documentation Freshness
 
-- Last verified: `2026-04-07`
+- Last verified: `2026-04-22`
 - Verified against: `api_specs/current/britecore.json`, `src/britecore_sdk/api/api_calls/v1/`, and `src/britecore_sdk/api/api_calls/v2/`
 - Known wrapper/spec drift is tracked in `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
 - Use module-level docs in `src/britecore_sdk/api/api_calls/v1/` and `src/britecore_sdk/api/api_calls/v2/` as the source of truth for current wrapper names.

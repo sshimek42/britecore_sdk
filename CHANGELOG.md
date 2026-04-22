@@ -11,6 +11,31 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **10 quality-of-life enhancements** to the SDK core:
+  1. `BritecoreAPIClient` context manager (`__enter__`/`__exit__`) — auto-closes
+     the `urllib3.PoolManager` on exit (`with BritecoreAPIClient("site").init_client() as client:`).
+  2. `reset_api_client()` in `api.api_calls` — clears module-level client for
+     test isolation or multi-site swapping.
+  3. `BritecoreAPIClient.__repr__` — shows `site`, `base_url`, `auth` mode,
+     and `initialized` state for easy REPL/log debugging.
+  4. `HealthcheckResult.__bool__` — enables `if result:` / `if not result:`
+     idioms without accessing `.ok`.
+  5. Flat exception aliases exported from `britecore_sdk.exceptions` (e.g.
+     `from britecore_sdk import NotFoundError`) and from the top-level package
+     (`AuthenticationError`, `ConfigurationError`, `NotFoundError`,
+     `RateLimitError`, `RequestTimeoutError`, `ServerError`, `ValidationError`).
+  6. `dry_run=True` on `do_request` — logs full URL/headers/body and returns
+     `None` without sending, for development and debugging.
+  7. `X-SDK-Request-ID` header — every outbound request carries a short
+     correlation ID (already visible in `[req_id] → METHOD /path` debug logs)
+     and now also propagates it as an HTTP header to the server.
+  8. `zip_code_lookup.load_zip_codes` — documented thread-pool safety for use
+     with `AsyncBritecoreAPIClient` (call via `run_in_executor`).
+  9. CLI entry points registered in `pyproject.toml` — `britecore-healthcheck`,
+     `britecore-check-config`, and `britecore-run-checks` are now installable
+     shell commands.
+  10. `BritecoreAPIClient.init_client()` returns `Self` — enables one-liner
+      fluent initialization (`client = BritecoreAPIClient("site").init_client()`).
 - `tests/unit/test_api_spec_alignment.py` — validates wrapper paths against
   the canonical `api_specs/current/britecore.json` specification.
 - `tests/unit/test_v1_endpoint_routing.py` — unit tests for v1 custom_ui,
