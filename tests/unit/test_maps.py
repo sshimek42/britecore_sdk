@@ -106,7 +106,8 @@ class TestLoadRegexes:
     @pytest.mark.unit
     def test_load_regexes_unknown_system_returns_common(self, monkeypatch):
         """Unknown system returns common regexes; KeyError is raised by
-        the caller (RegexMappings), not by load_regexes itself."""
+        the caller (RegexMappings), not by load_regexes itself.
+        """
         from britecore_sdk.maps import load_regexes
 
         compiled, groups = load_regexes(

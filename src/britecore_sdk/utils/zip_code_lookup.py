@@ -56,6 +56,16 @@ def load_zip_codes() -> ZipCodeLookup:
     """
     Load ZIP code data from CSV into an in-memory lookup.
 
+    This function performs synchronous CSV I/O and is safe to call at module
+    import time or from a thread-pool executor.  When used alongside
+    :class:`~britecore_sdk.api.britecore_async_api_client.AsyncBritecoreAPIClient`,
+    call it from a worker thread to avoid blocking the event loop::
+
+        import asyncio
+        from britecore_sdk.utils.zip_code_lookup import load_zip_codes
+
+        lookup = await asyncio.get_event_loop().run_in_executor(None, load_zip_codes)
+
     Returns
     -------
     ZipCodeLookup

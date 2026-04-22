@@ -6,12 +6,28 @@ on:
   pull_request:
     branches: [ master, main, develop ]
   workflow_dispatch:
+    inputs:
+      python-version:
+        description: 'Python version to test against'
+        required: false
+        default: '3.11'
+        type: choice
+        options: ['3.11', '3.12', '3.13', '3.14']
+      randomly-seed:
+        description: 'pytest-randomly seed (leave blank to use run ID)'
+        required: false
+        default: ''
+      run-weekly:
+        description: 'Run weekly-randomized job (3.12-3.14) instead of normal test job'
+        required: false
+        default: false
+        type: boolean
   schedule:
     - cron: '0 6 * * 1'
 
 jobs:
   test:
-    if: github.event_name != 'schedule'
+    if: github.event_name != 'schedule' && !(github.event_name == 'workflow_dispatch' && inputs.run-weekly == true)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -48,11 +64,25 @@ jobs:
 
     - name: Run tests with pytest
       run: |
+        SEED="${{ inputs.randomly-seed }}"
         RANDOM_ARGS=""
-        if [ "${{ matrix.randomized }}" = "true" ]; then
-          RANDOM_ARGS="--randomly-seed=${{ github.run_id }}"
+        if [ "${{ matrix.randomized }}" = "true" ] || [ -n "$SEED" ]; then
+          SEED="${SEED:-${{ github.run_id }}}"
+          RANDOM_ARGS="--randomly-seed=$SEED"
         fi
         pytest tests/ -v --cov=src/britecore_sdk --cov-report=term-missing --cov-report=html --cov-report=xml $RANDOM_ARGS
+
+    - name: Type-check with mypy
+      if: matrix.python-version == '3.11'
+      run: |
+        mypy src/britecore_sdk --ignore-missing-imports
+      continue-on-error: true
+
+    - name: Security audit with pip-audit
+      if: matrix.python-version == '3.11' && matrix.randomized == false
+      run: |
+        pip-audit --desc on
+      continue-on-error: true
 
     - name: Rewrite coverage paths for DeepSource
       if: matrix.python-version == '3.11' && matrix.randomized == false
@@ -81,9 +111,9 @@ jobs:
         fail_ci_if_error: false
 
     - name: Generate coverage report
+      if: matrix.python-version == '3.11' && matrix.randomized == false
       run: |
-        coverage report --fail-under=75
-      continue-on-error: true
+        coverage report --fail-under=80
 
     - name: Archive coverage report
       if: always()
@@ -102,7 +132,7 @@ jobs:
         dsn: ${{ secrets.DEEPSOURCE_DSN }}
 
   weekly-randomized:
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run-weekly == true)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -127,4 +157,6 @@ jobs:
 
     - name: Run randomized tests with pytest
       run: |
-        pytest tests/ -v --randomly-seed=${{ github.run_id }}
+        SEED="${{ inputs.randomly-seed }}"
+        SEED="${SEED:-${{ github.run_id }}}"
+        pytest tests/ -v --randomly-seed=$SEED

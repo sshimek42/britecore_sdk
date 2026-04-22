@@ -25,6 +25,10 @@ class HealthcheckResult:
     api_ok: bool
     message: str
 
+    def __bool__(self) -> bool:
+        """Allow ``if result:`` / ``if not result:`` idiom based on :attr:`ok`."""
+        return self.ok
+
 
 def _detect_auth_mode(client: BritecoreAPIClient) -> str:
     """Return selected authentication mode from initialized client state."""

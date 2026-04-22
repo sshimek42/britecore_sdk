@@ -31,7 +31,16 @@ if TYPE_CHECKING:
         DEFAULT_EMAIL_TYPE,
         DEFAULT_PHONE_TYPE,
     )
-    from britecore_sdk.exceptions import BritecoreError
+    from britecore_sdk.exceptions import (
+        AuthenticationError,
+        BritecoreError,
+        ConfigurationError,
+        NotFoundError,
+        RateLimitError,
+        RequestTimeoutError,
+        ServerError,
+        ValidationError,
+    )
     from britecore_sdk.maps import get_common_regexes, load_regexes
     from britecore_sdk.models import BritecoreContact, BritecorePolicy
     from britecore_sdk.validators import (
@@ -59,6 +68,14 @@ _EXPORT_MAP: dict[str, tuple[str, str]] = {
     "DEFAULT_EMAIL_TYPE": ("britecore_sdk.constants", "DEFAULT_EMAIL_TYPE"),
     "DEFAULT_PHONE_TYPE": ("britecore_sdk.constants", "DEFAULT_PHONE_TYPE"),
     "BritecoreError": ("britecore_sdk.exceptions", "BritecoreError"),
+    # Flat exception aliases
+    "AuthenticationError": ("britecore_sdk.exceptions", "AuthenticationError"),
+    "ConfigurationError": ("britecore_sdk.exceptions", "ConfigurationError"),
+    "NotFoundError": ("britecore_sdk.exceptions", "NotFoundError"),
+    "RateLimitError": ("britecore_sdk.exceptions", "RateLimitError"),
+    "RequestTimeoutError": ("britecore_sdk.exceptions", "RequestTimeoutError"),
+    "ServerError": ("britecore_sdk.exceptions", "ServerError"),
+    "ValidationError": ("britecore_sdk.exceptions", "ValidationError"),
     "load_regexes": ("britecore_sdk.maps", "load_regexes"),
     "get_common_regexes": ("britecore_sdk.maps", "get_common_regexes"),
     "BritecoreContact": ("britecore_sdk.models", "BritecoreContact"),
@@ -122,6 +139,13 @@ __all__ = [
     "normalize_business_name",
     # Exceptions
     "BritecoreError",
+    "AuthenticationError",
+    "ConfigurationError",
+    "NotFoundError",
+    "RateLimitError",
+    "RequestTimeoutError",
+    "ServerError",
+    "ValidationError",
     # Constants
     "DEFAULT_ADDRESS_TYPE",
     "DEFAULT_EMAIL_TYPE",
