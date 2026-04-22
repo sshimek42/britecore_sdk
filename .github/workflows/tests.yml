@@ -128,4 +128,3 @@ jobs:
     - name: Run randomized tests with pytest
       run: |
         pytest tests/ -v --randomly-seed=${{ github.run_id }}
-
