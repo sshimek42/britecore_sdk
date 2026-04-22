@@ -140,21 +140,16 @@ python -c "import britecore_sdk; print(britecore_sdk.__version__)"
 python -c "from britecore_sdk.api.api_calls import init_api_client; print(repr(init_api_client('your_site')))"
 ```
 
-Readiness checks — via installed CLI commands (after `pip install`):
+Readiness checks — via installed CLI commands (works in both bash and PowerShell):
 
-```bash
+```sh
 britecore-check-config
 britecore-healthcheck --site your_site
 ```
 
-Or via `python -m`:
+Or via `python -m` (works in both bash and PowerShell):
 
-```powershell
-python -m britecore_sdk.utils.check_site_configs
-python -m britecore_sdk.utils.healthcheck --site your_site
-```
-
-```bash
+```sh
 python -m britecore_sdk.utils.check_site_configs
 python -m britecore_sdk.utils.healthcheck --site your_site
 ```

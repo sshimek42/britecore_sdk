@@ -15,7 +15,7 @@
 
 **Solution:**
 
-```powershell
+```sh
 # Install in editable mode
 pip install -e .
 
@@ -34,7 +34,7 @@ python -c "import britecore_sdk; print(britecore_sdk.__version__)"
 
 **Solution:**
 
-```powershell
+```sh
 # Try with timeout
 pip install -e . --default-timeout=100
 
@@ -55,11 +55,24 @@ python --version  # Should be 3.11+
 
 **Solution:**
 
-```powershell
+```sh
 # Use --user flag
 pip install --user -e .
+```
 
-# Or use virtual environment
+Or use a virtual environment:
+
+**Linux/macOS (bash):**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+**Windows (PowerShell):**
+
+```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e .
@@ -135,6 +148,17 @@ client_secret = "..."             # Required (if no API key)
 
 **Or use environment variables:**
 
+**Linux/macOS (bash):**
+
+```bash
+export BRITECORE_SDK_BASE_URL="https://..."
+export BRITECORE_SDK_API_KEY="..."
+export BRITECORE_SDK_CLIENT_ID="..."
+export BRITECORE_SDK_CLIENT_SECRET="..."
+```
+
+**Windows (PowerShell):**
+
 ```powershell
 $env:BRITECORE_SDK_BASE_URL="https://..."
 $env:BRITECORE_SDK_API_KEY="..."
@@ -144,8 +168,8 @@ $env:BRITECORE_SDK_CLIENT_SECRET="..."
 
 Validate site sections and key combinations quickly:
 
-```bash
-# Installed CLI (v1.1+):
+```sh
+# Installed CLI (v1.1+) — works in bash and PowerShell:
 britecore-check-config
 
 # Or via python -m:
@@ -373,7 +397,7 @@ from britecore_sdk.models import *
 
 **Solution:**
 
-```powershell
+```sh
 pip install -e ".[dev]"
 python -m pytest tests/ -v
 ```
@@ -404,14 +428,25 @@ with patch("britecore_sdk.api.api_calls.API_CLIENT") as mock:
 
 **Solution:**
 
-```powershell
+```sh
 # Make sure pytest-cov installed
 pip install -e ".[dev]"
 
 # Run with coverage
 python -m pytest tests/ --cov=src/britecore_sdk --cov-report=html
+```
 
-# View report
+Open the HTML report:
+
+**Linux/macOS (bash):**
+
+```bash
+open htmlcov/index.html
+```
+
+**Windows (PowerShell):**
+
+```powershell
 Invoke-Item htmlcov/index.html
 ```
 
@@ -423,7 +458,7 @@ Invoke-Item htmlcov/index.html
 
 **Solution:**
 
-```powershell
+```sh
 # Run from project root
 cd britecore_sdk
 python -m pytest tests/ -v
@@ -559,10 +594,14 @@ init_api_client("site_b")
 
 ### Check These First
 
-1. **Environment Variables:** `echo $env:target_site`
-2. **Config File:** `Get-Content src/britecore_sdk/settings/settings.toml`
+1. **Environment Variables:**
+   - bash: `echo $target_site`
+   - PowerShell: `echo $env:target_site`
+2. **Config File:**
+   - bash: `cat src/britecore_sdk/settings/settings.toml`
+   - PowerShell: `Get-Content src/britecore_sdk/settings/settings.toml`
 3. **Python Version:** `python --version` (should be 3.11+)
-4. **Package Installation:** `pip show britecore-libraries`
+4. **Package Installation:** `pip show britecore_sdk`
 5. **Test Suite:** `python -m pytest tests/unit/test_maps.py -v`
 
 ### Get Help

@@ -162,9 +162,18 @@ pip install britecore_sdk[dev]         # Development (tests, linting, type check
 
 Copy the sample files from `src/britecore_sdk/settings/sample/` to `src/britecore_sdk/settings/` and fill in your real values:
 
+**Linux/macOS (bash):**
+
 ```bash
 cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
 cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.secrets.toml
+```
+
+**Windows (PowerShell):**
+
+```powershell
+Copy-Item src\britecore_sdk\settings\sample\settings.toml src\britecore_sdk\settings\settings.toml
+Copy-Item src\britecore_sdk\settings\sample\.secrets.toml src\britecore_sdk\settings\.secrets.toml
 ```
 
 Then edit both files — `settings.toml` holds public runtime defaults and `.secrets.toml` (gitignored) holds your secrets:
@@ -264,8 +273,8 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CO
 
 Validate configured sites before first API calls:
 
-```bash
-# As an installed command (after pip install):
+```sh
+# As an installed command (after pip install) — works in bash and PowerShell:
 britecore-check-config
 
 # Or via python -m:
@@ -274,7 +283,7 @@ python -m britecore_sdk.utils.check_site_configs
 
 Run an end-user readiness check (config + auth + safe API ping):
 
-```bash
+```sh
 # As an installed command:
 britecore-healthcheck --site production
 
