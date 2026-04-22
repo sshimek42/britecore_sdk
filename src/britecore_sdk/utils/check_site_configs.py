@@ -7,6 +7,7 @@ Usage:
 Outputs a table of sites showing status, auth mode, URL, and any missing keys.
 """
 
+from britecore_sdk.utils import _config_common as _common
 from britecore_sdk.utils._config_common import (
     CONFIG_PATH,
     SETTINGS_PATH,
@@ -15,6 +16,11 @@ from britecore_sdk.utils._config_common import (
     validate_site,
     warn_if_secrets_in_settings,
 )
+
+# Backward-compatibility exports used by tests and external monkeypatching.
+os = _common.os
+toml = _common.toml
+check_site = validate_site
 
 
 def main() -> None:
@@ -27,7 +33,7 @@ def main() -> None:
     print(f"{'Site':<20} {'Status':<11} {'Auth':<9} {'URL':<45} Missing Keys")
     print("-" * 100)
     for site, config in site_sections.items():
-        ok, missing = validate_site(site, config)
+        ok, missing = check_site(site, config)
         status = "OK" if ok else "INCORRECT"
         auth = get_auth_mode(config)
         url = config.get("base_url", "")

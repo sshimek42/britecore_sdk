@@ -63,16 +63,16 @@ def save_secrets(path: str, config: dict, backup: bool = True) -> None:
         backup_path = f"{path}.backup.{timestamp}"
         try:
             shutil.copy2(path, backup_path)
-            logger.info(f"Backup created: {backup_path}")
+            logger.info("Backup created: %s", backup_path)
         except OSError as e:
-            logger.warning(f"Could not create backup: {e}")
+            logger.warning("Could not create backup: %s", e)
 
     try:
         with open(path, "w") as f:
             toml.dump(config, f)
-        logger.info(f"Configuration saved to {path}")
+        logger.info("Configuration saved to %s", path)
     except OSError as e:
-        logger.error(f"Failed to save configuration: {e}")
+        logger.error("Failed to save configuration: %s", e)
         raise
 
 
@@ -86,7 +86,7 @@ def load_settings(path: str) -> dict:
         Parsed TOML dictionary.
     """
     if not os.path.exists(path):
-        logger.warning(f"Settings file not found: {path}; using empty defaults")
+        logger.warning("Settings file not found: %s; using empty defaults", path)
         return {}
     return toml.load(path)
 
@@ -107,16 +107,16 @@ def save_settings(path: str, config: dict, backup: bool = True) -> None:
         backup_path = f"{path}.backup.{timestamp}"
         try:
             shutil.copy2(path, backup_path)
-            logger.info(f"Backup created: {backup_path}")
+            logger.info("Backup created: %s", backup_path)
         except OSError as e:
-            logger.warning(f"Could not create backup: {e}")
+            logger.warning("Could not create backup: %s", e)
 
     try:
         with open(path, "w") as f:
             toml.dump(config, f)
-        logger.info(f"Settings saved to {path}")
+        logger.info("Settings saved to %s", path)
     except OSError as e:
-        logger.error(f"Failed to save settings: {e}")
+        logger.error("Failed to save settings: %s", e)
         raise
 
 
@@ -140,7 +140,7 @@ def get_auth_mode(config: dict) -> str:
     return "-"
 
 
-def validate_site(site_name: str, config: dict) -> tuple[bool, list[str]]:
+def validate_site(_site_name: str, config: dict) -> tuple[bool, list[str]]:
     """Validate one site section and return status with missing required keys.
 
     Args:

@@ -16,6 +16,9 @@ exclude_patterns = [
   "README.md",
   "TROUBLESHOOTING.md",
   "ARCHITECTURE.md",
+  # Template/sample config files can contain placeholder credential-like values.
+  "src/britecore_sdk/settings/*.example",
+  "src/britecore_sdk/settings/sample/**",
 ]
 
 test_patterns = [
@@ -34,16 +37,6 @@ enabled = true
 [[analyzers]]
 name = "secrets"
 enabled = true
-
-  [analyzers.meta]
-  # Narrow-scoped ignores: example/template files only — never applied to source code.
-  # These files contain placeholder values (e.g. "your-client-id-here") that the
-  # secrets analyzer flags as false positives.
-  exclude_patterns = [
-    "examples/**",
-    "src/britecore_sdk/settings/*.example",
-    "src/britecore_sdk/settings/sample/**",
-  ]
 
 [[analyzers]]
 name = "test-coverage"
