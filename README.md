@@ -109,6 +109,15 @@ See [examples/basic_api_usage.py](examples/basic_api_usage.py) for more detailed
 
 The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 
+If you need to verify selected auth mode during initialization, enable SDK debug logging before client init. The client emits `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth` at debug level.
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+```
+
 ---
 
 ## Features

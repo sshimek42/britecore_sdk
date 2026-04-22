@@ -127,6 +127,17 @@ Required keys in `.secrets.toml` for each site:
 - `base_url` — API endpoint URL (always required)
 - Either `api_key` (for API key auth) or both `client_id` + `client_secret` (for OAuth)
 
+To see which auth mode was selected at init time, enable debug logs before calling `get_api_client()` or `init_api_client()`.
+
+```python
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+```
+
+When debug logging is enabled, init emits either `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth`.
+
 ## Smoke checks
 
 ```powershell

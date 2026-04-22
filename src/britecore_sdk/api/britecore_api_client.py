@@ -218,7 +218,7 @@ class BritecoreAPIClient:
         )
 
         if self.use_api_key:
-            LOGGER.info("client_id and/or client_secret not found. Using api_key.")
+            LOGGER.debug("Auth mode selected during init_client: api_key")
             try:
                 self.api_key = self.site_settings.api_key
             except AttributeError as attribute_error:
@@ -234,6 +234,7 @@ class BritecoreAPIClient:
                 self.site_settings.client_secret,
                 self.site_settings.base_url,
             )
+            LOGGER.debug("Auth mode selected during init_client: oauth")
         return self
 
     # ------------------------------------------------------------------
