@@ -90,7 +90,9 @@ class ConfigManager:
             if mask_secrets:
                 # Add masked credential info
                 if auth_mode == "OAuth":
-                    site_info["client_id"] = mask_secret(str(config.get("client_id", "")))
+                    site_info["client_id"] = mask_secret(
+                        str(config.get("client_id", ""))
+                    )
                     site_info["client_secret"] = mask_secret(
                         str(config.get("client_secret", ""))
                     )
