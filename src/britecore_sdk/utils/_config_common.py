@@ -5,6 +5,7 @@ This module provides common constants and functions used by both
 check_site_configs.py (diagnostic) and config_manager.py (CRUD operations).
 """
 
+import logging
 import os
 import shutil
 import sys
@@ -13,7 +14,7 @@ from pathlib import Path
 
 import toml  # type: ignore[import-untyped]
 
-from britecore_sdk import logger
+logger = logging.getLogger("britecore_sdk")
 
 REQUIRED_KEYS = ["base_url"]
 OAUTH_KEYS = ["client_id", "client_secret"]
