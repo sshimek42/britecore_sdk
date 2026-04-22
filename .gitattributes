@@ -1,0 +1,32 @@
+# Normalize line endings to LF on commit for all text files
+* text=auto eol=lf
+
+# Explicitly declare common source file types
+*.py    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+*.toml  text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.json  text eol=lf
+*.cfg   text eol=lf
+*.ini   text eol=lf
+*.rst   text eol=lf
+*.html  text eol=lf
+*.css   text eol=lf
+*.js    text eol=lf
+*.sh    text eol=lf
+
+# Binary files — never convert
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.pdf   binary
+*.zip   binary
+*.gz    binary

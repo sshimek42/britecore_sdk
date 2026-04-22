@@ -4,7 +4,10 @@ import time
 import uuid
 from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
-from typing import Any, NotRequired, TypedDict  # added typing
+from typing import TYPE_CHECKING, Any, NotRequired, Self, TypedDict  # added typing
+
+if TYPE_CHECKING:
+    import types
 
 import urllib3
 from urllib3.exceptions import (
@@ -136,7 +139,7 @@ class BritecoreAPIClient:
         self.site_settings: Any = None
         self.target_site = target_site
 
-    def init_client(self) -> None:
+    def init_client(self) -> Self:
         """
         Initializes the Britecore API client with configuration settings and HTTP components.
 
@@ -144,6 +147,11 @@ class BritecoreAPIClient:
         HTTP timeouts and retries, and initializing authentication components. It ensures
         that all necessary configuration parameters are present and valid before proceeding
         with client initialization.
+
+        Returns:
+            Self: The initialized client instance, allowing fluent one-liner construction::
+
+                client = BritecoreAPIClient("my_site").init_client()
 
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
@@ -217,6 +225,41 @@ class BritecoreAPIClient:
                 self.site_settings.client_secret,
                 self.site_settings.base_url,
             )
+        return self
+
+    # ------------------------------------------------------------------
+    # Context-manager support
+    # ------------------------------------------------------------------
+
+    def __enter__(self) -> Self:
+        """Support ``with BritecoreAPIClient(...) as client:`` usage."""
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: "types.TracebackType | None",
+    ) -> None:
+        """Close the underlying urllib3 PoolManager on context-manager exit."""
+        if self.http is not None:
+            self.http.clear()
+            self.http = None
+
+    # ------------------------------------------------------------------
+    # Developer-friendly repr
+    # ------------------------------------------------------------------
+
+    def __repr__(self) -> str:
+        auth_mode = "api_key" if self.use_api_key else "oauth"
+        initialized = self.http is not None
+        return (
+            f"BritecoreAPIClient("
+            f"site={self.target_site!r}, "
+            f"base_url={self.base_url!r}, "
+            f"auth={auth_mode!r}, "
+            f"initialized={initialized})"
+        )
 
     @staticmethod
     def _extract_error_message(raw_message: Any) -> str:
@@ -440,6 +483,7 @@ class BritecoreAPIClient:
         cache_bypass: bool = False,
         cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
         dedupe_in_flight: bool = True,
+        dry_run: bool = False,
     ) -> urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
@@ -451,10 +495,12 @@ class BritecoreAPIClient:
             request_retries (Optional[Retry]): The retry configuration for the request.
             request_headers (Optional[dict[str, Any]]): Custom headers to include in the request.
             method (Optional[str]): The HTTP method to use for the request, defaults to "POST".
+            dry_run (bool): If ``True``, log the full request details and return ``None``
+                without sending the request. Useful for debugging endpoint wrappers.
 
         Returns:
             Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]: The response from the
-            HTTP request, or None if no response is received.
+            HTTP request, or None if no response is received or ``dry_run`` is True.
 
         Raises:
             BritecoreError.RequestTimeoutError: If the request exceeds the configured timeout.
@@ -487,6 +533,19 @@ class BritecoreAPIClient:
             method,
             path,
         )
+        # Attach correlation ID to outbound headers so it appears in server logs
+        request_headers["X-SDK-Request-ID"] = request_id
+
+        if dry_run:
+            LOGGER.info(
+                "[%s] DRY-RUN %s %s  body=%s  headers=%s",
+                request_id,
+                method,
+                request_url,
+                dumps(dict(json or {})),
+                request_headers,
+            )
+            return None
         # ------------------------------------------------------------------------
 
         try:
@@ -644,3 +703,4 @@ class RequestParameters(TypedDict):
     cache_bypass: NotRequired[bool]
     cache_invalidate_on_success: NotRequired[list[str] | tuple[str, ...]]
     dedupe_in_flight: NotRequired[bool]
+    dry_run: NotRequired[bool]

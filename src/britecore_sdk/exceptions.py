@@ -197,3 +197,53 @@ class BritecoreError:
             if self.endpoint:
                 parts.append(f"Endpoint: {self.endpoint}")
             return "\n".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# Flat aliases — importable directly from britecore_sdk.exceptions
+# so consumer code can write:
+#   from britecore_sdk.exceptions import NotFoundError
+# instead of:
+#   except BritecoreError.NotFoundError
+# ---------------------------------------------------------------------------
+BritecoreBaseError = BritecoreError.Base
+NoDataReturned = BritecoreError.NoDataReturned
+NoTokenReturned = BritecoreError.NoTokenReturned
+AuthenticationError = BritecoreError.AuthenticationError
+RateLimitError = BritecoreError.RateLimitError
+ServerError = BritecoreError.ServerError
+ValidationError = BritecoreError.ValidationError
+NotFoundError = BritecoreError.NotFoundError
+ConflictError = BritecoreError.ConflictError
+ConfigurationError = BritecoreError.ConfigurationError
+RequestTimeoutError = BritecoreError.RequestTimeoutError
+BritecoreKeyError = BritecoreError.BritecoreKeyError
+NoSiteError = BritecoreError.NoSiteError
+MissingParameter = BritecoreError.MissingParameter
+ConflictingParameters = BritecoreError.ConflictingParameters
+InvalidPhoneNumber = BritecoreError.InvalidPhoneNumber
+InvalidEmailAddress = BritecoreError.InvalidEmailAddress
+InvalidAddress = BritecoreError.InvalidAddress
+
+__all__ = [
+    "BritecoreError",
+    # Flat aliases
+    "BritecoreBaseError",
+    "NoDataReturned",
+    "NoTokenReturned",
+    "AuthenticationError",
+    "RateLimitError",
+    "ServerError",
+    "ValidationError",
+    "NotFoundError",
+    "ConflictError",
+    "ConfigurationError",
+    "RequestTimeoutError",
+    "BritecoreKeyError",
+    "NoSiteError",
+    "MissingParameter",
+    "ConflictingParameters",
+    "InvalidPhoneNumber",
+    "InvalidEmailAddress",
+    "InvalidAddress",
+]

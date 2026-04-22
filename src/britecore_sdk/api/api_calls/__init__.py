@@ -74,6 +74,27 @@ def init_async_api_client(
     return client
 
 
+def reset_api_client() -> None:
+    """Reset the module-level API client to ``None``.
+
+    Useful for test isolation and multi-site workflows where a fresh client
+    should be initialized for a different target site.  After calling this,
+    the next call to :func:`get_api_client` (or any endpoint wrapper) will
+    raise :class:`~britecore_sdk.exceptions.BritecoreError.ConfigurationError`
+    until :func:`init_api_client` is called again.
+
+    Example::
+
+        from britecore_sdk.api.api_calls import init_api_client, reset_api_client
+
+        client_a = init_api_client("site_a")
+        reset_api_client()
+        client_b = init_api_client("site_b")
+    """
+    _set_module_client_state("_api_client", None)
+    _set_module_client_state("_async_api_client", None)
+
+
 # Lazy initialization: _api_client is only created on first access to avoid
 # import-time failures in contexts without config/env setup.
 _api_client: BritecoreAPIClient | None = None
@@ -169,6 +190,7 @@ __all__ = [
     "get_async_api_client",
     "init_api_client",
     "init_async_api_client",
+    "reset_api_client",
     "BritecoreAPIClient",
     "AsyncBritecoreAPIClient",
     "web_timeout_long",
