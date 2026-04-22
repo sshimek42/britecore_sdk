@@ -18,6 +18,7 @@ from urllib3.util import Retry, Timeout, Url
 from britecore_sdk.api.britecore_oauth_token_manager import OAuthToken
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import settings
+from britecore_sdk.settings.defaults import DEFAULTS, calculate_long_timeout
 
 LOGGER: Logger = getLogger("britecore_sdk")
 
@@ -76,7 +77,6 @@ class LoadClientSettings:
                 web_retry=settings.get("web_retry"),
                 web_timeout=settings.get("web_timeout"),
                 web_timeout_long=settings.get("web_timeout_long"),
-                web_browser=settings.get("web_browser", default=""),
             )
 
 
@@ -174,15 +174,17 @@ class BritecoreAPIClient:
 
         self.web_timeout = self.site_settings.web_timeout
         if not self.web_timeout:
-            self.web_timeout = self.site_settings.web_timeout = 5
+            self.web_timeout = self.site_settings.web_timeout = DEFAULTS["web_timeout"]
 
         self.web_timeout_long = self.site_settings.web_timeout_long
         if not self.web_timeout_long:
-            self.web_timeout_long = self.site_settings.web_timeout * 10
+            self.web_timeout_long = self.site_settings.web_timeout_long = (
+                calculate_long_timeout(self.web_timeout)
+            )
 
         self.web_retry = self.site_settings.web_retry
         if not self.web_retry:
-            self.web_retry = 5
+            self.web_retry = DEFAULTS["web_retry"]
 
         timeout: Timeout = Timeout(self.web_timeout)
         retries: Retry = Retry(

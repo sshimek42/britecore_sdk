@@ -58,24 +58,23 @@ async def aretrieve_policy(
     policy_number: str | None = None,
     policy_id: str | None = None,
     revision_state: str | None = None,
-    revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve top-level policy information asynchronously.
 
-    The request accepts ``revision_id``, ``policy_id``, or ``policy_number`` with
-    optional ``revision_state`` and follows the same identifier-priority rules as
-    the synchronous wrapper. Returns the async ``aprocess_result(...)`` payload,
-    enables cached reads by default, and accepts ``RequestParameters`` plus cache overrides.
+    The request accepts ``policy_id`` or ``policy_number`` with optional
+    ``revision_state`` and follows the same identifier-priority rules as the
+    synchronous wrapper. Returns the async ``aprocess_result(...)`` payload,
+    enables cached reads by default, and accepts ``RequestParameters`` plus
+    cache overrides.
     """
     LOGGER.debug("Retrieving policy")
     client = await API_CLIENT.aget_client()
     verification_list: list[dict[str, str | None]] = [
         {"policy_number": policy_number},
         {"policy_id": policy_id},
-        {"revision_id": revision_id},
     ]
-    priority_list: list[str] = ["revision_id", "policy_id", "policy_number"]
+    priority_list: list[str] = ["policy_id", "policy_number"]
     policy_request_json = client.multiple_parameter_verification(
         verification_list, priority_list
     )
@@ -84,7 +83,6 @@ async def aretrieve_policy(
 
     request_kwargs = await _ensure_long_timeout(dict(kwargs))
     cache_parts = [
-        f"revision_id:{revision_id}" if revision_id else "",
         f"policy_id:{policy_id}" if policy_id else "",
         f"policy_number:{policy_number}" if policy_number else "",
         f"revision_state:{revision_state}" if revision_state else "",

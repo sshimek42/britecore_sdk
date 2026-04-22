@@ -1,0 +1,51 @@
+# BriteCore SDK Settings Example
+#
+# This file demonstrates all available configuration settings.
+# Settings defined here are NOT sensitive and CAN be committed to version control.
+#
+# For sensitive credentials (base_url, api_key, client_id, client_secret),
+# use .secrets.toml instead (see .secrets.toml.example).
+
+[default]
+# === HTTP Configuration ===
+
+# Standard HTTP request timeout in seconds.
+# Hard-coded default: 5 seconds
+# Set lower for faster fail-fast behavior, higher for slower networks.
+web_timeout = 30
+
+# Long timeout for long-running operations.
+# Hard-coded default: 50 seconds (calculated as 10x web_timeout if omitted)
+# Automatically calculated from web_timeout if not specified.
+web_timeout_long = 60
+
+# Number of retries for failed HTTP requests.
+# Hard-coded default: 5 retries
+# Retries apply to 500, 502, 503, 504 errors with exponential backoff.
+web_retry = 10
+
+# === Site Selection ===
+
+# Active site name when no explicit target is provided.
+# Can be overridden by the target_site environment variable.
+target_site = 'production'
+
+# === Per-site Configuration ===
+
+# You can also define site-specific settings by creating [site_name] sections.
+# These will override [default] values when that site is active.
+
+[production]
+# Override timeout for production (more conservative)
+web_timeout = 30
+web_timeout_long = 300
+
+[development]
+# Override timeout for development (more aggressive/faster fail)
+web_timeout = 5
+web_timeout_long = 50
+
+[staging]
+web_timeout = 15
+web_timeout_long = 150
+
