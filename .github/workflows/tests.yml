@@ -5,9 +5,12 @@ on:
     branches: [ master, main, develop ]
   pull_request:
     branches: [ master, main, develop ]
+  schedule:
+    - cron: '0 6 * * 1'
 
 jobs:
   test:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -96,3 +99,32 @@ jobs:
         key: python
         coverage-file: coverage.deepsource.xml
         dsn: ${{ secrets.DEEPSOURCE_DSN }}
+
+  weekly-randomized:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13', '3.14']
+
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Run randomized tests with pytest
+      run: |
+        pytest tests/ -v --randomly-seed=${{ github.run_id }}
+
