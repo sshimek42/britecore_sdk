@@ -589,7 +589,8 @@ class BritecoreAPIClient:
         if request_retries is None:
             request_retries = self.web_retry
 
-        effective_dry_run = self.default_dry_run if dry_run is None else dry_run
+        client_default_dry_run = bool(getattr(self, "default_dry_run", False))
+        effective_dry_run = client_default_dry_run if dry_run is None else dry_run
 
         resolved_request_headers: dict[str, Any] = dict(request_headers or {})
         auth_mode = "api_key" if self.use_api_key else "oauth"
