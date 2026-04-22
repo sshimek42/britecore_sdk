@@ -4,6 +4,14 @@ This page is the generated symbol-level API reference. For narrative usage
 guidance, examples, and broader endpoint notes, see the repository-level
 `API.md` guide.
 
+## Notable v1.1 additions
+
+- `BritecoreAPIClient` — context manager (`__enter__`/`__exit__`), `__repr__`, `init_client()` returns `Self`
+- `do_request(..., dry_run=True)` — logs request without sending
+- `reset_api_client()` — clears module-level client (test isolation)
+- `HealthcheckResult.__bool__` — truthiness from `.ok`
+- Flat exception aliases in `britecore_sdk.exceptions` and top-level package
+
 ## Package exports
 
 ```{automodule} britecore_sdk
@@ -27,6 +35,22 @@ guidance, examples, and broader endpoint notes, see the repository-level
 ```
 
 ```{automodule} britecore_sdk.api.request_cache
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
+## Exceptions
+
+```{automodule} britecore_sdk.exceptions
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
+## Utilities
+
+```{automodule} britecore_sdk.utils.healthcheck
 :members:
 :undoc-members:
 :show-inheritance:

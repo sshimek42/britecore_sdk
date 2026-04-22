@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: April 8, 2026*
+*Last updated: April 22, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -131,15 +131,23 @@ Required keys in `.secrets.toml` for each site:
 
 ```powershell
 python -c "import britecore_sdk; print(britecore_sdk.__version__)"
-python -c "from britecore_sdk.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
+# Fluent one-liner init (new in v1.1)
+python -c "from britecore_sdk.api.api_calls import init_api_client; print(repr(init_api_client('your_site')))"
 ```
 
 ```bash
 python -c "import britecore_sdk; print(britecore_sdk.__version__)"
-python -c "from britecore_sdk.api.api_calls import init_api_client; print(type(init_api_client('your_site')).__name__)"
+python -c "from britecore_sdk.api.api_calls import init_api_client; print(repr(init_api_client('your_site')))"
 ```
 
-Readiness checks:
+Readiness checks — via installed CLI commands (after `pip install`):
+
+```bash
+britecore-check-config
+britecore-healthcheck --site your_site
+```
+
+Or via `python -m`:
 
 ```powershell
 python -m britecore_sdk.utils.check_site_configs
@@ -162,6 +170,32 @@ client = get_api_client()
 
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
+```
+
+### Alternative: fluent one-liner + context manager (new in v1.1)
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.api.api_calls.v2 import policies
+
+with BritecoreAPIClient("your_site").init_client() as client:
+    result = policies.retrieve_policy(policy_number="POL001")
+    print(result)
+# urllib3 PoolManager closed automatically on exit
+```
+
+### Flat exception imports (new in v1.1)
+
+```python
+from britecore_sdk import NotFoundError, AuthenticationError, RateLimitError
+from britecore_sdk.api.api_calls.v2 import policies
+
+try:
+    result = policies.retrieve_policy(policy_number="POL001")
+except NotFoundError as e:
+    print(f"Policy not found: {e}")
+except AuthenticationError as e:
+    print(f"Auth error: {e}")
 ```
 
 ## Async cached wrappers
@@ -205,6 +239,9 @@ python -m pytest tests/integration -m integration -v
 ## API Client Initialization Notes
 
 - The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
+- `init_client()` now returns `Self`, so `BritecoreAPIClient("site").init_client()` is a valid one-liner.
+- Use the context manager (`with BritecoreAPIClient("site").init_client() as client:`) to ensure the connection pool is closed on exit.
+- Call `reset_api_client()` to clear the module-level client (useful in tests or multi-site scripts).
 - API client initialization failures usually indicate missing `target_site` or site config.
 - Endpoint wrappers expect response normalization through `process_result(...)`; prefer using provided `v2` modules.
 - If policy name mapping behaves unexpectedly, verify `system` is set for regex map selection.

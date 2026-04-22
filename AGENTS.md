@@ -85,5 +85,12 @@ logging.basicConfig(level=logging.INFO)  # Global config
 ## Gotchas that affect agent changes
 
 - API client initialization is now lazy: `api_client` is a proxy that initializes on first use, avoiding failures in contexts without config/env. Call `get_api_client()` for explicit control.
+- `init_client()` returns `Self` — one-liner `client = BritecoreAPIClient("site").init_client()` is valid and preferred in examples.
+- `BritecoreAPIClient` supports the context-manager protocol (`__enter__`/`__exit__`); prefer `with` blocks in examples that need clean teardown.
+- `reset_api_client()` (from `api.api_calls`) clears the module-level client; use it in tests for site isolation instead of monkeypatching globals.
+- `do_request(...)` accepts `dry_run=True` (part of `RequestParameters`) — logs request details without sending. Document this in any debugging section.
+- Flat exception aliases are exported from `britecore_sdk.exceptions` and the top-level package (`NotFoundError`, `AuthenticationError`, etc.). Prefer these in new example code; the nested `BritecoreError.X` form still works.
+- Every outbound request carries an `X-SDK-Request-ID` header (short hex correlation ID). The same ID appears in `[req_id] → METHOD /path` debug log lines.
 - `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; some v1 wrappers with no v2 equivalent may parse raw payloads directly.
 - Keep public exports updated via `__all__` in package `__init__.py` files when adding new top-level functionality.
+- CLI entry points (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are registered in `pyproject.toml [project.scripts]`; re-run `pip install -e .` after adding new ones.

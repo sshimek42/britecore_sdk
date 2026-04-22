@@ -121,6 +121,10 @@ The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, a
 ✅ **Models** — Domain classes for Contact, Policy, and Quote payloads
 ✅ **Config-first** — Dynaconf-based environment and secrets management
 ✅ **Production-ready** — Stable API, comprehensive tests, security-focused
+✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
+✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
+✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
+✅ **Debug dry-run** — `do_request(..., dry_run=True)` logs without sending
 
 ---
 
@@ -261,20 +265,20 @@ See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CO
 Validate configured sites before first API calls:
 
 ```bash
-python -m britecore_sdk.utils.check_site_configs
-```
+# As an installed command (after pip install):
+britecore-check-config
 
-```powershell
+# Or via python -m:
 python -m britecore_sdk.utils.check_site_configs
 ```
 
 Run an end-user readiness check (config + auth + safe API ping):
 
 ```bash
-python -m britecore_sdk.utils.healthcheck --site production
-```
+# As an installed command:
+britecore-healthcheck --site production
 
-```powershell
+# Or via python -m:
 python -m britecore_sdk.utils.healthcheck --site production
 ```
 
@@ -364,10 +368,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ## Architecture
 
 - **`BritecoreAPIClient`** — Core HTTP transport and response processing
+- **Context manager** — `with client:` pattern closes the connection pool on exit
+- **Fluent init** — `client = BritecoreAPIClient("site").init_client()` (one-liner)
 - **Endpoint modules** — Build request JSON → call `do_request()` → return `process_result()`
 - **Auth modes** — Automatic: API key (when `client_id`/`client_secret` blank) or OAuth2 (when both provided)
 - **Config** — Dynaconf-based in `src/britecore_sdk/settings/` with environment variable overrides
 - **Lazy initialization** — API client initializes on first use to avoid import-time failures (see "About API Client Initialization" above)
+- **Flat exceptions** — Import `NotFoundError`, `AuthenticationError` etc. directly from `britecore_sdk`
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
 

@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-*Last updated: April 8, 2026*
+*Last updated: April 22, 2026*
 *Document type: Living troubleshooting guide*
 
 **BriteCore Libraries** - Common issues and solutions
@@ -144,7 +144,11 @@ $env:BRITECORE_SDK_CLIENT_SECRET="..."
 
 Validate site sections and key combinations quickly:
 
-```powershell
+```bash
+# Installed CLI (v1.1+):
+britecore-check-config
+
+# Or via python -m:
 python -m britecore_sdk.utils.check_site_configs
 ```
 
@@ -258,6 +262,20 @@ try:
     ...
 except BritecoreError.Base as exc:
     print(f"SDK failure: {exc}")
+```
+
+Or using the flat aliases introduced in v1.1 (shorter imports):
+
+```python
+from britecore_sdk import NotFoundError, AuthenticationError, ConfigurationError
+from britecore_sdk.exceptions import RateLimitError  # full set available here
+
+try:
+    ...
+except NotFoundError as exc:
+    print(f"Not found: {exc}")
+except AuthenticationError as exc:
+    print(f"Auth error: {exc}")
 ```
 
 ---
@@ -496,13 +514,43 @@ except ssl.SSLError as e:
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
-# Now all debug messages will print
+# Now all debug messages will print, including [req_id] → METHOD /path traces
 from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 policy = policies.retrieve_policy(policy_number="POL001")
-# Check console for debug output
+# Check console for debug output including X-SDK-Request-ID correlation IDs
+```
+
+---
+
+### Inspect a request without sending it (dry-run, v1.1+)
+
+```python
+import logging
+logging.basicConfig(level=logging.INFO)
+
+from britecore_sdk.api.api_calls.v2 import policies
+
+# Logs full URL, headers, and body; no network call made
+policies.retrieve_policy(policy_number="POL001", dry_run=True)
+```
+
+---
+
+### Reset the API client between tests or sites (v1.1+)
+
+```python
+from britecore_sdk.api.api_calls import init_api_client, reset_api_client
+
+init_api_client("site_a")
+# ... use site_a ...
+
+reset_api_client()  # clears both sync and async module-level clients
+
+init_api_client("site_b")
+# ... use site_b ...
 ```
 
 ---
@@ -556,3 +604,6 @@ Some features in britecore_sdk rely on map files (such as policy, field, or agen
 ## Troubleshooting Summary
 
 - **API client initialization failures** usually indicate missing `target_site` or site config. The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
+- **To swap sites or isolate tests,** call `reset_api_client()` before calling `init_api_client("new_site")`.
+- **To debug without sending a real request,** pass `dry_run=True` to any endpoint wrapper call.
+- **CLI commands** (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are available after `pip install`; fall back to `python -m britecore_sdk.utils.<module>` otherwise.
