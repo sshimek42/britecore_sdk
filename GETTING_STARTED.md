@@ -62,6 +62,45 @@ python -m pip install -e ".[dev]"
 
 ## Configuration
 
+### Step 1: Copy Example Configuration Files
+
+Example files are provided to show you the correct format:
+
+```powershell
+Copy-Item src\britecore_sdk\settings\.secrets.toml.example src\britecore_sdk\settings\.secrets.toml
+Copy-Item src\britecore_sdk\settings\settings.toml.example src\britecore_sdk\settings\settings.toml
+```
+
+```bash
+cp src/britecore_sdk/settings/.secrets.toml.example src/britecore_sdk/settings/.secrets.toml
+cp src/britecore_sdk/settings/settings.toml.example src/britecore_sdk/settings/settings.toml
+```
+
+### Step 2: Edit `.secrets.toml` with Your Credentials
+
+Replace placeholder values with your actual BriteCore API credentials:
+
+```toml
+[production]
+base_url = "https://api.britecore.example.com"
+client_id = "your-actual-client-id"
+client_secret = "your-actual-client-secret"
+```
+
+### Step 3: Customize `settings.toml` (Optional)
+
+Override default timeouts and select your target site:
+
+```toml
+[default]
+web_timeout = 10
+target_site = 'production'
+```
+
+See [CONFIG_MANAGEMENT.md](CONFIG_MANAGEMENT.md) for complete setup instructions.
+
+### Step 4: Set Environment Variables (Optional)
+
 Set environment variables for the current shell session:
 
 ```powershell
@@ -74,20 +113,19 @@ export target_site="your_site"
 export system="your_system"
 ```
 
-Configure site values in:
+**Note:** `target_site` can also be set in `settings.toml` — environment variable takes precedence if both are set.
 
-- `src/britecore_sdk/settings/settings.toml` — default runtime settings
-- `src/britecore_sdk/settings/.secrets.toml` — credentials (`base_url`, `client_id`, `client_secret`, `api_key`)
+### Authentication Behavior
 
-Required keys in `.secrets.toml`:
+The SDK automatically selects authentication mode based on configured credentials:
 
-- `base_url`
+- **API Key Auth:** Use when `client_id` and `client_secret` are blank/missing
+- **OAuth Auth:** Use when both `client_id` AND `client_secret` are provided
+
+Required keys in `.secrets.toml` for each site:
+
+- `base_url` — API endpoint URL (always required)
 - Either `api_key` (for API key auth) or both `client_id` + `client_secret` (for OAuth)
-
-Authentication behavior is automatic:
-
-- API key auth when `client_id` and `client_secret` are blank
-- OAuth auth when both are provided
 
 ## Smoke checks
 

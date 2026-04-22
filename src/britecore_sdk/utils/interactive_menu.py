@@ -218,3 +218,14 @@ def policy_menu(**kwargs: Unpack[RequestParameters]) -> Any:
         ),
         None,
     )
+
+
+def config_menu() -> None:
+    """Interactive menu for site configuration management.
+
+    Delegates to ConfigManager's interactive menu for adding, updating,
+    deleting, and viewing site configurations.
+    """
+    from britecore_sdk.utils.config_manager import interactive_config_menu
+
+    interactive_config_menu()

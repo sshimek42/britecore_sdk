@@ -142,7 +142,10 @@ class TestAsyncPoliciesEndpoints:
             result = asyncio.run(aretrieve_policy(policy_id="policy_123"))
 
         assert result["id"] == "policy_123"
-        mock_sync_client.multiple_parameter_verification.assert_called_once()
+        mock_sync_client.multiple_parameter_verification.assert_called_once_with(
+            [{"policy_number": None}, {"policy_id": "policy_123"}],
+            ["policy_id", "policy_number"],
+        )
         call = mock_client.ado_request.await_args
         assert call.kwargs["path"] == "/api/v2/policies/retrieve_policy"
         assert call.kwargs["cache_enabled"] is True

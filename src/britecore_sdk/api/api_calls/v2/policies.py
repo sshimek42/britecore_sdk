@@ -5,7 +5,7 @@ endorsements, cancellations, reinstatements, renewals, line items,
 and revision management.
 
 Key functions:
-    retrieve_policy         -- Fetch a policy by number, ID, or revision ID.
+    retrieve_policy         -- Fetch a policy by number or ID.
     retrieve_policy_ids     -- Convenience wrapper returning (revision_id, property_id).
     add_line_item           -- Add a coverage line item to a revision.
     cancel_policy           -- Initiate a policy cancellation.
@@ -38,13 +38,13 @@ def retrieve_policy(
     revision_state: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve policy information by revision, policy ID, or policy number.
+    """Retrieve policy information by policy ID or policy number.
 
     This wrapper calls ``/api/v2/policies/retrieve_policy`` with identifier
-    priority of ``revision_id``, then ``policy_id``, then ``policy_number``.
-    It optionally includes ``revision_state`` and returns the normalized
-    ``process_result(...)`` payload. ``**kwargs`` accepts ``RequestParameters``
-    overrides and a long timeout is applied when not provided.
+    priority of ``policy_id`` then ``policy_number``. It optionally includes
+    ``revision_state`` and returns the normalized ``process_result(...)``
+    payload. ``**kwargs`` accepts ``RequestParameters`` overrides and a long
+    timeout is applied when not provided.
     """
     LOGGER.debug("Retrieving policy")
 
