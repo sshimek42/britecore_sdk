@@ -278,7 +278,7 @@ Client-level default dry-run is also supported:
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
-init_api_client(default_dry_run=True)
+init_api_client(client_dry_run=True)
 
 # Inherits dry-run from the initialized client.
 preview = policies.retrieve_policy(policy_number="POL001")
@@ -297,7 +297,7 @@ Notes:
 - Sensitive request-body fields are always redacted in dry-run output (for example `api_key`,
   token/secret/password-like keys), even if header sensitivity overrides are enabled.
 - For OAuth clients, dry-run skips token acquisition unless you explicitly pass headers.
-- Async wrappers support the same behavior via `init_async_api_client(default_dry_run=True)` or
+- Async wrappers support the same behavior via `init_async_api_client(client_dry_run=True)` or
   per-call `dry_run=True`; async dry-run also bypasses cache and in-flight dedupe.
 
 ---

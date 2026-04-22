@@ -25,11 +25,11 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
      (`AuthenticationError`, `ConfigurationError`, `NotFoundError`,
      `RateLimitError`, `RequestTimeoutError`, `ServerError`, `ValidationError`).
   6. Dry-run improvements — per-call `dry_run=True` and client-level
-     `init_api_client(default_dry_run=True)` / `init_client(default_dry_run=True)`
+     `init_api_client(client_dry_run=True)` / `init_client(client_dry_run=True)`
      now return a synthetic successful payload without sending, include redacted
      request headers by default, and skip OAuth token acquisition unless caller
      headers are explicitly supplied.
-     Async parity is now included via `init_async_api_client(default_dry_run=True)`
+     Async parity is now included via `init_async_api_client(client_dry_run=True)`
      and async wrapper/request support, with async dry-run bypassing cache reads,
      cache writes, and in-flight dedupe.
   7. `X-SDK-Request-ID` header — every outbound request carries a short

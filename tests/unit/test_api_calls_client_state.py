@@ -27,15 +27,15 @@ class TestApiCallsClientState:
         assert returned is fake_client
         assert module._api_client is fake_client
         fake_ctor.assert_called_once_with("test-site")
-        fake_client.init_client.assert_called_once_with(default_dry_run=False)
+        fake_client.init_client.assert_called_once_with(client_dry_run=False)
 
         # Access through lazy proxy must reuse seeded global client.
         assert module.api_client.token == "ready"
         fake_ctor.assert_called_once()
 
     @pytest.mark.unit
-    def test_init_api_client_forwards_default_dry_run(self, monkeypatch):
-        """init_api_client(default_dry_run=True) forwards the client default."""
+    def test_init_api_client_forwards_client_dry_run(self, monkeypatch):
+        """init_api_client(client_dry_run=True) forwards the client dry-run default."""
         module = importlib.reload(api_calls_module)
         monkeypatch.delenv("target_site", raising=False)
 
@@ -43,10 +43,10 @@ class TestApiCallsClientState:
         fake_ctor = MagicMock(return_value=fake_client)
         monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
 
-        module.init_api_client("test-site", default_dry_run=True)
+        module.init_api_client("test-site", client_dry_run=True)
 
         fake_ctor.assert_called_once_with("test-site")
-        fake_client.init_client.assert_called_once_with(default_dry_run=True)
+        fake_client.init_client.assert_called_once_with(client_dry_run=True)
 
     @pytest.mark.unit
     def test_init_async_api_client_sets_global_for_lazy_proxy(self, monkeypatch):
@@ -63,15 +63,15 @@ class TestApiCallsClientState:
 
         assert returned is fake_async_client
         assert module._async_api_client is fake_async_client
-        fake_ctor.assert_called_once_with("test-site", default_dry_run=False)
+        fake_ctor.assert_called_once_with("test-site", client_dry_run=False)
 
         # Access through lazy proxy must reuse seeded global async client.
         assert module.async_api_client.token == "async-ready"
         fake_ctor.assert_called_once()
 
     @pytest.mark.unit
-    def test_init_async_api_client_forwards_default_dry_run(self, monkeypatch):
-        """init_async_api_client(default_dry_run=True) forwards async dry-run defaults."""
+    def test_init_async_api_client_forwards_client_dry_run(self, monkeypatch):
+        """init_async_api_client(client_dry_run=True) forwards async dry-run defaults."""
         module = importlib.reload(api_calls_module)
         monkeypatch.delenv("target_site", raising=False)
 
@@ -79,9 +79,9 @@ class TestApiCallsClientState:
         fake_ctor = MagicMock(return_value=fake_async_client)
         monkeypatch.setattr(module, "AsyncBritecoreAPIClient", fake_ctor)
 
-        module.init_async_api_client("test-site", default_dry_run=True)
+        module.init_async_api_client("test-site", client_dry_run=True)
 
-        fake_ctor.assert_called_once_with("test-site", default_dry_run=True)
+        fake_ctor.assert_called_once_with("test-site", client_dry_run=True)
 
     @pytest.mark.unit
     def test_init_api_client_requires_explicit_target_site(self, monkeypatch):

@@ -439,13 +439,13 @@ class TestDoRequestExceptionMapping:
         assert response.headers.get("X-SDK-Request-ID")
 
     @pytest.mark.unit
-    def test_default_dry_run_is_inherited_when_request_omits_flag(
+    def test_client_dry_run_is_inherited_when_request_omits_flag(
         self, env_api_key, mock_settings
     ):
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         client = self._initialized_client(mock_settings)
-        client.default_dry_run = True
+        client.client_dry_run = True
 
         with patch.object(client.http, "request") as mock_req:
             response = client.do_request(
@@ -457,9 +457,9 @@ class TestDoRequestExceptionMapping:
         assert data["dry_run"] is True
 
     @pytest.mark.unit
-    def test_explicit_false_overrides_default_dry_run(self, env_api_key, mock_settings):
+    def test_explicit_false_overrides_client_dry_run(self, env_api_key, mock_settings):
         client = self._initialized_client(mock_settings)
-        client.default_dry_run = True
+        client.client_dry_run = True
         mock_resp = _make_response()
 
         with patch.object(client.http, "request", return_value=mock_resp) as mock_req:
@@ -513,7 +513,7 @@ class TestDoRequestExceptionMapping:
         assert data["headers"]["Authorization"] == "***redacted***"
 
     @pytest.mark.unit
-    def test_do_request_handles_missing_default_dry_run_attr(self):
+    def test_do_request_handles_missing_client_dry_run_attr(self):
         """Regression: __new__-constructed clients should default dry-run state safely."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 

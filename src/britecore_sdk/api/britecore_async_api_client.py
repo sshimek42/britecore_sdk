@@ -21,17 +21,17 @@ class AsyncBritecoreAPIClient:
         client: BritecoreAPIClient | None = None,
         cache: RequestCache | None = None,
         default_cache_ttl_seconds: int = 60,
-        default_dry_run: bool | None = None,
+        client_dry_run: bool | None = None,
     ) -> None:
         """Create an async client facade with optional injected sync client/cache."""
         self.target_site = target_site or getattr(client, "target_site", None)
         self._client = client
         self._cache = cache or RequestCache()
         self._default_cache_ttl_seconds = default_cache_ttl_seconds
-        self._default_dry_run = (
-            getattr(client, "default_dry_run", False)
-            if default_dry_run is None
-            else default_dry_run
+        self._client_dry_run = (
+            getattr(client, "client_dry_run", False)
+            if client_dry_run is None
+            else client_dry_run
         )
         self._client_init_lock = asyncio.Lock()
         self._inflight_lock = asyncio.Lock()
@@ -51,10 +51,10 @@ class AsyncBritecoreAPIClient:
                 client = BritecoreAPIClient(target_site)
                 await asyncio.to_thread(
                     client.init_client,
-                    default_dry_run=self._default_dry_run,
+                    client_dry_run=self._client_dry_run,
                 )
                 self._client = client
-            self._default_dry_run = getattr(self._client, "default_dry_run", False)
+            self._client_dry_run = getattr(self._client, "client_dry_run", False)
 
         return self._client
 
@@ -242,7 +242,7 @@ class AsyncBritecoreAPIClient:
         """Execute a request asynchronously with optional response caching."""
         client = await self.aget_client()
         normalized_method = (method or "POST").upper()
-        effective_dry_run = client.default_dry_run if dry_run is None else dry_run
+        effective_dry_run = client.client_dry_run if dry_run is None else dry_run
         should_build_key = (cache_enabled or dedupe_in_flight) and not effective_dry_run
         cache_key = ""
 

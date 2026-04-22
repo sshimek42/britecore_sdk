@@ -185,7 +185,7 @@ data = API_CLIENT.process_result(response)
   bearer token header for OAuth mode
 - `X-SDK-Request-ID` header automatically attached to every outbound request
   for server-side correlation tracing
-- client-level dry-run default available via `init_client(default_dry_run=True)`;
+- client-level dry-run default available via `init_client(client_dry_run=True)`;
   OAuth dry-run skips token acquisition unless headers are explicitly supplied
 
 ### Context Manager (v1.1+)

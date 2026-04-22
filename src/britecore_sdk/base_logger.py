@@ -19,7 +19,7 @@ def get_logger(
 
     Args:
         name: The logger name (typically __package__ or module name)
-        level: Console output log level (default: "INFO")
+        level: Initial logger level (default: "INFO")
         log_to_file: Whether to enable file logging (default: True)
         log_file_level: File output log level (default: "INFO")
 
@@ -28,13 +28,17 @@ def get_logger(
     """
     logger = logging.getLogger(name)
 
+    # Keep SDK logs from being emitted again by root handlers configured by applications.
+    logger.propagate = False
+
     # Only configure if not already configured (prevent duplicate handlers)
     if not logger.handlers:
         logger.setLevel(getattr(logging, level))
 
         # Console handler
         console_handler = logging.StreamHandler()
-        console_handler.setLevel(getattr(logging, level))
+        # Let logger level control console verbosity (INFO by default; DEBUG when caller sets it).
+        console_handler.setLevel(logging.NOTSET)
         console_formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
         )
