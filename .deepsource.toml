@@ -35,6 +35,16 @@ enabled = true
 name = "secrets"
 enabled = true
 
+  [analyzers.meta]
+  # Narrow-scoped ignores: example/template files only — never applied to source code.
+  # These files contain placeholder values (e.g. "your-client-id-here") that the
+  # secrets analyzer flags as false positives.
+  exclude_patterns = [
+    "examples/**",
+    "src/britecore_sdk/settings/*.example",
+    "src/britecore_sdk/settings/sample/**",
+  ]
+
 [[analyzers]]
 name = "test-coverage"
 enabled = true

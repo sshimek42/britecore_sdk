@@ -115,5 +115,3 @@ The CI pipeline validates the following matrix:
 
 - Original development target. All type annotations validated.
 - `annotationlib` changes do not affect runtime behaviour of this library.
-
----

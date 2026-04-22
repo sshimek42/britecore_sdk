@@ -52,5 +52,11 @@ autodoc_mock_imports = [
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+# Suppress warnings for relative .md links that point to files intentionally
+# outside the Sphinx source tree (e.g. tests/README.md, GETTING_STARTED.md,
+# TROUBLESHOOTING.md).  These are valid links for GitHub/local viewing but are
+# not part of the built docs.
+suppress_warnings = ["myst.xref_missing"]
+
 html_theme = "alabaster"
 html_static_path = []
