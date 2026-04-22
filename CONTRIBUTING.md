@@ -21,7 +21,7 @@ Related docs:
 
 ## Development setup
 
-```powershell
+```bash
 python -m pip install -e ".[dev]"
 ```
 
@@ -29,13 +29,13 @@ python -m pip install -e ".[dev]"
 
 Install Git hooks once per clone:
 
-```powershell
+```bash
 pre-commit install
 ```
 
 Run hooks manually across the repo:
 
-```powershell
+```bash
 pre-commit run --all-files
 ```
 
@@ -48,6 +48,16 @@ Notes:
 
 Optional virtual environment:
 
+**Linux/macOS (bash):**
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+```
+
+**Windows (PowerShell):**
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -56,33 +66,23 @@ python -m pip install -e ".[dev]"
 
 Set local environment variables:
 
+**Linux/macOS (bash):**
+
+```bash
+export target_site="your_site"
+export system="your_system"
+```
+
+**Windows (PowerShell):**
+
 ```powershell
 $env:target_site = "your_site"
 $env:system = "your_system"
 ```
 
-### Bash equivalents
-
-```bash
-python -m pip install -e ".[dev]"
-pre-commit install
-pre-commit run --all-files
-
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[dev]"
-
-export target_site="your_site"
-export system="your_system"
-
-git checkout -b feature/short-description
-
-python -m pytest tests/ -v
-```
-
 ## Branch and commit workflow
 
-```powershell
+```bash
 git checkout -b feature/short-description
 ```
 
@@ -94,7 +94,7 @@ git checkout -b feature/short-description
 
 Minimum validation command set for API-client or exception changes:
 
-```powershell
+```bash
 python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 python -m pytest tests/unit/test_api_client.py -v
 python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client import BritecoreAPIClient; print(britecore_sdk.__version__)"
@@ -102,13 +102,13 @@ python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client imp
 
 Run targeted tests first:
 
-```powershell
+```bash
 python -m pytest tests/unit/test_api_client.py -v
 ```
 
 Run standard suites before opening a PR:
 
-```powershell
+```bash
 python -m pytest tests/ -v
 python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v
