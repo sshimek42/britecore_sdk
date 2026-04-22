@@ -90,12 +90,12 @@ class ConfigManager:
             if mask_secrets:
                 # Add masked credential info
                 if auth_mode == "OAuth":
-                    site_info["client_id"] = mask_secret(config.get("client_id", ""))
+                    site_info["client_id"] = mask_secret(str(config.get("client_id", "")))
                     site_info["client_secret"] = mask_secret(
-                        config.get("client_secret", "")
+                        str(config.get("client_secret", ""))
                     )
                 elif auth_mode == "API Key":
-                    site_info["api_key"] = mask_secret(config.get(API_KEY, ""))
+                    site_info["api_key"] = mask_secret(str(config.get(API_KEY, "")))
 
             sites.append(site_info)
 
@@ -160,7 +160,7 @@ class ConfigManager:
         self.config[site_name] = config
         try:
             save_secrets(self.config_path, self.config, backup=True)
-            logger.info(f"Site '{site_name}' added successfully")
+            logger.info("Site '%s' added successfully", site_name)
             return True, f"Site '{site_name}' added successfully"
         except OSError as e:
             # Revert on save failure
@@ -197,7 +197,7 @@ class ConfigManager:
         self.config[site_name] = updated_config
         try:
             save_secrets(self.config_path, self.config, backup=True)
-            logger.info(f"Site '{site_name}' updated successfully")
+            logger.info("Site '%s' updated successfully", site_name)
             return True, f"Site '{site_name}' updated successfully"
         except OSError as e:
             # Revert on save failure
@@ -219,7 +219,7 @@ class ConfigManager:
         del self.config[site_name]
         try:
             save_secrets(self.config_path, self.config, backup=True)
-            logger.info(f"Site '{site_name}' deleted successfully")
+            logger.info("Site '%s' deleted successfully", site_name)
             return True, f"Site '{site_name}' deleted successfully"
         except OSError as e:
             # Revert on save failure
@@ -251,7 +251,8 @@ class ConfigManager:
         """
         return dict(self.settings)
 
-    def get_available_defaults(self) -> dict:
+    @staticmethod
+    def get_available_defaults() -> dict:
         """Get all available configuration defaults.
 
         These defaults are applied when a setting is not provided in settings.toml.
@@ -307,7 +308,7 @@ class ConfigManager:
 
         try:
             save_settings(self.settings_path, self.settings, backup=True)
-            logger.info(f"Setting '{section}.{key}' = {repr(value)} saved successfully")
+            logger.info("Setting '%s.%s' = %r saved successfully", section, key, value)
             return True, f"Setting '{section}.{key}' added/updated successfully"
         except OSError as e:
             # Revert on save failure
@@ -343,7 +344,7 @@ class ConfigManager:
 
         try:
             save_settings(self.settings_path, self.settings, backup=True)
-            logger.info(f"Setting '{section}.{key}' updated successfully")
+            logger.info("Setting '%s.%s' updated successfully", section, key)
             return True, f"Setting '{section}.{key}' updated successfully"
         except OSError as e:
             # Revert on save failure
@@ -377,7 +378,7 @@ class ConfigManager:
 
         try:
             save_settings(self.settings_path, self.settings, backup=True)
-            logger.info(f"Setting '{section}.{key}' deleted successfully")
+            logger.info("Setting '%s.%s' deleted successfully", section, key)
             return True, f"Setting '{section}.{key}' deleted successfully"
         except OSError as e:
             # Revert on save failure
@@ -523,7 +524,7 @@ def _add_site_interactive(manager: ConfigManager) -> None:
         if not client_id or not client_secret:
             print("Client ID and Secret cannot be empty.")
             return
-        success, msg = manager.add_site(
+        _, msg = manager.add_site(
             site_name,
             base_url,
             "oauth",
@@ -535,7 +536,7 @@ def _add_site_interactive(manager: ConfigManager) -> None:
         if not api_key:
             print("API Key cannot be empty.")
             return
-        success, msg = manager.add_site(site_name, base_url, "api_key", api_key=api_key)
+        _, msg = manager.add_site(site_name, base_url, "api_key", api_key=api_key)
     else:
         print("Invalid auth type.")
         return
@@ -590,7 +591,7 @@ def _update_site_interactive(manager: ConfigManager) -> None:
         return
 
     if updates:
-        success, msg = manager.update_site(site_name, **updates)
+        _, msg = manager.update_site(site_name, **updates)
         print(msg)
     else:
         print("No updates provided.")
@@ -610,7 +611,7 @@ def _delete_site_interactive(manager: ConfigManager) -> None:
         print("Deletion cancelled.")
         return
 
-    success, msg = manager.delete_site(site_name)
+    _, msg = manager.delete_site(site_name)
     print(msg)
 
 
@@ -622,7 +623,7 @@ def _export_backup_interactive(manager: ConfigManager) -> None:
         print("Backup path cannot be empty.")
         return
 
-    success, msg = manager.export_backup(backup_path)
+    _, msg = manager.export_backup(backup_path)
     print(msg)
 
 
@@ -701,7 +702,7 @@ def _add_update_setting_interactive(manager: ConfigManager) -> None:
     except Exception:
         value = value_str
 
-    success, msg = manager.add_setting(section, key, value)
+    _, msg = manager.add_setting(section, key, value)
     print(msg)
 
 
@@ -723,7 +724,7 @@ def _delete_setting_interactive(manager: ConfigManager) -> None:
         print("Deletion cancelled.")
         return
 
-    success, msg = manager.delete_setting(section, key)
+    _, msg = manager.delete_setting(section, key)
     print(msg)
 
 

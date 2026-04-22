@@ -116,6 +116,91 @@ class AsyncBritecoreAPIClient:
         """Return True when the HTTP response is cacheable as a success."""
         return response is not None and getattr(response, "status", None) == 200
 
+    async def _request_with_optional_dedupe(
+        self,
+        *,
+        path: str,
+        json: dict[str, Any] | None,
+        request_timeout: Timeout | None,
+        request_retries: Retry | None,
+        request_headers: dict[str, Any] | None,
+        method: str,
+        dedupe_in_flight: bool,
+        cache_bypass: bool,
+        cache_enabled: bool,
+        cache_key: str,
+    ) -> BaseHTTPResponse | None:
+        """Execute request directly or via in-flight dedupe task map."""
+        if not (dedupe_in_flight and not cache_bypass and cache_key):
+            return await self._perform_request(
+                path=path,
+                json=json,
+                request_timeout=request_timeout,
+                request_retries=request_retries,
+                request_headers=request_headers,
+                method=method,
+            )
+
+        created_task = False
+        inflight_task: asyncio.Task[Any] | None = None
+
+        async with self._inflight_lock:
+            if cache_enabled:
+                cached_response = self._cache.get(cache_key)
+                if cached_response is not None:
+                    return cached_response
+
+            inflight_task = self._inflight_requests.get(cache_key)
+            if inflight_task is None:
+                new_task = asyncio.create_task(
+                    self._perform_request(
+                        path=path,
+                        json=json,
+                        request_timeout=request_timeout,
+                        request_retries=request_retries,
+                        request_headers=request_headers,
+                        method=method,
+                    )
+                )
+                self._inflight_requests[cache_key] = new_task
+                inflight_task = new_task
+                created_task = True
+
+        try:
+            return await inflight_task
+        finally:
+            if created_task:
+                async with self._inflight_lock:
+                    if self._inflight_requests.get(cache_key) is inflight_task:
+                        del self._inflight_requests[cache_key]
+
+    def _cache_response_on_success(
+        self,
+        *,
+        response: BaseHTTPResponse | None,
+        cache_enabled: bool,
+        cache_bypass: bool,
+        cache_key: str,
+        cache_ttl_seconds: int | None,
+        cache_namespace: str | None,
+        cache_invalidate_on_success: list[str] | tuple[str, ...] | None,
+    ) -> None:
+        """Apply invalidation and optional write-through cache on success responses."""
+        if not self._is_success_response(response):
+            return
+
+        if cache_invalidate_on_success:
+            self._cache.invalidate_namespaces(cache_invalidate_on_success)
+
+        if cache_enabled and not cache_bypass and cache_key:
+            ttl_seconds = cache_ttl_seconds or self._default_cache_ttl_seconds
+            self._cache.set(
+                cache_key,
+                response,
+                ttl_seconds=ttl_seconds,
+                namespace=cache_namespace or "",
+            )
+
     async def ado_request(
         self,
         path: str,
@@ -151,61 +236,27 @@ class AsyncBritecoreAPIClient:
             cached_response = self._cache.get(cache_key)
             if cached_response is not None:
                 return cached_response
+        response = await self._request_with_optional_dedupe(
+            path=path,
+            json=json,
+            request_timeout=request_timeout,
+            request_retries=request_retries,
+            request_headers=request_headers,
+            method=normalized_method,
+            dedupe_in_flight=dedupe_in_flight,
+            cache_bypass=cache_bypass,
+            cache_enabled=cache_enabled,
+            cache_key=cache_key,
+        )
 
-        response: BaseHTTPResponse | None
-        created_task = False
-        inflight_task: asyncio.Task[Any] | None = None
-
-        if dedupe_in_flight and not cache_bypass and cache_key:
-            async with self._inflight_lock:
-                if cache_enabled:
-                    cached_response = self._cache.get(cache_key)
-                    if cached_response is not None:
-                        return cached_response
-
-                inflight_task = self._inflight_requests.get(cache_key)
-                if inflight_task is None:
-                    inflight_task = asyncio.create_task(
-                        self._perform_request(
-                            path=path,
-                            json=json,
-                            request_timeout=request_timeout,
-                            request_retries=request_retries,
-                            request_headers=request_headers,
-                            method=normalized_method,
-                        )
-                    )
-                    self._inflight_requests[cache_key] = inflight_task
-                    created_task = True
-
-            try:
-                response = await inflight_task
-            finally:
-                if created_task:
-                    async with self._inflight_lock:
-                        if self._inflight_requests.get(cache_key) is inflight_task:
-                            del self._inflight_requests[cache_key]
-        else:
-            response = await self._perform_request(
-                path=path,
-                json=json,
-                request_timeout=request_timeout,
-                request_retries=request_retries,
-                request_headers=request_headers,
-                method=normalized_method,
-            )
-
-        if self._is_success_response(response):
-            if cache_invalidate_on_success:
-                self._cache.invalidate_namespaces(cache_invalidate_on_success)
-
-            if cache_enabled and not cache_bypass and cache_key:
-                ttl_seconds = cache_ttl_seconds or self._default_cache_ttl_seconds
-                self._cache.set(
-                    cache_key,
-                    response,
-                    ttl_seconds=ttl_seconds,
-                    namespace=cache_namespace or "",
-                )
+        self._cache_response_on_success(
+            response=response,
+            cache_enabled=cache_enabled,
+            cache_bypass=cache_bypass,
+            cache_key=cache_key,
+            cache_ttl_seconds=cache_ttl_seconds,
+            cache_namespace=cache_namespace,
+            cache_invalidate_on_success=cache_invalidate_on_success,
+        )
 
         return response
