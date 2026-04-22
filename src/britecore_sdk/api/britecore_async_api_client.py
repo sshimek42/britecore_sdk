@@ -21,12 +21,18 @@ class AsyncBritecoreAPIClient:
         client: BritecoreAPIClient | None = None,
         cache: RequestCache | None = None,
         default_cache_ttl_seconds: int = 60,
+        default_dry_run: bool | None = None,
     ) -> None:
         """Create an async client facade with optional injected sync client/cache."""
         self.target_site = target_site or getattr(client, "target_site", None)
         self._client = client
         self._cache = cache or RequestCache()
         self._default_cache_ttl_seconds = default_cache_ttl_seconds
+        self._default_dry_run = (
+            getattr(client, "default_dry_run", False)
+            if default_dry_run is None
+            else default_dry_run
+        )
         self._client_init_lock = asyncio.Lock()
         self._inflight_lock = asyncio.Lock()
         self._inflight_requests: dict[str, asyncio.Task[Any]] = {}
@@ -43,8 +49,12 @@ class AsyncBritecoreAPIClient:
                     self.target_site if self.target_site is not None else ""
                 )
                 client = BritecoreAPIClient(target_site)
-                await asyncio.to_thread(client.init_client)
+                await asyncio.to_thread(
+                    client.init_client,
+                    default_dry_run=self._default_dry_run,
+                )
                 self._client = client
+            self._default_dry_run = getattr(self._client, "default_dry_run", False)
 
         return self._client
 
@@ -74,17 +84,21 @@ class AsyncBritecoreAPIClient:
         request_retries: Retry | None,
         request_headers: dict[str, Any] | None,
         method: str,
+        dry_run: bool | None,
+        dry_run_include_sensitive_headers: bool,
     ) -> BaseHTTPResponse | None:
         """Execute the sync request in a worker thread."""
         client = await self.aget_client()
         return await asyncio.to_thread(
             client.do_request,
-            path,
-            json,
-            request_timeout,
-            request_retries,
-            request_headers,
-            method,
+            path=path,
+            json=json,
+            request_timeout=request_timeout,
+            request_retries=request_retries,
+            request_headers=request_headers,
+            method=method,
+            dry_run=dry_run,
+            dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
         )
 
     def _build_request_cache_key(
@@ -125,6 +139,8 @@ class AsyncBritecoreAPIClient:
         request_retries: Retry | None,
         request_headers: dict[str, Any] | None,
         method: str,
+        dry_run: bool | None,
+        dry_run_include_sensitive_headers: bool,
         dedupe_in_flight: bool,
         cache_bypass: bool,
         cache_enabled: bool,
@@ -139,6 +155,8 @@ class AsyncBritecoreAPIClient:
                 request_retries=request_retries,
                 request_headers=request_headers,
                 method=method,
+                dry_run=dry_run,
+                dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
             )
 
         created_task = False
@@ -160,6 +178,8 @@ class AsyncBritecoreAPIClient:
                         request_retries=request_retries,
                         request_headers=request_headers,
                         method=method,
+                        dry_run=dry_run,
+                        dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
                     )
                 )
                 self._inflight_requests[cache_key] = new_task
@@ -216,10 +236,14 @@ class AsyncBritecoreAPIClient:
         cache_bypass: bool = False,
         cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
         dedupe_in_flight: bool = True,
+        dry_run: bool | None = None,
+        dry_run_include_sensitive_headers: bool = False,
     ) -> BaseHTTPResponse | None:
         """Execute a request asynchronously with optional response caching."""
+        client = await self.aget_client()
         normalized_method = (method or "POST").upper()
-        should_build_key = cache_enabled or dedupe_in_flight
+        effective_dry_run = client.default_dry_run if dry_run is None else dry_run
+        should_build_key = (cache_enabled or dedupe_in_flight) and not effective_dry_run
         cache_key = ""
 
         if should_build_key:
@@ -243,16 +267,18 @@ class AsyncBritecoreAPIClient:
             request_retries=request_retries,
             request_headers=request_headers,
             method=normalized_method,
-            dedupe_in_flight=dedupe_in_flight,
-            cache_bypass=cache_bypass,
-            cache_enabled=cache_enabled,
+            dry_run=effective_dry_run,
+            dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
+            dedupe_in_flight=dedupe_in_flight and not effective_dry_run,
+            cache_bypass=cache_bypass or effective_dry_run,
+            cache_enabled=cache_enabled and not effective_dry_run,
             cache_key=cache_key,
         )
 
         self._cache_response_on_success(
             response=response,
-            cache_enabled=cache_enabled,
-            cache_bypass=cache_bypass,
+            cache_enabled=cache_enabled and not effective_dry_run,
+            cache_bypass=cache_bypass or effective_dry_run,
             cache_key=cache_key,
             cache_ttl_seconds=cache_ttl_seconds,
             cache_namespace=cache_namespace,

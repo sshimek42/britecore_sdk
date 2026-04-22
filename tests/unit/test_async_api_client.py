@@ -82,6 +82,8 @@ class TestRequestCacheHelpers:
             "cache_bypass",
             "cache_invalidate_on_success",
             "dedupe_in_flight",
+            "dry_run",
+            "dry_run_include_sensitive_headers",
         ):
             assert field_name in annotations
 
@@ -152,7 +154,22 @@ class TestAsyncBritecoreAPIClient:
 
         assert isinstance(client, BritecoreAPIClient)
         assert client.target_site == "test_site"
-        mock_init.assert_called_once_with(client)
+        mock_init.assert_called_once_with(client, default_dry_run=False)
+
+    @pytest.mark.unit
+    def test_aget_client_forwards_default_dry_run_to_sync_client(self):
+        """aget_client should seed the sync client with the async dry-run default."""
+        with patch.object(
+            BritecoreAPIClient, "init_client", autospec=True
+        ) as mock_init:
+            adapter = AsyncBritecoreAPIClient(
+                target_site="test_site",
+                default_dry_run=True,
+            )
+            client = asyncio.run(adapter.aget_client())
+
+        assert isinstance(client, BritecoreAPIClient)
+        mock_init.assert_called_once_with(client, default_dry_run=True)
 
     @pytest.mark.unit
     def test_ado_request_returns_cached_response_on_second_call(self):
@@ -183,6 +200,70 @@ class TestAsyncBritecoreAPIClient:
         assert first is response
         assert second is response
         mock_request.assert_called_once()
+
+    @pytest.mark.unit
+    def test_ado_request_inherits_client_default_dry_run_and_bypasses_cache(self):
+        """Default async dry-run should skip cache reads/writes and return synthetic payloads."""
+        client = BritecoreAPIClient("test_site")
+        client.default_dry_run = True
+        client.base_url = "https://example.com"
+        client.use_api_key = True
+
+        class DummySettings:
+            api_key = "test-key"
+
+        client.site_settings = DummySettings()
+        adapter = AsyncBritecoreAPIClient(client=client)
+
+        with patch.object(
+            client, "do_request", wraps=client.do_request
+        ) as mock_request:
+            first = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/retrieve",
+                    json={"policy_id": "123"},
+                    cache_enabled=True,
+                    cache_namespace="policies",
+                )
+            )
+            second = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/retrieve",
+                    json={"policy_id": "123"},
+                    cache_enabled=True,
+                    cache_namespace="policies",
+                )
+            )
+
+        assert mock_request.call_count == 2
+        first_payload = client.process_result(first)
+        second_payload = client.process_result(second)
+        assert first_payload["dry_run"] is True
+        assert second_payload["dry_run"] is True
+        assert first_payload["request_id"] != second_payload["request_id"]
+
+    @pytest.mark.unit
+    def test_ado_request_explicit_false_overrides_default_dry_run(self):
+        """Per-call dry_run=False should disable inherited async dry-run."""
+        response = _make_response()
+        client = BritecoreAPIClient("test_site")
+        client.default_dry_run = True
+        adapter = AsyncBritecoreAPIClient(client=client)
+
+        with patch.object(
+            BritecoreAPIClient, "do_request", return_value=response
+        ) as mock_request:
+            result = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/retrieve",
+                    json={"policy_id": "123"},
+                    dry_run=False,
+                )
+            )
+
+        assert result is response
+        mock_request.assert_called_once()
+        assert mock_request.call_args.kwargs["dry_run"] is False
 
     @pytest.mark.unit
     def test_ado_request_cache_bypass_skips_read_and_write(self):
@@ -307,6 +388,30 @@ class TestAsyncBritecoreAPIClient:
 
         assert call_count == 1
         assert results == [response] * 5
+
+    @pytest.mark.unit
+    def test_async_oauth_dry_run_skips_token_acquisition(self, mock_settings_oauth):
+        """Async dry-run should inherit sync OAuth auth-skip behavior."""
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader.return_value.load_config.return_value = mock_settings_oauth
+            adapter = AsyncBritecoreAPIClient(
+                target_site="test_site", default_dry_run=True
+            )
+            client = asyncio.run(adapter.aget_client())
+
+        token_manager = client.token_class
+        assert token_manager is not None
+
+        with patch.object(token_manager, "get_authorization_headers") as mock_auth:
+            response = asyncio.run(adapter.ado_request("/api/v2/test"))
+
+        mock_auth.assert_not_called()
+        payload = client.process_result(response)
+        assert payload["dry_run"] is True
+        assert payload["auth_mode"] == "oauth"
+        assert payload["auth_skipped"] is True
 
     @pytest.mark.unit
     def test_aprocess_result_uses_sync_result_processing(self, mock_http_response):

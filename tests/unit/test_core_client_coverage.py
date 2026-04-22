@@ -236,6 +236,19 @@ class TestDoRequestExceptionMapping:
             client.init_client()
         return client
 
+    def _initialized_oauth_client(self, mock_settings_oauth):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings_oauth
+            mock_loader.return_value = mock_loader_instance
+            client = BritecoreAPIClient("test_site")
+            client.init_client()
+        return client
+
     @pytest.mark.unit
     def test_timeout_error_raises_request_timeout_error(
         self, env_api_key, mock_settings
@@ -347,6 +360,157 @@ class TestDoRequestExceptionMapping:
             client.do_request("/api/v2/test", method="GET")
         _, kwargs = mock_req.call_args
         assert kwargs.get("method") == "GET"
+
+    @pytest.mark.unit
+    def test_dry_run_returns_synthetic_success_response(
+        self, env_api_key, mock_settings
+    ):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = self._initialized_client(mock_settings)
+
+        with patch.object(client.http, "request") as mock_req:
+            response = client.do_request(
+                "/api/v2/test",
+                json={"policy_number": "POL123"},
+                request_headers={"Authorization": "Bearer secret-token"},
+                dry_run=True,
+            )
+
+        mock_req.assert_not_called()
+        data = BritecoreAPIClient.process_result(response)
+        assert data["dry_run"] is True
+        assert data["path"] == "/api/v2/test"
+        assert data["method"] == "POST"
+        assert data["body"]["policy_number"] == "POL123"
+        assert data["body"]["api_key"] == "***redacted***"
+        assert data["headers"]["X-SDK-Request-ID"] == data["request_id"]
+        assert data["headers"].get("Authorization") == "***redacted***"
+
+    @pytest.mark.unit
+    def test_dry_run_redacts_nested_sensitive_body_fields(
+        self, env_api_key, mock_settings
+    ):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = self._initialized_client(mock_settings)
+        response = client.do_request(
+            "/api/v2/test",
+            json={
+                "policy_number": "POL123",
+                "credentials": {
+                    "token": "secret-token",
+                    "nested": [{"api_key": "secret-key"}],
+                },
+            },
+            dry_run=True,
+        )
+
+        data = BritecoreAPIClient.process_result(response)
+        assert data["body"]["credentials"]["token"] == "***redacted***"
+        assert data["body"]["credentials"]["nested"][0]["api_key"] == "***redacted***"
+
+    @pytest.mark.unit
+    def test_dry_run_can_include_sensitive_headers_when_opted_in(
+        self, env_api_key, mock_settings
+    ):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = self._initialized_client(mock_settings)
+
+        response = client.do_request(
+            "/api/v2/test",
+            json={"policy_number": "POL123"},
+            request_headers={"Authorization": "Bearer test-token"},
+            dry_run=True,
+            dry_run_include_sensitive_headers=True,
+        )
+        data = BritecoreAPIClient.process_result(response)
+        assert data["headers"].get("Authorization") == "Bearer test-token"
+        assert data["body"]["api_key"] == "***redacted***"
+
+    @pytest.mark.unit
+    def test_dry_run_includes_request_id_header(self, env_api_key, mock_settings):
+        client = self._initialized_client(mock_settings)
+
+        response = client.do_request("/api/v2/test", dry_run=True)
+        assert response is not None
+        assert response.headers.get("X-SDK-Dry-Run") == "true"
+        assert response.headers.get("X-SDK-Request-ID")
+
+    @pytest.mark.unit
+    def test_default_dry_run_is_inherited_when_request_omits_flag(
+        self, env_api_key, mock_settings
+    ):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = self._initialized_client(mock_settings)
+        client.default_dry_run = True
+
+        with patch.object(client.http, "request") as mock_req:
+            response = client.do_request(
+                "/api/v2/test", json={"policy_number": "POL123"}
+            )
+
+        mock_req.assert_not_called()
+        data = BritecoreAPIClient.process_result(response)
+        assert data["dry_run"] is True
+
+    @pytest.mark.unit
+    def test_explicit_false_overrides_default_dry_run(self, env_api_key, mock_settings):
+        client = self._initialized_client(mock_settings)
+        client.default_dry_run = True
+        mock_resp = _make_response()
+
+        with patch.object(client.http, "request", return_value=mock_resp) as mock_req:
+            response = client.do_request("/api/v2/test", dry_run=False)
+
+        mock_req.assert_called_once()
+        assert response is mock_resp
+
+    @pytest.mark.unit
+    def test_oauth_dry_run_skips_token_acquisition_when_no_headers_provided(
+        self, env_oauth, mock_settings_oauth
+    ):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = self._initialized_oauth_client(mock_settings_oauth)
+        token_manager = client.token_class
+        assert token_manager is not None
+
+        with patch.object(token_manager, "get_authorization_headers") as mock_auth:
+            response = client.do_request("/api/v2/test", dry_run=True)
+
+        mock_auth.assert_not_called()
+        data = BritecoreAPIClient.process_result(response)
+        assert data["auth_mode"] == "oauth"
+        assert data["auth_skipped"] is True
+        assert data["authorization_header_source"] == "skipped-for-dry-run"
+        assert "Authorization" not in data["headers"]
+
+    @pytest.mark.unit
+    def test_oauth_dry_run_keeps_caller_supplied_authorization_header(
+        self, env_oauth, mock_settings_oauth
+    ):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = self._initialized_oauth_client(mock_settings_oauth)
+        token_manager = client.token_class
+        assert token_manager is not None
+
+        with patch.object(token_manager, "get_authorization_headers") as mock_auth:
+            response = client.do_request(
+                "/api/v2/test",
+                request_headers={"Authorization": "Bearer caller-token"},
+                dry_run=True,
+            )
+
+        mock_auth.assert_not_called()
+        data = BritecoreAPIClient.process_result(response)
+        assert data["auth_mode"] == "oauth"
+        assert data["auth_skipped"] is False
+        assert data["authorization_header_source"] == "caller-provided"
+        assert data["headers"]["Authorization"] == "***redacted***"
 
 
 # ---------------------------------------------------------------------------

@@ -137,9 +137,10 @@ class BritecoreAPIClient:
         self.bad_url_error: str | None = None
         self.enable_timers: bool | None = None
         self.site_settings: Any = None
+        self.default_dry_run: bool = False
         self.target_site = target_site
 
-    def init_client(self) -> Self:
+    def init_client(self, *, default_dry_run: bool = False) -> Self:
         """
         Initializes the Britecore API client with configuration settings and HTTP components.
 
@@ -153,6 +154,11 @@ class BritecoreAPIClient:
 
                 client = BritecoreAPIClient("my_site").init_client()
 
+        Args:
+            default_dry_run: When ``True``, requests inherit dry-run behavior unless a
+                specific call passes ``dry_run=False``. This is useful for testing SDK
+                wrapper flow and payload shaping without sending requests.
+
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
             BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
@@ -164,6 +170,7 @@ class BritecoreAPIClient:
                 "target_site must be specified explicitly; environment fallback is not allowed."
             )
         self.site_settings = LoadClientSettings(target_site).load_config()
+        self.default_dry_run = default_dry_run
 
         self.enable_timers = True
         self.bad_url_error = "Invalid URL"
@@ -183,11 +190,13 @@ class BritecoreAPIClient:
         self.web_timeout = self.site_settings.web_timeout
         if not self.web_timeout:
             self.web_timeout = self.site_settings.web_timeout = DEFAULTS["web_timeout"]
+        web_timeout = self.web_timeout
+        assert web_timeout is not None
 
         self.web_timeout_long = self.site_settings.web_timeout_long
         if not self.web_timeout_long:
             self.web_timeout_long = self.site_settings.web_timeout_long = (
-                calculate_long_timeout(self.web_timeout)
+                calculate_long_timeout(web_timeout)
             )
 
         self.web_retry = self.site_settings.web_retry
@@ -288,6 +297,71 @@ class BritecoreAPIClient:
     def _with_hint(message: str, hint: str) -> str:
         """Append a short, actionable hint to an error message."""
         return f"{message}\nHint: {hint}"
+
+    @staticmethod
+    def _sanitize_dry_run_headers(
+        headers: dict[str, Any], include_sensitive: bool = False
+    ) -> dict[str, Any]:
+        """Return dry-run-safe headers, redacting sensitive values by default."""
+        if include_sensitive:
+            return dict(headers)
+
+        redacted_headers: dict[str, Any] = {}
+        sensitive_markers = (
+            "authorization",
+            "token",
+            "cookie",
+            "secret",
+            "password",
+            "api-key",
+            "apikey",
+            "key",
+        )
+        for header_name, header_value in headers.items():
+            normalized = header_name.strip().lower()
+            if any(marker in normalized for marker in sensitive_markers):
+                redacted_headers[header_name] = "***redacted***"
+            else:
+                redacted_headers[header_name] = header_value
+        return redacted_headers
+
+    @classmethod
+    def _sanitize_dry_run_body(cls, body: Any) -> Any:
+        """Return dry-run-safe request body with sensitive fields redacted."""
+        sensitive_markers = (
+            "authorization",
+            "token",
+            "secret",
+            "password",
+            "api-key",
+            "apikey",
+            "api_key",
+            "key",
+        )
+
+        if isinstance(body, dict):
+            redacted: dict[str, Any] = {}
+            for key, value in body.items():
+                normalized_key = str(key).strip().lower()
+                if any(marker in normalized_key for marker in sensitive_markers):
+                    redacted[key] = "***redacted***"
+                else:
+                    redacted[key] = cls._sanitize_dry_run_body(value)
+            return redacted
+
+        if isinstance(body, list):
+            return [cls._sanitize_dry_run_body(item) for item in body]
+
+        if isinstance(body, tuple):
+            return [cls._sanitize_dry_run_body(item) for item in body]
+
+        return body
+
+    @staticmethod
+    def _has_header(headers: dict[str, Any], header_name: str) -> bool:
+        """Return ``True`` when a header exists using case-insensitive matching."""
+        target = header_name.strip().lower()
+        return any(existing.strip().lower() == target for existing in headers)
 
     @classmethod
     def _raise_for_http_status(
@@ -483,7 +557,8 @@ class BritecoreAPIClient:
         cache_bypass: bool = False,
         cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
         dedupe_in_flight: bool = True,
-        dry_run: bool = False,
+        dry_run: bool | None = None,
+        dry_run_include_sensitive_headers: bool = False,
     ) -> urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
@@ -495,12 +570,15 @@ class BritecoreAPIClient:
             request_retries (Optional[Retry]): The retry configuration for the request.
             request_headers (Optional[dict[str, Any]]): Custom headers to include in the request.
             method (Optional[str]): The HTTP method to use for the request, defaults to "POST".
-            dry_run (bool): If ``True``, log the full request details and return ``None``
-                without sending the request. Useful for debugging endpoint wrappers.
+            dry_run (bool | None): If ``True``, log the full request details and return a
+                synthetic successful response without sending the request. If ``None``,
+                inherit the client's ``default_dry_run`` setting.
+            dry_run_include_sensitive_headers (bool): If ``True``, include unredacted
+                headers in dry-run logs/response. Defaults to ``False`` for safety.
 
         Returns:
             Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]: The response from the
-            HTTP request, or None if no response is received or ``dry_run`` is True.
+            HTTP request.
 
         Raises:
             BritecoreError.RequestTimeoutError: If the request exceeds the configured timeout.
@@ -511,14 +589,25 @@ class BritecoreAPIClient:
         if request_retries is None:
             request_retries = self.web_retry
 
-        request_headers = dict(request_headers or {})
-        if not self.use_api_key and "Authorization" not in request_headers:
+        effective_dry_run = self.default_dry_run if dry_run is None else dry_run
+
+        resolved_request_headers: dict[str, Any] = dict(request_headers or {})
+        auth_mode = "api_key" if self.use_api_key else "oauth"
+        caller_supplied_authorization = self._has_header(
+            resolved_request_headers,
+            "Authorization",
+        )
+        if (
+            not effective_dry_run
+            and not self.use_api_key
+            and not caller_supplied_authorization
+        ):
             token_manager = self.token_class
             if token_manager is None:
                 raise BritecoreError.ConfigurationError(
                     "OAuth token manager not initialized"
                 )
-            request_headers.update(token_manager.get_authorization_headers())
+            resolved_request_headers.update(token_manager.get_authorization_headers())
 
         if not self.base_url:
             raise BritecoreError.ConfigurationError("base_url not configured")
@@ -534,25 +623,65 @@ class BritecoreAPIClient:
             path,
         )
         # Attach correlation ID to outbound headers so it appears in server logs
-        request_headers["X-SDK-Request-ID"] = request_id
+        resolved_request_headers["X-SDK-Request-ID"] = request_id
 
-        if dry_run:
+        request_body: dict[str, Any] = dict(json or {})
+        if self.use_api_key:
+            request_body.update({"api_key": self.site_settings.api_key})
+
+        if effective_dry_run:
+            dry_run_headers = self._sanitize_dry_run_headers(
+                resolved_request_headers,
+                include_sensitive=dry_run_include_sensitive_headers,
+            )
+            dry_run_body = self._sanitize_dry_run_body(request_body)
+            auth_skipped = auth_mode == "oauth" and not caller_supplied_authorization
             LOGGER.info(
                 "[%s] DRY-RUN %s %s  body=%s  headers=%s",
                 request_id,
                 method,
                 request_url,
-                dumps(dict(json or {})),
-                request_headers,
+                dumps(dry_run_body),
+                dry_run_headers,
             )
-            return None
+            dry_run_envelope = {
+                "success": True,
+                "data": {
+                    "dry_run": True,
+                    "request_id": request_id,
+                    "method": method,
+                    "path": path,
+                    "url": request_url,
+                    "auth_mode": auth_mode,
+                    "auth_skipped": auth_skipped,
+                    "authorization_header_source": (
+                        "caller-provided"
+                        if caller_supplied_authorization
+                        else (
+                            "skipped-for-dry-run"
+                            if auth_mode == "oauth"
+                            else "request-body-api-key"
+                        )
+                    ),
+                    "body": dry_run_body,
+                    "headers": dry_run_headers,
+                },
+                "message": "Dry run: request was not sent.",
+            }
+            return urllib3.HTTPResponse(
+                body=dumps(dry_run_envelope).encode("utf-8"),
+                status=200,
+                reason="DRY-RUN",
+                headers={
+                    "Content-Type": "application/json",
+                    "X-SDK-Dry-Run": "true",
+                    "X-SDK-Request-ID": request_id,
+                },
+                preload_content=True,
+            )
         # ------------------------------------------------------------------------
 
         try:
-            request_body: dict[str, Any] = dict(json or {})
-            if self.use_api_key:
-                request_body.update({"api_key": self.site_settings.api_key})
-
             body_bytes: bytes | None = None
             if request_body:
                 body_bytes = dumps(request_body).encode("utf-8")
@@ -564,7 +693,7 @@ class BritecoreAPIClient:
             request_result: urllib3.BaseHTTPResponse = http_client.request(
                 method=method,
                 url=request_url,
-                headers=request_headers,
+                headers=resolved_request_headers,
                 body=body_bytes,
                 timeout=request_timeout,
                 retries=request_retries,
@@ -704,3 +833,4 @@ class RequestParameters(TypedDict):
     cache_invalidate_on_success: NotRequired[list[str] | tuple[str, ...]]
     dedupe_in_flight: NotRequired[bool]
     dry_run: NotRequired[bool]
+    dry_run_include_sensitive_headers: NotRequired[bool]

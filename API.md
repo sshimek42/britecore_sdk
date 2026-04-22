@@ -254,7 +254,8 @@ Available top-level aliases: `AuthenticationError`, `ConfigurationError`,
 
 Pass `dry_run=True` to `do_request` (or any endpoint wrapper that forwards `**kwargs`) to
 log the full request details — URL, method, headers, body — **without** sending anything to
-the server. The call returns `None`.
+the server. The call returns a synthetic successful payload that flows through
+`process_result(...)` like a normal response.
 
 ```python
 import logging
@@ -265,11 +266,39 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 # Inspect what would be sent — no network call made
-policies.retrieve_policy(policy_number="POL001", dry_run=True)
+preview = policies.retrieve_policy(policy_number="POL001", dry_run=True)
+print(preview["dry_run"])
+print(preview["headers"])
 # INFO [abc12345] DRY-RUN POST https://...  body={"policy_number": "POL001"}  headers={...}
 ```
 
-`dry_run` is part of `RequestParameters` so it is accepted by every v2 endpoint wrapper.
+Client-level default dry-run is also supported:
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+init_api_client(default_dry_run=True)
+
+# Inherits dry-run from the initialized client.
+preview = policies.retrieve_policy(policy_number="POL001")
+
+# Override for one request if needed.
+live_result = policies.retrieve_policy(policy_number="POL001", dry_run=False)
+```
+
+Notes:
+
+- `dry_run` is part of `RequestParameters` so it is accepted by every v2 endpoint wrapper.
+- Dry-run responses include `dry_run`, `request_id`, `method`, `path`, `url`, `body`, `headers`,
+  `auth_mode`, `auth_skipped`, and `authorization_header_source`.
+- Headers are redacted by default. Pass `dry_run_include_sensitive_headers=True` only when you
+  explicitly need raw header values.
+- Sensitive request-body fields are always redacted in dry-run output (for example `api_key`,
+  token/secret/password-like keys), even if header sensitivity overrides are enabled.
+- For OAuth clients, dry-run skips token acquisition unless you explicitly pass headers.
+- Async wrappers support the same behavior via `init_async_api_client(default_dry_run=True)` or
+  per-call `dry_run=True`; async dry-run also bypasses cache and in-flight dedupe.
 
 ---
 

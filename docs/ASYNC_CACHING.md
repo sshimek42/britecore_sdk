@@ -70,6 +70,8 @@ All async wrappers accept these optional kwargs:
 - `cache_bypass`: force live request and skip cache read/write
 - `cache_invalidate_on_success`: namespaces to invalidate after successful mutation
 - `dedupe_in_flight`: deduplicate concurrent identical requests
+- `dry_run`: return a synthetic success payload without sending a live request
+- `dry_run_include_sensitive_headers`: include unredacted headers in dry-run output
 
 Example overrides:
 
@@ -83,6 +85,35 @@ policy = await aretrieve_policy(
     cache_key_parts=["tenant:acme", "view:summary"],
 )
 ```
+
+## Async dry-run behavior
+
+Async clients support the same client-level dry-run default as the sync client:
+
+```python
+import asyncio
+
+from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+
+async def main() -> None:
+    init_async_api_client(default_dry_run=True)
+    preview = await aretrieve_policy(policy_number="POL001")
+    print(preview["dry_run"])
+    print(preview["auth_skipped"])
+
+
+asyncio.run(main())
+```
+
+Notes:
+
+- Async dry-run requests bypass async cache reads/writes and in-flight dedupe.
+- For OAuth sites, async dry-run skips token acquisition unless you explicitly pass headers.
+- Per-call `dry_run=False` overrides an inherited client default.
+- Sensitive request-body fields are always redacted in dry-run output (for example
+  `api_key` and token/secret/password-like keys), even when sensitive headers are included.
 
 ## Manage cache manually
 
