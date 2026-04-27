@@ -19,7 +19,8 @@ def _discover_settings_files() -> list[Path]:
     ``BRITECORE_SDK_*`` environment variables):
 
     1. **SDK package defaults** — ``settings.toml`` / ``.secrets.toml`` inside the
-       installed package directory.  Always present; provide built-in defaults.
+       installed package directory. Loaded when they exist (they are in .gitignore
+       and are not required for operation).
     2. **User-level config** — ``~/.britecore/settings.toml`` and
        ``~/.britecore/.secrets.toml``.  Loaded when they exist; useful for
        developer workstation defaults that span many projects.
@@ -38,8 +39,8 @@ def _discover_settings_files() -> list[Path]:
     """
     candidates: list[Path] = []
 
-    # 1. SDK package defaults — settings.toml is always present; .secrets.toml
-    #    is optional (not bundled with the installed package, never committed).
+    # 1. SDK package defaults — settings.toml and .secrets.toml may be present
+    #    (both are in .gitignore and are optional for operation).
     sdk_dir = Path(__file__).parent
     for name in ("settings.toml", ".secrets.toml"):
         p = sdk_dir / name
