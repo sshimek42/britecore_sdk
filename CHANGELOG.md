@@ -9,6 +9,10 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.1.2] — 2026-04-27
+
 ### Added
 
 - `check_site_configs` now supports `--json` output for CI/tooling, including
@@ -124,6 +128,10 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- Removed `"settings/*.toml"` from `pyproject.toml` package-data — those files
+  are in `.gitignore` and must not be bundled with the distributed package.
+  Tests that assumed SDK defaults always exist are now CI-safe (they check for
+  file presence before asserting, so they pass both locally and in CI).
 - `python -m britecore_sdk.utils.check_site_configs --json` now correctly emits
   JSON in module execution mode (instead of falling back to table output).
 - MyPy `TypedDict` compatibility in `payments.py` via explicit casting for
