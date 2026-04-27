@@ -11,12 +11,76 @@ from britecore_sdk.exceptions import BritecoreError
 
 LOGGER = logging.getLogger(__name__)
 
-curr_dir = Path(__file__).parent
-setting_files: list[str] = [".secrets.toml", "settings.toml"]
 
-setting_files_full: list[Path] = []
-for each_file in setting_files:
-    setting_files_full.append(curr_dir / each_file)
+def _discover_settings_files() -> list[Path]:
+    """Return an ordered list of settings files to load, from lowest to highest priority.
+
+    Priority order (earlier = lower, later = higher priority; all are overridden by
+    ``BRITECORE_SDK_*`` environment variables):
+
+    1. **SDK package defaults** — ``settings.toml`` / ``.secrets.toml`` inside the
+       installed package directory.  Always present; provide built-in defaults.
+    2. **User-level config** — ``~/.britecore/settings.toml`` and
+       ``~/.britecore/.secrets.toml``.  Loaded when they exist; useful for
+       developer workstation defaults that span many projects.
+    3. **Project-local config** — ``britecore.toml`` and ``.britecore_secrets.toml``
+       in the current working directory.  Loaded when they exist; intended for
+       per-project credentials checked into the project (non-secret) or kept out of
+       version control (secrets).
+    4. **Explicit env-var override** — the path given by
+       ``BRITECORE_SDK_SETTINGS_FILE``.  Loaded last (highest file priority) when
+       the variable is set and points to an existing file.
+
+    Returns:
+        List of :class:`~pathlib.Path` objects for all settings files that should be
+        passed to Dynaconf's ``settings_files`` parameter.  Files that do not exist
+        are omitted so Dynaconf does not raise ``FileNotFoundError``.
+    """
+    candidates: list[Path] = []
+
+    # 1. SDK package defaults — settings.toml is always present; .secrets.toml
+    #    is optional (not bundled with the installed package, never committed).
+    sdk_dir = Path(__file__).parent
+    for name in ("settings.toml", ".secrets.toml"):
+        p = sdk_dir / name
+        if p.exists():
+            candidates.append(p)
+
+    # 2. User-level config (~/.britecore/)
+    user_dir = Path.home() / ".britecore"
+    for name in ("settings.toml", ".secrets.toml"):
+        p = user_dir / name
+        if p.exists():
+            candidates.append(p)
+
+    # 3. Project-local config (CWD)
+    cwd = Path.cwd()
+    for name in ("britecore.toml", ".britecore_secrets.toml"):
+        p = cwd / name
+        if p.exists():
+            candidates.append(p)
+
+    # 4. Explicit env-var override (highest file priority)
+    env_path_str = os.environ.get("BRITECORE_SDK_SETTINGS_FILE")
+    if env_path_str:
+        env_path = Path(env_path_str)
+        if env_path.exists():
+            candidates.append(env_path)
+        else:
+            LOGGER.warning(
+                "BRITECORE_SDK_SETTINGS_FILE points to a non-existent file: %s",
+                env_path,
+            )
+
+    LOGGER.debug(
+        "Discovered %d settings file(s): %s",
+        len(candidates),
+        [str(p) for p in candidates],
+    )
+    return candidates
+
+
+setting_files_full: list[Path] = _discover_settings_files()
 
 settings = Dynaconf(
     settings_files=setting_files_full,

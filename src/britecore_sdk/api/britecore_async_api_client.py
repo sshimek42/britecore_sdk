@@ -22,8 +22,33 @@ class AsyncBritecoreAPIClient:
         cache: RequestCache | None = None,
         default_cache_ttl_seconds: int = 60,
         client_dry_run: bool | None = None,
+        base_url: str | None = None,
+        api_key: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
     ) -> None:
-        """Create an async client facade with optional injected sync client/cache."""
+        """Create an async client facade with optional injected sync client/cache.
+
+        Credentials can be supplied in two ways:
+
+        **File-based (default):** omit all credential kwargs.  The underlying sync
+        client reads credentials from the layered config file search hierarchy.
+
+        **Explicit (inline):** pass ``base_url`` (required) plus any combination of
+        ``api_key``, ``client_id``, and ``client_secret``.  File-based lookup is
+        bypassed when ``base_url`` is provided.
+
+        Args:
+            target_site: Target site name / label.
+            client: Pre-built :class:`BritecoreAPIClient` to wrap (skips lazy init).
+            cache: Optional :class:`~britecore_sdk.api.request_cache.RequestCache`.
+            default_cache_ttl_seconds: Default TTL for cached responses.
+            client_dry_run: Forward to the underlying sync client's dry-run mode.
+            base_url: Explicit base URL; bypasses config-file lookup when provided.
+            api_key: Explicit API key (used only when ``base_url`` is also given).
+            client_id: Explicit OAuth client ID (used only when ``base_url`` is given).
+            client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
+        """
         self.target_site = target_site or getattr(client, "target_site", None)
         self._client = client
         self._cache = cache or RequestCache()
@@ -33,6 +58,11 @@ class AsyncBritecoreAPIClient:
             if client_dry_run is None
             else client_dry_run
         )
+        # Explicit credential overrides
+        self._base_url = base_url
+        self._api_key = api_key
+        self._client_id = client_id
+        self._client_secret = client_secret
         self._client_init_lock = asyncio.Lock()
         self._inflight_lock = asyncio.Lock()
         self._inflight_requests: dict[str, asyncio.Task[Any]] = {}
@@ -52,6 +82,10 @@ class AsyncBritecoreAPIClient:
                 await asyncio.to_thread(
                     client.init_client,
                     client_dry_run=self._client_dry_run,
+                    base_url=self._base_url,
+                    api_key=self._api_key,
+                    client_id=self._client_id,
+                    client_secret=self._client_secret,
                 )
                 self._client = client
             self._client_dry_run = getattr(self._client, "client_dry_run", False)

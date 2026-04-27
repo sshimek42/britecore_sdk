@@ -1,5 +1,6 @@
 """Unit tests for configuration module."""
 
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -25,7 +26,7 @@ class TestLoadClientSettings:
         from britecore_sdk.exceptions import BritecoreError
 
         with pytest.raises(BritecoreError.ConfigurationError):
-            LoadClientSettings(None)
+            LoadClientSettings(None)  # type: ignore[arg-type]
 
     @pytest.mark.unit
     def test_load_config_merges_default(self, mock_settings):
@@ -173,3 +174,207 @@ class TestConfigInitialization:
         from britecore_sdk.settings import get_target_site
 
         assert callable(get_target_site)
+
+
+# ---------------------------------------------------------------------------
+# New: layered settings file discovery
+# ---------------------------------------------------------------------------
+class TestDiscoverSettingsFiles:
+    """Tests for _discover_settings_files()."""
+
+    @pytest.mark.unit
+    def test_always_includes_sdk_defaults(self):
+        """SDK package settings files are always present in the result."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        files = _discover_settings_files()
+        sdk_names = {p.name for p in files}
+        assert "settings.toml" in sdk_names
+        assert ".secrets.toml" in sdk_names
+
+    @pytest.mark.unit
+    def test_includes_user_level_files_when_present(self, tmp_path, monkeypatch):
+        """User-level ~/.britecore/ files are included when they exist."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        fake_home = tmp_path / "home"
+        britecore_dir = fake_home / ".britecore"
+        britecore_dir.mkdir(parents=True)
+        (britecore_dir / "settings.toml").write_text("[default]\n")
+        (britecore_dir / ".secrets.toml").write_text("[default]\n")
+
+        monkeypatch.setattr(Path, "home", lambda: fake_home)
+
+        files = _discover_settings_files()
+        file_paths = [str(p) for p in files]
+        assert any(".britecore" in fp and "settings.toml" in fp for fp in file_paths)
+        assert any(".britecore" in fp and ".secrets.toml" in fp for fp in file_paths)
+
+    @pytest.mark.unit
+    def test_includes_project_local_files_when_present(self, tmp_path, monkeypatch):
+        """CWD britecore.toml / .britecore_secrets.toml are included when they exist."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        (tmp_path / "britecore.toml").write_text("[default]\n")
+        (tmp_path / ".britecore_secrets.toml").write_text("[default]\n")
+        monkeypatch.setattr(Path, "cwd", lambda: tmp_path)
+
+        files = _discover_settings_files()
+        file_paths = [str(p) for p in files]
+        assert any("britecore.toml" in fp for fp in file_paths)
+        assert any(".britecore_secrets.toml" in fp for fp in file_paths)
+
+    @pytest.mark.unit
+    def test_env_var_file_included_when_exists(self, tmp_path, monkeypatch):
+        """BRITECORE_SDK_SETTINGS_FILE is appended when the path exists."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        custom_cfg = tmp_path / "my_settings.toml"
+        custom_cfg.write_text("[default]\n")
+        monkeypatch.setenv("BRITECORE_SDK_SETTINGS_FILE", str(custom_cfg))
+
+        files = _discover_settings_files()
+        assert custom_cfg in files
+
+    @pytest.mark.unit
+    def test_env_var_missing_file_excluded(self, tmp_path, monkeypatch):
+        """BRITECORE_SDK_SETTINGS_FILE pointing to non-existent file is excluded."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        missing = tmp_path / "does_not_exist.toml"
+        monkeypatch.setenv("BRITECORE_SDK_SETTINGS_FILE", str(missing))
+
+        files = _discover_settings_files()
+        assert missing not in files
+
+    @pytest.mark.unit
+    def test_env_var_not_set_excluded(self, monkeypatch):
+        """No extra file is added when BRITECORE_SDK_SETTINGS_FILE is unset."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        monkeypatch.delenv("BRITECORE_SDK_SETTINGS_FILE", raising=False)
+        files = _discover_settings_files()
+        # At minimum the two SDK defaults are always there
+        assert len(files) >= 2
+
+    @pytest.mark.unit
+    def test_sdk_defaults_appear_before_project_local(self, tmp_path, monkeypatch):
+        """SDK defaults appear before project-local files (lower priority)."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        (tmp_path / "britecore.toml").write_text("[default]\n")
+        monkeypatch.setattr(Path, "cwd", lambda: tmp_path)
+        monkeypatch.delenv("BRITECORE_SDK_SETTINGS_FILE", raising=False)
+
+        files = _discover_settings_files()
+        sdk_dir = Path(__file__).parent.parent.parent / "src" / "britecore_sdk" / "settings"
+        sdk_indices = [i for i, p in enumerate(files) if p.parent.resolve() == sdk_dir.resolve()]
+        project_indices = [i for i, p in enumerate(files) if p.name == "britecore.toml"]
+        if sdk_indices and project_indices:
+            assert max(sdk_indices) < min(project_indices)
+
+
+# ---------------------------------------------------------------------------
+# New: explicit kwargs on init_client / init_api_client
+# ---------------------------------------------------------------------------
+class TestExplicitCredentials:
+    """Tests for explicit base_url/api_key/client_id/client_secret kwargs."""
+
+    @pytest.mark.unit
+    def test_init_client_explicit_api_key_skips_load_client_settings(self):
+        """When base_url is given, LoadClientSettings is never called."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader, patch(
+            "britecore_sdk.api.britecore_api_client.urllib3.PoolManager"
+        ):
+            client = BritecoreAPIClient("mysite")
+            client.init_client(
+                base_url="https://api.example.com",
+                api_key="test-key",
+            )
+            mock_loader.assert_not_called()
+            assert client.base_url is not None
+            assert client.use_api_key is True
+
+    @pytest.mark.unit
+    def test_init_client_explicit_oauth_selects_oauth_mode(self):
+        """Explicit client_id + client_secret triggers OAuth auth mode."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ), patch(
+            "britecore_sdk.api.britecore_api_client.urllib3.PoolManager"
+        ), patch(
+            "britecore_sdk.api.britecore_api_client.OAuthToken"
+        ) as mock_oauth:
+            client = BritecoreAPIClient("mysite")
+            client.init_client(
+                base_url="https://api.example.com",
+                client_id="cid",
+                client_secret="csecret",
+            )
+            assert client.use_api_key is False
+            mock_oauth.assert_called_once()
+
+    @pytest.mark.unit
+    def test_init_api_client_explicit_base_url_no_target_site(self, monkeypatch):
+        """init_api_client with base_url and no target_site uses 'explicit' as label."""
+        import importlib
+
+        import britecore_sdk.api.api_calls as api_calls_module
+
+        module = importlib.reload(api_calls_module)
+
+        fake_client = MagicMock()
+        fake_ctor = MagicMock(return_value=fake_client)
+        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+
+        result = module.init_api_client(base_url="https://api.example.com", api_key="k")
+
+        fake_ctor.assert_called_once_with("explicit")
+        fake_client.init_client.assert_called_once_with(
+            client_dry_run=False,
+            base_url="https://api.example.com",
+            api_key="k",
+            client_id=None,
+            client_secret=None,
+        )
+        assert result is fake_client
+
+    @pytest.mark.unit
+    def test_init_api_client_explicit_with_named_site(self, monkeypatch):
+        """init_api_client with base_url and explicit target_site keeps site name."""
+        import importlib
+
+        import britecore_sdk.api.api_calls as api_calls_module
+
+        module = importlib.reload(api_calls_module)
+
+        fake_client = MagicMock()
+        fake_ctor = MagicMock(return_value=fake_client)
+        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+
+        module.init_api_client(
+            "production",
+            base_url="https://prod.example.com",
+            api_key="prod-key",
+        )
+
+        fake_ctor.assert_called_once_with("production")
+
+    @pytest.mark.unit
+    def test_init_api_client_no_base_url_still_requires_target_site(self, monkeypatch):
+        """Without base_url, missing target_site still raises ConfigurationError."""
+        import importlib
+
+        import britecore_sdk.api.api_calls as api_calls_module
+
+        module = importlib.reload(api_calls_module)
+        monkeypatch.setattr(module, "get_target_site", lambda: None)
+
+        with pytest.raises(module.BritecoreError.ConfigurationError):
+            module.init_api_client()

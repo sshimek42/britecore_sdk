@@ -21,6 +21,10 @@ def init_api_client(
     target_site: str | None | object = _TARGET_SITE_UNSET,
     *,
     client_dry_run: bool = False,
+    base_url: str | None = None,
+    api_key: str | None = None,
+    client_id: str | None = None,
+    client_secret: str | None = None,
 ) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
@@ -32,26 +36,57 @@ def init_api_client(
     lazy proxy (``api_client``) used by endpoint wrappers resolves to this instance
     rather than re-initialising without a site on first use.
 
+    Credentials can be supplied in two ways:
+
+    **File-based (default):** omit all credential kwargs.  The client reads credentials
+    from the layered config file search hierarchy (SDK defaults →
+    ``~/.britecore/`` → CWD → ``BRITECORE_SDK_SETTINGS_FILE``).
+
+    **Explicit (inline):** pass ``base_url`` (required) plus any combination of
+    ``api_key``, ``client_id``, and ``client_secret``.  When ``base_url`` is given,
+    no config files are read and ``target_site`` becomes optional (defaults to
+    ``"explicit"`` when omitted).
+
     Args:
         target_site: The target site URL or identifier for the Britecore API.
                      If omitted, this is resolved from settings via
                      ``get_target_site()``. Passing ``None`` or an empty value
-                     explicitly is treated as invalid input.
+                     explicitly is treated as invalid input **unless** ``base_url``
+                     is also provided, in which case ``"explicit"`` is used as the
+                     site label.
         client_dry_run: When ``True``, requests made through this client inherit
                          dry-run behavior unless explicitly overridden per call.
+        base_url: Override the site base URL directly.  When provided, file-based
+            credential lookup is bypassed and ``target_site`` becomes optional.
+        api_key: Explicit API key (used only when ``base_url`` is also given).
+        client_id: Explicit OAuth client ID (used only when ``base_url`` is given).
+        client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
 
     Returns:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
-    resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
-    if not isinstance(resolved, str) or not resolved:
-        raise BritecoreError.ConfigurationError(
-            "target_site must be specified: pass a non-empty value, or omit the argument "
-            "to use configured fallback resolution."
-        )
+    if base_url is not None:
+        # Explicit-credential mode: target_site is optional
+        if target_site is _TARGET_SITE_UNSET or not isinstance(target_site, str) or not target_site:
+            resolved: str = "explicit"
+        else:
+            resolved = target_site  # type: ignore[assignment]
+    else:
+        resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site  # type: ignore[assignment]
+        if not isinstance(resolved, str) or not resolved:
+            raise BritecoreError.ConfigurationError(
+                "target_site must be specified: pass a non-empty value, or omit the argument "
+                "to use configured fallback resolution."
+            )
     client: BritecoreAPIClient = BritecoreAPIClient(resolved)
-    client.init_client(client_dry_run=client_dry_run)
+    client.init_client(
+        client_dry_run=client_dry_run,
+        base_url=base_url,
+        api_key=api_key,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
     _set_module_client_state("_api_client", client)
     return client
 
@@ -60,6 +95,10 @@ def init_async_api_client(
     target_site: str | None | object = _TARGET_SITE_UNSET,
     *,
     client_dry_run: bool = False,
+    base_url: str | None = None,
+    api_key: str | None = None,
+    client_id: str | None = None,
+    client_secret: str | None = None,
 ) -> AsyncBritecoreAPIClient:
     """Initialize and return a lazy async API client wrapper.
 
@@ -69,18 +108,44 @@ def init_async_api_client(
     Also sets the module-level ``_async_api_client`` so the lazy proxy resolves
     to this instance rather than re-initialising without a site on first use.
 
+    Credentials can be supplied in two ways:
+
+    **File-based (default):** omit all credential kwargs.  The client reads credentials
+    from the layered config file search hierarchy.
+
+    **Explicit (inline):** pass ``base_url`` plus optional ``api_key``,
+    ``client_id``, and ``client_secret``.  File-based lookup is bypassed, and
+    ``target_site`` defaults to ``"explicit"`` when omitted.
+
     Args:
         target_site: Explicit target site name. If omitted, resolve from settings.
         client_dry_run: When ``True``, async requests inherit dry-run behavior
             unless explicitly overridden per call.
+        base_url: Override the site base URL directly.
+        api_key: Explicit API key (used only when ``base_url`` is also given).
+        client_id: Explicit OAuth client ID (used only when ``base_url`` is given).
+        client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
     """
-    resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
-    if not isinstance(resolved, str) or not resolved:
-        raise BritecoreError.ConfigurationError(
-            "target_site must be specified: pass a non-empty value, or omit the argument "
-            "to use configured fallback resolution."
-        )
-    client = AsyncBritecoreAPIClient(resolved, client_dry_run=client_dry_run)
+    if base_url is not None:
+        if target_site is _TARGET_SITE_UNSET or not isinstance(target_site, str) or not target_site:
+            resolved = "explicit"
+        else:
+            resolved = target_site  # type: ignore[assignment]
+    else:
+        resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site  # type: ignore[assignment]
+        if not isinstance(resolved, str) or not resolved:
+            raise BritecoreError.ConfigurationError(
+                "target_site must be specified: pass a non-empty value, or omit the argument "
+                "to use configured fallback resolution."
+            )
+    client = AsyncBritecoreAPIClient(
+        resolved,
+        client_dry_run=client_dry_run,
+        base_url=base_url,
+        api_key=api_key,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
     _set_module_client_state("_async_api_client", client)
     return client
 

@@ -26,8 +26,16 @@ FORBIDDEN_KEYS = ["api_key", "client_id", "client_secret"]
 SETTINGS_ONLY_KEYS = FORBIDDEN_KEYS  # Keys NOT allowed in settings.toml
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-CONFIG_PATH: str = str(BASE_DIR / "settings" / ".secrets.toml")
-SETTINGS_PATH: str = str(BASE_DIR / "settings" / "settings.toml")
+_PKG_SECRETS = BASE_DIR / "settings" / ".secrets.toml"
+_PKG_SETTINGS = BASE_DIR / "settings" / "settings.toml"
+_USER_DIR = Path.home() / ".britecore"
+_USER_SECRETS = _USER_DIR / ".secrets.toml"
+_USER_SETTINGS = _USER_DIR / "settings.toml"
+
+# Prefer user-level files so the installed package directory is never required
+# to hold credentials (it shouldn't — secrets don't belong in site-packages).
+CONFIG_PATH: str = str(_USER_SECRETS if _USER_SECRETS.exists() else _PKG_SECRETS)
+SETTINGS_PATH: str = str(_USER_SETTINGS if _USER_SETTINGS.exists() else _PKG_SETTINGS)
 
 
 def load_secrets(path: str) -> dict:

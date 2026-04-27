@@ -43,7 +43,9 @@ api_key = "your_api_key_here"
 
 **Alternative: Environment variables**
 
-> **Note:** `target_site` is always required by the client. When credentials are set via
+> **Note:** `target_site` is required for file/environment-driven initialization (the standard mode).
+> In explicit mode (`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults
+> to `"explicit"`. When credentials are set via
 > `BRITECORE_SDK_*` environment variables, `target_site` is still required but its value
 > does not affect which credentials are loaded when **all** required credentials are supplied as
 > env vars — they take precedence over `.secrets.toml` values regardless of the site name. If any
@@ -111,10 +113,22 @@ The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, a
 
 If you need to verify selected auth mode during initialization, enable SDK debug logging before client init. The client emits `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth` at debug level.
 
+Pattern A (app-owned logging, preferred for host apps):
+
 ```python
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+```
+
+Pattern B (SDK-managed handler, opt-in):
+
+```python
+import logging
+from britecore_sdk import configure_logging
+
+configure_logging(level="INFO")
 logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 ```
 
@@ -233,12 +247,12 @@ client_secret = "your_staging_client_secret"
 
 **Environment variables** (override file config):
 
-> **Note on `target_site` with env vars:** `target_site` selects which section of `.secrets.toml`
+> **Note on `target_site` with env vars:** In standard init mode, `target_site` selects which section of `.secrets.toml`
 > to use for credentials. When **all** required credentials are supplied via `BRITECORE_SDK_*`
 > environment variables, the specific `target_site` value does not affect which credentials are
 > loaded — env vars take precedence regardless. If any credential is missing from env vars, the
 > client falls back to the `.secrets.toml` section matching `target_site`. Either way, `target_site`
-> is required for client initialization.
+> is required unless you use explicit mode (`init_api_client(base_url=..., ...)`).
 
 API key authentication:
 

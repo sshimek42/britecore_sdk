@@ -11,7 +11,155 @@ The BriteCore SDK provides utilities to safely manage site configurations stored
 
 ---
 
-## Initial Setup
+## Config file search hierarchy
+
+`target_site` is required for standard (file/env-driven) initialization. It is optional
+only in explicit mode when you pass `base_url` directly to `init_api_client(...)` or
+`BritecoreAPIClient.init_client(...)`.
+
+On every import the SDK discovers settings files automatically. Files are loaded in priority
+order — later sources override earlier ones. Environment variables (`BRITECORE_SDK_*`)
+always win over any file.
+
+| Priority | Source | File name(s) |
+|----------|--------|-------------|
+| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
+| 2 | User-level config | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
+| 3 | Project-local config | `./britecore.toml`, `./.britecore_secrets.toml` |
+| 4 | Explicit env-var file | Path pointed to by `BRITECORE_SDK_SETTINGS_FILE` |
+| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
+
+### User-level config (`~/.britecore/`)
+
+Place shared credentials here once and reuse them across every project on the machine:
+
+```toml
+# ~/.britecore/.secrets.toml
+[production]
+base_url = "https://api.britecore.example.com"
+client_id = "your-client-id"
+client_secret = "your-client-secret"
+```
+
+### Project-local config (`./britecore.toml` / `./.britecore_secrets.toml`)
+
+Add project-specific credentials alongside your code.  Add `.britecore_secrets.toml`
+to `.gitignore` to keep secrets out of version control:
+
+```toml
+# britecore.toml (safe to commit — no secrets)
+[default]
+target_site = "staging"
+web_timeout = 10
+
+# .britecore_secrets.toml (add to .gitignore!)
+[staging]
+base_url = "https://staging.example.com"
+api_key = "staging-key"
+```
+
+### Explicit env-var override (`BRITECORE_SDK_SETTINGS_FILE`)
+
+Point the SDK at a single settings file anywhere on disk — useful in CI/CD pipelines:
+
+**PowerShell:**
+
+```powershell
+$env:BRITECORE_SDK_SETTINGS_FILE = "C:\\britecore\\ci_settings.toml"
+python my_script.py
+```
+
+**Bash:**
+
+```bash
+export BRITECORE_SDK_SETTINGS_FILE=/etc/britecore/ci_settings.toml
+python my_script.py
+```
+
+If the file does not exist the SDK emits a warning and continues without it.
+
+### Inspect the resolved file list
+
+```python
+from britecore_sdk.settings import setting_files_full
+
+for path in setting_files_full:
+    print(path)
+```
+
+---
+
+## Explicit credentials (no config file required)
+
+Pass credentials directly to `init_api_client()` (or `init_client()`) to bypass the
+config file system entirely.  This is ideal for programmatic environments such as
+serverless functions, containers, and notebooks where files are inconvenient.
+
+### `init_api_client()` with inline credentials
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+# API-key auth — no config file needed
+client = init_api_client(
+    base_url="https://api.britecore.example.com",
+    api_key="my-api-key",
+)
+
+# OAuth auth — no config file needed
+client = init_api_client(
+    base_url="https://api.britecore.example.com",
+    client_id="my-client-id",
+    client_secret="my-client-secret",
+)
+
+# Optionally supply a site label (used in logging / repr)
+client = init_api_client(
+    "production",
+    base_url="https://api.britecore.example.com",
+    api_key="my-api-key",
+)
+```
+
+When `base_url` is provided:
+- `target_site` defaults to `"explicit"` if omitted.
+- `LoadClientSettings` (file-based lookup) is **not** called.
+- Missing credentials are treated as empty strings — auth mode is selected as usual
+  (API-key mode when `client_id` / `client_secret` are blank).
+
+### `BritecoreAPIClient.init_client()` with inline credentials
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+client = BritecoreAPIClient("my_site").init_client(
+    base_url="https://api.britecore.example.com",
+    api_key="my-api-key",
+)
+```
+
+### Environment variables as explicit credentials
+
+All credential keys can also be set via environment variables (no `target_site` section
+needed in any config file):
+
+**PowerShell:**
+
+```powershell
+$env:BRITECORE_SDK_BASE_URL = "https://api.britecore.example.com"
+$env:BRITECORE_SDK_API_KEY = "my-api-key"
+```
+
+**Bash:**
+
+```bash
+export BRITECORE_SDK_BASE_URL="https://api.britecore.example.com"
+export BRITECORE_SDK_API_KEY="my-api-key"
+```
+
+---
+
+
 
 ### 1. Copy Example Files
 
@@ -55,6 +203,14 @@ target_site = 'production'
 
 ### 4. Verify Your Configuration
 
+**PowerShell:**
+
+```powershell
+python -m britecore_sdk.utils.check_site_configs
+```
+
+**Bash:**
+
 ```bash
 python -m britecore_sdk.utils.check_site_configs
 ```
@@ -65,13 +221,142 @@ python -m britecore_sdk.utils.check_site_configs
 
 ### Check your current sites
 
+**PowerShell:**
+
+```powershell
+python -m britecore_sdk.utils.check_site_configs
+```
+
+**Bash:**
+
 ```bash
 python -m britecore_sdk.utils.check_site_configs
+```
+
+Machine-readable output for CI/scripts:
+
+**PowerShell:**
+
+```powershell
+python -m britecore_sdk.utils.check_site_configs --json
+```
+
+**Bash:**
+
+```bash
+python -m britecore_sdk.utils.check_site_configs --json
+```
+
+#### JSON contract (`--json`)
+
+For CI parsing, treat this payload shape as the contract:
+
+- Top-level keys: `config_precedence`, `resolved_settings_files`, `active_paths`, `warnings`, `sites`
+- `active_paths` keys: `secrets_file`, `settings_file`
+- `warnings` keys: `sensitive_keys_in_settings` (list of `{section, key}` objects)
+- `sites` entries contain: `site`, `ok`, `status`, `auth_mode`, `url`, `missing_keys`
+
+Compact example:
+
+```json
+{
+  "config_precedence": [
+    "sdk_package_defaults",
+    "user_level_config",
+    "project_local_config",
+    "envvar_settings_file",
+    "envvar_britecore_sdk_prefix"
+  ],
+  "resolved_settings_files": [
+    "..."
+  ],
+  "active_paths": {
+    "secrets_file": "...",
+    "settings_file": "..."
+  },
+  "warnings": {
+    "sensitive_keys_in_settings": [
+      {
+        "section": "default",
+        "key": "api_key"
+      }
+    ]
+  },
+  "sites": [
+    {
+      "site": "production",
+      "ok": true,
+      "status": "OK",
+      "auth_mode": "OAuth",
+      "url": "https://api.example.com",
+      "missing_keys": []
+    }
+  ]
+}
+```
+
+Compatibility note: future updates may add new keys. CI consumers should require the keys above and ignore unknown extras.
+
+#### CI key-check snippet
+
+GitHub Actions step (fails when required keys are missing):
+
+```yaml
+- name: Validate check-site-configs JSON contract
+  run: |
+    python - <<'PY'
+    import json
+    import subprocess
+    import sys
+
+    data = json.loads(
+        subprocess.check_output(
+            [sys.executable, "-m", "britecore_sdk.utils.check_site_configs", "--json"],
+            text=True,
+        )
+    )
+    required = {
+        "config_precedence",
+        "resolved_settings_files",
+        "active_paths",
+        "warnings",
+        "sites",
+    }
+    missing = sorted(required - set(data))
+    if missing:
+        raise SystemExit(f"Missing required keys: {', '.join(missing)}")
+    print("JSON contract keys present")
+    PY
+```
+
+Local equivalent:
+
+**PowerShell:**
+
+```powershell
+python -c "import json, subprocess, sys; data=json.loads(subprocess.check_output([sys.executable, '-m', 'britecore_sdk.utils.check_site_configs', '--json'], text=True)); required={'config_precedence','resolved_settings_files','active_paths','warnings','sites'}; missing=sorted(required-set(data)); print('JSON contract keys present' if not missing else 'Missing required keys: ' + ', '.join(missing)); raise SystemExit(1 if missing else 0)"
+```
+
+**Bash:**
+
+```bash
+python -c "import json, subprocess, sys; data=json.loads(subprocess.check_output([sys.executable, '-m', 'britecore_sdk.utils.check_site_configs', '--json'], text=True)); required={'config_precedence','resolved_settings_files','active_paths','warnings','sites'}; missing=sorted(required-set(data)); print('JSON contract keys present' if not missing else 'Missing required keys: ' + ', '.join(missing)); raise SystemExit(1 if missing else 0)"
 ```
 
 Output:
 
 ```text
+Configuration source precedence (lowest -> highest):
+  1) SDK package defaults
+  2) User-level config (~/.britecore)
+  3) Project-local config (./britecore.toml, ./.britecore_secrets.toml)
+  4) BRITECORE_SDK_SETTINGS_FILE override
+  5) BRITECORE_SDK_* environment variables
+
+Resolved settings files (load order):
+  1. ...
+  2. ...
+
 Checking API config for 2 site(s) in .../settings/.secrets.toml...
 
 Site                 Status      Auth      URL                                       Missing Keys

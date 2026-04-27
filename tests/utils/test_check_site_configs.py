@@ -1,5 +1,7 @@
 import importlib.util
+import json
 import os
+from pathlib import Path
 
 import pytest
 
@@ -126,12 +128,18 @@ def test_main_prints_status_table_and_filters_non_site_sections(monkeypatch, cap
 
     monkeypatch.setattr(check_site_configs, "warn_if_secrets_in_settings", fake_warn)
     monkeypatch.setattr(check_site_configs, "load_secrets", fake_load)
+    monkeypatch.setattr(
+        check_site_configs,
+        "_print_config_source_diagnostics",
+        lambda: calls.append(("diag", None)),
+    )
 
     check_site_configs.main()
     output = capsys.readouterr().out
 
-    assert calls[0] == ("warn", check_site_configs.SETTINGS_PATH)
-    assert calls[1] == ("load", check_site_configs.CONFIG_PATH)
+    assert calls[0] == ("load", check_site_configs.CONFIG_PATH)
+    assert calls[1] == ("diag", None)
+    assert calls[2] == ("warn", check_site_configs.SETTINGS_PATH)
     assert "Checking API config for 2 site(s)" in output
     assert "Site" in output and "Status" in output and "Missing Keys" in output
     assert "Auth" in output and "URL" in output
@@ -157,6 +165,7 @@ def test_get_auth_mode(config, expected_auth):
 
 
 def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
+    monkeypatch.setattr(check_site_configs, "_print_config_source_diagnostics", lambda: None)
     monkeypatch.setattr(
         check_site_configs, "warn_if_secrets_in_settings", lambda _: None
     )
@@ -175,3 +184,112 @@ def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
     output = capsys.readouterr().out
     assert "OAuth" in output
     assert "https://prod.example.com" in output
+
+
+def test_main_json_output_includes_precedence_and_sites(monkeypatch, capsys):
+    monkeypatch.setattr(
+        check_site_configs,
+        "load_secrets",
+        lambda _: {
+            "prod": {
+                "base_url": "https://prod.example.com",
+                "api_key": "token",
+            },
+            "_meta": "ignore",
+        },
+    )
+    monkeypatch.setattr(
+        check_site_configs,
+        "_find_sensitive_keys_in_settings",
+        lambda _path: [{"section": "default", "key": "api_key"}],
+    )
+    monkeypatch.setattr(
+        check_site_configs,
+        "setting_files_full",
+        [Path("C:/work/repo/britecore.toml")],
+    )
+
+    check_site_configs.main(["--json"])
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["config_precedence"][-1] == "envvar_britecore_sdk_prefix"
+    assert payload["resolved_settings_files"]
+    assert payload["active_paths"]["secrets_file"]
+    assert payload["warnings"]["sensitive_keys_in_settings"] == [
+        {"section": "default", "key": "api_key"}
+    ]
+    assert payload["sites"] == [
+        {
+            "site": "prod",
+            "ok": True,
+            "status": "OK",
+            "auth_mode": "API Key",
+            "url": "https://prod.example.com",
+            "missing_keys": [],
+        }
+    ]
+
+
+def test_main_json_mode_does_not_call_text_warning_output(monkeypatch, capsys):
+    called: list[str] = []
+    monkeypatch.setattr(check_site_configs, "warn_if_secrets_in_settings", lambda _: called.append("warn"))
+    monkeypatch.setattr(check_site_configs, "load_secrets", lambda _: {"prod": {"base_url": "https://x", "api_key": "k"}})
+
+    check_site_configs.main(["--json"])
+    _ = json.loads(capsys.readouterr().out)
+
+    assert called == []
+
+
+def test_main_honors_sys_argv_json_mode(monkeypatch, capsys):
+    monkeypatch.setattr(
+        check_site_configs.sys,
+        "argv",
+        ["check_site_configs", "--json"],
+    )
+    monkeypatch.setattr(
+        check_site_configs,
+        "load_secrets",
+        lambda _: {"prod": {"base_url": "https://x", "api_key": "k"}},
+    )
+
+    check_site_configs.main()
+    payload = json.loads(capsys.readouterr().out)
+
+    assert payload["sites"][0]["site"] == "prod"
+
+
+def test_display_path_aliases_home_and_cwd(monkeypatch):
+    fake_home = Path("C:/Users/tester")
+    fake_cwd = Path("C:/work/repo")
+
+    monkeypatch.setattr(check_site_configs.Path, "home", staticmethod(lambda: fake_home))
+    monkeypatch.setattr(check_site_configs.Path, "cwd", staticmethod(lambda: fake_cwd))
+
+    in_home = fake_home / ".britecore" / "settings.toml"
+    in_cwd = fake_cwd / "britecore.toml"
+    external = Path("D:/shared/settings.toml")
+
+    assert check_site_configs._display_path(in_home) == "~\\.britecore\\settings.toml"
+    assert check_site_configs._display_path(in_cwd) == ".\\britecore.toml"
+    assert check_site_configs._display_path(external).endswith("D:\\shared\\settings.toml")
+
+
+def test_print_config_source_diagnostics_includes_resolved_files(monkeypatch, capsys):
+    fake_files = [Path("C:/work/repo/britecore.toml"), Path("C:/Users/tester/.britecore/settings.toml")]
+    monkeypatch.setattr(check_site_configs, "setting_files_full", fake_files)
+    monkeypatch.setattr(
+        check_site_configs,
+        "_display_path",
+        lambda path: f"display::{Path(path).name}",
+    )
+
+    check_site_configs._print_config_source_diagnostics()
+    output = capsys.readouterr().out
+
+    assert "Configuration source precedence" in output
+    assert "BRITECORE_SDK_* environment variables" in output
+    assert "Resolved settings files (load order):" in output
+    assert "1. display::britecore.toml" in output
+    assert "2. display::settings.toml" in output
+

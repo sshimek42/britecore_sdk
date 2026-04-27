@@ -140,7 +140,15 @@ class BritecoreAPIClient:
         self.client_dry_run: bool = False
         self.target_site = target_site
 
-    def init_client(self, *, client_dry_run: bool = False) -> Self:
+    def init_client(
+        self,
+        *,
+        client_dry_run: bool = False,
+        base_url: str | None = None,
+        api_key: str | None = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+    ) -> Self:
         """
         Initializes the Britecore API client with configuration settings and HTTP components.
 
@@ -149,27 +157,67 @@ class BritecoreAPIClient:
         that all necessary configuration parameters are present and valid before proceeding
         with client initialization.
 
+        Credentials can be supplied in two mutually exclusive ways:
+
+        **File-based (default):** omit all credential kwargs — ``LoadClientSettings``
+        reads values from the layered config file search hierarchy
+        (see :func:`~britecore_sdk.settings.config._discover_settings_files`).
+
+        **Explicit (inline):** pass ``base_url`` (required) plus any combination of
+        ``api_key``, ``client_id``, and ``client_secret``.  When ``base_url`` is given,
+        the file-based lookup is skipped entirely and only the supplied values are used.
+
         Returns:
             Self: The initialized client instance, allowing fluent one-liner construction::
 
                 client = BritecoreAPIClient("my_site").init_client()
 
+                # Explicit-credential variant (no config file required):
+                client = BritecoreAPIClient("my_site").init_client(
+                    base_url="https://api.example.com",
+                    api_key="my-key",
+                )
+
         Args:
             client_dry_run: When ``True``, requests inherit dry-run behavior unless a
                 specific call passes ``dry_run=False``. This is useful for testing SDK
                 wrapper flow and payload shaping without sending requests.
+            base_url: Override (or supply) the site base URL directly.  When provided,
+                the file-based :class:`LoadClientSettings` lookup is bypassed.
+            api_key: Explicit API key.  Used only when ``base_url`` is also given.
+            client_id: Explicit OAuth client ID.  Used only when ``base_url`` is given.
+            client_secret: Explicit OAuth client secret.  Used only when ``base_url`` is given.
 
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
             BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
             ValueError: If target_site is not specified.
         """
+        from types import SimpleNamespace
+
         target_site = self.target_site
         if not target_site:
             raise ValueError(
                 "target_site must be specified explicitly; environment fallback is not allowed."
             )
-        self.site_settings = LoadClientSettings(target_site).load_config()
+
+        if base_url is not None:
+            # Explicit-credential mode: bypass file-based lookup
+            LOGGER.debug(
+                "init_client: using explicit credentials for target_site=%r", target_site
+            )
+            self.site_settings = SimpleNamespace(
+                base_url=base_url,
+                client_id=client_id or "",
+                client_secret=client_secret or "",
+                api_key=api_key or "",
+                web_retry=None,
+                web_timeout=None,
+                web_timeout_long=None,
+            )
+        else:
+            self.site_settings = LoadClientSettings(target_site).load_config()
+
         self.client_dry_run = client_dry_run
 
         self.enable_timers = True

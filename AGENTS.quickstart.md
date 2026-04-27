@@ -11,7 +11,7 @@ For full guidance, see `AGENTS.md`.
 - Use `RequestParameters` + `**kwargs: Unpack[RequestParameters]` for timeout/retry/header overrides. `dry_run=True` is part of `RequestParameters` — logs request without sending.
 - `process_result(...)` expects `{success, data, message/messages}` JSON; some supported v1 wrappers parse raw payloads differently.
 - Keep endpoint modules under `api/api_calls/v2`; supported v1 wrappers remain where no v2 equivalent exists.
-- Config comes from Dynaconf in `src/britecore_sdk/settings/.secrets.toml` + `src/britecore_sdk/settings/settings.toml`; validated site keys include `base_url`, `client_id`, `client_secret`, `api_key`.
+- Config is loaded from a layered hierarchy (lowest → highest priority): SDK package defaults → `~/.britecore/` → CWD `britecore.toml` / `.britecore_secrets.toml` → `BRITECORE_SDK_SETTINGS_FILE` env var → `BRITECORE_SDK_*` env vars. Call `from britecore_sdk.settings import setting_files_full` to inspect resolved paths.
 - Important env vars in code paths: `target_site` (client init) and `system` (regex selection in maps, with sensible defaults if unset).
 - Prefer imports from `models`/`validators`; `classes` import paths are removed.
 - Flat exception aliases: `from britecore_sdk import NotFoundError, AuthenticationError` etc. — use these in new example code.

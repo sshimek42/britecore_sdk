@@ -211,7 +211,20 @@ def retrieve_effective_date(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve effective-date details for the provided identifiers."""
+    """Retrieve effective-date details for a given effective date ID.
+
+    Args:
+        payload: Dict containing ``effective_date_id`` (UUID, required).
+            Example::
+
+                {"effective_date_id": "1376645b-85ff-44db-9498-1e6f73049670"}
+
+        **kwargs: :class:`~britecore_sdk.api.britecore_api_client.RequestParameters` overrides.
+
+    Returns:
+        Normalized response data dict with keys including ``effective_date``,
+        ``id``, ``description``, ``states``, ``lines``, etc.
+    """
     return post(
         path="/api/v2/lines/retrieve_effective_date",
         payload=payload,
