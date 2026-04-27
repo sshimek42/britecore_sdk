@@ -68,25 +68,40 @@ def init_api_client(
     """
     if base_url is not None:
         # Explicit-credential mode: target_site is optional
-        if target_site is _TARGET_SITE_UNSET or not isinstance(target_site, str) or not target_site:
+        if (
+            target_site is _TARGET_SITE_UNSET
+            or not isinstance(target_site, str)
+            or not target_site
+        ):
             resolved: str = "explicit"
         else:
             resolved = target_site  # type: ignore[assignment]
     else:
-        resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site  # type: ignore[assignment]
+        resolved = (
+            get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
+        )  # type: ignore[assignment]
         if not isinstance(resolved, str) or not resolved:
             raise BritecoreError.ConfigurationError(
                 "target_site must be specified: pass a non-empty value, or omit the argument "
                 "to use configured fallback resolution."
             )
     client: BritecoreAPIClient = BritecoreAPIClient(resolved)
-    client.init_client(
-        client_dry_run=client_dry_run,
-        base_url=base_url,
-        api_key=api_key,
-        client_id=client_id,
-        client_secret=client_secret,
-    )
+    kwargs: dict[str, object] = {"client_dry_run": client_dry_run}
+    if base_url is not None:
+        # Explicit-credential mode: always pass all credential kwargs explicitly
+        kwargs["base_url"] = base_url
+        kwargs["api_key"] = api_key
+        kwargs["client_id"] = client_id
+        kwargs["client_secret"] = client_secret
+    else:
+        # File-based mode: only pass credentials if they're provided
+        if api_key is not None:
+            kwargs["api_key"] = api_key
+        if client_id is not None:
+            kwargs["client_id"] = client_id
+        if client_secret is not None:
+            kwargs["client_secret"] = client_secret
+    client.init_client(**kwargs)  # type: ignore[arg-type]
     _set_module_client_state("_api_client", client)
     return client
 
@@ -127,25 +142,35 @@ def init_async_api_client(
         client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
     """
     if base_url is not None:
-        if target_site is _TARGET_SITE_UNSET or not isinstance(target_site, str) or not target_site:
+        if (
+            target_site is _TARGET_SITE_UNSET
+            or not isinstance(target_site, str)
+            or not target_site
+        ):
             resolved = "explicit"
         else:
             resolved = target_site  # type: ignore[assignment]
     else:
-        resolved = get_target_site() if target_site is _TARGET_SITE_UNSET else target_site  # type: ignore[assignment]
+        resolved = (
+            get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
+        )  # type: ignore[assignment]
         if not isinstance(resolved, str) or not resolved:
             raise BritecoreError.ConfigurationError(
                 "target_site must be specified: pass a non-empty value, or omit the argument "
                 "to use configured fallback resolution."
             )
-    client = AsyncBritecoreAPIClient(
-        resolved,
-        client_dry_run=client_dry_run,
-        base_url=base_url,
-        api_key=api_key,
-        client_id=client_id,
-        client_secret=client_secret,
-    )
+    async_kwargs: dict[str, object] = {
+        "client_dry_run": client_dry_run,
+    }
+    if base_url is not None:
+        async_kwargs["base_url"] = base_url
+    if api_key is not None:
+        async_kwargs["api_key"] = api_key
+    if client_id is not None:
+        async_kwargs["client_id"] = client_id
+    if client_secret is not None:
+        async_kwargs["client_secret"] = client_secret
+    client = AsyncBritecoreAPIClient(resolved, **async_kwargs)  # type: ignore[arg-type]
     _set_module_client_state("_async_api_client", client)
     return client
 

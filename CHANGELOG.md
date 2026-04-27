@@ -11,6 +11,12 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- `check_site_configs` now supports `--json` output for CI/tooling, including
+  config source precedence, resolved settings files, active config paths,
+  warnings, and per-site validation results.
+- New regression coverage for package-root logging exports and config
+  diagnostics JSON/table behavior (`tests/unit/test_package_exports.py`,
+  `tests/unit/test_base_logger.py`, `tests/utils/test_check_site_configs.py`).
 - **10 quality-of-life enhancements** to the SDK core:
   1. `BritecoreAPIClient` context manager (`__enter__`/`__exit__`) — auto-closes
      the `urllib3.PoolManager` on exit (`with BritecoreAPIClient("site").init_client() as client:`).
@@ -67,6 +73,20 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- **Configuration loading and init ergonomics:**
+  - Layered file discovery is now explicit and documented: SDK defaults →
+    `~/.britecore` → CWD (`britecore.toml`, `.britecore_secrets.toml`) →
+    `BRITECORE_SDK_SETTINGS_FILE`, with `BRITECORE_SDK_*` env vars highest.
+  - `init_api_client(...)`, `init_async_api_client(...)`, and
+    `BritecoreAPIClient.init_client(...)` support explicit inline credentials
+    (`base_url`, `api_key`, `client_id`, `client_secret`) that bypass file lookup.
+  - `target_site` guidance is normalized across docs: required for standard
+    file/env init, optional in explicit `base_url` mode.
+- **Logging contract refinements:**
+  - Package import now uses a library-safe default logger (`NullHandler`,
+    no root/global logging configuration).
+  - Added opt-in `configure_logging(...)` for SDK-managed stream/file handlers
+    and documented app-owned vs SDK-managed logging patterns.
 - **Code quality improvements:**
   - Reduced cyclomatic complexity in `BritecoreAPIClient.process_result` by
     extracting helper methods (`_raise_for_http_status`, `_load_json_payload`,
@@ -104,6 +124,8 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- `python -m britecore_sdk.utils.check_site_configs --json` now correctly emits
+  JSON in module execution mode (instead of falling back to table output).
 - MyPy `TypedDict` compatibility in `payments.py` via explicit casting for
   standardized kwargs handling.
 - DeepSource findings (D202, W1203, PTC-W0048, PTC-W0062, PY-R1000,

@@ -267,8 +267,12 @@ class TestDiscoverSettingsFiles:
         monkeypatch.delenv("BRITECORE_SDK_SETTINGS_FILE", raising=False)
 
         files = _discover_settings_files()
-        sdk_dir = Path(__file__).parent.parent.parent / "src" / "britecore_sdk" / "settings"
-        sdk_indices = [i for i, p in enumerate(files) if p.parent.resolve() == sdk_dir.resolve()]
+        sdk_dir = (
+            Path(__file__).parent.parent.parent / "src" / "britecore_sdk" / "settings"
+        )
+        sdk_indices = [
+            i for i, p in enumerate(files) if p.parent.resolve() == sdk_dir.resolve()
+        ]
         project_indices = [i for i, p in enumerate(files) if p.name == "britecore.toml"]
         if sdk_indices and project_indices:
             assert max(sdk_indices) < min(project_indices)
@@ -285,10 +289,11 @@ class TestExplicitCredentials:
         """When base_url is given, LoadClientSettings is never called."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-        with patch(
-            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
-        ) as mock_loader, patch(
-            "britecore_sdk.api.britecore_api_client.urllib3.PoolManager"
+        with (
+            patch(
+                "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+            ) as mock_loader,
+            patch("britecore_sdk.api.britecore_api_client.urllib3.PoolManager"),
         ):
             client = BritecoreAPIClient("mysite")
             client.init_client(
@@ -304,13 +309,11 @@ class TestExplicitCredentials:
         """Explicit client_id + client_secret triggers OAuth auth mode."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-        with patch(
-            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
-        ), patch(
-            "britecore_sdk.api.britecore_api_client.urllib3.PoolManager"
-        ), patch(
-            "britecore_sdk.api.britecore_api_client.OAuthToken"
-        ) as mock_oauth:
+        with (
+            patch("britecore_sdk.api.britecore_api_client.LoadClientSettings"),
+            patch("britecore_sdk.api.britecore_api_client.urllib3.PoolManager"),
+            patch("britecore_sdk.api.britecore_api_client.OAuthToken") as mock_oauth,
+        ):
             client = BritecoreAPIClient("mysite")
             client.init_client(
                 base_url="https://api.example.com",

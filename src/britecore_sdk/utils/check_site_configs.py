@@ -13,17 +13,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from britecore_sdk.settings import setting_files_full
 from britecore_sdk.utils import _config_common as _common
 from britecore_sdk.utils._config_common import (
-    FORBIDDEN_KEYS,
     CONFIG_PATH,
+    FORBIDDEN_KEYS,
     SETTINGS_PATH,
     get_auth_mode,
     load_secrets,
     validate_site,
     warn_if_secrets_in_settings,
 )
-from britecore_sdk.settings import setting_files_full
 
 # Backward-compatibility exports used by tests and external monkeypatching.
 os = _common.os
@@ -124,9 +124,7 @@ def build_site_config_report() -> dict[str, Any]:
             "envvar_settings_file",
             "envvar_britecore_sdk_prefix",
         ],
-        "resolved_settings_files": [
-            _display_path(path) for path in setting_files_full
-        ],
+        "resolved_settings_files": [_display_path(path) for path in setting_files_full],
         "active_paths": {
             "secrets_file": _display_path(CONFIG_PATH),
             "settings_file": _display_path(SETTINGS_PATH),

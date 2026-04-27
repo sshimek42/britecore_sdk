@@ -44,7 +44,9 @@ def configure_logging(
     logger = get_logger(name)
     logger.setLevel(_to_log_level(level))
 
-    if not any(not isinstance(handler, logging.NullHandler) for handler in logger.handlers):
+    if not any(
+        not isinstance(handler, logging.NullHandler) for handler in logger.handlers
+    ):
         logger.handlers.clear()
 
         console_handler = logging.StreamHandler()

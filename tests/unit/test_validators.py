@@ -287,6 +287,8 @@ class TestAddressValidator:
 
     @pytest.mark.unit
     def test_validate_state_mismatch_fix_address_true(self, monkeypatch, caplog):
+        import logging
+
         # Patch ZIP_CODE_LOOKUP to return a fake state and county
         class FakeZip:
             admin_code1 = "IL"
@@ -304,14 +306,25 @@ class TestAddressValidator:
             "zip": "62701",
         }
         validator = AddressValidator(address)
-        with caplog.at_level("INFO"):
-            result = validator.process()
-        assert result[0]["address_state"] == "IL"
-        assert any("ADDRESS UPDATED" in m for m in caplog.messages)
-        monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
+
+        # Ensure logger propagates for caplog
+        sdk_logger = logging.getLogger("britecore_sdk")
+        original_propagate = sdk_logger.propagate
+        sdk_logger.propagate = True
+
+        try:
+            with caplog.at_level(logging.INFO, logger="britecore_sdk"):
+                result = validator.process()
+            assert result[0]["address_state"] == "IL"
+            assert any("ADDRESS UPDATED" in m for m in caplog.messages)
+        finally:
+            sdk_logger.propagate = original_propagate
+            monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
 
     @pytest.mark.unit
     def test_validate_city_mismatch_fix_address_true(self, monkeypatch, caplog):
+        import logging
+
         class FakeZip:
             admin_code1 = "IL"
             admin_name2 = "Sangamon"
@@ -328,11 +341,20 @@ class TestAddressValidator:
             "zip": "62701",
         }
         validator = AddressValidator(address)
-        with caplog.at_level("INFO"):
-            result = validator.process()
-        assert result[0]["address_city"] == "Springfield"
-        assert any("ADDRESS UPDATED" in m for m in caplog.messages)
-        monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
+
+        # Ensure logger propagates for caplog
+        sdk_logger = logging.getLogger("britecore_sdk")
+        original_propagate = sdk_logger.propagate
+        sdk_logger.propagate = True
+
+        try:
+            with caplog.at_level(logging.INFO, logger="britecore_sdk"):
+                result = validator.process()
+            assert result[0]["address_city"] == "Springfield"
+            assert any("ADDRESS UPDATED" in m for m in caplog.messages)
+        finally:
+            sdk_logger.propagate = original_propagate
+            monkeypatch.setattr(address_validator, "FIX_ADDRESS", False)
 
     @pytest.mark.unit
     def test_validate_state_mismatch_fix_address_false(self, monkeypatch, caplog):
