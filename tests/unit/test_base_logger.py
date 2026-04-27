@@ -2,11 +2,10 @@
 
 import logging
 import uuid
-from unittest.mock import patch
 
 import pytest
 
-from britecore_sdk.base_logger import get_logger
+from britecore_sdk.base_logger import configure_logging, get_logger
 
 
 class _CountingHandler(logging.Handler):
@@ -21,26 +20,17 @@ class _CountingHandler(logging.Handler):
 
 
 @pytest.mark.unit
-def test_get_logger_disables_propagation_to_root():
-    """SDK logger should not propagate to root to avoid duplicate console lines."""
+def test_get_logger_uses_null_handler_by_default():
+    """SDK logger should be safe for libraries until users opt into handlers."""
     logger_name = f"britecore_sdk.test.{uuid.uuid4().hex}"
-
-    root_logger = logging.getLogger()
-    root_handler = _CountingHandler()
-    root_logger.addHandler(root_handler)
-
-    logger = get_logger(logger_name, level="INFO", log_to_file=False)
-    local_handler = _CountingHandler()
-    logger.addHandler(local_handler)
+    logger = get_logger(logger_name)
 
     try:
-        logger.info("hello")
         assert logger.propagate is False
-        assert len(local_handler.records) == 1
-        assert len(root_handler.records) == 0
+        assert len(logger.handlers) == 1
+        assert isinstance(logger.handlers[0], logging.NullHandler)
     finally:
         logger.handlers.clear()
-        root_logger.removeHandler(root_handler)
 
 
 @pytest.mark.unit
@@ -48,9 +38,9 @@ def test_get_logger_does_not_add_duplicate_handlers_for_same_name():
     """Repeated get_logger calls should reuse existing handlers for the same logger."""
     logger_name = f"britecore_sdk.test.{uuid.uuid4().hex}"
 
-    logger_a = get_logger(logger_name, level="INFO", log_to_file=False)
+    logger_a = get_logger(logger_name)
     handler_count = len(logger_a.handlers)
-    logger_b = get_logger(logger_name, level="INFO", log_to_file=False)
+    logger_b = get_logger(logger_name)
 
     try:
         assert logger_a is logger_b
@@ -61,23 +51,59 @@ def test_get_logger_does_not_add_duplicate_handlers_for_same_name():
 
 
 @pytest.mark.unit
-def test_get_logger_allows_runtime_debug_level_changes():
-    """Raising logger level to DEBUG should emit debug without changing handler levels."""
+def test_configure_logging_adds_stream_handler_and_emits_records():
+    """configure_logging should replace NullHandler with a usable stream handler."""
     logger_name = f"britecore_sdk.test.{uuid.uuid4().hex}"
-    logger = get_logger(logger_name, level="INFO", log_to_file=False)
-    console_handler = logger.handlers[0]
-    records: list[logging.LogRecord] = []
+    logger = configure_logging(logger_name, level="INFO")
+    stream_handler = logger.handlers[0]
+    counter_handler = _CountingHandler()
+    counter_handler.setLevel(logging.NOTSET)
+    logger.addHandler(counter_handler)
 
-    assert console_handler.level == logging.NOTSET
+    assert logger.level == logging.INFO
+    assert logger.propagate is False
+    assert not isinstance(stream_handler, logging.NullHandler)
+    assert stream_handler.level == logging.NOTSET
+
+    logger.info("visible at info")
+    logger.debug("hidden at info")
+
+    assert [record.getMessage() for record in counter_handler.records] == [
+        "visible at info"
+    ]
+    logger.handlers.clear()
+
+
+@pytest.mark.unit
+def test_configure_logging_is_idempotent_for_same_logger():
+    """Repeated configure_logging calls should not duplicate handlers."""
+    logger_name = f"britecore_sdk.test.{uuid.uuid4().hex}"
+    logger = configure_logging(logger_name, level="INFO")
 
     try:
-        with patch.object(
-            console_handler, "emit", side_effect=lambda record: records.append(record)
-        ):
-            logger.debug("hidden at info")
-            logger.setLevel(logging.DEBUG)
-            logger.debug("visible at debug")
+        initial_handlers = list(logger.handlers)
+        configure_logging(logger_name, level="DEBUG")
 
-        assert [record.getMessage() for record in records] == ["visible at debug"]
+        assert logger.level == logging.DEBUG
+        assert logger.handlers == initial_handlers
+    finally:
+        logger.handlers.clear()
+
+
+@pytest.mark.unit
+def test_configure_logging_preserves_existing_custom_handlers():
+    """SDK helper should not replace custom handlers already attached by applications."""
+    logger_name = f"britecore_sdk.test.{uuid.uuid4().hex}"
+    logger = get_logger(logger_name)
+    custom_handler = _CountingHandler()
+
+    try:
+        logger.handlers.clear()
+        logger.addHandler(custom_handler)
+        configure_logging(logger_name, level="INFO")
+
+        assert logger.handlers == [custom_handler]
+        logger.info("custom")
+        assert [record.getMessage() for record in custom_handler.records] == ["custom"]
     finally:
         logger.handlers.clear()

@@ -37,7 +37,14 @@ For a compact version, see `AGENTS.quickstart.md`.
 
 ## Configuration and integration points
 
-- Runtime config is Dynaconf-based in `src/britecore_sdk/settings/config.py`, loading `src/britecore_sdk/settings/.secrets.toml` + `src/britecore_sdk/settings/settings.toml`.
+- Runtime config uses a **layered file hierarchy** (lowest → highest priority):
+  1. SDK package defaults (`src/britecore_sdk/settings/settings.toml` + `.secrets.toml`)
+  2. User-level config (`~/.britecore/settings.toml` + `~/.britecore/.secrets.toml`)
+  3. Project-local config (`./britecore.toml` + `./.britecore_secrets.toml` in CWD)
+  4. Explicit file path (`BRITECORE_SDK_SETTINGS_FILE` env var)
+  5. `BRITECORE_SDK_*` environment variables (always highest priority)
+- `_discover_settings_files()` (in `config.py`) builds the Dynaconf `settings_files` list at import time; call `from britecore_sdk.settings import setting_files_full` to inspect what was resolved.
+- `init_api_client()` and `BritecoreAPIClient.init_client()` accept explicit `base_url`, `api_key`, `client_id`, `client_secret` kwargs to bypass file-based lookup entirely. When `base_url` is given, `target_site` is optional (defaults to `"explicit"`).
 - Required site keys are validated (`base_url`, `client_id`, `client_secret`, `api_key`) for configured environments.
 - Important env vars used directly by code: `target_site` (client init) and `system` (regex map selection in `maps/britecore_policy_name_map.py`).
 - External integrations: `urllib3` (HTTP), OAuth2 token endpoint `/api/auth/oauth2/token`, CSV-backed zip lookup in `utils/zip_code_lookup.py`.
@@ -71,7 +78,8 @@ python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client imp
 
 - Logger is exposed as `britecore_sdk.logger` (standard Python `logging.Logger`).
 - Use `logger.info()`, `logger.debug()`, `logger.error()`, etc. for logging.
-- Logs are written to console and (by default) to `~/.britecore_logs/{package_name}.log`.
+- SDK import does not configure root/global logging; the default package logger uses a `NullHandler`.
+- Use `britecore_sdk.configure_logging(...)` when you want SDK-managed console/file handlers.
 - Library users can configure logging via standard Python logging mechanisms:
 
 ```python

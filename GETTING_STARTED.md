@@ -114,6 +114,8 @@ export system="your_system"
 ```
 
 **Note:** `target_site` can also be set in `settings.toml` — environment variable takes precedence if both are set.
+In standard initialization, a non-empty `target_site` is required. In explicit mode
+(`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults to `"explicit"`.
 
 ### Authentication Behavior
 
@@ -129,10 +131,28 @@ Required keys in `.secrets.toml` for each site:
 
 To see which auth mode was selected at init time, enable debug logs before calling `get_api_client()` or `init_api_client()`.
 
+Two supported patterns:
+
+#### Pattern A: App-owned logging configuration
+
+Use this when your application already controls logging for all dependencies.
+
 ```python
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+```
+
+#### Pattern B: SDK-managed handler (opt-in)
+
+Use this when you want a quick SDK console formatter without configuring root logging.
+
+```python
+import logging
+from britecore_sdk import configure_logging
+
+configure_logging(level="INFO")
 logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 ```
 
@@ -283,6 +303,6 @@ python -m pytest tests/integration -m integration -v
 - `init_client()` now returns `Self`, so `BritecoreAPIClient("site").init_client()` is a valid one-liner.
 - Use the context manager (`with BritecoreAPIClient("site").init_client() as client:`) to ensure the connection pool is closed on exit.
 - Call `reset_api_client()` to clear the module-level client (useful in tests or multi-site scripts).
-- API client initialization failures usually indicate missing `target_site` or site config.
+- API client initialization failures usually indicate missing `target_site`/site config in standard mode, or missing `base_url` in explicit mode.
 - Endpoint wrappers expect response normalization through `process_result(...)`; prefer using provided `v2` modules.
 - If policy name mapping behaves unexpectedly, verify `system` is set for regex map selection.

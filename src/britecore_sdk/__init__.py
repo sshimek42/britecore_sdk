@@ -14,9 +14,9 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from britecore_sdk.base_logger import get_logger
+from britecore_sdk.base_logger import configure_logging, get_logger
 
-logger = get_logger(__package__, level="INFO", log_to_file=True, log_file_level="INFO")
+logger = get_logger(__package__)
 
 try:
     __version__ = version("britecore_sdk")
@@ -159,4 +159,5 @@ __all__ = [
     # Version
     "__version__",
     "logger",
+    "configure_logging",
 ]

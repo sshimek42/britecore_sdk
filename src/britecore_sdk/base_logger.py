@@ -1,62 +1,66 @@
-"""Logger configuration using Python's built-in logging module."""
+"""Library-safe logging helpers built on Python's standard logging module."""
 
 import logging
 from pathlib import Path
 
+_DEFAULT_FORMAT = (
+    "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
+)
 
-def get_logger(
-    name: str,
-    level: str = "INFO",
-    log_to_file: bool = True,
-    log_file_level: str = "INFO",
-) -> logging.Logger:
-    """
-    Create and configure a logger instance with both console and optional file output.
 
-    This function provides a simple way to set up a logger with sensible defaults,
-    supporting both console output and file output. It replaces the previous SCLogging
-    wrapper with Python's built-in logging module.
+def _to_log_level(level: str | int) -> int:
+    """Resolve string/int log levels into logging module constants."""
+    if isinstance(level, int):
+        return level
+    return getattr(logging, str(level).upper())
 
-    Args:
-        name: The logger name (typically __package__ or module name)
-        level: Initial logger level (default: "INFO")
-        log_to_file: Whether to enable file logging (default: True)
-        log_file_level: File output log level (default: "INFO")
 
-    Returns:
-        logging.Logger: A configured logger instance
+def get_logger(name: str = "britecore_sdk") -> logging.Logger:
+    """Return the SDK logger with a NullHandler attached by default.
+
+    SDK code should emit records but avoid configuring global/root logging behavior.
+    Applications can opt in to SDK-local handlers via ``configure_logging``.
     """
     logger = logging.getLogger(name)
-
-    # Keep SDK logs from being emitted again by root handlers configured by applications.
     logger.propagate = False
 
-    # Only configure if not already configured (prevent duplicate handlers)
     if not logger.handlers:
-        logger.setLevel(getattr(logging, level))
+        logger.addHandler(logging.NullHandler())
 
-        # Console handler
+    return logger
+
+
+def configure_logging(
+    name: str = "britecore_sdk",
+    level: str | int = "INFO",
+    *,
+    log_to_file: bool = False,
+    log_file_level: str | int | None = None,
+) -> logging.Logger:
+    """Opt in to SDK-managed stream/file handlers.
+
+    This helper is intentionally explicit so SDK import does not alter host app logging.
+    """
+    logger = get_logger(name)
+    logger.setLevel(_to_log_level(level))
+
+    if not any(not isinstance(handler, logging.NullHandler) for handler in logger.handlers):
+        logger.handlers.clear()
+
         console_handler = logging.StreamHandler()
-        # Let logger level control console verbosity (INFO by default; DEBUG when caller sets it).
         console_handler.setLevel(logging.NOTSET)
-        console_formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
-        )
-        console_handler.setFormatter(console_formatter)
+        console_handler.setFormatter(logging.Formatter(_DEFAULT_FORMAT))
         logger.addHandler(console_handler)
 
-        # File handler (optional)
         if log_to_file:
+            file_level = level if log_file_level is None else log_file_level
             log_dir = Path.home() / ".britecore_logs"
             log_dir.mkdir(exist_ok=True)
             log_file = log_dir / f"{name}.log"
 
             file_handler = logging.FileHandler(log_file)
-            file_handler.setLevel(getattr(logging, log_file_level))
-            file_formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
-            )
-            file_handler.setFormatter(file_formatter)
+            file_handler.setLevel(_to_log_level(file_level))
+            file_handler.setFormatter(logging.Formatter(_DEFAULT_FORMAT))
             logger.addHandler(file_handler)
 
     return logger

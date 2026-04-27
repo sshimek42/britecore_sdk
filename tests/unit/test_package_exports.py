@@ -1,6 +1,7 @@
 """Regression tests for lazy package-root exports."""
 
 import importlib
+import logging
 import sys
 from types import ModuleType
 
@@ -55,6 +56,12 @@ class TestPackageRootExports:
         package = _import_fresh_package(monkeypatch)
 
         assert package.logger.name == "britecore_sdk"
+        assert isinstance(package.logger, logging.Logger)
+        assert any(
+            isinstance(handler, logging.NullHandler)
+            for handler in package.logger.handlers
+        )
+        assert callable(package.configure_logging)
         assert "britecore_sdk.api.api_calls" not in sys.modules
         assert "britecore_sdk.models" not in sys.modules
         assert "britecore_sdk.validators" not in sys.modules
@@ -95,6 +102,7 @@ class TestPackageRootExports:
             "get_api_client",
             "get_async_api_client",
             "logger",
+            "configure_logging",
             "__version__",
         }
 
