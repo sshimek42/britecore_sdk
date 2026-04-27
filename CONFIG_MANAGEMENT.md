@@ -159,8 +159,6 @@ export BRITECORE_SDK_API_KEY="my-api-key"
 
 ---
 
-
-
 ### 1. Copy Example Files
 
 Two example files are provided to help you get started:

@@ -204,7 +204,8 @@ class BritecoreAPIClient:
         if base_url is not None:
             # Explicit-credential mode: bypass file-based lookup
             LOGGER.debug(
-                "init_client: using explicit credentials for target_site=%r", target_site
+                "init_client: using explicit credentials for target_site=%r",
+                target_site,
             )
             self.site_settings = SimpleNamespace(
                 base_url=base_url,

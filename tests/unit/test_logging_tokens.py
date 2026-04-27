@@ -58,6 +58,11 @@ def test_runtime_logs_do_not_emit_legacy_tokens(caplog) -> None:
     async_contacts.API_CLIENT = cast(Any, DummyAsyncClient())
     deliverables.API_CLIENT = cast(Any, DummySyncClient())
 
+    # Ensure the logger can propagate messages to caplog
+    sdk_logger = logging.getLogger("britecore_sdk")
+    original_propagate = sdk_logger.propagate
+    sdk_logger.propagate = True
+
     try:
         with caplog.at_level(logging.DEBUG, logger="britecore_sdk"):
             contacts.new_contact(name="Jane Doe", address=[{"line1": "x"}])
@@ -73,3 +78,4 @@ def test_runtime_logs_do_not_emit_legacy_tokens(caplog) -> None:
         contacts.API_CLIENT = sync_client_original
         async_contacts.API_CLIENT = async_client_original
         deliverables.API_CLIENT = deliverables_client_original
+        sdk_logger.propagate = original_propagate

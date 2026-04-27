@@ -36,13 +36,17 @@ def test_load_zip_codes_from_csv(
 def test_load_zip_codes_missing_file_logs_and_raises(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
-    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Missing ZIP CSV should raise and emit an error log."""
+    from unittest.mock import patch
+
     missing_csv = tmp_path / "does_not_exist.csv"
     monkeypatch.setattr(zip_code_lookup, "import_file", missing_csv)
 
-    with pytest.raises(FileNotFoundError):
-        load_zip_codes()
+    # Patch the LOGGER.error method to verify it's called with our message
+    with patch.object(zip_code_lookup.LOGGER, "error") as mock_error:
+        with pytest.raises(FileNotFoundError):
+            load_zip_codes()
 
-    assert "Zip Code lookup file is missing" in caplog.text
+        # Verify the error method was called with our message
+        mock_error.assert_called_once_with("Zip Code lookup file is missing")

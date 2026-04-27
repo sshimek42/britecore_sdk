@@ -165,7 +165,9 @@ def test_get_auth_mode(config, expected_auth):
 
 
 def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
-    monkeypatch.setattr(check_site_configs, "_print_config_source_diagnostics", lambda: None)
+    monkeypatch.setattr(
+        check_site_configs, "_print_config_source_diagnostics", lambda: None
+    )
     monkeypatch.setattr(
         check_site_configs, "warn_if_secrets_in_settings", lambda _: None
     )
@@ -232,8 +234,16 @@ def test_main_json_output_includes_precedence_and_sites(monkeypatch, capsys):
 
 def test_main_json_mode_does_not_call_text_warning_output(monkeypatch, capsys):
     called: list[str] = []
-    monkeypatch.setattr(check_site_configs, "warn_if_secrets_in_settings", lambda _: called.append("warn"))
-    monkeypatch.setattr(check_site_configs, "load_secrets", lambda _: {"prod": {"base_url": "https://x", "api_key": "k"}})
+    monkeypatch.setattr(
+        check_site_configs,
+        "warn_if_secrets_in_settings",
+        lambda _: called.append("warn"),
+    )
+    monkeypatch.setattr(
+        check_site_configs,
+        "load_secrets",
+        lambda _: {"prod": {"base_url": "https://x", "api_key": "k"}},
+    )
 
     check_site_configs.main(["--json"])
     _ = json.loads(capsys.readouterr().out)
@@ -260,23 +270,36 @@ def test_main_honors_sys_argv_json_mode(monkeypatch, capsys):
 
 
 def test_display_path_aliases_home_and_cwd(monkeypatch):
+    import os
+
     fake_home = Path("C:/Users/tester")
     fake_cwd = Path("C:/work/repo")
 
-    monkeypatch.setattr(check_site_configs.Path, "home", staticmethod(lambda: fake_home))
+    monkeypatch.setattr(
+        check_site_configs.Path, "home", staticmethod(lambda: fake_home)
+    )
     monkeypatch.setattr(check_site_configs.Path, "cwd", staticmethod(lambda: fake_cwd))
 
     in_home = fake_home / ".britecore" / "settings.toml"
     in_cwd = fake_cwd / "britecore.toml"
     external = Path("D:/shared/settings.toml")
 
-    assert check_site_configs._display_path(in_home) == "~\\.britecore\\settings.toml"
-    assert check_site_configs._display_path(in_cwd) == ".\\britecore.toml"
-    assert check_site_configs._display_path(external).endswith("D:\\shared\\settings.toml")
+    # Expected output should be OS-normalized
+    home_result = check_site_configs._display_path(in_home)
+    assert home_result == f"~{os.sep}.britecore{os.sep}settings.toml"
+
+    cwd_result = check_site_configs._display_path(in_cwd)
+    assert cwd_result == f".{os.sep}britecore.toml"
+
+    external_result = check_site_configs._display_path(external)
+    assert external_result.endswith(f"D:{os.sep}shared{os.sep}settings.toml")
 
 
 def test_print_config_source_diagnostics_includes_resolved_files(monkeypatch, capsys):
-    fake_files = [Path("C:/work/repo/britecore.toml"), Path("C:/Users/tester/.britecore/settings.toml")]
+    fake_files = [
+        Path("C:/work/repo/britecore.toml"),
+        Path("C:/Users/tester/.britecore/settings.toml"),
+    ]
     monkeypatch.setattr(check_site_configs, "setting_files_full", fake_files)
     monkeypatch.setattr(
         check_site_configs,
@@ -292,4 +315,3 @@ def test_print_config_source_diagnostics_includes_resolved_files(monkeypatch, ca
     assert "Resolved settings files (load order):" in output
     assert "1. display::britecore.toml" in output
     assert "2. display::settings.toml" in output
-
