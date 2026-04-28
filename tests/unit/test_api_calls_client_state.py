@@ -111,3 +111,38 @@ class TestApiCallsClientState:
 
         with pytest.raises(module.BritecoreError.ConfigurationError):
             module.get_async_api_client()
+
+    @pytest.mark.unit
+    def test_use_api_client_overrides_global_within_context(self):
+        """use_api_client should route proxy calls to the bound client in-context."""
+        module = importlib.reload(api_calls_module)
+
+        global_client = MagicMock()
+        global_client.token = "global"
+        context_client = MagicMock()
+        context_client.token = "context"
+
+        module._api_client = global_client
+
+        assert module.api_client.token == "global"
+        with module.use_api_client(context_client):
+            assert module.api_client.token == "context"
+            assert module.get_api_client() is context_client
+        assert module.api_client.token == "global"
+        assert module.get_api_client() is global_client
+
+    @pytest.mark.unit
+    def test_use_api_client_supports_nested_contexts(self):
+        """Nested use_api_client contexts should restore prior override on exit."""
+        module = importlib.reload(api_calls_module)
+
+        outer = MagicMock()
+        outer.token = "outer"
+        inner = MagicMock()
+        inner.token = "inner"
+
+        with module.use_api_client(outer):
+            assert module.api_client.token == "outer"
+            with module.use_api_client(inner):
+                assert module.api_client.token == "inner"
+            assert module.api_client.token == "outer"

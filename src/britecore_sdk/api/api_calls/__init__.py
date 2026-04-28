@@ -1,4 +1,5 @@
-# ...existing code...
+from contextlib import contextmanager
+from contextvars import ContextVar
 from typing import cast
 
 from britecore_sdk.api.britecore_api_client import (
@@ -10,6 +11,9 @@ from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import get_target_site
 
 _TARGET_SITE_UNSET = object()
+_context_api_client: ContextVar[BritecoreAPIClient | None] = ContextVar(
+    "_context_api_client", default=None
+)
 
 
 def _set_module_client_state(name: str, client: object) -> None:
@@ -196,6 +200,21 @@ def reset_api_client() -> None:
     _set_module_client_state("_async_api_client", None)
 
 
+@contextmanager
+def use_api_client(client: BritecoreAPIClient):
+    """Temporarily bind a specific sync client for endpoint wrapper calls.
+
+    Within this context, wrappers that access ``api_client``/``API_CLIENT``
+    resolve to ``client`` instead of the module-level global ``_api_client``.
+    This enables safe multi-site workflows without resetting global state.
+    """
+    token = _context_api_client.set(client)
+    try:
+        yield client
+    finally:
+        _context_api_client.reset(token)
+
+
 # Lazy initialization: _api_client is only created on first access to avoid
 # import-time failures in contexts without config/env setup.
 _api_client: BritecoreAPIClient | None = None
@@ -213,6 +232,10 @@ def get_api_client() -> BritecoreAPIClient:
         BritecoreError.Base: If lazy initialization fails.
         Any exceptions from BritecoreAPIClient.init_client() if initialization fails.
     """
+    context_client = _context_api_client.get()
+    if context_client is not None:
+        return context_client
+
     if _api_client is None:
         raise BritecoreError.ConfigurationError(
             "API client has not been initialized. Call init_api_client(target_site=...) first.\n"
@@ -292,6 +315,7 @@ __all__ = [
     "init_api_client",
     "init_async_api_client",
     "reset_api_client",
+    "use_api_client",
     "BritecoreAPIClient",
     "AsyncBritecoreAPIClient",
     "web_timeout_long",

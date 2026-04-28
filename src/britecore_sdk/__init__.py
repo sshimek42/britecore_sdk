@@ -24,7 +24,11 @@ except PackageNotFoundError:  # pragma: no cover
     __version__ = "0.0.0"
 
 if TYPE_CHECKING:
-    from britecore_sdk.api.api_calls import get_api_client, get_async_api_client
+    from britecore_sdk.api.api_calls import (
+        get_api_client,
+        get_async_api_client,
+        use_api_client,
+    )
     from britecore_sdk.constants import (
         COMMON_CITY_REPLACEMENT,
         DEFAULT_ADDRESS_TYPE,
@@ -60,6 +64,7 @@ _EXPORT_MAP: dict[str, tuple[str, str]] = {
         "britecore_sdk.api.api_calls",
         "get_async_api_client",
     ),
+    "use_api_client": ("britecore_sdk.api.api_calls", "use_api_client"),
     "COMMON_CITY_REPLACEMENT": (
         "britecore_sdk.constants",
         "COMMON_CITY_REPLACEMENT",
@@ -156,6 +161,7 @@ __all__ = [
     # API client helpers
     "get_api_client",
     "get_async_api_client",
+    "use_api_client",
     # Version
     "__version__",
     "logger",

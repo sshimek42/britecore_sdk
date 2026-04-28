@@ -58,6 +58,22 @@ print(repr(client))
 # BritecoreAPIClient(site='your_site', base_url='https://...', auth='oauth', initialized=True)
 ```
 
+### Per-site wrapper binding (multi-site)
+
+```python
+from britecore_sdk.api.api_calls import init_api_client, use_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+prod_client = init_api_client("production", base_url="api.prod.example.com", api_key="...")
+staging_client = init_api_client("staging", base_url="api.staging.example.com", api_key="...")
+
+with use_api_client(prod_client):
+    prod_policy = policies.retrieve_policy(policy_number="POL-001")
+
+with use_api_client(staging_client):
+    staging_policy = policies.retrieve_policy(policy_number="POL-001")
+```
+
 Domain modules are importable from `britecore_sdk.api.api_calls.v2`.
 The API client initializes lazily on first request; use `get_api_client()` for explicit control when needed. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 

@@ -4,13 +4,28 @@ This site hosts generated API docs and key project guides.
 
 ```{toctree}
 :maxdepth: 2
-:caption: Current guides
+:caption: Core Guides
 
 api_reference
 ASYNC_CACHING
 Configuration <CONFIGURATION>
 Sensitive map files <MAP_FILES>
-CI/CD and Coverage <CI_AND_COVERAGE>
 Python compatibility <python_compatibility>
+```
+
+```{toctree}
+:maxdepth: 2
+:caption: Integration & Operations
+
+MULTI_TENANCY
+OBSERVABILITY
+DEPLOYMENT
+CI/CD and Coverage <CI_AND_COVERAGE>
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Reference
+
 Unimplemented API stubs <unimplemented_api_stubs>
 ```

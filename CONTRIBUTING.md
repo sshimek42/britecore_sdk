@@ -18,6 +18,10 @@ Related docs:
 - [API.md](API.md) for endpoint behavior and examples
 - [ARCHITECTURE.md](ARCHITECTURE.md) for system design
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for known issues
+- [DEPRECATION.md](DEPRECATION.md) for deprecation policy
+- [docs/MULTI_TENANCY.md](docs/MULTI_TENANCY.md) for multi-site patterns
+- [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) for logging and monitoring
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for production deployment
 
 ## Development setup
 
