@@ -113,7 +113,7 @@ jobs:
     - name: Generate coverage report
       if: matrix.python-version == '3.11' && matrix.randomized == false
       run: |
-        coverage report --fail-under=72
+        coverage report --fail-under=85
 
     - name: Archive coverage report
       if: always()
