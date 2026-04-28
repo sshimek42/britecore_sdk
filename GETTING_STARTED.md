@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: April 22, 2026*
+*Last updated: April 28, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -152,6 +152,48 @@ export system="your_system"
 **Note:** `target_site` can also be set in `settings.toml` — environment variable takes precedence if both are set.
 In standard initialization, a non-empty `target_site` is required. In explicit mode
 (`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults to `"explicit"`.
+
+### Explicit inline credentials (no config files)
+
+Pass credentials directly to `init_api_client()` or `BritecoreAPIClient.init_client()` to bypass the config file system entirely. This is ideal for serverless functions, containers, and test isolation:
+
+#### API Key Authentication
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+client = init_api_client(
+    base_url="https://api.britecore.example.com",
+    api_key="your-api-key",
+)
+```
+
+#### OAuth Authentication
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+client = init_api_client(
+    base_url="https://api.britecore.example.com",
+    client_id="your-client-id",
+    client_secret="your-client-secret",
+)
+```
+
+#### Using context manager (v1.1+)
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.api.api_calls.v2 import policies
+
+with BritecoreAPIClient("production").init_client(
+    base_url="https://api.britecore.example.com",
+    api_key="your-api-key"
+) as client:
+    result = policies.retrieve_policy(policy_number="POL001")
+    print(result)
+# urllib3 PoolManager auto-closed on exit
+```
 
 ### Authentication Behavior
 
