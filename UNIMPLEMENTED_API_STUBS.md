@@ -2,7 +2,7 @@
 
 Canonical source: this file. `docs/unimplemented_api_stubs.md` includes this content.
 
-*Last updated: April 7, 2026*
+*Last updated: April 28, 2026*
 *Document type: Living implementation backlog*
 
 ## Status

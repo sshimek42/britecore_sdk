@@ -2,7 +2,7 @@
 
 Canonical source: this file. `docs/python_compatibility.md` includes this content.
 
-*Last updated: April 7, 2026*
+*Last updated: April 28, 2026*
 *Document type: Living compatibility policy*
 
 **BriteCore Libraries** — supported Python versions and compatibility commitments.
