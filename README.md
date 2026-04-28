@@ -6,9 +6,9 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Test Coverage](https://img.shields.io/badge/coverage-77%25-brightgreen.svg)](#test-coverage)
+[![Coverage](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
-**Status:** Stable (v1.1.2) | **License:** Apache-2.0 | **Python:** 3.11+ | **Coverage:** 77%
+**Status:** Stable (v1.2.0) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 

@@ -58,6 +58,7 @@ def main() -> None:
             "unit",
             "--cov=src/britecore_sdk",
             "--cov-report=term-missing",
+            "--cov-report=xml",
             "--cov-fail-under=60",
         ],
         "Unit tests",

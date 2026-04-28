@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_sdk"
-version = "1.1.2"
+version = "1.2.0"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -32,8 +32,7 @@ dependencies = [
     "dynaconf~=3.2.13",
     "typing_extensions>=4.15.0",
     "urllib3~=2.6.3",
-    "toml>=0.10.2,<1.0.0",  # Added for utils/check_site_configs.py (Python 3.11+ compatible)
-    "mypy>=1.20.0",
+    "toml>=0.10.2,<1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -51,7 +50,7 @@ dev = [
     "python-dotenv>=1.2.2",
     "black>=26.3.1",
     "ruff>=0.15.11",
-    "mypy>=1.17.0",
+    "mypy>=1.20.0",
     "pre-commit>=4.5.1",
     "pymarkdownlnt>=0.9.36",
     "pip-audit>=2.10.0",
