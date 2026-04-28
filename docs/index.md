@@ -28,4 +28,5 @@ CI/CD and Coverage <CI_AND_COVERAGE>
 :caption: Reference
 
 Unimplemented API stubs <unimplemented_api_stubs>
+Endpoint verification snapshot (2026-04-28) <ENDPOINT_VERIFICATION_2026-04-28>
 ```

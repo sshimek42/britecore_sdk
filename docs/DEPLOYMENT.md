@@ -53,7 +53,7 @@ CMD ["python", "app.py"]
 **requirements.txt:**
 
 ```text
-britecore_sdk>=1.1.2
+britecore_sdk>=1.2.0
 flask>=3.0.0
 # ... other deps
 ```

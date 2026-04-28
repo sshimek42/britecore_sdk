@@ -9,6 +9,10 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.2.0] — 2026-04-28
+
 ### Added
 
 - Added `use_api_client(client)` context manager in `api.api_calls` to bind
