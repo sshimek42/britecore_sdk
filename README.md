@@ -22,20 +22,49 @@ pip install britecore_sdk
 
 ### 2. Configure
 
-Set `target_site` and credentials via `settings.toml`/`.secrets.toml` or environment variables.
+Set `target_site` and credentials via config files or environment variables. The SDK discovers
+config files automatically from several locations (later sources override earlier ones):
 
-**Recommended: `settings.toml` + `.secrets.toml`**
+| Priority | Location | File(s) |
+|---|---|---|
+| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
+| 2 | User-level (all projects on machine) | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
+| 3 | Project-local (current directory) | `./britecore.toml`, `./.britecore_secrets.toml` |
+| 4 | Explicit file override | Path pointed to by `BRITECORE_SDK_SETTINGS_FILE` |
+| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
 
-In `src/britecore_sdk/settings/settings.toml`:
+**Recommended for most users: user-level config (`~/.britecore/`)**
+
+Works across all your projects without touching the SDK package files:
+
+`~/.britecore/settings.toml`:
 
 ```toml
 [default]
 target_site = "production"
 ```
 
-In `src/britecore_sdk/settings/.secrets.toml`:
+`~/.britecore/.secrets.toml`:
 
 ```toml
+[production]
+base_url = "https://your-britecore-instance.com"
+api_key = "your_api_key_here"
+```
+
+**Alternative: project-local config (current working directory)**
+
+Place `britecore.toml` and `.britecore_secrets.toml` in your project root. Add
+`.britecore_secrets.toml` to `.gitignore` to keep secrets out of version control:
+
+```toml
+# britecore.toml (safe to commit)
+[default]
+target_site = "production"
+```
+
+```toml
+# .britecore_secrets.toml (add to .gitignore!)
 [production]
 base_url = "https://your-britecore-instance.com"
 api_key = "your_api_key_here"
@@ -183,40 +212,30 @@ pip install britecore_sdk[dev]         # Development (tests, linting, type check
 
 ### Configuration
 
-Copy the sample files from `src/britecore_sdk/settings/sample/` to `src/britecore_sdk/settings/` and fill in your real values:
+The SDK loads settings from multiple locations in priority order — later sources override earlier ones.
+`BRITECORE_SDK_*` environment variables always win over any file:
 
-**Linux/macOS (bash):**
+| Priority | Location | File(s) |
+|---|---|---|
+| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
+| 2 | User-level (all projects on machine) | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
+| 3 | Project-local (current directory) | `./britecore.toml`, `./.britecore_secrets.toml` |
+| 4 | Explicit file override | Path pointed to by `BRITECORE_SDK_SETTINGS_FILE` |
+| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
 
-```bash
-cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
-cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.secrets.toml
-```
+#### Option A: User-level config (recommended for pip-installed users)
 
-**Windows (PowerShell):**
+Create `~/.britecore/settings.toml` and `~/.britecore/.secrets.toml`. Settings here apply to all
+projects on the machine without touching SDK package files:
 
-```powershell
-Copy-Item src\britecore_sdk\settings\sample\settings.toml src\britecore_sdk\settings\settings.toml
-Copy-Item src\britecore_sdk\settings\sample\.secrets.toml src\britecore_sdk\settings\.secrets.toml
-```
-
-Then edit both files — `settings.toml` holds public runtime defaults and `.secrets.toml` (gitignored) holds your secrets:
-
-**settings.toml** (example):
+**`~/.britecore/settings.toml`** (example):
 
 ```toml
-# Default runtime configuration
 [default]
-
-# Site definitions (endpoints only, no credentials)
-[production]
-# base_url and credentials go in .secrets.toml
-
-[staging]
-# base_url and credentials go in .secrets.toml
-
+target_site = "production"
 ```
 
-**.secrets.toml** (never commit):
+**`~/.britecore/.secrets.toml`** (never commit):
 
 API key authentication:
 
@@ -242,10 +261,47 @@ client_secret = "your_real_client_secret"
 base_url = "https://api-staging.britecore.example.com"
 client_id = "your_staging_client_id"
 client_secret = "your_staging_client_secret"
-
 ```
 
-**Environment variables** (override file config):
+#### Option B: Project-local config
+
+Place `britecore.toml` and `.britecore_secrets.toml` in your project's working directory.
+Add `.britecore_secrets.toml` to `.gitignore` to keep secrets out of version control:
+
+**`britecore.toml`** (safe to commit):
+
+```toml
+[default]
+target_site = "production"
+```
+
+**`.britecore_secrets.toml`** (add to `.gitignore`!):
+
+```toml
+[production]
+base_url = "https://api.britecore.example.com"
+api_key = "your_real_api_key"
+```
+
+#### Option C: SDK package defaults (repo clones only)
+
+If you have cloned the repo and are working directly from source, you can copy the sample files:
+
+**Linux/macOS (bash):**
+
+```bash
+cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
+cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.secrets.toml
+```
+
+**Windows (PowerShell):**
+
+```powershell
+Copy-Item src\britecore_sdk\settings\sample\settings.toml src\britecore_sdk\settings\settings.toml
+Copy-Item src\britecore_sdk\settings\sample\.secrets.toml src\britecore_sdk\settings\.secrets.toml
+```
+
+#### Option D: Environment variables (highest priority, overrides all files)
 
 > **Note on `target_site` with env vars:** In standard init mode, `target_site` selects which section of `.secrets.toml`
 > to use for credentials. When **all** required credentials are supplied via `BRITECORE_SDK_*`
@@ -404,7 +460,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **Fluent init** — `client = BritecoreAPIClient("site").init_client()` (one-liner)
 - **Endpoint modules** — Build request JSON → call `do_request()` → return `process_result()`
 - **Auth modes** — Automatic: API key (when `client_id`/`client_secret` blank) or OAuth2 (when both provided)
-- **Config** — Dynaconf-based in `src/britecore_sdk/settings/` with environment variable overrides
+- **Config** — Dynaconf-based layered config: SDK defaults → `~/.britecore/` → `./britecore.toml` → `BRITECORE_SDK_SETTINGS_FILE` → env vars
 - **Lazy initialization** — API client initializes on first use to avoid import-time failures (see "About API Client Initialization" above)
 - **Flat exceptions** — Import `NotFoundError`, `AuthenticationError` etc. directly from `britecore_sdk`
 
