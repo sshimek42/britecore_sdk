@@ -1,0 +1,16 @@
+#!/bin/sh
+# Block pushing fileshare-only branch to origin.
+remote_name="$1"
+
+if [ "$remote_name" = "origin" ]; then
+  while read local_ref local_sha remote_ref remote_sha; do
+    if [ "$local_ref" = "refs/heads/fileshare-settings" ] || [ "$remote_ref" = "refs/heads/fileshare-settings" ]; then
+      echo "ERROR: blocked push of fileshare-settings to origin"
+      echo "Use: git push fileshare fileshare-settings"
+      exit 1
+    fi
+  done
+fi
+
+exit 0
+
