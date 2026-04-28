@@ -1,6 +1,6 @@
 # Contributing
 
-*Last updated: April 7, 2026*
+*Last updated: April 28, 2026*
 *Document type: Living contributor guide*
 
 This guide covers the project workflow for contributing changes safely and consistently.
@@ -64,7 +64,19 @@ python -m venv .venv
 python -m pip install -e ".[dev]"
 ```
 
-Set local environment variables:
+### Configuration
+
+The SDK uses a **layered configuration system** (lowest → highest priority):
+
+1. SDK package defaults (`src/britecore_sdk/settings/settings.toml` + `.secrets.toml` — in `.gitignore`, optional)
+2. User-level config (`~/.britecore/settings.toml` + `~/.britecore/.secrets.toml`)
+3. Project-local config (`./britecore.toml` + `./.britecore_secrets.toml` in CWD)
+4. Explicit file path (`BRITECORE_SDK_SETTINGS_FILE` env var)
+5. `BRITECORE_SDK_*` environment variables (highest priority)
+
+#### Option A: Environment variables
+
+Set `target_site` and `system` for basic multi-site testing:
 
 **Linux/macOS (bash):**
 
@@ -79,6 +91,40 @@ export system="your_system"
 $env:target_site = "your_site"
 $env:system = "your_system"
 ```
+
+#### Option B: Local config file
+
+Create `britecore.toml` in your project root:
+
+```toml
+target_site = "your_site"
+system = "your_system"
+base_url = "https://api.example.com"
+api_key = "your_api_key"
+```
+
+#### Option C: Explicit inline credentials (recommended for tests)
+
+Bypass file lookup entirely by passing credentials directly:
+
+```python
+from britecore_sdk import init_api_client
+
+# API key auth
+client = init_api_client(
+    base_url="https://api.example.com",
+    api_key="your_api_key"
+)
+
+# OAuth auth
+client = init_api_client(
+    base_url="https://api.example.com",
+    client_id="your_client_id",
+    client_secret="your_client_secret"
+)
+```
+
+This pattern is best for test isolation and CI/CD environments where environment variables should not be set globally.
 
 ## Branch and commit workflow
 
