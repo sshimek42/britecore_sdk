@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-*Last updated: April 22, 2026*
+*Last updated: April 28, 2026*
 *Document type: Living troubleshooting guide*
 
 **BriteCore Libraries** - Common issues and solutions
