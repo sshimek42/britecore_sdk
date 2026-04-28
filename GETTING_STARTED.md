@@ -62,6 +62,42 @@ python -m pip install -e ".[dev]"
 
 ## Configuration
 
+The SDK automatically loads settings from several locations in priority order. Choose the approach
+that best fits how you installed the SDK:
+
+| Priority | Location | File(s) |
+|---|---|---|
+| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
+| 2 | User-level | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
+| 3 | Project-local | `./britecore.toml`, `./.britecore_secrets.toml` |
+| 4 | Explicit file override | `BRITECORE_SDK_SETTINGS_FILE` env var |
+| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
+
+### For pip-installed users (recommended): user-level config
+
+Create `~/.britecore/settings.toml` and `~/.britecore/.secrets.toml`. These apply to all your
+projects without touching SDK package files.
+
+**`~/.britecore/settings.toml`:**
+
+```toml
+[default]
+target_site = "production"
+```
+
+**`~/.britecore/.secrets.toml`:**
+
+```toml
+[production]
+base_url = "https://api.britecore.example.com"
+client_id = "your-actual-client-id"
+client_secret = "your-actual-client-secret"
+```
+
+Then skip to [Step 3](#step-3-customize-settingstoml-optional) below.
+
+### For repo clones: copy example files from source
+
 ### Step 1: Copy Example Configuration Files
 
 Example files are provided to show you the correct format:
