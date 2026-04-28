@@ -9,6 +9,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Added `use_api_client(client)` context manager in `api.api_calls` to bind
+  endpoint wrapper calls to an explicit `BritecoreAPIClient` instance without
+  mutating module-global client state.
+- Added top-level `britecore_sdk.use_api_client` export for convenience.
+- Added multi-site and operations documentation:
+  `docs/MULTI_TENANCY.md`, `docs/OBSERVABILITY.md`, `docs/DEPLOYMENT.md`, and
+  `DEPRECATION.md`.
+
+### Changed
+
+- Updated examples and guides to demonstrate explicit per-site client binding
+  for multi-tenant workflows.
+
 ---
 
 ## [1.1.2] — 2026-04-27

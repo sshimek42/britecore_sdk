@@ -380,6 +380,7 @@ python -m pytest tests/integration -m integration -v
 - The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 - `init_client()` now returns `Self`, so `BritecoreAPIClient("site").init_client()` is a valid one-liner.
 - Use the context manager (`with BritecoreAPIClient("site").init_client() as client:`) to ensure the connection pool is closed on exit.
+- For multi-site scripts, bind wrappers to a specific client with `use_api_client(client)` instead of repeatedly mutating global client state.
 - Call `reset_api_client()` to clear the module-level client (useful in tests or multi-site scripts).
 - API client initialization failures usually indicate missing `target_site`/site config in standard mode, or missing `base_url` in explicit mode.
 - Endpoint wrappers expect response normalization through `process_result(...)`; prefer using provided `v2` modules.
