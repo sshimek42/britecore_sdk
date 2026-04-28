@@ -29,6 +29,28 @@ Related docs:
 python -m pip install -e ".[dev]"
 ```
 
+### Git hooks and fileshare settings sync
+
+Enable tracked hooks once per clone (this turns on `.githooks/pre-push`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install-git-hooks.ps1
+```
+
+`fileshare-settings` is a fileshare-only branch used for local `settings.toml` and `.secrets.toml` updates. Sync it with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\sync-fileshare-settings.ps1
+```
+
+Preview staged changes without pushing:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\sync-fileshare-settings.ps1 -DryRun
+```
+
+The pre-push hook blocks `fileshare-settings` from being pushed to `origin`.
+
 ### Pre-commit hooks
 
 Install Git hooks once per clone:

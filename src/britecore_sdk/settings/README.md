@@ -16,6 +16,8 @@ This directory contains the BriteCore SDK configuration files and examples.
 
 **Safe to commit:** ✅ YES (contains no secrets)
 
+**Repository workflow note:** This repo uses `fileshare-settings` as a fileshare-only branch for `settings.toml` updates that should not be pushed to GitHub.
+
 **Example:**
 
 ```toml
@@ -39,7 +41,7 @@ web_timeout = 30
 
 **Safe to commit:** ❌ NO (contains sensitive credentials)
 
-**Note:** `.secrets.toml` is in `.gitignore` and will not be version controlled
+**Note:** `.secrets.toml` is in `.gitignore` and will not be version controlled in standard branches. If you intentionally use the fileshare-only branch workflow, keep pushes scoped to `fileshare` only.
 
 **Example:**
 
@@ -49,6 +51,19 @@ base_url = "https://api.britecore.example.com"
 client_id = "your-client-id"
 client_secret = "your-client-secret"
 ```
+
+## Fileshare-Only Sync Workflow
+
+Use these commands from the repository root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\install-git-hooks.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\sync-fileshare-settings.ps1 -DryRun
+powershell -ExecutionPolicy Bypass -File .\scripts\sync-fileshare-settings.ps1
+```
+
+- `.githooks/pre-push` blocks pushes of `fileshare-settings` to `origin`.
+- `scripts/sync-fileshare-settings.ps1` force-adds `settings.toml` and `.secrets.toml` into `fileshare-settings` and pushes only to `fileshare`.
 
 ## Quick Setup
 
