@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: April 28, 2026*
+*Last updated: April 29, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -358,6 +358,75 @@ async def main() -> None:
 
 asyncio.run(main())
 ```
+
+```
+
+---
+
+## Rate limiting (new in v1.3.0)
+
+Enable optional client-side rate limiting to prevent overwhelming the API or account rate limits:
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+# Enable rate limiting with defaults (10 req/s, 20-request burst)
+client = init_api_client("production", enable_rate_limiter=True)
+
+# Or customize parameters
+client = init_api_client(
+    "production",
+    enable_rate_limiter=True,
+    rate_limiter_requests_per_second=5.0,     # 5 requests per second
+    rate_limiter_burst_size=10,               # allow bursts up to 10 requests
+    rate_limiter_adaptive_backoff=True,       # automatic backoff on 429s
+    rate_limiter_backoff_timeout_seconds=60.0 # back off for 60 seconds
+)
+```
+
+The rate limiter is **per-client instance**, so different sites or environments can have different limits.
+See [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete examples and behavior details.
+
+---
+
+## Batch quote creation (new in v1.3.0)
+
+For workloads creating many quotes (100+), use batch functions to parallelize quote creation:
+
+```python
+from britecore_sdk.api.api_calls.v2 import create_full_quotes_batch
+
+quotes_data = [
+    {"insured_name": "Alice", ...},
+    {"insured_name": "Bob", ...},
+    # ... 100+ more
+]
+
+# Sync batch with default 5 workers
+result = create_full_quotes_batch(
+    quotes_data,
+    max_workers=5,           # parallel workers
+    fail_fast=False          # collect all results even on error
+)
+
+print(f"Created: {result['succeeded']}/{result['total']}")
+print(f"Failed: {result['total']} ({len(result['failed'])} errors)")
+```
+
+For async workloads:
+
+```python
+import asyncio
+from britecore_sdk.api.api_calls.v2 import acreate_full_quotes_batch
+
+async def main():
+    result = await acreate_full_quotes_batch(quotes_data, max_concurrent=5)
+    print(f"Created: {result['succeeded']}/{result['total']}")
+
+asyncio.run(main())
+```
+
+See [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) for advanced options and real-world examples.
 
 ---
 

@@ -11,7 +11,57 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [1.2.0] — 2026-04-28
+## [1.3.1] — 2026-04-29
+
+### Added
+
+- Rate limiter options now available in `init_api_client()` for feature parity with `init_client()`:
+  - `enable_rate_limiter` (bool)
+  - `rate_limiter_requests_per_second` (float)
+  - `rate_limiter_burst_size` (int)
+  - `rate_limiter_adaptive_backoff` (bool)
+  - `rate_limiter_backoff_timeout_seconds` (float)
+
+### Fixed
+
+- Updated `BritecoreAPIClient.process_result()` to properly support instance method calls
+  (changed from classmethod to instance method to support rate limiter state updates).
+  All existing tests updated to reflect this change.
+- Added defensive `getattr()` check for `rate_limiter` attribute to handle clients
+  created via `__new__` that bypass `__init__`.
+
+---
+
+## [1.3.0] — 2026-04-28
+
+### Added
+
+- **Client-side token bucket rate limiter** — optional rate limiting integrated into
+  `BritecoreAPIClient` to throttle requests at configurable rates (default: 10 req/s,
+  20-request burst):
+  - Per-client instance (independent limits per site/environment).
+  - Opt-in via `enable_rate_limiter=True` in `init_client()`.
+  - Configurable via `rate_limiter_*` parameters or `settings.toml`.
+  - Adaptive backoff on HTTP 429 responses (respects `Retry-After` header).
+  - Integrated into `do_request()` with optional per-call bypass via `rate_limiter_bypass=True`.
+  - Full unit test coverage and `docs/RATE_LIMITING.md` guide.
+  - Examples in `examples/rate_limiting_example.py`.
+
+- **Batch quote creation functions** — high-throughput quote generation:
+  - Sync: `create_full_quotes_batch(quotes, max_workers=5, fail_fast=False)`.
+  - Async: `acreate_full_quotes_batch(quotes, max_concurrent=5, fail_fast=False)`.
+  - Configurable parallelism and fail-fast mode.
+  - Per-item result tracking with summary statistics.
+  - Full unit test coverage and `docs/BATCH_QUOTE_CREATION.md` guide.
+  - Examples in `examples/batch_quote_creation.py`.
+
+- **Comprehensive error logging** — `BritecoreAPIClient.init_client()` now logs:
+  - ERROR level for all configuration validation failures (missing base_url, api_key, OAuth errors, rate limiter config errors).
+  - INFO level on successful initialization showing auth mode and rate limiting status.
+  - DEBUG level throughout configuration discovery and authentication selection.
+  - Stack traces (`exc_info=True`) for easier troubleshooting in logs/APM systems.
+
+---
 
 ### Added
 
