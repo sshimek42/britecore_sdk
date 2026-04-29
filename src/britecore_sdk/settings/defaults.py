@@ -19,12 +19,22 @@ class ConfigDefaults(TypedDict, total=False):
     web_timeout: int
     web_timeout_long: int
     web_retry: int
+    rate_limiter_enabled: bool
+    rate_limiter_requests_per_second: float
+    rate_limiter_burst_size: int
+    rate_limiter_adaptive_backoff: bool
+    rate_limiter_backoff_timeout_seconds: float
 
 
 # Core defaults: used when settings.toml or environment does not provide values
 DEFAULTS: ConfigDefaults = {
     "web_timeout": 5,  # Standard HTTP timeout in seconds
     "web_retry": 5,  # Number of retries for failed HTTP requests
+    "rate_limiter_enabled": False,  # Disabled by default; opt-in
+    "rate_limiter_requests_per_second": 10.0,  # Target rate: 10 requests/second
+    "rate_limiter_burst_size": 20,  # Allow up to 20-request bursts
+    "rate_limiter_adaptive_backoff": True,  # Automatically back off on 429
+    "rate_limiter_backoff_timeout_seconds": 60.0,  # Back off for 60 seconds after 429
 }
 
 
