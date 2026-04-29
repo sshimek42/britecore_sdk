@@ -575,10 +575,13 @@ class TestHTTPErrorHandling:
 
     def _get_client(self):
         """Create a minimal BritecoreAPIClient for testing."""
-        from unittest.mock import patch, MagicMock
+        from unittest.mock import MagicMock, patch
+
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_loader:
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
             mock_loader_instance = MagicMock()
             mock_loader_instance.load_config.return_value = MagicMock(
                 base_url="https://api.example.com",
