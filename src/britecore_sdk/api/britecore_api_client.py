@@ -902,7 +902,7 @@ class BritecoreAPIClient:
             rate_limit_delay = 0.0
             if (
                 not effective_dry_run
-                and self.rate_limiter is not None
+                and getattr(self, "rate_limiter", None) is not None
                 and not rate_limiter_bypass
             ):
                 try:
