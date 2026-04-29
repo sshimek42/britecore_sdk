@@ -8,7 +8,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg?token=BVRUP1ROTF)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
-**Status:** Stable (v1.2.0) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v1.3.1) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 
@@ -177,6 +177,8 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 ✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
 ✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
 ✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
+✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses
+✅ **Batch operations** — `create_full_quotes_batch()` and `acreate_full_quotes_batch()` for parallel quote creation
 
 ---
 
@@ -187,6 +189,8 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 | **Setup & examples** | [GETTING_STARTED.md](GETTING_STARTED.md) |
 | **API reference** | [API.md](API.md) |
 | **Async & caching** | [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) |
+| **Rate limiting** | [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) |
+| **Batch operations** | [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) |
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | **Python compatibility** | [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) |
 | **Contributing** | [CONTRIBUTING.md](CONTRIBUTING.md) |

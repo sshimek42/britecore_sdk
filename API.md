@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: April 28, 2026*
+*Last updated: April 29, 2026*
 *Document type: Living reference guide*
 
 **BriteCore Libraries** - API endpoint reference
@@ -27,6 +27,8 @@ For known wrapper/spec drift currently tracked in tests, see
 See also:
 
 - [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
+- [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for rate limiter configuration
+- [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) for high-throughput quote creation
 
 ---
 
