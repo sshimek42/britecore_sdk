@@ -451,22 +451,19 @@ class TestInitApiClientRateLimiter:
             patcher.stop()
 
     def test_init_api_client_rate_limiter_default_is_disabled(self):
-        """init_api_client should keep rate_limiter None when no enable flag is passed."""
-        from unittest.mock import patch
+        """init_api_client should keep rate_limiter None when no enable flag is passed.
+
+        The SDK default for rate_limiter_enabled is False, so omitting the flag
+        should result in no rate limiter being initialised.
+        """
         from britecore_sdk.api.api_calls import init_api_client, reset_api_client
 
         patcher = self._mock_settings_ctx()
-        # Also patch settings.get so rate_limiter_enabled returns False
-        settings_patcher = patch(
-            "britecore_sdk.api.britecore_api_client.settings.get",
-            return_value=False,
-        )
         try:
-            settings_patcher.start()
+            # No enable_rate_limiter kwarg — relies on SDK default (False)
             client = init_api_client("test_site")
             assert client.rate_limiter is None
         finally:
-            settings_patcher.stop()
             reset_api_client()
             patcher.stop()
 
