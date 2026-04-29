@@ -29,6 +29,11 @@ def init_api_client(
     api_key: str | None = None,
     client_id: str | None = None,
     client_secret: str | None = None,
+    enable_rate_limiter: bool | None = None,
+    rate_limiter_requests_per_second: float | None = None,
+    rate_limiter_burst_size: int | None = None,
+    rate_limiter_adaptive_backoff: bool | None = None,
+    rate_limiter_backoff_timeout_seconds: float | None = None,
 ) -> BritecoreAPIClient:
     """
     Initializes and returns a configured Britecore API client instance.
@@ -51,6 +56,10 @@ def init_api_client(
     no config files are read and ``target_site`` becomes optional (defaults to
     ``"explicit"`` when omitted).
 
+    **Rate Limiting (optional):** pass ``enable_rate_limiter=True`` to enable
+    client-side rate limiting. Configuration can be provided explicitly via
+    ``rate_limiter_*`` parameters, or read from settings.toml if omitted.
+
     Args:
         target_site: The target site URL or identifier for the Britecore API.
                      If omitted, this is resolved from settings via
@@ -65,6 +74,17 @@ def init_api_client(
         api_key: Explicit API key (used only when ``base_url`` is also given).
         client_id: Explicit OAuth client ID (used only when ``base_url`` is given).
         client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
+        enable_rate_limiter: Enable client-side rate limiting. When ``None`` (default),
+            reads from settings ``rate_limiter_enabled``. When ``True`` or ``False``,
+            overrides the setting.
+        rate_limiter_requests_per_second: Target request rate for rate limiter
+            (default: 10.0 req/s from settings). Only used if rate limiter is enabled.
+        rate_limiter_burst_size: Maximum burst capacity for rate limiter
+            (default: 20 requests from settings). Only used if rate limiter is enabled.
+        rate_limiter_adaptive_backoff: Enable automatic backoff on 429 responses
+            (default: True from settings). Only used if rate limiter is enabled.
+        rate_limiter_backoff_timeout_seconds: Duration to back off after 429
+            (default: 60.0 seconds from settings). Only used if rate limiter is enabled.
 
     Returns:
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
@@ -105,6 +125,16 @@ def init_api_client(
             kwargs["client_id"] = client_id
         if client_secret is not None:
             kwargs["client_secret"] = client_secret
+    # Rate limiter options — always forwarded (None means "use settings default")
+    kwargs["enable_rate_limiter"] = enable_rate_limiter
+    if rate_limiter_requests_per_second is not None:
+        kwargs["rate_limiter_requests_per_second"] = rate_limiter_requests_per_second
+    if rate_limiter_burst_size is not None:
+        kwargs["rate_limiter_burst_size"] = rate_limiter_burst_size
+    if rate_limiter_adaptive_backoff is not None:
+        kwargs["rate_limiter_adaptive_backoff"] = rate_limiter_adaptive_backoff
+    if rate_limiter_backoff_timeout_seconds is not None:
+        kwargs["rate_limiter_backoff_timeout_seconds"] = rate_limiter_backoff_timeout_seconds
     client.init_client(**kwargs)  # type: ignore[arg-type]
     _set_module_client_state("_api_client", client)
     return client

@@ -27,7 +27,9 @@ class TestApiCallsClientState:
         assert returned is fake_client
         assert module._api_client is fake_client
         fake_ctor.assert_called_once_with("test-site")
-        fake_client.init_client.assert_called_once_with(client_dry_run=False)
+        fake_client.init_client.assert_called_once_with(
+            client_dry_run=False, enable_rate_limiter=None
+        )
 
         # Access through lazy proxy must reuse seeded global client.
         assert module.api_client.token == "ready"
@@ -46,7 +48,9 @@ class TestApiCallsClientState:
         module.init_api_client("test-site", client_dry_run=True)
 
         fake_ctor.assert_called_once_with("test-site")
-        fake_client.init_client.assert_called_once_with(client_dry_run=True)
+        fake_client.init_client.assert_called_once_with(
+            client_dry_run=True, enable_rate_limiter=None
+        )
 
     @pytest.mark.unit
     def test_init_async_api_client_sets_global_for_lazy_proxy(self, monkeypatch):

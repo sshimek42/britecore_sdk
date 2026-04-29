@@ -369,6 +369,7 @@ class TestExplicitCredentials:
             api_key="k",
             client_id=None,
             client_secret=None,
+            enable_rate_limiter=None,
         )
         assert result is fake_client
 
