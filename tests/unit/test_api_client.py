@@ -162,39 +162,99 @@ class TestBritecoreAPIClientProcessResult:
     def test_process_result_success(self, mock_http_response):
         """Test successful result processing."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from unittest.mock import patch
 
-        result = BritecoreAPIClient.process_result(mock_http_response)
+        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
 
-        assert result is not None
-        assert result["id"] == "test_id"
+            client = BritecoreAPIClient("test_site").init_client()
+            result = client.process_result(mock_http_response)
+
+            assert result is not None
+            assert result["id"] == "test_id"
 
     @pytest.mark.unit
     def test_process_result_error_response_none(self):
         """Test process_result raises error when response is None."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from unittest.mock import patch
 
-        with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(None)
+        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            with pytest.raises(BritecoreError.NoDataReturned):
+                client.process_result(None)
 
     @pytest.mark.unit
     def test_process_result_error_non_200_status(self, mock_http_response_error):
         """Test process_result raises error for non-200 status."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from unittest.mock import patch
 
-        with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(mock_http_response_error)
+        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            with pytest.raises(BritecoreError.NoDataReturned):
+                client.process_result(mock_http_response_error)
 
     @pytest.mark.unit
     def test_process_result_error_success_false(self):
         """Test process_result raises error when success is false."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from unittest.mock import patch
 
         response = MagicMock()
         response.status = 200
         response.data = b'{"success": false, "message": "API Error"}'
 
-        with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(response)
+        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            with pytest.raises(BritecoreError.NoDataReturned):
+                client.process_result(response)
 
 
 class TestMultipleParameterVerification:

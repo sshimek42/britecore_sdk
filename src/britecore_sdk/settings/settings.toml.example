@@ -24,6 +24,39 @@ web_timeout_long = 60
 # Retries apply to 500, 502, 503, 504 errors with exponential backoff.
 web_retry = 10
 
+# === Rate Limiting ===
+
+# Enable client-side rate limiting (opt-in).
+# Hard-coded default: False
+# When enabled, outbound requests are throttled client-side to stay below
+# the configured rate limit. The rate limiter uses token bucket algorithm.
+rate_limiter_enabled = false
+
+# Target request rate when rate limiting is enabled (requests per second).
+# Hard-coded default: 10.0 req/s
+# Recommendations:
+#   - Conservative (safe): 5.0 req/s
+#   - Moderate (balanced): 10.0 req/s
+#   - Aggressive (server-permitting): 20.0 req/s
+rate_limiter_requests_per_second = 10.0
+
+# Maximum burst size (in number of requests) when rate limiting is enabled.
+# Hard-coded default: 20 requests
+# This allows short bursts of traffic up to this many requests in quick succession.
+# Set to at least rate_limiter_requests_per_second to allow some burst capacity.
+rate_limiter_burst_size = 20
+
+# Enable adaptive backoff when the server responds with 429 (rate limited).
+# Hard-coded default: True
+# When True, the client automatically backs off (reduces request rate) for
+# the duration of backoff_timeout_seconds, then resumes at the configured rate.
+rate_limiter_adaptive_backoff = true
+
+# Duration in seconds to back off when the server responds with 429.
+# Hard-coded default: 60.0 seconds
+# If the server provides a Retry-After header, that value is used instead (if longer).
+rate_limiter_backoff_timeout_seconds = 60.0
+
 # === Site Selection ===
 
 # Active site name when no explicit target is provided.

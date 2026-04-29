@@ -19,6 +19,7 @@ from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_sdk.api.britecore_oauth_token_manager import OAuthToken
+from britecore_sdk.api.rate_limiter import RateLimiter
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import settings
 from britecore_sdk.settings.defaults import DEFAULTS, calculate_long_timeout
@@ -139,6 +140,7 @@ class BritecoreAPIClient:
         self.site_settings: Any = None
         self.client_dry_run: bool = False
         self.target_site = target_site
+        self.rate_limiter: RateLimiter | None = None
 
     def init_client(
         self,
@@ -148,6 +150,11 @@ class BritecoreAPIClient:
         api_key: str | None = None,
         client_id: str | None = None,
         client_secret: str | None = None,
+        enable_rate_limiter: bool | None = None,
+        rate_limiter_requests_per_second: float | None = None,
+        rate_limiter_burst_size: int | None = None,
+        rate_limiter_adaptive_backoff: bool | None = None,
+        rate_limiter_backoff_timeout_seconds: float | None = None,
     ) -> Self:
         """
         Initializes the Britecore API client with configuration settings and HTTP components.
@@ -167,15 +174,26 @@ class BritecoreAPIClient:
         ``api_key``, ``client_id``, and ``client_secret``.  When ``base_url`` is given,
         the file-based lookup is skipped entirely and only the supplied values are used.
 
+        **Rate Limiting (optional):** pass ``enable_rate_limiter=True`` to enable
+        client-side rate limiting. Configuration can be provided explicitly via
+        ``rate_limiter_*`` parameters, or read from settings.toml if omitted.
+
         Returns:
             Self: The initialized client instance, allowing fluent one-liner construction::
 
                 client = BritecoreAPIClient("my_site").init_client()
 
+                # With rate limiting enabled:
+                client = BritecoreAPIClient("my_site").init_client(
+                    enable_rate_limiter=True,
+                    rate_limiter_requests_per_second=5,
+                )
+
                 # Explicit-credential variant (no config file required):
                 client = BritecoreAPIClient("my_site").init_client(
                     base_url="https://api.example.com",
                     api_key="my-key",
+                    enable_rate_limiter=True,
                 )
 
         Args:
@@ -187,11 +205,22 @@ class BritecoreAPIClient:
             api_key: Explicit API key.  Used only when ``base_url`` is also given.
             client_id: Explicit OAuth client ID.  Used only when ``base_url`` is given.
             client_secret: Explicit OAuth client secret.  Used only when ``base_url`` is given.
+            enable_rate_limiter: Enable client-side rate limiting. When ``None`` (default),
+                reads from settings ``rate_limiter_enabled``. When ``True`` or ``False``,
+                overrides the setting.
+            rate_limiter_requests_per_second: Target request rate for rate limiter
+                (default: 10.0 req/s from settings). Only used if rate limiter is enabled.
+            rate_limiter_burst_size: Maximum burst capacity for rate limiter
+                (default: 20 requests from settings). Only used if rate limiter is enabled.
+            rate_limiter_adaptive_backoff: Enable automatic backoff on 429 responses
+                (default: True from settings). Only used if rate limiter is enabled.
+            rate_limiter_backoff_timeout_seconds: Duration to back off after 429
+                (default: 60.0 seconds from settings). Only used if rate limiter is enabled.
 
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
             BritecoreError.BritecoreKeyError: If base_url or api_key is not found when required.
-            ValueError: If target_site is not specified.
+            ValueError: If target_site is not specified or if rate limiter parameters are invalid.
         """
         from types import SimpleNamespace
 
@@ -284,6 +313,63 @@ class BritecoreAPIClient:
                 self.site_settings.base_url,
             )
             LOGGER.debug("Auth mode selected during init_client: oauth")
+
+        # --- Initialize optional rate limiter ---
+        # Read enable flag from settings if not explicitly provided
+        if enable_rate_limiter is None:
+            enable_rate_limiter = settings.get(
+                "rate_limiter_enabled",
+                default=DEFAULTS.get("rate_limiter_enabled", False),
+            )
+
+        if enable_rate_limiter:
+            # Resolve rate limiter parameters with explicit args taking precedence
+            rps = rate_limiter_requests_per_second
+            if rps is None:
+                rps = settings.get(
+                    "rate_limiter_requests_per_second",
+                    default=DEFAULTS.get("rate_limiter_requests_per_second", 10.0),
+                )
+
+            burst = rate_limiter_burst_size
+            if burst is None:
+                burst = settings.get(
+                    "rate_limiter_burst_size",
+                    default=DEFAULTS.get("rate_limiter_burst_size", 20),
+                )
+
+            adaptive = rate_limiter_adaptive_backoff
+            if adaptive is None:
+                adaptive = settings.get(
+                    "rate_limiter_adaptive_backoff",
+                    default=DEFAULTS.get("rate_limiter_adaptive_backoff", True),
+                )
+
+            backoff_timeout = rate_limiter_backoff_timeout_seconds
+            if backoff_timeout is None:
+                backoff_timeout = settings.get(
+                    "rate_limiter_backoff_timeout_seconds",
+                    default=DEFAULTS.get("rate_limiter_backoff_timeout_seconds", 60.0),
+                )
+
+            try:
+                self.rate_limiter = RateLimiter(
+                    requests_per_second=float(rps),
+                    burst_size=int(burst),
+                    adaptive_backoff_enabled=bool(adaptive),
+                    backoff_timeout_seconds=float(backoff_timeout),
+                )
+                LOGGER.debug(
+                    "Rate limiter initialized: %s",
+                    self.rate_limiter,
+                )
+            except (ValueError, TypeError) as config_error:
+                raise ValueError(
+                    f"Invalid rate limiter configuration: {config_error}"
+                ) from config_error
+        else:
+            self.rate_limiter = None
+
         return self
 
     # ------------------------------------------------------------------
@@ -418,6 +504,7 @@ class BritecoreAPIClient:
         cls,
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
         endpoint: str | None = None,
+        client: "BritecoreAPIClient | None" = None,
     ) -> None:
         """Raise SDK exceptions for non-success HTTP statuses with endpoint context."""
         if response.status in {401, 403}:
@@ -445,6 +532,11 @@ class BritecoreAPIClient:
                         retry_after = int(retry_after_val)
                     except (ValueError, TypeError):
                         pass
+
+            # Update client's rate limiter adaptive backoff if available
+            if client is not None and client.rate_limiter is not None:
+                client.rate_limiter.record_rate_limit_response(retry_after=retry_after)
+
             raise BritecoreError.RateLimitError(
                 cls._with_hint(
                     response.reason or "Too Many Requests",
@@ -534,9 +626,8 @@ class BritecoreAPIClient:
 
         return json_result.get("data")
 
-    @classmethod
     def process_result(
-        cls,
+        self,
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
         logs: bool = False,
         endpoint: str | None = None,
@@ -544,9 +635,10 @@ class BritecoreAPIClient:
         """
         Process HTTP response and extract data from successful API calls.
 
-        This class method handles the processing of HTTP responses from API calls,
+        This instance method handles the processing of HTTP responses from API calls,
         validating the response status, parsing JSON data, and raising appropriate
-        exceptions for errors or missing data.
+        exceptions for errors or missing data. The method has access to the client
+        instance, allowing it to update the rate limiter when needed.
 
         Parameters:
             response: HTTPResponse object containing the API response
@@ -563,27 +655,27 @@ class BritecoreAPIClient:
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned(
-                cls._with_hint(
+                self._with_hint(
                     "Error - No response",
                     "Check network reachability, base_url, and client initialization.",
                 ),
                 endpoint=endpoint,
             )
-        cls._raise_for_http_status(response, endpoint=endpoint)
+        self._raise_for_http_status(response, endpoint=endpoint, client=self)
 
         try:
-            json_result: Any = cls._load_json_payload(response)
+            json_result: Any = self._load_json_payload(response)
         except (JSONDecodeError, UnicodeDecodeError, AttributeError) as parse_error:
             LOGGER.error("Error parsing API response: %s", parse_error)
             raise BritecoreError.NoDataReturned(
-                cls._with_hint(
+                self._with_hint(
                     f"Error parsing API response: {parse_error}",
                     "Enable debug logging and verify endpoint response content-type.",
                 ),
                 endpoint=endpoint,
             ) from parse_error
 
-        data: Any = cls._extract_success_data(json_result)
+        data: Any = self._extract_success_data(json_result)
         if logs:
             LOGGER.debug(data)
 
@@ -609,6 +701,7 @@ class BritecoreAPIClient:
         dedupe_in_flight: bool = True,
         dry_run: bool | None = None,
         dry_run_include_sensitive_headers: bool = False,
+        rate_limiter_bypass: bool = False,
     ) -> urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None:
         """
         Execute an HTTP request to the specified path with optional JSON payload and headers.
@@ -625,6 +718,9 @@ class BritecoreAPIClient:
                 inherit the client's ``client_dry_run`` setting.
             dry_run_include_sensitive_headers (bool): If ``True``, include unredacted
                 headers in dry-run logs/response. Defaults to ``False`` for safety.
+            rate_limiter_bypass (bool): If ``True``, bypass the client-side rate limiter
+                for this request. Defaults to ``False``. Only applicable when rate limiter
+                is enabled on the client.
 
         Returns:
             Optional[urllib3.HTTPResponse | urllib3.BaseHTTPResponse]: The response from the
@@ -740,6 +836,34 @@ class BritecoreAPIClient:
             http_client = self.http
             if http_client is None:
                 raise BritecoreError.ConfigurationError("HTTP client not initialized")
+
+            # --- Apply rate limiting (if enabled and not bypassed) ---
+            rate_limit_delay = 0.0
+            if (
+                not effective_dry_run
+                and self.rate_limiter is not None
+                and not rate_limiter_bypass
+            ):
+                try:
+                    rate_limit_delay = self.rate_limiter.acquire(
+                        timeout=self._timeout_seconds(request_timeout)
+                    )
+                    if rate_limit_delay > 0.001:  # Log only significant delays
+                        LOGGER.debug(
+                            "[%s] Rate limited: delayed %.3fs",
+                            request_id,
+                            rate_limit_delay,
+                        )
+                except TimeoutError as rate_limit_timeout:
+                    LOGGER.error(
+                        "[%s] Rate limiter timeout: %s",
+                        request_id,
+                        rate_limit_timeout,
+                    )
+                    raise BritecoreError.RequestTimeoutError(
+                        f"Rate limiter timeout: {rate_limit_timeout}",
+                        timeout_seconds=self._timeout_seconds(request_timeout),
+                    ) from rate_limit_timeout
 
             request_result: urllib3.BaseHTTPResponse = http_client.request(
                 method=method,
@@ -870,6 +994,7 @@ class RequestParameters(TypedDict):
         request_retries (urllib3.util.Retry): Retry settings
         request_headers (dict[str, Any]): Request headers
         method (str): Request method (Default: "POST")
+        rate_limiter_bypass (bool): Skip rate limiting for this request
     """
 
     request_timeout: NotRequired[urllib3.util.Timeout]
@@ -885,3 +1010,4 @@ class RequestParameters(TypedDict):
     dedupe_in_flight: NotRequired[bool]
     dry_run: NotRequired[bool]
     dry_run_include_sensitive_headers: NotRequired[bool]
+    rate_limiter_bypass: NotRequired[bool]
