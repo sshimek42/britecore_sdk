@@ -137,7 +137,10 @@ class RateLimiter:
             if self._backoff_until > now:
                 # In backoff; wait for backoff to expire
                 backoff_remaining = self._backoff_until - now
-                if timeout is not None and (now - start_time) + backoff_remaining > timeout:
+                if (
+                    timeout is not None
+                    and (now - start_time) + backoff_remaining > timeout
+                ):
                     elapsed = now - start_time
                     raise TimeoutError(
                         f"Rate limit acquire exceeded timeout ({timeout}s) after {elapsed:.2f}s"
@@ -187,7 +190,9 @@ class RateLimiter:
             return
 
         now = time.monotonic()
-        backoff_duration = retry_after if retry_after is not None else self._backoff_timeout
+        backoff_duration = (
+            retry_after if retry_after is not None else self._backoff_timeout
+        )
         self._backoff_until = now + backoff_duration
 
         LOGGER.warning(
@@ -242,4 +247,3 @@ class RateLimiter:
             f"in_backoff={state['in_backoff']}"
             f")"
         )
-

@@ -134,7 +134,9 @@ def init_api_client(
     if rate_limiter_adaptive_backoff is not None:
         kwargs["rate_limiter_adaptive_backoff"] = rate_limiter_adaptive_backoff
     if rate_limiter_backoff_timeout_seconds is not None:
-        kwargs["rate_limiter_backoff_timeout_seconds"] = rate_limiter_backoff_timeout_seconds
+        kwargs["rate_limiter_backoff_timeout_seconds"] = (
+            rate_limiter_backoff_timeout_seconds
+        )
     client.init_client(**kwargs)  # type: ignore[arg-type]
     _set_module_client_state("_api_client", client)
     return client

@@ -10,11 +10,11 @@ Tests cover:
 """
 
 import time
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import Mock, patch, MagicMock
 
 from britecore_sdk.api.rate_limiter import RateLimiter
-from britecore_sdk.exceptions import BritecoreError
 
 
 class TestRateLimiterBasic:
@@ -289,7 +289,9 @@ class TestRateLimiterIntegration:
 
     def test_client_initialization_with_rate_limiter(self):
         """Test that client initializes rate limiter when enabled."""
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             # Mock settings
             mock_instance = Mock()
             mock_instance.load_config.return_value = Mock(
@@ -305,7 +307,9 @@ class TestRateLimiterIntegration:
 
             from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-            client = BritecoreAPIClient("test_site").init_client(enable_rate_limiter=True)
+            client = BritecoreAPIClient("test_site").init_client(
+                enable_rate_limiter=True
+            )
 
             assert client.rate_limiter is not None
             assert isinstance(client.rate_limiter, RateLimiter)
@@ -313,7 +317,9 @@ class TestRateLimiterIntegration:
 
     def test_client_rate_limiter_disabled_by_default(self):
         """Test that rate limiter is disabled by default."""
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             mock_instance = Mock()
             mock_instance.load_config.return_value = Mock(
                 base_url="https://api.example.com",
@@ -328,13 +334,17 @@ class TestRateLimiterIntegration:
 
             from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-            client = BritecoreAPIClient("test_site").init_client(enable_rate_limiter=False)
+            client = BritecoreAPIClient("test_site").init_client(
+                enable_rate_limiter=False
+            )
 
             assert client.rate_limiter is None
 
     def test_client_rate_limiter_custom_params(self):
         """Test that custom rate limiter parameters are applied."""
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             mock_instance = Mock()
             mock_instance.load_config.return_value = Mock(
                 base_url="https://api.example.com",
@@ -384,7 +394,7 @@ class TestInitApiClientRateLimiter:
     @staticmethod
     def _mock_settings_ctx():
         """Return a patch context for LoadClientSettings with a minimal config."""
-        from unittest.mock import patch, Mock
+        from unittest.mock import Mock, patch
 
         patcher = patch("britecore_sdk.api.britecore_api_client.LoadClientSettings")
         mock_cls = patcher.start()
@@ -470,4 +480,3 @@ class TestInitApiClientRateLimiter:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

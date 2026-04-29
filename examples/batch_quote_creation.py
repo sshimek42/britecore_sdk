@@ -181,9 +181,11 @@ def example_chunked_batch_for_very_large_volumes():
         total_succeeded += result["succeeded"]
         total_failed += result["failed"]
 
-        print(f"  ✓ {result['succeeded']} success, {result['failed']} failed ({elapsed:.1f}s)")
+        print(
+            f"  ✓ {result['succeeded']} success, {result['failed']} failed ({elapsed:.1f}s)"
+        )
 
-    print(f"\n✓ All chunks complete!")
+    print("\n✓ All chunks complete!")
     print(f"  Total succeeded: {total_succeeded}")
     print(f"  Total failed:    {total_failed}")
 
@@ -207,7 +209,9 @@ async def example_async_chunked_with_progress():
     all_failed = 0
 
     for chunk_idx, chunk in enumerate(chunks, 1):
-        print(f"[Chunk {chunk_idx}/{len(chunks)}] Starting {len(chunk)} concurrent creates...")
+        print(
+            f"[Chunk {chunk_idx}/{len(chunks)}] Starting {len(chunk)} concurrent creates..."
+        )
 
         result = await acreate_full_quotes_batch(
             chunk, max_concurrent=3, fail_fast=False
@@ -219,9 +223,11 @@ async def example_async_chunked_with_progress():
         success_rate = (
             100 * result["succeeded"] / result["total"] if result["total"] > 0 else 0
         )
-        print(f"  ✓ {result['succeeded']}/{result['total']} ({success_rate:.0f}% success)")
+        print(
+            f"  ✓ {result['succeeded']}/{result['total']} ({success_rate:.0f}% success)"
+        )
 
-    print(f"\n✓ All chunks complete!")
+    print("\n✓ All chunks complete!")
     print(f"  Total succeeded: {all_succeeded}")
     print(f"  Total failed:    {all_failed}")
 
@@ -277,4 +283,3 @@ if __name__ == "__main__":
     # Async examples (require asyncio)
     print("Run with: python -m asyncio batch_quote_creation.py")
     asyncio.run(main())
-

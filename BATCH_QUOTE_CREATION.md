@@ -35,24 +35,28 @@ result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
 ## What You Get
 
 ### 1. **Synchronous Batching** ✅
+
 - `create_full_quotes_batch()` — ThreadPoolExecutor-based parallelism
 - Perfect for scripts, cron jobs, standalone automation
 - Configurable `max_workers` (default: 5)
 - Fail-fast or collect-all-errors modes
 
 ### 2. **Asynchronous Batching** ✅
+
 - `acreate_full_quotes_batch()` — asyncio-based concurrency
 - Perfect for FastAPI, aiohttp, event-driven systems
 - Configurable `max_concurrent` (default: 5)
 - Same fail-fast & error collection modes
 
 ### 3. **Comprehensive Testing** ✅
+
 - **9 unit tests** (4 sync + 5 async)
 - 70%+ code coverage
 - Tests for success, partial failure, fail-fast, invalid inputs, concurrency limits
 - All tests passing: `pytest tests/unit/test_quotes_batch.py tests/unit/test_async_quotes_batch.py`
 
 ### 4. **Production Examples** ✅
+
 - **6 real-world patterns** in `examples/batch_quote_creation.py`:
   1. Simple batch creation
   2. Chunked batch for 1000+ quotes
@@ -62,6 +66,7 @@ result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
   6. Rate-limited batch operations
 
 ### 5. **Documentation** ✅
+
 - **56-page guide** in `docs/BATCH_QUOTE_CREATION.md`:
   - API reference for both sync & async
   - 5+ usage patterns from simple to advanced
@@ -128,27 +133,27 @@ result = create_full_quotes_batch(
 
 ### Synchronous (ThreadPoolExecutor)
 
-```
+```text
 Main Thread
-  ├─ Worker 1: create_full_quote(quote_1) → network I/O
-  ├─ Worker 2: create_full_quote(quote_2) → network I/O  
-  ├─ Worker 3: create_full_quote(quote_3) → network I/O
-  ├─ Worker 4: create_full_quote(quote_4) → network I/O
-  └─ Worker 5: create_full_quote(quote_5) → network I/O
-     (while one worker waits for I/O, others process)
+   ├─ Worker 1: create_full_quote(quote_1) → network I/O
+   ├─ Worker 2: create_full_quote(quote_2) → network I/O
+   ├─ Worker 3: create_full_quote(quote_3) → network I/O
+   ├─ Worker 4: create_full_quote(quote_4) → network I/O
+   └─ Worker 5: create_full_quote(quote_5) → network I/O
+      (while one worker waits for I/O, others process)
 ```
 
 **Result: 5 quotes processed in ~T seconds (vs 5T for sequential)**
 
 ### Asynchronous (asyncio)
 
-```
+```text
 Event Loop
-  → await acreate_full_quote(quote_1)  ─┐
-  → await acreate_full_quote(quote_2)  ─┼─ Concurrent I/O
-  → await acreate_full_quote(quote_3)  ─┤  (semaphore limits to 5)
-  → await acreate_full_quote(quote_4)  ─┤
-  → await acreate_full_quote(quote_5)  ─┘
+   → await acreate_full_quote(quote_1)  ─┐
+   → await acreate_full_quote(quote_2)  ─┼─ Concurrent I/O
+   → await acreate_full_quote(quote_3)  ─┤  (semaphore limits to 5)
+   → await acreate_full_quote(quote_4)  ─┤
+   → await acreate_full_quote(quote_5)  ─┘
 ```
 
 **Result: 5 quotes processed concurrently from single thread**
@@ -212,4 +217,3 @@ for workers in [3, 5, 10]:
 ---
 
 **Your 100-quote automation task should now complete in 2-4 minutes instead of 8-17 minutes!** 🚀
-

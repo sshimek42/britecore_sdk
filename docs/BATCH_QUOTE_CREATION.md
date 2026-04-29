@@ -8,7 +8,7 @@ The BriteCore SDK provides **synchronous and asynchronous batch quote creation h
 
 Without batching, creating quotes sequentially results in excessive runtime:
 
-```
+```text
 100 quotes × 5-10 seconds per quote = 8-17 minutes
 ```
 
@@ -197,7 +197,7 @@ all_failed = []
 for chunk_idx, chunk in enumerate(chunks, 1):
     print(f"Processing chunk {chunk_idx}/{len(chunks)}...")
     result = create_full_quotes_batch(chunk, max_workers=5, fail_fast=False)
-    
+
     all_successful.extend([item['quote_id'] for item in result['results'] if item['success']])
     all_failed.extend([
         {
@@ -224,16 +224,16 @@ async def batch_create_with_progress(quotes: list, websocket=None):
     """Create quotes and stream progress to WebSocket client."""
     chunk_size = 25
     chunks = [quotes[i:i+chunk_size] for i in range(0, len(quotes), chunk_size)]
-    
+
     total_succeeded = 0
     total_failed = 0
-    
+
     for chunk_idx, chunk in enumerate(chunks, 1):
         result = await acreate_full_quotes_batch(chunk, max_concurrent=5)
-        
+
         total_succeeded += result['succeeded']
         total_failed += result['failed']
-        
+
         # Stream progress to client
         if websocket:
             await websocket.send_json({
@@ -242,7 +242,7 @@ async def batch_create_with_progress(quotes: list, websocket=None):
                 'succeeded_so_far': total_succeeded,
                 'failed_so_far': total_failed,
             })
-    
+
     return {
         'total': len(quotes),
         'succeeded': total_succeeded,
@@ -309,7 +309,7 @@ for max_workers in [3, 5, 10]:
     start = time.time()
     result = create_full_quotes_batch(100_quotes, max_workers=max_workers)
     elapsed = time.time() - start
-    
+
     print(f"max_workers={max_workers}: {elapsed:.1f}s "
           f"({result['succeeded']}/{result['total']} success, "
           f"{result['failed']} failed)")
@@ -334,7 +334,7 @@ if result['failed'] > 0:
                 'index': item['index'],
                 'error': item['error']
             })
-    
+
     # Log for investigation
     for error_type, items in failures_by_error.items():
         print(f"{error_type}: {len(items)} failures")
@@ -350,25 +350,25 @@ from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
 
 def batch_with_retry(quotes, max_retries=3):
     failed_payloads = quotes[:]
-    
+
     for attempt in range(1, max_retries + 1):
         if not failed_payloads:
             break
-        
+
         print(f"Attempt {attempt}: Creating {len(failed_payloads)} quotes...")
         result = create_full_quotes_batch(failed_payloads, max_workers=5, fail_fast=False)
-        
+
         # Extract failed for next attempt
         failed_payloads = [
-            failed_payloads[item['index']] 
+            failed_payloads[item['index']]
             for item in result['results'] if not item['success']
         ]
-        
+
         if failed_payloads and attempt < max_retries:
             backoff_seconds = 2 ** attempt  # 2s, 4s, 8s
             print(f"  {len(failed_payloads)} failed. Retrying in {backoff_seconds}s...")
             time.sleep(backoff_seconds)
-    
+
     return result
 ```
 
@@ -510,6 +510,7 @@ if __name__ == "__main__":
 2. Check network latency — run `curl -w '@curl-format.txt' -o /dev/null -s https://<api-url>` to measure response time.
 3. Check API server logs for errors (5xx responses).
 4. Enable debug logging:
+
    ```python
    import logging
    logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
@@ -577,4 +578,3 @@ Typical execution times for 100 quotes (5-10 seconds each):
 - [Rate Limiting](./RATE_LIMITING.md) — Configure automatic backoff for 429 responses.
 - [Examples](../examples/batch_quote_creation.py) — Runnable code samples.
 - [API Reference](./api_reference.md) — Full endpoint documentation.
-

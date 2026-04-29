@@ -329,7 +329,9 @@ class BritecoreAPIClient:
                 self.api_key = self.site_settings.api_key
                 if not self.api_key:
                     raise AttributeError("api_key is empty or not set")
-                LOGGER.debug("API key authentication configured for target_site=%r", target_site)
+                LOGGER.debug(
+                    "API key authentication configured for target_site=%r", target_site
+                )
             except AttributeError as attribute_error:
                 error_msg = (
                     "api_key not found. Please set the api_key in your "
@@ -350,7 +352,9 @@ class BritecoreAPIClient:
                     self.site_settings.client_secret,
                     self.site_settings.base_url,
                 )
-                LOGGER.debug("OAuth authentication configured for target_site=%r", target_site)
+                LOGGER.debug(
+                    "OAuth authentication configured for target_site=%r", target_site
+                )
             except Exception as oauth_error:
                 LOGGER.error(
                     "Failed to initialize OAuth for target_site=%r: %s",

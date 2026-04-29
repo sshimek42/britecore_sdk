@@ -149,7 +149,7 @@ The rate limiter uses a **token bucket** to control request rates:
 
 With `requests_per_second=10` and `burst_size=20`:
 
-```
+```text
 Time 0s:   Bucket full (20 tokens)
            Request 1-20 proceed instantly (consume 20 tokens)
            Bucket now: 0 tokens
@@ -180,7 +180,7 @@ This prevents cascading rate limit errors and allows the server to recover.
 
 Example:
 
-```
+```text
 Server responds: HTTP 429 with Retry-After: 30
 
 Rate limiter records this and enters backoff:
@@ -195,13 +195,13 @@ The rate limiter logs important events:
 
 ### INFO Level: Backoff Events
 
-```
+```text
 WARNING:britecore_sdk:Rate limit response received, backing off for 60.0 seconds (adaptive_backoff_enabled=True)
 ```
 
 ### DEBUG Level: Rate Limit Delays
 
-```
+```text
 DEBUG:britecore_sdk:[req_abc123] Rate limited: delayed 0.234s
 ```
 
@@ -416,4 +416,3 @@ logging.getLogger("britecore_sdk").setLevel(logging.WARNING)  # See backoff mess
 - [BriteCore API documentation](https://api.britecore.io/docs) for server-side rate limits
 - [Configuration Management](CONFIG_MANAGEMENT.md) for settings file hierarchy
 - [Troubleshooting](TROUBLESHOOTING.md) for common issues
-

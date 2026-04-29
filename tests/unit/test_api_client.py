@@ -161,10 +161,13 @@ class TestBritecoreAPIClientProcessResult:
     @pytest.mark.unit
     def test_process_result_success(self, mock_http_response):
         """Test successful result processing."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from unittest.mock import patch
 
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             mock_instance = MagicMock()
             mock_instance.load_config.return_value = MagicMock(
                 base_url="https://api.example.com",
@@ -186,10 +189,13 @@ class TestBritecoreAPIClientProcessResult:
     @pytest.mark.unit
     def test_process_result_error_response_none(self):
         """Test process_result raises error when response is None."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from unittest.mock import patch
 
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             mock_instance = MagicMock()
             mock_instance.load_config.return_value = MagicMock(
                 base_url="https://api.example.com",
@@ -209,10 +215,13 @@ class TestBritecoreAPIClientProcessResult:
     @pytest.mark.unit
     def test_process_result_error_non_200_status(self, mock_http_response_error):
         """Test process_result raises error for non-200 status."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from unittest.mock import patch
 
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             mock_instance = MagicMock()
             mock_instance.load_config.return_value = MagicMock(
                 base_url="https://api.example.com",
@@ -232,14 +241,17 @@ class TestBritecoreAPIClientProcessResult:
     @pytest.mark.unit
     def test_process_result_error_success_false(self):
         """Test process_result raises error when success is false."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         response = MagicMock()
         response.status = 200
         response.data = b'{"success": false, "message": "API Error"}'
 
-        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_settings:
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
             mock_instance = MagicMock()
             mock_instance.load_config.return_value = MagicMock(
                 base_url="https://api.example.com",
