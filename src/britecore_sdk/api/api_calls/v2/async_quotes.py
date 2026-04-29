@@ -172,7 +172,7 @@ async def acreate_full_quotes_batch(
                 task.cancel()
             raise
     else:
-        task_results = await asyncio.gather(*tasks, return_exceptions=True)
+        task_results = await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore[assignment]
         for idx, result in enumerate(task_results):
             if isinstance(result, Exception):
                 results[idx] = {
