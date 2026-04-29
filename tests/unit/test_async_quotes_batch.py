@@ -26,7 +26,10 @@ class TestAsyncQuotesBatchEndpoints:
 
         async def _run_test():
             with patch.object(
-                async_quotes, "acreate_full_quote", new_callable=AsyncMock, side_effect=_mock_create
+                async_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
             ):
                 batch_result = await async_quotes.acreate_full_quotes_batch(
                     payloads, max_concurrent=3
@@ -35,10 +38,11 @@ class TestAsyncQuotesBatchEndpoints:
             assert batch_result["total"] == 3
             assert batch_result["succeeded"] == 3
             assert batch_result["failed"] == 0
-            assert (
-                sorted([item["quote_id"] for item in batch_result["results"]])
-                == ["Q-001", "Q-002", "Q-003"]
-            )
+            assert sorted([item["quote_id"] for item in batch_result["results"]]) == [
+                "Q-001",
+                "Q-002",
+                "Q-003",
+            ]
 
         asyncio.run(_run_test())
 
@@ -62,7 +66,10 @@ class TestAsyncQuotesBatchEndpoints:
 
         async def _run_test():
             with patch.object(
-                async_quotes, "acreate_full_quote", new_callable=AsyncMock, side_effect=_mock_create
+                async_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
             ):
                 batch_result = await async_quotes.acreate_full_quotes_batch(
                     payloads, max_concurrent=2
@@ -71,7 +78,9 @@ class TestAsyncQuotesBatchEndpoints:
             assert batch_result["total"] == 3
             assert batch_result["succeeded"] == 2
             assert batch_result["failed"] == 1
-            failed_item = [item for item in batch_result["results"] if not item["success"]][0]
+            failed_item = [
+                item for item in batch_result["results"] if not item["success"]
+            ][0]
             assert "number is required" in failed_item["error"]
 
         asyncio.run(_run_test())
@@ -95,7 +104,10 @@ class TestAsyncQuotesBatchEndpoints:
 
         async def _run_test():
             with patch.object(
-                async_quotes, "acreate_full_quote", new_callable=AsyncMock, side_effect=_mock_create
+                async_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
             ):
                 with pytest.raises(BritecoreError.MissingParameter):
                     await async_quotes.acreate_full_quotes_batch(
@@ -157,4 +169,3 @@ class TestAsyncQuotesBatchEndpoints:
             assert max_concurrent_observed <= 3
 
         asyncio.run(_run_test())
-

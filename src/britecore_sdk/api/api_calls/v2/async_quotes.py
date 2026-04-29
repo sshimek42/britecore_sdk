@@ -30,6 +30,7 @@ class BatchQuoteCreateResult(TypedDict):
     quote_id: str | None
     error: str | None
 
+
 LOGGER: Logger = logger
 
 API_CLIENT: AsyncBritecoreAPIClient = async_api_client

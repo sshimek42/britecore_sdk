@@ -359,7 +359,7 @@ async def main() -> None:
 asyncio.run(main())
 ```
 
-```
+```python
 
 ---
 

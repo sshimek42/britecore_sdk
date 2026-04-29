@@ -13,4 +13,3 @@ if [ "$remote_name" = "origin" ]; then
 fi
 
 exit 0
-

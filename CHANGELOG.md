@@ -61,15 +61,11 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   - DEBUG level throughout configuration discovery and authentication selection.
   - Stack traces (`exc_info=True`) for easier troubleshooting in logs/APM systems.
 
----
-
-### Added
-
-- Added `use_api_client(client)` context manager in `api.api_calls` to bind
+- `use_api_client(client)` context manager in `api.api_calls` to bind
   endpoint wrapper calls to an explicit `BritecoreAPIClient` instance without
   mutating module-global client state.
-- Added top-level `britecore_sdk.use_api_client` export for convenience.
-- Added multi-site and operations documentation:
+- Top-level `britecore_sdk.use_api_client` export for convenience.
+- Multi-site and operations documentation:
   `docs/MULTI_TENANCY.md`, `docs/OBSERVABILITY.md`, `docs/DEPLOYMENT.md`, and
   `DEPRECATION.md`.
 

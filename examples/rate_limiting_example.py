@@ -11,10 +11,11 @@ Rate limiting is useful when:
 - Implementing safe backoff behavior after 429 errors
 """
 
-from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-from britecore_sdk.api.api_calls.v2 import policies
-from britecore_sdk.exceptions import RateLimitError
 import logging
+
+from britecore_sdk.api.api_calls.v2 import policies
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.exceptions import RateLimitError
 
 # Enable debug logging to see rate limiting in action
 logging.basicConfig(level=logging.DEBUG)
@@ -36,13 +37,13 @@ print(f"Client initialized with rate limiter: {client.rate_limiter}")
 for i in range(5):
     try:
         result = policies.retrieve_policy(
-            policy_number=f"POL-{1000+i}",
+            policy_number=f"POL-{1000 + i}",
         )
-        print(f"Request {i+1} succeeded")
+        print(f"Request {i + 1} succeeded")
     except RateLimitError as e:
-        print(f"Request {i+1} rate limited: {e}")
+        print(f"Request {i + 1} rate limited: {e}")
     except Exception as e:
-        print(f"Request {i+1} failed: {e}")
+        print(f"Request {i + 1} failed: {e}")
 
 # ============================================================================
 # Example 2: Custom Rate Limiting Parameters
@@ -54,9 +55,9 @@ print("-" * 50)
 # Initialize with custom settings for conservative rate limiting
 client = BritecoreAPIClient("production").init_client(
     enable_rate_limiter=True,
-    rate_limiter_requests_per_second=5.0,     # 5 requests per second
-    rate_limiter_burst_size=10,               # Allow burst of 10
-    rate_limiter_adaptive_backoff=True,       # Back off on 429
+    rate_limiter_requests_per_second=5.0,  # 5 requests per second
+    rate_limiter_burst_size=10,  # Allow burst of 10
+    rate_limiter_adaptive_backoff=True,  # Back off on 429
     rate_limiter_backoff_timeout_seconds=60.0,  # Back off for 60 seconds
 )
 
@@ -65,13 +66,13 @@ print(f"Client initialized with rate limiter: {client.rate_limiter}")
 # Make requests - they'll be rate-limited at 5 req/s instead of 10 req/s
 for i in range(3):
     try:
-        print(f"Making request {i+1}...")
+        print(f"Making request {i + 1}...")
         result = policies.retrieve_policy(
-            policy_number=f"POL-{2000+i}",
+            policy_number=f"POL-{2000 + i}",
         )
-        print(f"Request {i+1} succeeded")
+        print(f"Request {i + 1} succeeded")
     except Exception as e:
-        print(f"Request {i+1} failed: {e}")
+        print(f"Request {i + 1} failed: {e}")
 
 # ============================================================================
 # Example 3: Monitoring Rate Limiter State
@@ -194,4 +195,3 @@ Key features:
 
 For more information, see: docs/RATE_LIMITING.md
 """)
-

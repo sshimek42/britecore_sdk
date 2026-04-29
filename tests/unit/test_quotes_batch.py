@@ -98,4 +98,3 @@ class TestQuotesBatchEndpoints:
 
         with pytest.raises(ValueError):
             quotes.create_full_quotes_batch([{"number": "Q-001"}], max_workers=0)
-

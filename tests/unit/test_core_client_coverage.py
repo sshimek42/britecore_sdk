@@ -389,8 +389,6 @@ class TestDoRequestExceptionMapping:
     def test_dry_run_returns_synthetic_success_response(
         self, env_api_key, mock_settings
     ):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-
         client = self._initialized_client(mock_settings)
 
         with patch.object(client.http, "request") as mock_req:
@@ -415,8 +413,6 @@ class TestDoRequestExceptionMapping:
     def test_dry_run_redacts_nested_sensitive_body_fields(
         self, env_api_key, mock_settings
     ):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-
         client = self._initialized_client(mock_settings)
         response = client.do_request(
             "/api/v2/test",
@@ -438,8 +434,6 @@ class TestDoRequestExceptionMapping:
     def test_dry_run_can_include_sensitive_headers_when_opted_in(
         self, env_api_key, mock_settings
     ):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-
         client = self._initialized_client(mock_settings)
 
         response = client.do_request(
@@ -466,8 +460,6 @@ class TestDoRequestExceptionMapping:
     def test_client_dry_run_is_inherited_when_request_omits_flag(
         self, env_api_key, mock_settings
     ):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-
         client = self._initialized_client(mock_settings)
         client.client_dry_run = True
 
@@ -496,8 +488,6 @@ class TestDoRequestExceptionMapping:
     def test_oauth_dry_run_skips_token_acquisition_when_no_headers_provided(
         self, env_oauth, mock_settings_oauth
     ):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-
         client = self._initialized_oauth_client(mock_settings_oauth)
         token_manager = client.token_class
         assert token_manager is not None
@@ -516,8 +506,6 @@ class TestDoRequestExceptionMapping:
     def test_oauth_dry_run_keeps_caller_supplied_authorization_header(
         self, env_oauth, mock_settings_oauth
     ):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
-
         client = self._initialized_oauth_client(mock_settings_oauth)
         token_manager = client.token_class
         assert token_manager is not None

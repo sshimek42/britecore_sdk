@@ -6,8 +6,8 @@ docstrings describe the intended API contract first and call out SDK-specific
 response normalization where needed.
 """
 
-from logging import Logger
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
+from logging import Logger
 from typing import Any, TypedDict, Unpack
 
 from urllib3 import BaseHTTPResponse, HTTPResponse
@@ -137,7 +137,9 @@ def create_full_quotes_batch(
     worker_count = min(max_workers, len(quotes_json))
     results: list[BatchQuoteCreateResult | None] = [None] * len(quotes_json)
 
-    def _create_one(index: int, payload: dict[str, Any]) -> tuple[int, dict[str, Any] | None, str | None]:
+    def _create_one(
+        index: int, payload: dict[str, Any]
+    ) -> tuple[int, dict[str, Any] | None, str | None]:
         quote_data, quote_id = create_full_quote(payload, **kwargs)
         return index, quote_data, quote_id
 
@@ -171,11 +173,7 @@ def create_full_quotes_batch(
                     "error": str(exc),
                 }
 
-    finalized_results = [
-        item
-        for item in results
-        if item is not None
-    ]
+    finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])
     failed = len(finalized_results) - succeeded
 
