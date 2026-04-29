@@ -573,78 +573,100 @@ class TestContactsV1Endpoints:
 class TestHTTPErrorHandling:
     """Verify process_result raises the correct exception type for each HTTP status."""
 
+    def _get_client(self):
+        """Create a minimal BritecoreAPIClient for testing."""
+        from unittest.mock import patch, MagicMock
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch("britecore_sdk.api.britecore_api_client.LoadClientSettings") as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=5,
+                web_timeout_long=50,
+                web_retry=3,
+            )
+            mock_loader.return_value = mock_loader_instance
+            client = BritecoreAPIClient("test_site")
+            client.init_client()
+        return client
+
     @pytest.mark.integration
     def test_401_raises_authentication_error(self):
         """process_result raises AuthenticationError on HTTP 401."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
 
+        client = self._get_client()
         resp = MagicMock()
         resp.status = 401
         resp.reason = "Unauthorized"
 
         with pytest.raises(BritecoreError.AuthenticationError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.integration
     def test_403_raises_authentication_error(self):
         """process_result raises AuthenticationError on HTTP 403."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
 
+        client = self._get_client()
         resp = MagicMock()
         resp.status = 403
         resp.reason = "Forbidden"
 
         with pytest.raises(BritecoreError.AuthenticationError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.integration
     def test_429_raises_rate_limit_error_with_retry_after(self):
         """process_result raises RateLimitError on HTTP 429, parsing Retry-After."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
 
+        client = self._get_client()
         resp = MagicMock()
         resp.status = 429
         resp.reason = "Too Many Requests"
         resp.headers = {"Retry-After": "60"}
 
         with pytest.raises(BritecoreError.RateLimitError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
         assert exc_info.value.retry_after == 60
 
     @pytest.mark.integration
     def test_500_raises_server_error(self):
         """process_result raises ServerError on HTTP 500."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
 
+        client = self._get_client()
         resp = MagicMock()
         resp.status = 500
         resp.reason = "Internal Server Error"
 
         with pytest.raises(BritecoreError.ServerError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.integration
     def test_none_response_raises_no_data_returned(self):
         """process_result raises NoDataReturned when response is None."""
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
 
+        client = self._get_client()
+
         with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(None)
+            client.process_result(None)
 
     @pytest.mark.integration
     def test_success_false_body_raises_no_data_returned(self):
         """process_result raises NoDataReturned when success=false in body."""
         import json as json_mod
 
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
 
+        client = self._get_client()
         resp = MagicMock()
         resp.status = 200
         resp.data = json_mod.dumps(
@@ -652,7 +674,7 @@ class TestHTTPErrorHandling:
         ).encode()
 
         with pytest.raises(BritecoreError.NoDataReturned, match="Policy not found"):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
 
 # ===========================================================================

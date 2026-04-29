@@ -80,7 +80,8 @@ class TestRateLimiterTokenBucket:
         for i in range(3):
             delay = limiter.acquire()
             assert delay < 0.01
-            assert limiter._tokens == (2 - i)
+            # Use approximate equality due to token replenishment during test execution
+            assert abs(limiter._tokens - (2 - i)) < 0.01
 
     def test_acquire_causes_wait_when_depleted(self):
         """Test that acquire waits when no tokens are available."""
@@ -106,7 +107,8 @@ class TestRateLimiterTokenBucket:
         # Consume both tokens
         limiter.acquire()
         limiter.acquire()
-        assert limiter._tokens == 0.0
+        # Use approximate equality to account for timing precision
+        assert abs(limiter._tokens - 0.0) < 0.001
 
         # Wait and check replenishment
         time.sleep(0.6)  # Should generate ~1.2 tokens at 2 req/s
