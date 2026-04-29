@@ -904,13 +904,14 @@ class BritecoreAPIClient:
 
             # --- Apply rate limiting (if enabled and not bypassed) ---
             rate_limit_delay = 0.0
+            rate_limiter = getattr(self, "rate_limiter", None)
             if (
                 not effective_dry_run
-                and getattr(self, "rate_limiter", None) is not None
+                and rate_limiter is not None
                 and not rate_limiter_bypass
             ):
                 try:
-                    rate_limit_delay = self.rate_limiter.acquire(
+                    rate_limit_delay = rate_limiter.acquire(
                         timeout=self._timeout_seconds(request_timeout)
                     )
                     if rate_limit_delay > 0.001:  # Log only significant delays
