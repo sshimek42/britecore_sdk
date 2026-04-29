@@ -373,6 +373,104 @@ class TestRateLimiterIntegration:
         # But we can't directly test bypass - it's tested via do_request integration
 
 
+class TestInitApiClientRateLimiter:
+    """Tests confirming init_api_client exposes the same rate limiter options as init_client."""
+
+    @pytest.fixture(autouse=True)
+    def mock_api_client(self):
+        """Override the conftest autouse mock so the real init_api_client runs."""
+        yield  # no patching — let the real implementation execute
+
+    @staticmethod
+    def _mock_settings_ctx():
+        """Return a patch context for LoadClientSettings with a minimal config."""
+        from unittest.mock import patch, Mock
+
+        patcher = patch("britecore_sdk.api.britecore_api_client.LoadClientSettings")
+        mock_cls = patcher.start()
+        mock_instance = Mock()
+        mock_instance.load_config.return_value = Mock(
+            base_url="https://api.example.com",
+            client_id="",
+            client_secret="",
+            api_key="test-key",
+            web_timeout=30,
+            web_timeout_long=300,
+            web_retry=5,
+        )
+        mock_cls.return_value = mock_instance
+        return patcher
+
+    def test_init_api_client_rate_limiter_enabled(self):
+        """init_api_client should enable the rate limiter when enable_rate_limiter=True."""
+        from britecore_sdk.api.api_calls import init_api_client, reset_api_client
+
+        patcher = self._mock_settings_ctx()
+        try:
+            client = init_api_client("test_site", enable_rate_limiter=True)
+            assert client.rate_limiter is not None
+            assert isinstance(client.rate_limiter, RateLimiter)
+            assert client.rate_limiter.requests_per_second == 10.0  # SDK default
+        finally:
+            reset_api_client()
+            patcher.stop()
+
+    def test_init_api_client_rate_limiter_disabled(self):
+        """init_api_client should leave rate_limiter None when enable_rate_limiter=False."""
+        from britecore_sdk.api.api_calls import init_api_client, reset_api_client
+
+        patcher = self._mock_settings_ctx()
+        try:
+            client = init_api_client("test_site", enable_rate_limiter=False)
+            assert client.rate_limiter is None
+        finally:
+            reset_api_client()
+            patcher.stop()
+
+    def test_init_api_client_rate_limiter_custom_params(self):
+        """init_api_client should forward all rate limiter params to init_client."""
+        from britecore_sdk.api.api_calls import init_api_client, reset_api_client
+
+        patcher = self._mock_settings_ctx()
+        try:
+            client = init_api_client(
+                "test_site",
+                enable_rate_limiter=True,
+                rate_limiter_requests_per_second=3.0,
+                rate_limiter_burst_size=6,
+                rate_limiter_adaptive_backoff=False,
+                rate_limiter_backoff_timeout_seconds=30.0,
+            )
+            assert client.rate_limiter is not None
+            assert client.rate_limiter.requests_per_second == 3.0
+            assert client.rate_limiter.burst_size == 6
+            assert client.rate_limiter._adaptive_backoff_enabled is False
+            assert client.rate_limiter._backoff_timeout == 30.0
+        finally:
+            reset_api_client()
+            patcher.stop()
+
+    def test_init_api_client_rate_limiter_default_is_disabled(self):
+        """init_api_client should keep rate_limiter None when no enable flag is passed."""
+        from unittest.mock import patch
+        from britecore_sdk.api.api_calls import init_api_client, reset_api_client
+
+        patcher = self._mock_settings_ctx()
+        # Also patch settings.get so rate_limiter_enabled returns False
+        settings_patcher = patch(
+            "britecore_sdk.api.britecore_api_client.settings.get",
+            return_value=False,
+        )
+        try:
+            settings_patcher.start()
+            client = init_api_client("test_site")
+            assert client.rate_limiter is None
+        finally:
+            settings_patcher.stop()
+            reset_api_client()
+            patcher.stop()
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
 
