@@ -164,6 +164,15 @@ class BritecoreAPIClient:
         that all necessary configuration parameters are present and valid before proceeding
         with client initialization.
 
+        **Logging behavior:**
+        - ``DEBUG`` logs are emitted throughout for configuration discovery and auth mode selection
+        - ``ERROR`` logs are emitted for any configuration validation failures (missing base_url,
+          missing api_key, OAuth initialization errors, rate limiter configuration errors, etc.)
+          before raising exceptions. This ensures failures are captured in application logs even
+          if exceptions are caught by caller code.
+        - ``INFO`` log is emitted on successful initialization, including auth mode and rate
+          limiting status.
+
         Credentials can be supplied in two mutually exclusive ways:
 
         **File-based (default):** omit all credential kwargs — ``LoadClientSettings``
@@ -226,9 +235,9 @@ class BritecoreAPIClient:
 
         target_site = self.target_site
         if not target_site:
-            raise ValueError(
-                "target_site must be specified explicitly; environment fallback is not allowed."
-            )
+            error_msg = "target_site must be specified explicitly; environment fallback is not allowed."
+            LOGGER.error(error_msg)
+            raise ValueError(error_msg)
 
         if base_url is not None:
             # Explicit-credential mode: bypass file-based lookup
@@ -246,7 +255,20 @@ class BritecoreAPIClient:
                 web_timeout_long=None,
             )
         else:
-            self.site_settings = LoadClientSettings(target_site).load_config()
+            try:
+                self.site_settings = LoadClientSettings(target_site).load_config()
+                LOGGER.debug(
+                    "Configuration loaded for target_site=%r from settings files",
+                    target_site,
+                )
+            except Exception as config_load_error:
+                LOGGER.error(
+                    "Failed to load configuration for target_site=%r: %s",
+                    target_site,
+                    config_load_error,
+                    exc_info=True,
+                )
+                raise
 
         self.client_dry_run = client_dry_run
 
@@ -258,12 +280,18 @@ class BritecoreAPIClient:
             self.base_url = Url(scheme="https", host=self.base_url, path=None).url
             if self.base_url.endswith("/"):
                 self.base_url = self.base_url[:-1]
+            LOGGER.debug("base_url configured: %r", self.base_url)
         else:
-            raise BritecoreError.BritecoreKeyError(
+            error_msg = (
                 "base_url not configured. Please set base_url in your "
                 "settings.toml or .secrets.toml file.\n"
                 "Tip: To check your site configuration, run: python -m britecore_sdk.utils.check_site_configs"
             )
+            LOGGER.error(
+                "Configuration validation failed for target_site=%r: base_url is missing",
+                target_site,
+            )
+            raise BritecoreError.BritecoreKeyError(error_msg)
 
         self.web_timeout = self.site_settings.web_timeout
         if not self.web_timeout:
@@ -299,19 +327,38 @@ class BritecoreAPIClient:
             LOGGER.debug("Auth mode selected during init_client: api_key")
             try:
                 self.api_key = self.site_settings.api_key
+                if not self.api_key:
+                    raise AttributeError("api_key is empty or not set")
+                LOGGER.debug("API key authentication configured for target_site=%r", target_site)
             except AttributeError as attribute_error:
-                raise BritecoreError.BritecoreKeyError(
+                error_msg = (
                     "api_key not found. Please set the api_key in your "
                     ".secrets.toml file.\n"
                     "Tip: To check your site configuration, run: python -m britecore_sdk.utils.check_site_configs"
-                ) from attribute_error
+                )
+                LOGGER.error(
+                    "Configuration validation failed for target_site=%r: api_key is missing - %s",
+                    target_site,
+                    attribute_error,
+                )
+                raise BritecoreError.BritecoreKeyError(error_msg) from attribute_error
             self.token_class = None
         else:
-            self.token_class = OAuthToken(
-                self.site_settings.client_id,
-                self.site_settings.client_secret,
-                self.site_settings.base_url,
-            )
+            try:
+                self.token_class = OAuthToken(
+                    self.site_settings.client_id,
+                    self.site_settings.client_secret,
+                    self.site_settings.base_url,
+                )
+                LOGGER.debug("OAuth authentication configured for target_site=%r", target_site)
+            except Exception as oauth_error:
+                LOGGER.error(
+                    "Failed to initialize OAuth for target_site=%r: %s",
+                    target_site,
+                    oauth_error,
+                    exc_info=True,
+                )
+                raise
             LOGGER.debug("Auth mode selected during init_client: oauth")
 
         # --- Initialize optional rate limiter ---
@@ -360,15 +407,29 @@ class BritecoreAPIClient:
                     backoff_timeout_seconds=float(backoff_timeout),
                 )
                 LOGGER.debug(
-                    "Rate limiter initialized: %s",
+                    "Rate limiter initialized for target_site=%r: %s",
+                    target_site,
                     self.rate_limiter,
                 )
             except (ValueError, TypeError) as config_error:
-                raise ValueError(
-                    f"Invalid rate limiter configuration: {config_error}"
-                ) from config_error
+                error_msg = f"Invalid rate limiter configuration: {config_error}"
+                LOGGER.error(
+                    "Rate limiter configuration failed for target_site=%r: %s",
+                    target_site,
+                    config_error,
+                    exc_info=True,
+                )
+                raise ValueError(error_msg) from config_error
         else:
             self.rate_limiter = None
+
+        LOGGER.info(
+            "BritecoreAPIClient initialized successfully for target_site=%r "
+            "(auth=%s, rate_limiting=%s)",
+            target_site,
+            "api_key" if self.use_api_key else "oauth",
+            "enabled" if self.rate_limiter else "disabled",
+        )
 
         return self
 
