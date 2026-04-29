@@ -45,173 +45,197 @@ def _make_response(
 class TestProcessResultStatusCodes:
     """Tests for HTTP status → exception mapping in process_result."""
 
-    @pytest.mark.unit
-    def test_none_response_raises_no_data_returned(self):
+    def _make_minimal_client(self):
+        """Create a minimal BritecoreAPIClient instance for testing process_result."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=5,
+                web_timeout_long=50,
+                web_retry=3,
+            )
+            mock_loader.return_value = mock_loader_instance
+            client = BritecoreAPIClient("test_site")
+            client.init_client()
+        return client
+
+    @pytest.mark.unit
+    def test_none_response_raises_no_data_returned(self):
+        client = self._make_minimal_client()
+
         with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(None)
+            client.process_result(None)
 
     @pytest.mark.unit
     def test_401_raises_authentication_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=401, reason="Unauthorized")
         with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert exc_info.value.http_status == 401
 
     @pytest.mark.unit
     def test_403_raises_authentication_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=403, reason="Forbidden")
         with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert exc_info.value.http_status == 403
 
     @pytest.mark.unit
     def test_authentication_error_str_includes_status(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=401, reason="Unauthorized")
         with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert "401" in str(exc_info.value)
 
     @pytest.mark.unit
     def test_429_raises_rate_limit_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=429, reason="Too Many Requests")
         with pytest.raises(BritecoreError.RateLimitError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_429_with_retry_after_header_populates_attribute(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(
             b"", status=429, reason="Too Many Requests", headers={"Retry-After": "30"}
         )
         with pytest.raises(BritecoreError.RateLimitError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert exc_info.value.retry_after == 30
 
     @pytest.mark.unit
     def test_500_raises_server_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=500, reason="Internal Server Error")
         with pytest.raises(BritecoreError.ServerError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert exc_info.value.http_status == 500
 
     @pytest.mark.unit
     def test_503_raises_server_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=503, reason="Service Unavailable")
         with pytest.raises(BritecoreError.ServerError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert exc_info.value.http_status == 503
 
     @pytest.mark.unit
     def test_server_error_str_includes_status(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=502, reason="Bad Gateway")
         with pytest.raises(BritecoreError.ServerError) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert "502" in str(exc_info.value)
 
     @pytest.mark.unit
     def test_404_raises_no_data_returned(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=404, reason="Not Found")
         with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_404_raises_not_found_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=404, reason="Not Found")
         with pytest.raises(BritecoreError.NotFoundError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_409_raises_conflict_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=409, reason="Conflict")
         with pytest.raises(BritecoreError.ConflictError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_422_raises_validation_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"", status=422, reason="Unprocessable Entity")
         with pytest.raises(BritecoreError.ValidationError):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_200_success_false_raises_no_data_returned(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(
             b'{"success": false, "message": "Quota exceeded"}', status=200
         )
         with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_200_success_true_returns_data(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b'{"success": true, "data": {"id": "ABC"}}', status=200)
-        result = BritecoreAPIClient.process_result(resp)
+        result = client.process_result(resp)
         assert result == {"id": "ABC"}
 
     @pytest.mark.unit
     def test_200_empty_data_returns_none_with_warning(self):
         from britecore_sdk.api import britecore_api_client as client_mod
 
+        client = self._make_minimal_client()
         resp = _make_response(b'{"success": true, "data": null}', status=200)
         with patch.object(client_mod.LOGGER, "warning") as mock_warning:
-            result = client_mod.BritecoreAPIClient.process_result(resp)
+            result = client.process_result(resp)
         assert result is None
         mock_warning.assert_called_once_with("No data returned")
 
     @pytest.mark.unit
     def test_messages_key_used_as_fallback_error(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(
             b'{"success": false, "messages": "Validation failed"}', status=200
         )
         with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
         assert "Validation failed" in str(exc_info.value)
 
     @pytest.mark.unit
     def test_malformed_json_raises_no_data_returned(self):
-        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        client = self._make_minimal_client()
 
         resp = _make_response(b"not-json", status=200)
         with pytest.raises(BritecoreError.NoDataReturned):
-            BritecoreAPIClient.process_result(resp)
+            client.process_result(resp)
 
     @pytest.mark.unit
     def test_logs_flag_triggers_debug_log(self):
         """When logs=True, LOGGER.debug is called with the data payload."""
         from britecore_sdk.api import britecore_api_client as client_mod
 
+        client = self._make_minimal_client()
         resp = _make_response(b'{"success": true, "data": {"id": "X"}}')
         with patch.object(client_mod.LOGGER, "debug") as mock_debug:
-            client_mod.BritecoreAPIClient.process_result(resp, logs=True)
+            client.process_result(resp, logs=True)
         mock_debug.assert_called_once_with({"id": "X"})
 
 
@@ -378,7 +402,7 @@ class TestDoRequestExceptionMapping:
             )
 
         mock_req.assert_not_called()
-        data = BritecoreAPIClient.process_result(response)
+        data = client.process_result(response)
         assert data["dry_run"] is True
         assert data["path"] == "/api/v2/test"
         assert data["method"] == "POST"
@@ -406,7 +430,7 @@ class TestDoRequestExceptionMapping:
             dry_run=True,
         )
 
-        data = BritecoreAPIClient.process_result(response)
+        data = client.process_result(response)
         assert data["body"]["credentials"]["token"] == "***redacted***"
         assert data["body"]["credentials"]["nested"][0]["api_key"] == "***redacted***"
 
@@ -425,7 +449,7 @@ class TestDoRequestExceptionMapping:
             dry_run=True,
             dry_run_include_sensitive_headers=True,
         )
-        data = BritecoreAPIClient.process_result(response)
+        data = client.process_result(response)
         assert data["headers"].get("Authorization") == "Bearer test-token"
         assert data["body"]["api_key"] == "***redacted***"
 
@@ -453,7 +477,7 @@ class TestDoRequestExceptionMapping:
             )
 
         mock_req.assert_not_called()
-        data = BritecoreAPIClient.process_result(response)
+        data = client.process_result(response)
         assert data["dry_run"] is True
 
     @pytest.mark.unit
@@ -482,7 +506,7 @@ class TestDoRequestExceptionMapping:
             response = client.do_request("/api/v2/test", dry_run=True)
 
         mock_auth.assert_not_called()
-        data = BritecoreAPIClient.process_result(response)
+        data = client.process_result(response)
         assert data["auth_mode"] == "oauth"
         assert data["auth_skipped"] is True
         assert data["authorization_header_source"] == "skipped-for-dry-run"
@@ -506,7 +530,7 @@ class TestDoRequestExceptionMapping:
             )
 
         mock_auth.assert_not_called()
-        data = BritecoreAPIClient.process_result(response)
+        data = client.process_result(response)
         assert data["auth_mode"] == "oauth"
         assert data["auth_skipped"] is False
         assert data["authorization_header_source"] == "caller-provided"

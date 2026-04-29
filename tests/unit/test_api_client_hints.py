@@ -35,10 +35,11 @@ def test_timeout_error_includes_hint(env_api_key, mock_settings):
 
 
 @pytest.mark.unit
-def test_process_result_no_response_includes_hint():
+def test_process_result_no_response_includes_hint(mock_settings):
     """No-response error paths include a troubleshooting hint."""
+    client = _initialized_client(mock_settings)
     with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
-        BritecoreAPIClient.process_result(None, endpoint="/api/v2/test")
+        client.process_result(None, endpoint="/api/v2/test")
 
     message = str(exc_info.value)
     assert "Hint:" in message
@@ -46,8 +47,9 @@ def test_process_result_no_response_includes_hint():
 
 
 @pytest.mark.unit
-def test_authentication_error_includes_healthcheck_hint():
+def test_authentication_error_includes_healthcheck_hint(mock_settings):
     """Authentication failures include healthcheck guidance."""
+    client = _initialized_client(mock_settings)
     response = MagicMock()
     response.status = 401
     response.reason = "Unauthorized"
@@ -55,7 +57,7 @@ def test_authentication_error_includes_healthcheck_hint():
     response.headers = {}
 
     with pytest.raises(BritecoreError.AuthenticationError) as exc_info:
-        BritecoreAPIClient.process_result(response, endpoint="/api/v2/test")
+        client.process_result(response, endpoint="/api/v2/test")
 
     message = str(exc_info.value)
     assert "Hint:" in message
