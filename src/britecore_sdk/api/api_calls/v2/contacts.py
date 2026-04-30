@@ -4,6 +4,7 @@ This module provides wrappers for contact creation, updates, role assignment,
 lookup by identifier, and filtered contact search.
 """
 
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from logging import Logger
 from typing import Any, Literal, Unpack
 
@@ -277,8 +278,6 @@ def create_contacts_batch(
         ValueError: If ``max_workers`` is less than 1.
         Exception: First worker exception when ``fail_fast=True``.
     """
-    from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-
     if not contacts_json or not isinstance(contacts_json, list):
         raise BritecoreError.MissingParameter(
             "contacts_json is required and must be a non-empty list"

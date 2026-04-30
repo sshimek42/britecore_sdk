@@ -9,12 +9,14 @@ Provides:
     aupdate_contact         -- Async update contact fields.
     aget_contact            -- Async retrieve a contact by ID (cached by default).
     afind_contact_by_params -- Async search for contacts.
+    acreate_contacts_batch  -- Async batch create many contacts concurrently.
 """
 
+import asyncio
 from logging import Logger
 from typing import Any, Literal, Unpack
 
-from britecore_sdk import logger
+from britecore_sdk import BritecoreError, logger
 from britecore_sdk.api.api_calls import (
     AsyncBritecoreAPIClient,
     RequestParameters,
@@ -242,10 +244,6 @@ async def acreate_contacts_batch(
         ValueError: If ``max_concurrent`` is less than 1.
         Exception: First worker exception when ``fail_fast=True``.
     """
-    import asyncio
-
-    from britecore_sdk import BritecoreError
-
     if not contacts_json or not isinstance(contacts_json, list):
         raise BritecoreError.MissingParameter(
             "contacts_json is required and must be a non-empty list"

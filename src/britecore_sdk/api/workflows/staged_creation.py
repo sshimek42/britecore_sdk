@@ -289,7 +289,7 @@ def create_entities_staged_batch(
         _create_contact,
         contact_max_workers,
         fail_fast,
-        results,  # type: ignore[arg-type]
+        results,
     )
     stage_totals["contacts"]["succeeded"] = len(contact_still_pending)
     stage_totals["contacts"]["failed"] = (
@@ -324,7 +324,7 @@ def create_entities_staged_batch(
         _create_quote,
         quote_max_workers,
         fail_fast,
-        results,  # type: ignore[arg-type]
+        results,
     )
     stage_totals["quotes"]["succeeded"] = len(quote_still_pending)
     stage_totals["quotes"]["failed"] = (
@@ -357,7 +357,7 @@ def create_entities_staged_batch(
         _create_policy,
         policy_max_workers,
         fail_fast,
-        results,  # type: ignore[arg-type]
+        results,
     )
     stage_totals["policies"]["succeeded"] = len(policy_still_pending)
     stage_totals["policies"]["failed"] = (
@@ -402,7 +402,7 @@ def create_entities_staged_batch(
         _create_risks,
         risk_max_workers,
         fail_fast,
-        results,  # type: ignore[arg-type]
+        results,
     )
     stage_totals["risks"]["succeeded"] = len(risk_still_pending)
     stage_totals["risks"]["failed"] = (

@@ -9,6 +9,7 @@ Key functions:
 For interactive menu functionality, see britecore_sdk.utils.interactive_menu.
 """
 
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from json import loads
 from logging import Logger
 from typing import Any, Unpack
@@ -425,8 +426,6 @@ def get_export_line_files_stitched(
         BritecoreError.MissingParameter: If ``lines`` is missing/empty.
         ValueError: If ``max_workers`` is less than 1.
     """
-    from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-
     if not lines or not isinstance(lines, list):
         raise BritecoreError.MissingParameter(
             "lines is required and must be a non-empty list"

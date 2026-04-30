@@ -14,6 +14,7 @@ Key functions:
     get_policies            -- List all policies (paginated).
 """
 
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from logging import Logger
 from typing import Any, Literal, Unpack
 
@@ -725,8 +726,6 @@ def create_policies_batch(
         ValueError: If ``max_workers`` is less than 1.
         Exception: First worker exception when ``fail_fast=True``.
     """
-    from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-
     if not policies_json or not isinstance(policies_json, list):
         raise BritecoreError.MissingParameter(
             "policies_json is required and must be a non-empty list"
@@ -820,8 +819,6 @@ def create_risks_batch(
         ValueError: If ``max_workers`` is less than 1.
         Exception: First worker exception when ``fail_fast=True``.
     """
-    from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-
     if not risks_json or not isinstance(risks_json, list):
         raise BritecoreError.MissingParameter(
             "risks_json is required and must be a non-empty list"
