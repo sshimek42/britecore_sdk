@@ -9,6 +9,7 @@ Key functions:
 For interactive menu functionality, see britecore_sdk.utils.interactive_menu.
 """
 
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from json import loads
 from logging import Logger
 from typing import Any, Unpack
@@ -379,3 +380,103 @@ def get_all_policy_types(
         client=API_CLIENT,
         **kwargs,
     )
+
+
+def get_export_line_files_stitched(
+    lines: list[tuple],
+    max_workers: int = 2,
+    include_custom_sequences: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Fetch export data for multiple lines and stitch the results together.
+
+    Line file export calls are **long-running** (typically 45–60 seconds each).
+    This helper intentionally defaults to low concurrency (``max_workers=2``)
+    to avoid overloading the BriteCore backend and to limit timeout failures.
+    Callers should pass a generous ``request_timeout`` (e.g., 120–180 seconds)
+    via ``**kwargs``.
+
+    The stitched result contains all per-line payloads keyed by line index,
+    plus a summary of successes and failures.
+
+    Args:
+        lines: List of ``(effective_date_id, state_id, line_id)`` tuples,
+            one per line to extract.
+        max_workers: Maximum concurrent workers.  Default is ``2`` (low because
+            each extract call is long-running and heavy).
+        include_custom_sequences: Whether to include custom sequences in each
+            export.  Defaults to ``False``.
+        **kwargs: ``RequestParameters`` overrides.  It is strongly recommended
+            to pass a long ``request_timeout``::
+
+                get_export_line_files_stitched(
+                    lines,
+                    request_timeout=120,
+                )
+
+    Returns:
+        dict[str, Any]:
+            - ``total``: total number of lines requested
+            - ``succeeded``: number of successful extracts
+            - ``failed``: number of failed extracts
+            - ``results``: list of per-line outcome dicts with keys
+              ``index``, ``line``, ``success``, ``data``, ``error``
+
+    Raises:
+        BritecoreError.MissingParameter: If ``lines`` is missing/empty.
+        ValueError: If ``max_workers`` is less than 1.
+    """
+    if not lines or not isinstance(lines, list):
+        raise BritecoreError.MissingParameter(
+            "lines is required and must be a non-empty list"
+        )
+    if max_workers < 1:
+        raise ValueError("max_workers must be at least 1")
+
+    worker_count = min(max_workers, len(lines))
+    results: list[dict[str, Any] | None] = [None] * len(lines)
+
+    def _fetch_one(index: int, line: tuple) -> tuple[int, Any]:
+        data = get_export_line_file(
+            line, include_custom_sequences=include_custom_sequences, **kwargs
+        )
+        return index, data
+
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        future_map: dict[Future[tuple[int, Any]], int] = {
+            executor.submit(_fetch_one, idx, line): idx
+            for idx, line in enumerate(lines)
+        }
+
+        for future in as_completed(future_map):
+            idx = future_map[future]
+            line = lines[idx]
+            try:
+                result_idx, data = future.result()
+                results[result_idx] = {
+                    "index": result_idx,
+                    "line": line,
+                    "success": True,
+                    "data": data,
+                    "error": None,
+                }
+            except Exception as exc:
+                LOGGER.error("Line extract failed for %s: %s", line, exc)
+                results[idx] = {
+                    "index": idx,
+                    "line": line,
+                    "success": False,
+                    "data": None,
+                    "error": str(exc),
+                }
+
+    finalized_results = [item for item in results if item is not None]
+    succeeded = sum(1 for item in finalized_results if item["success"])
+    failed = len(finalized_results) - succeeded
+
+    return {
+        "total": len(lines),
+        "succeeded": succeeded,
+        "failed": failed,
+        "results": finalized_results,
+    }
