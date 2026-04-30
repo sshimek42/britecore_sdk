@@ -122,6 +122,7 @@ class AsyncBritecoreAPIClient:
         request_retries: Retry | None,
         request_headers: dict[str, Any] | None,
         method: str,
+        rate_limiter_bypass: bool,
         dry_run: bool | None,
         dry_run_include_sensitive_headers: bool,
     ) -> BaseHTTPResponse | None:
@@ -135,6 +136,7 @@ class AsyncBritecoreAPIClient:
             request_retries=request_retries,
             request_headers=request_headers,
             method=method,
+            rate_limiter_bypass=rate_limiter_bypass,
             dry_run=dry_run,
             dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
         )
@@ -177,6 +179,7 @@ class AsyncBritecoreAPIClient:
         request_retries: Retry | None,
         request_headers: dict[str, Any] | None,
         method: str,
+        rate_limiter_bypass: bool,
         dry_run: bool | None,
         dry_run_include_sensitive_headers: bool,
         dedupe_in_flight: bool,
@@ -193,6 +196,7 @@ class AsyncBritecoreAPIClient:
                 request_retries=request_retries,
                 request_headers=request_headers,
                 method=method,
+                rate_limiter_bypass=rate_limiter_bypass,
                 dry_run=dry_run,
                 dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
             )
@@ -216,6 +220,7 @@ class AsyncBritecoreAPIClient:
                         request_retries=request_retries,
                         request_headers=request_headers,
                         method=method,
+                        rate_limiter_bypass=rate_limiter_bypass,
                         dry_run=dry_run,
                         dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
                     )
@@ -274,6 +279,7 @@ class AsyncBritecoreAPIClient:
         cache_bypass: bool = False,
         cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
         dedupe_in_flight: bool = True,
+        rate_limiter_bypass: bool = False,
         dry_run: bool | None = None,
         dry_run_include_sensitive_headers: bool = False,
     ) -> BaseHTTPResponse | None:
@@ -305,6 +311,7 @@ class AsyncBritecoreAPIClient:
             request_retries=request_retries,
             request_headers=request_headers,
             method=normalized_method,
+            rate_limiter_bypass=rate_limiter_bypass,
             dry_run=effective_dry_run,
             dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
             dedupe_in_flight=dedupe_in_flight and not effective_dry_run,

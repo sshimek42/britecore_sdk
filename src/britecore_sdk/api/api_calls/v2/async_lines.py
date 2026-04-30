@@ -132,15 +132,17 @@ async def aget_export_line_files_stitched(
             )
             return index, data
 
-    tasks = [
+    tasks: list[asyncio.Task[tuple[int, Any]]] = [
         asyncio.create_task(_fetch_one_semaphored(idx, line))
         for idx, line in enumerate(lines)
     ]
 
-    task_results = await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore[assignment]
+    task_results: list[tuple[int, Any] | BaseException] = await asyncio.gather(
+        *tasks, return_exceptions=True
+    )
     for idx, result in enumerate(task_results):
         line = lines[idx]
-        if isinstance(result, Exception):
+        if isinstance(result, BaseException):
             LOGGER.error("Async line extract failed for %s: %s", line, result)
             results[idx] = {
                 "index": idx,
