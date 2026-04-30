@@ -20,8 +20,7 @@ import asyncio
 import time
 from typing import Any
 
-from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quotes_batch
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import acreate_full_quotes_batch, create_full_quotes_batch
 
 
 def generate_sample_quotes(count: int) -> list[dict[str, Any]]:

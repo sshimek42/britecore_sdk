@@ -11,7 +11,7 @@ You now have **high-performance batch quote creation** for your 100+ quote autom
 ### For Your Script (Sync)
 
 ```python
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 # Your 100+ quote payloads
 quotes = [...]
@@ -25,7 +25,7 @@ print(f"✓ Created {result['succeeded']}/{result['total']} quotes")
 ### For Web Services (Async)
 
 ```python
-from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quotes_batch
+from britecore_sdk.api.workflows import acreate_full_quotes_batch
 
 result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
 ```
@@ -94,7 +94,7 @@ result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
 ```python
 # Enable rate limiter + batch for smooth parallel execution
 from britecore_sdk.api.api_calls import init_api_client
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 client = init_api_client("production", enable_rate_limiter=True)
 result = create_full_quotes_batch(quotes, max_workers=10)  # Safe!
@@ -120,12 +120,17 @@ result = create_full_quotes_batch(
 
 | File | Type | Purpose |
 |------|------|---------|
-| `src/britecore_sdk/api/api_calls/v2/quotes.py` | Modified | Added `create_full_quotes_batch()` + `BatchQuoteCreateResult` TypedDict |
-| `src/britecore_sdk/api/api_calls/v2/async_quotes.py` | Modified | Added `acreate_full_quotes_batch()` + imports |
-| `tests/unit/test_quotes_batch.py` | Existing | All 4 sync batch tests passing |
-| `tests/unit/test_async_quotes_batch.py` | New | 5 async batch tests (all passing) |
-| `examples/batch_quote_creation.py` | New | 6 runnable, documented patterns |
-| `docs/BATCH_QUOTE_CREATION.md` | New | Complete batching guide (2700+ lines) |
+| `src/britecore_sdk/api/workflows/batch_quotes.py` | New | `create_full_quotes_batch()` + `BatchQuoteCreateResult` TypedDict |
+| `src/britecore_sdk/api/workflows/async_batch_quotes.py` | New | `acreate_full_quotes_batch()` async batch helper |
+| `src/britecore_sdk/api/workflows/__init__.py` | New | Re-exports all workflow batch helpers |
+| `src/britecore_sdk/api/api_calls/v2/quotes.py` | Modified | Removed batch helper (moved to workflows) |
+| `src/britecore_sdk/api/api_calls/v2/async_quotes.py` | Modified | Removed async batch helper (moved to workflows) |
+| `src/britecore_sdk/api/britecore_api_client.py` | Modified | Added `create_full_quotes_batch()` client method |
+| `src/britecore_sdk/api/britecore_async_api_client.py` | Modified | Added `acreate_full_quotes_batch()` async client method |
+| `tests/unit/test_quotes_batch.py` | Modified | Updated imports to new workflows location |
+| `tests/unit/test_async_quotes_batch.py` | Modified | Updated imports to new workflows location |
+| `examples/batch_quote_creation.py` | Modified | Updated imports to new workflows location |
+| `docs/BATCH_QUOTE_CREATION.md` | Modified | Updated import paths in all code examples |
 
 ---
 

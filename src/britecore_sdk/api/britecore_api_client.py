@@ -4,7 +4,7 @@ import time
 import uuid
 from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Any, NotRequired, Self, TypedDict  # added typing
+from typing import TYPE_CHECKING, Any, NotRequired, Self, TypedDict, Unpack  # added typing
 
 if TYPE_CHECKING:
     import types
@@ -1050,6 +1050,45 @@ class BritecoreAPIClient:
                 request_dict.update({k: v})
 
         return request_dict
+
+    # ------------------------------------------------------------------
+    # Workflow: batch helpers
+    # ------------------------------------------------------------------
+
+    def create_full_quotes_batch(
+        self,
+        quotes_json: list[Any],
+        max_workers: int = 5,
+        fail_fast: bool = False,
+        **kwargs: "Unpack[RequestParameters]",
+    ) -> dict[str, Any]:
+        """Create many quotes concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.batch_quotes.create_full_quotes_batch`.
+        See that function for full documentation.
+
+        Args:
+            quotes_json: List of quote payload dictionaries.
+            max_workers: Maximum concurrent workers. Defaults to ``5``.
+            fail_fast: When ``True``, re-raises the first encountered exception
+                and cancels pending futures. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each quote create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.batch_quotes import (
+            create_full_quotes_batch as _create_full_quotes_batch,
+        )
+
+        return _create_full_quotes_batch(
+            quotes_json,
+            max_workers=max_workers,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
 
 
 class RequestParameters(TypedDict):

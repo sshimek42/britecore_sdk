@@ -324,3 +324,42 @@ class AsyncBritecoreAPIClient:
         )
 
         return response
+
+    # ------------------------------------------------------------------
+    # Workflow: batch helpers
+    # ------------------------------------------------------------------
+
+    async def acreate_full_quotes_batch(
+        self,
+        quotes_json: list[Any],
+        max_concurrent: int = 5,
+        fail_fast: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Create many quotes concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.async_batch_quotes.acreate_full_quotes_batch`.
+        See that function for full documentation.
+
+        Args:
+            quotes_json: List of quote payload dictionaries.
+            max_concurrent: Maximum concurrent coroutines. Defaults to ``5``.
+            fail_fast: When ``True``, raises the first encountered exception and
+                cancels remaining tasks. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each quote create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.async_batch_quotes import (
+            acreate_full_quotes_batch as _acreate_full_quotes_batch,
+        )
+
+        return await _acreate_full_quotes_batch(
+            quotes_json,
+            max_concurrent=max_concurrent,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
