@@ -6,21 +6,12 @@ Endpoint wrappers for individual quote calls live in
 """
 
 import asyncio
-from typing import Any, TypedDict, Unpack
+from typing import Any, Unpack
 
 from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quote
-
-
-class BatchQuoteCreateResult(TypedDict):
-    """Per-item outcome for ``acreate_full_quotes_batch``."""
-
-    index: int
-    success: bool
-    quote_data: dict[str, Any] | None
-    quote_id: str | None
-    error: str | None
+from britecore_sdk.api.workflows.batch_quotes import BatchQuoteCreateResult
 
 
 async def acreate_full_quotes_batch(
