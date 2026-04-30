@@ -23,7 +23,7 @@ Without batching, creating quotes sequentially results in excessive runtime:
 For scripts and CLI tools:
 
 ```python
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 # Generate or load 100+ quote payloads
 quotes = [
@@ -56,7 +56,7 @@ For FastAPI, aiohttp, or other async frameworks:
 
 ```python
 import asyncio
-from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quotes_batch
+from britecore_sdk.api.workflows import acreate_full_quotes_batch
 
 async def create_batch_quotes():
     # Same quote payloads as above
@@ -161,7 +161,7 @@ async def acreate_full_quotes_batch(
 Create all quotes at once, accept partial failures:
 
 ```python
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 result = create_full_quotes_batch(quotes, max_workers=5, fail_fast=False)
 
@@ -185,7 +185,7 @@ if failed_payloads and len(failed_payloads) < len(quotes):
 For 1000+ quotes, split into chunks to avoid memory/connection exhaustion:
 
 ```python
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 quotes = load_1000_quotes()
 chunk_size = 50
@@ -218,7 +218,7 @@ For web services, track progress and provide feedback:
 
 ```python
 import asyncio
-from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quotes_batch
+from britecore_sdk.api.workflows import acreate_full_quotes_batch
 
 async def batch_create_with_progress(quotes: list, websocket=None):
     """Create quotes and stream progress to WebSocket client."""
@@ -264,7 +264,7 @@ async def batch_quotes_endpoint(ws: WebSocket):
 When all-or-nothing semantics are required:
 
 ```python
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 try:
     result = create_full_quotes_batch(
@@ -346,7 +346,7 @@ if result['failed'] > 0:
 
 ```python
 import time
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 def batch_with_retry(quotes, max_retries=3):
     failed_payloads = quotes[:]
@@ -393,7 +393,7 @@ Batch operations work well with the SDK's **rate limiter**. Enable it to prevent
 
 ```python
 from britecore_sdk.api.api_calls import init_api_client
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 # Initialize client with rate limiting enabled
 client = init_api_client("production")
@@ -421,7 +421,7 @@ import sys
 from datetime import datetime
 
 from britecore_sdk.api.api_calls import init_api_client
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 logger = logging.getLogger(__name__)
 
