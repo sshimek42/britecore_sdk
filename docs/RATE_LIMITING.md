@@ -414,5 +414,5 @@ logging.getLogger("britecore_sdk").setLevel(logging.WARNING)  # See backoff mess
 ## See Also
 
 - [BriteCore API documentation](https://api.britecore.io/docs) for server-side rate limits
-- [Configuration Management](CONFIG_MANAGEMENT.md) for settings file hierarchy
-- [Troubleshooting](TROUBLESHOOTING.md) for common issues
+- [Configuration Management](../CONFIG_MANAGEMENT.md) for settings file hierarchy
+- [Troubleshooting](../TROUBLESHOOTING.md) for common issues

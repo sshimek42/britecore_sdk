@@ -17,14 +17,13 @@ Run:
     python examples/stitched_line_extract.py
 """
 
-import asyncio
 import time
 from typing import Any
-
 
 # ---------------------------------------------------------------------------
 # Helper to discover line tuples (in a real workflow you'd use these helpers)
 # ---------------------------------------------------------------------------
+
 
 def get_line_tuples_example() -> list[tuple]:
     """Show how to discover (effective_date_id, state_id, line_id) tuples.
@@ -61,6 +60,7 @@ def get_line_tuples_example() -> list[tuple]:
 # Synchronous stitched extract
 # ---------------------------------------------------------------------------
 
+
 def example_sync_stitched_extract() -> None:
     """Synchronous stitched line file extract.
 
@@ -83,9 +83,9 @@ def example_sync_stitched_extract() -> None:
 
     result = get_export_line_files_stitched(
         line_tuples,
-        max_workers=2,                  # Low concurrency — these calls are slow
+        max_workers=2,  # Low concurrency — these calls are slow
         include_custom_sequences=False,
-        request_timeout=120,            # ← REQUIRED: at least 90s, ideally 120–180s
+        request_timeout=120,  # ← REQUIRED: at least 90s, ideally 120–180s
     )
 
     elapsed = time.time() - start
@@ -112,6 +112,7 @@ def example_sync_stitched_extract() -> None:
 # Asynchronous stitched extract
 # ---------------------------------------------------------------------------
 
+
 async def example_async_stitched_extract() -> None:
     """Asynchronous stitched line file extract.
 
@@ -134,22 +135,25 @@ async def example_async_stitched_extract() -> None:
 
     result = await aget_export_line_files_stitched(
         line_tuples,
-        max_concurrent=2,               # Low concurrency
+        max_concurrent=2,  # Low concurrency
         include_custom_sequences=False,
-        request_timeout=120,            # ← REQUIRED
+        request_timeout=120,  # ← REQUIRED
     )
 
     elapsed = time.time() - start
 
     print(f"\n✓ Completed in {elapsed:.1f}s")
-    print(f"  Total: {result['total']}, "
-          f"Succeeded: {result['succeeded']}, "
-          f"Failed: {result['failed']}")
+    print(
+        f"  Total: {result['total']}, "
+        f"Succeeded: {result['succeeded']}, "
+        f"Failed: {result['failed']}"
+    )
 
 
 # ---------------------------------------------------------------------------
 # Retry pattern for failed extracts
 # ---------------------------------------------------------------------------
+
 
 def example_retry_failed_lines(initial_result: dict[str, Any]) -> None:
     """Retry only the lines that failed in a previous extract run.
@@ -171,11 +175,13 @@ def example_retry_failed_lines(initial_result: dict[str, Any]) -> None:
 
     retry_result = get_export_line_files_stitched(
         failed_lines,
-        max_workers=1,          # One at a time for retries
-        request_timeout=180,    # Even longer timeout for retries
+        max_workers=1,  # One at a time for retries
+        request_timeout=180,  # Even longer timeout for retries
     )
 
-    print(f"Retry result: {retry_result['succeeded']}/{retry_result['total']} succeeded")
+    print(
+        f"Retry result: {retry_result['succeeded']}/{retry_result['total']} succeeded"
+    )
 
 
 if __name__ == "__main__":
@@ -190,7 +196,9 @@ if __name__ == "__main__":
     #                   api_key="your-api-key")
 
     print("Stitched Line File Extract Examples")
-    print("(These require a configured BriteCore API client to run against a live server)")
+    print(
+        "(These require a configured BriteCore API client to run against a live server)"
+    )
     print()
     print("⚠️  REMINDER: Always pass request_timeout >= 90 for line file extracts")
 

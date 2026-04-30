@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: April 29, 2026*
+*Last updated: April 30, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -391,10 +391,11 @@ See [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete examples and beh
 
 ## Batch quote creation (new in v1.3.0)
 
-For workloads creating many quotes (100+), use batch functions to parallelize quote creation:
+For workloads creating many entities, use workflow batch helpers to parallelize
+creates (quotes, contacts, policies, and risks).
 
 ```python
-from britecore_sdk.api.api_calls.v2 import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 quotes_data = [
     {"insured_name": "Alice", ...},
@@ -410,14 +411,14 @@ result = create_full_quotes_batch(
 )
 
 print(f"Created: {result['succeeded']}/{result['total']}")
-print(f"Failed: {result['total']} ({len(result['failed'])} errors)")
+print(f"Failed: {result['failed']}")
 ```
 
 For async workloads:
 
 ```python
 import asyncio
-from britecore_sdk.api.api_calls.v2 import acreate_full_quotes_batch
+from britecore_sdk.api.workflows import acreate_full_quotes_batch
 
 async def main():
     result = await acreate_full_quotes_batch(quotes_data, max_concurrent=5)

@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: April 29, 2026*
+*Last updated: April 30, 2026*
 *Document type: Living reference guide*
 
 **BriteCore Libraries** - API endpoint reference
@@ -17,7 +17,9 @@ External API docs are available at [https://api.britecore.com/](https://api.brit
 Files under `api_specs/legacy/` are archival reference material for historical
 research and backlog planning, not the default support contract for the current SDK.
 
-The SDK surfaces wrappers under `src/britecore_sdk/api/api_calls/v2/`.
+The SDK surfaces endpoint wrappers under `src/britecore_sdk/api/api_calls/v2/`.
+Higher-level orchestration helpers (staged and batch workflows) live under
+`src/britecore_sdk/api/workflows/`.
 Endpoints without a `v2` equivalent are available in
 `src/britecore_sdk/api/api_calls/v1/`.
 
@@ -385,24 +387,37 @@ risks = policies.retrieve_risks(
 
 ## Batch Operations
 
-For bulk operations, use loops rather than batch endpoints (most don't exist):
+For supported create workflows, use workflow batch helpers in
+`britecore_sdk.api.workflows`:
+
+- `create_full_quotes_batch` / `acreate_full_quotes_batch`
+- `create_contacts_batch` / `acreate_contacts_batch`
+- `create_policies_batch` / `acreate_policies_batch`
+- `create_risks_batch` / `acreate_risks_batch`
 
 ```python
-from britecore_sdk import logger
-from britecore_sdk.api.api_calls import get_api_client
-from britecore_sdk.api.api_calls.v2 import policies
+from britecore_sdk.api.workflows import create_contacts_batch
 
-client = get_api_client()
-policy_numbers = ["POL001", "POL002", "POL003"]
+contacts_payload = [
+    {
+        "name": "Jane Doe",
+        "address": [
+            {
+                "address_line1": "123 Main",
+                "address_city": "Madison",
+                "address_state": "WI",
+                "address_zip": "53703",
+            }
+        ],
+    }
+]
 
-for policy_number in policy_numbers:
-    try:
-        policy = policies.retrieve_policy(policy_number=policy_number)
-        # Replace with your workflow handler.
-        print(policy["id"])
-    except Exception as e:
-        logger.error(f"Failed for {policy_number}: {e}")
+result = create_contacts_batch(contacts_payload, max_workers=5, fail_fast=False)
+print(result["succeeded"], result["failed"])
 ```
+
+See [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) for the full
+batch quote guide and examples.
 
 ---
 

@@ -119,9 +119,7 @@ class TestAsyncStagedWorkflow:
                     side_effect=_mock_policy,
                 ),
             ):
-                result = await acreate_entities_staged_batch(
-                    jobs, fail_fast=False
-                )
+                result = await acreate_entities_staged_batch(jobs, fail_fast=False)
 
             assert result["total"] == 3
             assert result["failed"] == 1

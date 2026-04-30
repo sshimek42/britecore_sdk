@@ -1,4 +1,4 @@
-"""Unit tests for batch creation helpers in contacts, policies, and risks modules."""
+"""Unit tests for batch creation helpers in contacts, policies, and risks workflows."""
 
 from unittest.mock import patch
 
@@ -11,7 +11,7 @@ class TestContactsBatchEndpoints:
     @pytest.mark.unit
     def test_create_contacts_batch_success(self):
         """Batch helper returns ordered successful results for all contact payloads."""
-        from britecore_sdk.api.api_calls.v2 import contacts
+        from britecore_sdk.api.workflows import batch_contacts
 
         payloads = [
             {"name": "Alice", "address": [{"address1": "1 A St"}]},
@@ -23,8 +23,8 @@ class TestContactsBatchEndpoints:
             cid = f"CID-{name}"
             return {"contact_id": cid}, cid
 
-        with patch.object(contacts, "new_contact", side_effect=_mock_new_contact):
-            result = contacts.create_contacts_batch(payloads, max_workers=3)
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
+            result = batch_contacts.create_contacts_batch(payloads, max_workers=3)
 
         assert result["total"] == 3
         assert result["succeeded"] == 3
@@ -36,7 +36,7 @@ class TestContactsBatchEndpoints:
     def test_create_contacts_batch_partial_failure(self):
         """Batch helper captures per-item errors when fail_fast is disabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import contacts
+        from britecore_sdk.api.workflows import batch_contacts
 
         payloads = [
             {"name": "Alice", "address": [{"address1": "1 A St"}]},
@@ -49,8 +49,8 @@ class TestContactsBatchEndpoints:
                 raise BritecoreError.MissingParameter("name is required")
             return {"contact_id": f"CID-{name}"}, f"CID-{name}"
 
-        with patch.object(contacts, "new_contact", side_effect=_mock_new_contact):
-            result = contacts.create_contacts_batch(payloads, max_workers=2)
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
+            result = batch_contacts.create_contacts_batch(payloads, max_workers=2)
 
         assert result["total"] == 3
         assert result["succeeded"] == 2
@@ -62,7 +62,7 @@ class TestContactsBatchEndpoints:
     def test_create_contacts_batch_fail_fast(self):
         """Batch helper re-raises immediately when fail_fast is enabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import contacts
+        from britecore_sdk.api.workflows import batch_contacts
 
         payloads = [
             {"name": "", "address": []},
@@ -74,23 +74,23 @@ class TestContactsBatchEndpoints:
                 raise BritecoreError.MissingParameter("name is required")
             return {"contact_id": "CID-Bob"}, "CID-Bob"
 
-        with patch.object(contacts, "new_contact", side_effect=_mock_new_contact):
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
             with pytest.raises(BritecoreError.MissingParameter):
-                contacts.create_contacts_batch(payloads, max_workers=1, fail_fast=True)
+                batch_contacts.create_contacts_batch(
+                    payloads, max_workers=1, fail_fast=True
+                )
 
     @pytest.mark.unit
     def test_create_contacts_batch_invalid_inputs(self):
         """Batch helper validates required payload list and worker count."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import contacts
+        from britecore_sdk.api.workflows.batch_contacts import create_contacts_batch
 
         with pytest.raises(BritecoreError.MissingParameter):
-            contacts.create_contacts_batch([])
+            create_contacts_batch([])
 
         with pytest.raises(ValueError):
-            contacts.create_contacts_batch(
-                [{"name": "A", "address": []}], max_workers=0
-            )
+            create_contacts_batch([{"name": "A", "address": []}], max_workers=0)
 
 
 class TestPoliciesBatchEndpoints:
@@ -99,7 +99,7 @@ class TestPoliciesBatchEndpoints:
     @pytest.mark.unit
     def test_create_policies_batch_success(self):
         """Batch helper returns ordered successful results for all policy payloads."""
-        from britecore_sdk.api.api_calls.v2 import policies
+        from britecore_sdk.api.workflows import batch_policies
 
         payloads = [
             {"policy_number": "POL-001", "policy_type_id": "pt"},
@@ -110,8 +110,10 @@ class TestPoliciesBatchEndpoints:
             rn = kwargs.get("policy_number", "unknown")
             return {"policy_number": rn, "revision_id": f"REV-{rn}"}, f"REV-{rn}"
 
-        with patch.object(policies, "create_policy", side_effect=_mock_create_policy):
-            result = policies.create_policies_batch(payloads, max_workers=2)
+        with patch.object(
+            batch_policies, "create_policy", side_effect=_mock_create_policy
+        ):
+            result = batch_policies.create_policies_batch(payloads, max_workers=2)
 
         assert result["total"] == 2
         assert result["succeeded"] == 2
@@ -123,7 +125,7 @@ class TestPoliciesBatchEndpoints:
     def test_create_policies_batch_partial_failure(self):
         """Batch helper captures per-item errors when fail_fast is disabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import policies
+        from britecore_sdk.api.workflows import batch_policies
 
         payloads = [
             {"policy_number": "POL-OK", "policy_type_id": "pt"},
@@ -136,8 +138,10 @@ class TestPoliciesBatchEndpoints:
                 raise BritecoreError.MissingParameter("policy_number required")
             return {"policy_number": pn, "revision_id": f"REV-{pn}"}, f"REV-{pn}"
 
-        with patch.object(policies, "create_policy", side_effect=_mock_create_policy):
-            result = policies.create_policies_batch(payloads, max_workers=2)
+        with patch.object(
+            batch_policies, "create_policy", side_effect=_mock_create_policy
+        ):
+            result = batch_policies.create_policies_batch(payloads, max_workers=2)
 
         assert result["total"] == 2
         assert result["succeeded"] == 1
@@ -147,15 +151,13 @@ class TestPoliciesBatchEndpoints:
     def test_create_policies_batch_invalid_inputs(self):
         """Batch helper validates required list and worker count."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import policies
+        from britecore_sdk.api.workflows.batch_policies import create_policies_batch
 
         with pytest.raises(BritecoreError.MissingParameter):
-            policies.create_policies_batch([])
+            create_policies_batch([])
 
         with pytest.raises(ValueError):
-            policies.create_policies_batch(
-                [{"policy_number": "P"}], max_workers=0
-            )
+            create_policies_batch([{"policy_number": "P"}], max_workers=0)
 
 
 class TestRisksBatchEndpoints:
@@ -164,7 +166,7 @@ class TestRisksBatchEndpoints:
     @pytest.mark.unit
     def test_create_risks_batch_success(self):
         """Batch helper returns ordered successful results for all risk payloads."""
-        from britecore_sdk.api.api_calls.v2 import policies
+        from britecore_sdk.api.workflows import batch_policies
 
         payloads = [
             {"revision_id": "REV-001"},
@@ -175,8 +177,8 @@ class TestRisksBatchEndpoints:
             rid = kwargs.get("revision_id", "unknown")
             return {"risk_id": f"RISK-{rid}"}
 
-        with patch.object(policies, "create_risk", side_effect=_mock_create_risk):
-            result = policies.create_risks_batch(payloads, max_workers=2)
+        with patch.object(batch_policies, "create_risk", side_effect=_mock_create_risk):
+            result = batch_policies.create_risks_batch(payloads, max_workers=2)
 
         assert result["total"] == 2
         assert result["succeeded"] == 2
@@ -186,7 +188,7 @@ class TestRisksBatchEndpoints:
     def test_create_risks_batch_partial_failure(self):
         """Batch helper captures per-item errors when fail_fast is disabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import policies
+        from britecore_sdk.api.workflows import batch_policies
 
         payloads = [
             {"revision_id": "REV-OK"},
@@ -199,8 +201,8 @@ class TestRisksBatchEndpoints:
                 raise BritecoreError.MissingParameter("revision_id required")
             return {"risk_id": f"RISK-{rid}"}
 
-        with patch.object(policies, "create_risk", side_effect=_mock_create_risk):
-            result = policies.create_risks_batch(payloads, max_workers=2)
+        with patch.object(batch_policies, "create_risk", side_effect=_mock_create_risk):
+            result = batch_policies.create_risks_batch(payloads, max_workers=2)
 
         assert result["total"] == 2
         assert result["succeeded"] == 1
@@ -210,10 +212,10 @@ class TestRisksBatchEndpoints:
     def test_create_risks_batch_invalid_inputs(self):
         """Batch helper validates required list and worker count."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import policies
+        from britecore_sdk.api.workflows.batch_policies import create_risks_batch
 
         with pytest.raises(BritecoreError.MissingParameter):
-            policies.create_risks_batch([])
+            create_risks_batch([])
 
         with pytest.raises(ValueError):
-            policies.create_risks_batch([{"revision_id": "R"}], max_workers=0)
+            create_risks_batch([{"revision_id": "R"}], max_workers=0)
