@@ -1090,6 +1090,114 @@ class BritecoreAPIClient:
             **kwargs,
         )
 
+    def create_contacts_batch(
+        self,
+        contacts_json: list[Any],
+        max_workers: int = 5,
+        fail_fast: bool = False,
+        **kwargs: "Unpack[RequestParameters]",
+    ) -> dict[str, Any]:
+        """Create many contacts concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.batch_contacts.create_contacts_batch`.
+        See that function for full documentation.
+
+        Args:
+            contacts_json: List of contact payload dicts (each must contain
+                ``name`` and ``address``).
+            max_workers: Maximum concurrent workers. Defaults to ``5``.
+            fail_fast: When ``True``, re-raises the first encountered exception
+                and cancels pending futures. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each contact create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.batch_contacts import (
+            create_contacts_batch as _create_contacts_batch,
+        )
+
+        return _create_contacts_batch(
+            contacts_json,
+            max_workers=max_workers,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
+
+    def create_policies_batch(
+        self,
+        policies_json: list[Any],
+        max_workers: int = 3,
+        fail_fast: bool = False,
+        **kwargs: "Unpack[RequestParameters]",
+    ) -> dict[str, Any]:
+        """Create many policies concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.batch_policies.create_policies_batch`.
+        See that function for full documentation.
+
+        Args:
+            policies_json: List of policy payload dicts forwarded as kwargs to
+                ``create_policy``.
+            max_workers: Maximum concurrent workers. Defaults to ``3``.
+            fail_fast: When ``True``, re-raises the first encountered exception
+                and cancels pending futures. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each policy create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.batch_policies import (
+            create_policies_batch as _create_policies_batch,
+        )
+
+        return _create_policies_batch(
+            policies_json,
+            max_workers=max_workers,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
+
+    def create_risks_batch(
+        self,
+        risks_json: list[Any],
+        max_workers: int = 3,
+        fail_fast: bool = False,
+        **kwargs: "Unpack[RequestParameters]",
+    ) -> dict[str, Any]:
+        """Create many risks concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.batch_policies.create_risks_batch`.
+        See that function for full documentation.
+
+        Args:
+            risks_json: List of risk payload dicts (each must contain
+                ``revision_id``).
+            max_workers: Maximum concurrent workers. Defaults to ``3``.
+            fail_fast: When ``True``, re-raises the first encountered exception
+                and cancels pending futures. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each risk create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.batch_policies import (
+            create_risks_batch as _create_risks_batch,
+        )
+
+        return _create_risks_batch(
+            risks_json,
+            max_workers=max_workers,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
+
 
 class RequestParameters(TypedDict):
     """

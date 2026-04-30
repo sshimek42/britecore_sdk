@@ -55,7 +55,6 @@ from britecore_sdk.api.api_calls.v2 import (
 # ------------------------------------------------------------------
 from britecore_sdk.api.api_calls.v2.async_contacts import (
     aadd_contact_to_role,
-    acreate_contacts_batch,
     afind_contact_by_params,
     aget_contact,
     anew_contact,
@@ -63,10 +62,8 @@ from britecore_sdk.api.api_calls.v2.async_contacts import (
 )
 from britecore_sdk.api.api_calls.v2.async_policies import (
     aadd_line_item,
-    acreate_policies_batch,
     acreate_policy,
     acreate_risk,
-    acreate_risks_batch,
     anew_mortgagee,
     anew_revision_contact,
     arate_revision,
@@ -87,6 +84,18 @@ from britecore_sdk.api.api_calls.v2.async_quotes import (
     acreate_full_quote,
     aget_quote,
 )
+from britecore_sdk.api.workflows.async_batch_contacts import acreate_contacts_batch
+from britecore_sdk.api.workflows.async_batch_policies import (
+    acreate_policies_batch,
+    acreate_risks_batch,
+)
+from britecore_sdk.api.workflows.async_batch_quotes import acreate_full_quotes_batch
+from britecore_sdk.api.workflows.batch_contacts import create_contacts_batch
+from britecore_sdk.api.workflows.batch_policies import (
+    create_policies_batch,
+    create_risks_batch,
+)
+from britecore_sdk.api.workflows.batch_quotes import create_full_quotes_batch
 
 __all__ = [
     # Sync domain modules
@@ -118,11 +127,17 @@ __all__ = [
     "uploads",
     "utils",
     "vendors",
+    # Sync batch helpers (from workflows)
+    "create_contacts_batch",
+    "create_full_quotes_batch",
+    "create_policies_batch",
+    "create_risks_batch",
     # Async function re-exports
     "aadd_contact_to_role",
     "aadd_line_item",
     "acreate_contacts_batch",
     "acreate_full_quote",
+    "acreate_full_quotes_batch",
     "acreate_policies_batch",
     "acreate_policy",
     "acreate_risk",
