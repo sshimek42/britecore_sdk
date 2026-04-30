@@ -20,6 +20,12 @@ Batch helpers
 -------------
 Domain-scoped parallel bulk-create helpers:
 
+- :mod:`britecore_sdk.api.workflows.batch_contacts` /
+  :mod:`britecore_sdk.api.workflows.async_batch_contacts` — bulk contact
+  creation
+- :mod:`britecore_sdk.api.workflows.batch_policies` /
+  :mod:`britecore_sdk.api.workflows.async_batch_policies` — bulk policy and
+  risk creation
 - :mod:`britecore_sdk.api.workflows.batch_quotes` — bulk quote creation via
   ``ThreadPoolExecutor``
 - :mod:`britecore_sdk.api.workflows.async_batch_quotes` — bulk quote creation
@@ -28,11 +34,14 @@ Domain-scoped parallel bulk-create helpers:
 All public helpers are re-exported from this package for convenience::
 
     from britecore_sdk.api.workflows import create_entities_staged_batch
+    from britecore_sdk.api.workflows import create_contacts_batch
+    from britecore_sdk.api.workflows import create_policies_batch
+    from britecore_sdk.api.workflows import create_risks_batch
     from britecore_sdk.api.workflows import create_full_quotes_batch
     from britecore_sdk.api.workflows import acreate_full_quotes_batch
 
 See ``docs/STAGED_WORKFLOWS.md``, ``docs/BATCH_QUOTE_CREATION.md``, and the
-``examples/`` directory for detailed usage and tuning guidance.
+``examples/`` directory for usage and tuning guidance.
 """
 
 from britecore_sdk.api.workflows.async_batch_contacts import acreate_contacts_batch

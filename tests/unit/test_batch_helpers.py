@@ -76,7 +76,9 @@ class TestContactsBatchEndpoints:
 
         with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
             with pytest.raises(BritecoreError.MissingParameter):
-                batch_contacts.create_contacts_batch(payloads, max_workers=1, fail_fast=True)
+                batch_contacts.create_contacts_batch(
+                    payloads, max_workers=1, fail_fast=True
+                )
 
     @pytest.mark.unit
     def test_create_contacts_batch_invalid_inputs(self):
@@ -88,9 +90,7 @@ class TestContactsBatchEndpoints:
             create_contacts_batch([])
 
         with pytest.raises(ValueError):
-            create_contacts_batch(
-                [{"name": "A", "address": []}], max_workers=0
-            )
+            create_contacts_batch([{"name": "A", "address": []}], max_workers=0)
 
 
 class TestPoliciesBatchEndpoints:
@@ -110,7 +110,9 @@ class TestPoliciesBatchEndpoints:
             rn = kwargs.get("policy_number", "unknown")
             return {"policy_number": rn, "revision_id": f"REV-{rn}"}, f"REV-{rn}"
 
-        with patch.object(batch_policies, "create_policy", side_effect=_mock_create_policy):
+        with patch.object(
+            batch_policies, "create_policy", side_effect=_mock_create_policy
+        ):
             result = batch_policies.create_policies_batch(payloads, max_workers=2)
 
         assert result["total"] == 2
@@ -136,7 +138,9 @@ class TestPoliciesBatchEndpoints:
                 raise BritecoreError.MissingParameter("policy_number required")
             return {"policy_number": pn, "revision_id": f"REV-{pn}"}, f"REV-{pn}"
 
-        with patch.object(batch_policies, "create_policy", side_effect=_mock_create_policy):
+        with patch.object(
+            batch_policies, "create_policy", side_effect=_mock_create_policy
+        ):
             result = batch_policies.create_policies_batch(payloads, max_workers=2)
 
         assert result["total"] == 2
@@ -153,9 +157,7 @@ class TestPoliciesBatchEndpoints:
             create_policies_batch([])
 
         with pytest.raises(ValueError):
-            create_policies_batch(
-                [{"policy_number": "P"}], max_workers=0
-            )
+            create_policies_batch([{"policy_number": "P"}], max_workers=0)
 
 
 class TestRisksBatchEndpoints:

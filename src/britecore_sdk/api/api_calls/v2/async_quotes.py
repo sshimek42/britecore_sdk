@@ -18,7 +18,6 @@ from britecore_sdk.api.api_calls import (
     async_api_client,
 )
 
-
 LOGGER: Logger = logger
 
 API_CLIENT: AsyncBritecoreAPIClient = async_api_client

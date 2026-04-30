@@ -1,4 +1,4 @@
-"""Version 2 API wrappers, including async cache-aware variants.
+"""Version 2 API wrappers, including async variants and batch aliases.
 
 Sync domain modules
 -------------------
@@ -10,11 +10,16 @@ Import a domain module to access its endpoint wrappers::
 All sync domain modules are listed in ``__all__`` and are importable
 directly from this package.
 
-Async helpers
--------------
-Individual async cache-aware wrapper functions are also re-exported
-directly from this package for backwards compatibility.
+Async helpers and batch aliases
+-------------------------------
+This package re-exports async v2 wrapper functions and exposes lazy,
+backwards-compatible aliases for workflow batch helpers.
 """
+
+from importlib import import_module
+from typing import Any, Unpack
+
+from britecore_sdk.api.api_calls import RequestParameters
 
 # ------------------------------------------------------------------
 # Sync domain modules
@@ -51,7 +56,7 @@ from britecore_sdk.api.api_calls.v2 import (
 )
 
 # ------------------------------------------------------------------
-# Async cache-aware wrappers (individual function re-exports)
+# Async v2 wrapper function re-exports
 # ------------------------------------------------------------------
 from britecore_sdk.api.api_calls.v2.async_contacts import (
     aadd_contact_to_role,
@@ -84,18 +89,131 @@ from britecore_sdk.api.api_calls.v2.async_quotes import (
     acreate_full_quote,
     aget_quote,
 )
-from britecore_sdk.api.workflows.async_batch_contacts import acreate_contacts_batch
-from britecore_sdk.api.workflows.async_batch_policies import (
-    acreate_policies_batch,
-    acreate_risks_batch,
-)
-from britecore_sdk.api.workflows.async_batch_quotes import acreate_full_quotes_batch
-from britecore_sdk.api.workflows.batch_contacts import create_contacts_batch
-from britecore_sdk.api.workflows.batch_policies import (
-    create_policies_batch,
-    create_risks_batch,
-)
-from britecore_sdk.api.workflows.batch_quotes import create_full_quotes_batch
+
+
+def create_contacts_batch(
+    contacts_json: list[dict[str, Any]],
+    max_workers: int = 5,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `create_contacts_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.batch_contacts"
+    ).create_contacts_batch
+    return _impl(contacts_json, max_workers=max_workers, fail_fast=fail_fast, **kwargs)
+
+
+def create_policies_batch(
+    policies_json: list[dict[str, Any]],
+    max_workers: int = 3,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `create_policies_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.batch_policies"
+    ).create_policies_batch
+    return _impl(policies_json, max_workers=max_workers, fail_fast=fail_fast, **kwargs)
+
+
+def create_risks_batch(
+    risks_json: list[dict[str, Any]],
+    max_workers: int = 3,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `create_risks_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.batch_policies"
+    ).create_risks_batch
+    return _impl(risks_json, max_workers=max_workers, fail_fast=fail_fast, **kwargs)
+
+
+def create_full_quotes_batch(
+    quotes_json: list[dict[str, Any]],
+    max_workers: int = 5,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `create_full_quotes_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.batch_quotes"
+    ).create_full_quotes_batch
+    return _impl(quotes_json, max_workers=max_workers, fail_fast=fail_fast, **kwargs)
+
+
+async def acreate_contacts_batch(
+    contacts_json: list[dict[str, Any]],
+    max_concurrent: int = 5,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `acreate_contacts_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.async_batch_contacts"
+    ).acreate_contacts_batch
+    return await _impl(
+        contacts_json,
+        max_concurrent=max_concurrent,
+        fail_fast=fail_fast,
+        **kwargs,
+    )
+
+
+async def acreate_policies_batch(
+    policies_json: list[dict[str, Any]],
+    max_concurrent: int = 3,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `acreate_policies_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.async_batch_policies"
+    ).acreate_policies_batch
+    return await _impl(
+        policies_json,
+        max_concurrent=max_concurrent,
+        fail_fast=fail_fast,
+        **kwargs,
+    )
+
+
+async def acreate_risks_batch(
+    risks_json: list[dict[str, Any]],
+    max_concurrent: int = 3,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `acreate_risks_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.async_batch_policies"
+    ).acreate_risks_batch
+    return await _impl(
+        risks_json,
+        max_concurrent=max_concurrent,
+        fail_fast=fail_fast,
+        **kwargs,
+    )
+
+
+async def acreate_full_quotes_batch(
+    quotes_json: list[dict[str, Any]],
+    max_concurrent: int = 5,
+    fail_fast: bool = False,
+    **kwargs: Unpack[RequestParameters],
+) -> dict[str, Any]:
+    """Backward-compatible alias to workflows `acreate_full_quotes_batch(...)`."""
+    _impl = import_module(
+        "britecore_sdk.api.workflows.async_batch_quotes"
+    ).acreate_full_quotes_batch
+    return await _impl(
+        quotes_json,
+        max_concurrent=max_concurrent,
+        fail_fast=fail_fast,
+        **kwargs,
+    )
+
 
 __all__ = [
     # Sync domain modules

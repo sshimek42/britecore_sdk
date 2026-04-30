@@ -687,4 +687,3 @@ def get_policies(
     return API_CLIENT.process_result(
         request_result, endpoint="/api/v2/policies/get_policies"
     )
-
