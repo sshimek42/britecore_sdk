@@ -55,6 +55,7 @@ from britecore_sdk.api.api_calls.v2 import (
 # ------------------------------------------------------------------
 from britecore_sdk.api.api_calls.v2.async_contacts import (
     aadd_contact_to_role,
+    acreate_contacts_batch,
     afind_contact_by_params,
     aget_contact,
     anew_contact,
@@ -62,8 +63,10 @@ from britecore_sdk.api.api_calls.v2.async_contacts import (
 )
 from britecore_sdk.api.api_calls.v2.async_policies import (
     aadd_line_item,
+    acreate_policies_batch,
     acreate_policy,
     acreate_risk,
+    acreate_risks_batch,
     anew_mortgagee,
     anew_revision_contact,
     arate_revision,
@@ -118,9 +121,12 @@ __all__ = [
     # Async function re-exports
     "aadd_contact_to_role",
     "aadd_line_item",
+    "acreate_contacts_batch",
     "acreate_full_quote",
+    "acreate_policies_batch",
     "acreate_policy",
     "acreate_risk",
+    "acreate_risks_batch",
     "afind_contact_by_params",
     "aget_contact",
     "aget_quote",
