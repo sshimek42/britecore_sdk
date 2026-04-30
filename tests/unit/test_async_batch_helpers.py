@@ -12,7 +12,7 @@ class TestAsyncContactsBatchEndpoints:
     @pytest.mark.unit
     def test_acreate_contacts_batch_success(self):
         """Async batch helper returns ordered results for all contact payloads."""
-        from britecore_sdk.api.api_calls.v2 import async_contacts
+        from britecore_sdk.api.workflows import async_batch_contacts
 
         payloads = [
             {"name": "Alice", "address": [{"address1": "1 A St"}]},
@@ -24,12 +24,12 @@ class TestAsyncContactsBatchEndpoints:
 
         async def _run():
             with patch.object(
-                async_contacts,
+                async_batch_contacts,
                 "anew_contact",
                 new_callable=AsyncMock,
                 side_effect=_mock_new_contact,
             ):
-                result = await async_contacts.acreate_contacts_batch(
+                result = await async_batch_contacts.acreate_contacts_batch(
                     payloads, max_concurrent=2
                 )
             assert result["total"] == 2
@@ -44,7 +44,7 @@ class TestAsyncContactsBatchEndpoints:
     def test_acreate_contacts_batch_partial_failure(self):
         """Async batch helper captures per-item errors when fail_fast disabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import async_contacts
+        from britecore_sdk.api.workflows import async_batch_contacts
 
         payloads = [
             {"name": "Alice", "address": [{"address1": "1 A St"}]},
@@ -58,12 +58,12 @@ class TestAsyncContactsBatchEndpoints:
 
         async def _run():
             with patch.object(
-                async_contacts,
+                async_batch_contacts,
                 "anew_contact",
                 new_callable=AsyncMock,
                 side_effect=_mock_new_contact,
             ):
-                result = await async_contacts.acreate_contacts_batch(
+                result = await async_batch_contacts.acreate_contacts_batch(
                     payloads, max_concurrent=2
                 )
             assert result["total"] == 2
@@ -76,7 +76,7 @@ class TestAsyncContactsBatchEndpoints:
     def test_acreate_contacts_batch_fail_fast(self):
         """Async batch helper re-raises immediately when fail_fast enabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import async_contacts
+        from britecore_sdk.api.workflows import async_batch_contacts
 
         payloads = [{"name": "", "address": []}, {"name": "Bob", "address": []}]
 
@@ -87,13 +87,13 @@ class TestAsyncContactsBatchEndpoints:
 
         async def _run():
             with patch.object(
-                async_contacts,
+                async_batch_contacts,
                 "anew_contact",
                 new_callable=AsyncMock,
                 side_effect=_mock_new_contact,
             ):
                 with pytest.raises(BritecoreError.MissingParameter):
-                    await async_contacts.acreate_contacts_batch(
+                    await async_batch_contacts.acreate_contacts_batch(
                         payloads, max_concurrent=1, fail_fast=True
                     )
 
@@ -103,13 +103,15 @@ class TestAsyncContactsBatchEndpoints:
     def test_acreate_contacts_batch_invalid_inputs(self):
         """Async batch helper validates required list and concurrent count."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import async_contacts
+        from britecore_sdk.api.workflows.async_batch_contacts import (
+            acreate_contacts_batch,
+        )
 
         async def _run():
             with pytest.raises(BritecoreError.MissingParameter):
-                await async_contacts.acreate_contacts_batch([])
+                await acreate_contacts_batch([])
             with pytest.raises(ValueError):
-                await async_contacts.acreate_contacts_batch(
+                await acreate_contacts_batch(
                     [{"name": "A", "address": []}], max_concurrent=0
                 )
 
@@ -122,7 +124,7 @@ class TestAsyncPoliciesBatchEndpoints:
     @pytest.mark.unit
     def test_acreate_policies_batch_success(self):
         """Async batch helper returns ordered results for all policy payloads."""
-        from britecore_sdk.api.api_calls.v2 import async_policies
+        from britecore_sdk.api.workflows import async_batch_policies
 
         payloads = [
             {"policy_number": "POL-001", "policy_type_id": "pt"},
@@ -135,12 +137,12 @@ class TestAsyncPoliciesBatchEndpoints:
 
         async def _run():
             with patch.object(
-                async_policies,
+                async_batch_policies,
                 "acreate_policy",
                 new_callable=AsyncMock,
                 side_effect=_mock_create_policy,
             ):
-                result = await async_policies.acreate_policies_batch(
+                result = await async_batch_policies.acreate_policies_batch(
                     payloads, max_concurrent=2
                 )
             assert result["total"] == 2
@@ -152,7 +154,7 @@ class TestAsyncPoliciesBatchEndpoints:
     @pytest.mark.unit
     def test_acreate_risks_batch_success(self):
         """Async batch helper returns ordered results for all risk payloads."""
-        from britecore_sdk.api.api_calls.v2 import async_policies
+        from britecore_sdk.api.workflows import async_batch_policies
 
         payloads = [
             {"revision_id": "REV-001"},
@@ -165,12 +167,12 @@ class TestAsyncPoliciesBatchEndpoints:
 
         async def _run():
             with patch.object(
-                async_policies,
+                async_batch_policies,
                 "acreate_risk",
                 new_callable=AsyncMock,
                 side_effect=_mock_create_risk,
             ):
-                result = await async_policies.acreate_risks_batch(
+                result = await async_batch_policies.acreate_risks_batch(
                     payloads, max_concurrent=2
                 )
             assert result["total"] == 2

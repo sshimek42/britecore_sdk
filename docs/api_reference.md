@@ -66,6 +66,14 @@ guidance, examples, and broader endpoint notes, see the repository-level
 :show-inheritance:
 ```
 
+## Workflow Package Exports
+
+```{automodule} britecore_sdk.api.workflows
+:members:
+:undoc-members:
+:show-inheritance:
+```
+
 ## V2 Synchronous Endpoint Modules
 
 ### Accounting

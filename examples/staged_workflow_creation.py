@@ -21,7 +21,6 @@ Run:
     python examples/staged_workflow_creation.py
 """
 
-import asyncio
 import time
 from typing import Any
 
@@ -88,11 +87,11 @@ def example_sync_staged_workflow() -> None:
     result = create_entities_staged_batch(
         jobs,
         contact_max_workers=5,  # Contacts are fast
-        quote_max_workers=5,    # Quotes are fast (skipped if no quote_payload)
-        policy_max_workers=3,   # Conservative: policies are heavy
-        risk_max_workers=3,     # Conservative: risks depend on revision_id
-        fail_fast=False,        # Continue on partial failures
-        request_timeout=30,     # 30s per individual API call
+        quote_max_workers=5,  # Quotes are fast (skipped if no quote_payload)
+        policy_max_workers=3,  # Conservative: policies are heavy
+        risk_max_workers=3,  # Conservative: risks depend on revision_id
+        fail_fast=False,  # Continue on partial failures
+        request_timeout=30,  # 30s per individual API call
     )
 
     elapsed = time.time() - start
@@ -104,9 +103,7 @@ def example_sync_staged_workflow() -> None:
     print("\nStage breakdown:")
     for stage, totals in result["stage_totals"].items():
         if totals["total"] > 0:
-            print(
-                f"  {stage:12s}: {totals['succeeded']}/{totals['total']} succeeded"
-            )
+            print(f"  {stage:12s}: {totals['succeeded']}/{totals['total']} succeeded")
 
     print("\nPer-job results (first 3):")
     for item in result["results"][:3]:
@@ -154,8 +151,10 @@ async def example_async_staged_workflow() -> None:
     elapsed = time.time() - start
 
     print(f"\n✓ Completed in {elapsed:.1f}s")
-    print(f"  Total: {result['total']}, Succeeded: {result['succeeded']}, "
-          f"Failed: {result['failed']}")
+    print(
+        f"  Total: {result['total']}, Succeeded: {result['succeeded']}, "
+        f"Failed: {result['failed']}"
+    )
 
 
 def example_chunked_large_batch() -> None:
@@ -184,9 +183,7 @@ def example_chunked_large_batch() -> None:
             fail_fast=False,
         )
         all_results.extend(chunk_result["results"])
-        print(
-            f"    → {chunk_result['succeeded']}/{chunk_result['total']} succeeded"
-        )
+        print(f"    → {chunk_result['succeeded']}/{chunk_result['total']} succeeded")
 
     total_succeeded = sum(1 for r in all_results if r["success"])
     print(f"\nFinal: {total_succeeded}/{len(all_jobs)} succeeded across all chunks")
@@ -204,7 +201,9 @@ if __name__ == "__main__":
     #                   api_key="your-api-key")
 
     print("Staged Workflow Creation Examples")
-    print("(These require a configured BriteCore API client to run against a live server)")
+    print(
+        "(These require a configured BriteCore API client to run against a live server)"
+    )
 
     # Uncomment to run:
     # example_sync_staged_workflow()

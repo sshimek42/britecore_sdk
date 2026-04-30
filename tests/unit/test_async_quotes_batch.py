@@ -1,4 +1,4 @@
-"""Unit tests for async batched quote creation in v2 quotes wrappers."""
+"""Unit tests for async batched quote creation in the workflows layer."""
 
 import asyncio
 from unittest.mock import AsyncMock, patch
@@ -12,7 +12,7 @@ class TestAsyncQuotesBatchEndpoints:
     @pytest.mark.unit
     def test_acreate_full_quotes_batch_success(self):
         """Async batch helper returns ordered successful results for all payloads."""
-        from britecore_sdk.api.api_calls.v2 import async_quotes
+        from britecore_sdk.api.workflows import async_batch_quotes
 
         payloads = [
             {"number": "Q-001", "policy_type_id": "pt"},
@@ -26,12 +26,12 @@ class TestAsyncQuotesBatchEndpoints:
 
         async def _run_test():
             with patch.object(
-                async_quotes,
+                async_batch_quotes,
                 "acreate_full_quote",
                 new_callable=AsyncMock,
                 side_effect=_mock_create,
             ):
-                batch_result = await async_quotes.acreate_full_quotes_batch(
+                batch_result = await async_batch_quotes.acreate_full_quotes_batch(
                     payloads, max_concurrent=3
                 )
 
@@ -50,7 +50,7 @@ class TestAsyncQuotesBatchEndpoints:
     def test_acreate_full_quotes_batch_partial_failure(self):
         """Async batch helper captures per-item errors when fail_fast is disabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import async_quotes
+        from britecore_sdk.api.workflows import async_batch_quotes
 
         payloads = [
             {"number": "Q-OK-1", "policy_type_id": "pt"},
@@ -66,12 +66,12 @@ class TestAsyncQuotesBatchEndpoints:
 
         async def _run_test():
             with patch.object(
-                async_quotes,
+                async_batch_quotes,
                 "acreate_full_quote",
                 new_callable=AsyncMock,
                 side_effect=_mock_create,
             ):
-                batch_result = await async_quotes.acreate_full_quotes_batch(
+                batch_result = await async_batch_quotes.acreate_full_quotes_batch(
                     payloads, max_concurrent=2
                 )
 
@@ -89,7 +89,7 @@ class TestAsyncQuotesBatchEndpoints:
     def test_acreate_full_quotes_batch_fail_fast(self):
         """Async batch helper re-raises immediately when fail_fast is enabled."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import async_quotes
+        from britecore_sdk.api.workflows import async_batch_quotes
 
         payloads = [
             {"number": "", "policy_type_id": "pt"},
@@ -104,13 +104,13 @@ class TestAsyncQuotesBatchEndpoints:
 
         async def _run_test():
             with patch.object(
-                async_quotes,
+                async_batch_quotes,
                 "acreate_full_quote",
                 new_callable=AsyncMock,
                 side_effect=_mock_create,
             ):
                 with pytest.raises(BritecoreError.MissingParameter):
-                    await async_quotes.acreate_full_quotes_batch(
+                    await async_batch_quotes.acreate_full_quotes_batch(
                         payloads,
                         max_concurrent=1,
                         fail_fast=True,
@@ -122,14 +122,14 @@ class TestAsyncQuotesBatchEndpoints:
     def test_acreate_full_quotes_batch_invalid_inputs(self):
         """Async batch helper validates required payload list and concurrent count."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.api_calls.v2 import async_quotes
+        from britecore_sdk.api.workflows import async_batch_quotes
 
         async def _run_test():
             with pytest.raises(BritecoreError.MissingParameter):
-                await async_quotes.acreate_full_quotes_batch([])
+                await async_batch_quotes.acreate_full_quotes_batch([])
 
             with pytest.raises(ValueError):
-                await async_quotes.acreate_full_quotes_batch(
+                await async_batch_quotes.acreate_full_quotes_batch(
                     [{"number": "Q-001"}], max_concurrent=0
                 )
 
@@ -138,7 +138,7 @@ class TestAsyncQuotesBatchEndpoints:
     @pytest.mark.unit
     def test_acreate_full_quotes_batch_respects_max_concurrent(self):
         """Async batch helper respects max_concurrent semaphore."""
-        from britecore_sdk.api.api_calls.v2 import async_quotes
+        from britecore_sdk.api.workflows import async_batch_quotes
 
         concurrent_count = 0
         max_concurrent_observed = 0
@@ -156,16 +156,47 @@ class TestAsyncQuotesBatchEndpoints:
             payloads = [{"number": f"Q-{i:03d}"} for i in range(10)]
 
             with patch.object(
-                async_quotes,
+                async_batch_quotes,
                 "acreate_full_quote",
                 new_callable=AsyncMock,
                 side_effect=_mock_create_with_tracking,
             ):
-                result = await async_quotes.acreate_full_quotes_batch(
+                result = await async_batch_quotes.acreate_full_quotes_batch(
                     payloads, max_concurrent=3
                 )
 
             assert result["succeeded"] == 10
             assert max_concurrent_observed <= 3
+
+        asyncio.run(_run_test())
+
+
+class TestAsyncBritecoreAPIClientBatchMethod:
+    """Tests that AsyncBritecoreAPIClient exposes acreate_full_quotes_batch as a method."""
+
+    @pytest.mark.unit
+    def test_async_client_method_delegates_to_workflow(self):
+        """Async client method delegates to the workflow batch function."""
+        from unittest.mock import AsyncMock, patch
+
+        from britecore_sdk.api.britecore_async_api_client import AsyncBritecoreAPIClient
+
+        client = AsyncBritecoreAPIClient.__new__(AsyncBritecoreAPIClient)
+        expected = {"total": 1, "succeeded": 1, "failed": 0, "results": []}
+
+        async def _run_test():
+            with patch(
+                "britecore_sdk.api.workflows.async_batch_quotes.acreate_full_quotes_batch",
+                new_callable=AsyncMock,
+                return_value=expected,
+            ) as mock_fn:
+                result = await client.acreate_full_quotes_batch(
+                    [{"number": "Q-001"}], max_concurrent=2
+                )
+
+            mock_fn.assert_called_once_with(
+                [{"number": "Q-001"}], max_concurrent=2, fail_fast=False
+            )
+            assert result == expected
 
         asyncio.run(_run_test())

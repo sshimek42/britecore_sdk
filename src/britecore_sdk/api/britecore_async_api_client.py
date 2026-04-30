@@ -324,3 +324,150 @@ class AsyncBritecoreAPIClient:
         )
 
         return response
+
+    # ------------------------------------------------------------------
+    # Workflow: batch helpers
+    # ------------------------------------------------------------------
+
+    async def acreate_full_quotes_batch(
+        self,
+        quotes_json: list[Any],
+        max_concurrent: int = 5,
+        fail_fast: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Create many quotes concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.async_batch_quotes.acreate_full_quotes_batch`.
+        See that function for full documentation.
+
+        Args:
+            quotes_json: List of quote payload dictionaries.
+            max_concurrent: Maximum concurrent coroutines. Defaults to ``5``.
+            fail_fast: When ``True``, raises the first encountered exception and
+                cancels remaining tasks. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each quote create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.async_batch_quotes import (
+            acreate_full_quotes_batch as _acreate_full_quotes_batch,
+        )
+
+        return await _acreate_full_quotes_batch(
+            quotes_json,
+            max_concurrent=max_concurrent,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
+
+    async def acreate_contacts_batch(
+        self,
+        contacts_json: list[Any],
+        max_concurrent: int = 5,
+        fail_fast: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Create many contacts concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.async_batch_contacts.acreate_contacts_batch`.
+        See that function for full documentation.
+
+        Args:
+            contacts_json: List of contact payload dicts (each must contain
+                ``name`` and ``address``).
+            max_concurrent: Maximum concurrent coroutines. Defaults to ``5``.
+            fail_fast: When ``True``, raises the first encountered exception and
+                cancels remaining tasks. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each contact create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.async_batch_contacts import (
+            acreate_contacts_batch as _acreate_contacts_batch,
+        )
+
+        return await _acreate_contacts_batch(
+            contacts_json,
+            max_concurrent=max_concurrent,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
+
+    async def acreate_policies_batch(
+        self,
+        policies_json: list[Any],
+        max_concurrent: int = 3,
+        fail_fast: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Create many policies concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.async_batch_policies.acreate_policies_batch`.
+        See that function for full documentation.
+
+        Args:
+            policies_json: List of policy payload dicts forwarded as kwargs to
+                ``acreate_policy``.
+            max_concurrent: Maximum concurrent coroutines. Defaults to ``3``.
+            fail_fast: When ``True``, raises the first encountered exception and
+                cancels remaining tasks. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each policy create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.async_batch_policies import (
+            acreate_policies_batch as _acreate_policies_batch,
+        )
+
+        return await _acreate_policies_batch(
+            policies_json,
+            max_concurrent=max_concurrent,
+            fail_fast=fail_fast,
+            **kwargs,
+        )
+
+    async def acreate_risks_batch(
+        self,
+        risks_json: list[Any],
+        max_concurrent: int = 3,
+        fail_fast: bool = False,
+        **kwargs: Any,
+    ) -> dict[str, Any]:
+        """Create many risks concurrently and return per-item outcomes.
+
+        Delegates to
+        :func:`britecore_sdk.api.workflows.async_batch_policies.acreate_risks_batch`.
+        See that function for full documentation.
+
+        Args:
+            risks_json: List of risk payload dicts (each must contain
+                ``revision_id``).
+            max_concurrent: Maximum concurrent coroutines. Defaults to ``3``.
+            fail_fast: When ``True``, raises the first encountered exception and
+                cancels remaining tasks. Defaults to ``False``.
+            **kwargs: ``RequestParameters`` passed through to each risk create
+                call.
+
+        Returns:
+            dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
+        """
+        from britecore_sdk.api.workflows.async_batch_policies import (
+            acreate_risks_batch as _acreate_risks_batch,
+        )
+
+        return await _acreate_risks_batch(
+            risks_json,
+            max_concurrent=max_concurrent,
+            fail_fast=fail_fast,
+            **kwargs,
+        )

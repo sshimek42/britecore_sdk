@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-
 _LINES = [
     ("EFF-001", "ST-001", "LN-001"),
     ("EFF-002", "ST-002", "LN-002"),
@@ -25,9 +24,7 @@ class TestStitchedLineExtractSync:
             return {"line_data": line[2], "items": []}
 
         with patch.object(lines, "get_export_line_file", side_effect=_mock_extract):
-            result = lines.get_export_line_files_stitched(
-                _LINES, max_workers=2
-            )
+            result = lines.get_export_line_files_stitched(_LINES, max_workers=2)
 
         assert result["total"] == 3
         assert result["succeeded"] == 3
@@ -52,7 +49,8 @@ class TestStitchedLineExtractSync:
 
         with patch.object(lines, "get_export_line_file", side_effect=_mock_extract):
             result = lines.get_export_line_files_stitched(
-                _LINES, max_workers=1  # serial to make call_count predictable
+                _LINES,
+                max_workers=1,  # serial to make call_count predictable
             )
 
         assert result["total"] == 3
@@ -82,9 +80,7 @@ class TestStitchedLineExtractSync:
             return {"data": True}
 
         with patch.object(lines, "get_export_line_file", side_effect=_mock_extract):
-            result = lines.get_export_line_files_stitched(
-                _LINES[:1], max_workers=1
-            )
+            result = lines.get_export_line_files_stitched(_LINES[:1], max_workers=1)
 
         assert result["results"][0]["line"] == _LINES[0]
 

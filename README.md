@@ -8,7 +8,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg?token=REDACTED_CODECOV_TOKEN)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
-**Status:** Stable (v1.3.1) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v1.4.0) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 
@@ -178,7 +178,7 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 ✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
 ✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
 ✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses
-✅ **Batch operations** — `create_full_quotes_batch()` and `acreate_full_quotes_batch()` for parallel quote creation
+✅ **Batch operations** — workflow helpers for parallel quote/contact/policy/risk creation
 
 ---
 

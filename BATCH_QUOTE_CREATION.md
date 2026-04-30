@@ -11,7 +11,7 @@ You now have **high-performance batch quote creation** for your 100+ quote autom
 ### For Your Script (Sync)
 
 ```python
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 # Your 100+ quote payloads
 quotes = [...]
@@ -25,7 +25,7 @@ print(f"✓ Created {result['succeeded']}/{result['total']} quotes")
 ### For Web Services (Async)
 
 ```python
-from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quotes_batch
+from britecore_sdk.api.workflows import acreate_full_quotes_batch
 
 result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
 ```
@@ -50,10 +50,9 @@ result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
 
 ### 3. **Comprehensive Testing** ✅
 
-- **9 unit tests** (4 sync + 5 async)
-- 70%+ code coverage
-- Tests for success, partial failure, fail-fast, invalid inputs, concurrency limits
-- All tests passing: `pytest tests/unit/test_quotes_batch.py tests/unit/test_async_quotes_batch.py`
+- Unit coverage for sync/async batch helpers across quotes, contacts, policies, and risks
+- Tests for success, partial failure, fail-fast, invalid inputs, and concurrency limits
+- Current test entry points: `tests/unit/test_batch_helpers.py` and `tests/unit/test_async_batch_helpers.py`
 
 ### 4. **Production Examples** ✅
 
@@ -94,7 +93,7 @@ result = await acreate_full_quotes_batch(quotes, max_concurrent=5)
 ```python
 # Enable rate limiter + batch for smooth parallel execution
 from britecore_sdk.api.api_calls import init_api_client
-from britecore_sdk.api.api_calls.v2.quotes import create_full_quotes_batch
+from britecore_sdk.api.workflows import create_full_quotes_batch
 
 client = init_api_client("production", enable_rate_limiter=True)
 result = create_full_quotes_batch(quotes, max_workers=10)  # Safe!
@@ -120,12 +119,18 @@ result = create_full_quotes_batch(
 
 | File | Type | Purpose |
 |------|------|---------|
-| `src/britecore_sdk/api/api_calls/v2/quotes.py` | Modified | Added `create_full_quotes_batch()` + `BatchQuoteCreateResult` TypedDict |
-| `src/britecore_sdk/api/api_calls/v2/async_quotes.py` | Modified | Added `acreate_full_quotes_batch()` + imports |
-| `tests/unit/test_quotes_batch.py` | Existing | All 4 sync batch tests passing |
-| `tests/unit/test_async_quotes_batch.py` | New | 5 async batch tests (all passing) |
-| `examples/batch_quote_creation.py` | New | 6 runnable, documented patterns |
-| `docs/BATCH_QUOTE_CREATION.md` | New | Complete batching guide (2700+ lines) |
+| `src/britecore_sdk/api/workflows/batch_quotes.py` | New | `create_full_quotes_batch()` + `BatchQuoteCreateResult` |
+| `src/britecore_sdk/api/workflows/async_batch_quotes.py` | New | `acreate_full_quotes_batch()` async helper |
+| `src/britecore_sdk/api/workflows/batch_contacts.py` | New | `create_contacts_batch()` + `BatchContactCreateResult` |
+| `src/britecore_sdk/api/workflows/async_batch_contacts.py` | New | `acreate_contacts_batch()` async helper |
+| `src/britecore_sdk/api/workflows/batch_policies.py` | New | `create_policies_batch()` / `create_risks_batch()` + result types |
+| `src/britecore_sdk/api/workflows/async_batch_policies.py` | New | Async policy/risk batch helpers |
+| `src/britecore_sdk/api/workflows/__init__.py` | Modified | Re-exports all workflow batch helpers |
+| `src/britecore_sdk/api/api_calls/v2/__init__.py` | Modified | Backward-compatible batch re-exports |
+| `src/britecore_sdk/api/britecore_api_client.py` | Modified | Added sync workflow batch client methods |
+| `src/britecore_sdk/api/britecore_async_api_client.py` | Modified | Added async workflow batch client methods |
+| `tests/unit/test_batch_helpers.py` | Modified | Batch helper tests use workflow modules |
+| `tests/unit/test_async_batch_helpers.py` | Modified | Async batch helper tests use workflow modules |
 
 ---
 
@@ -198,12 +203,11 @@ for workers in [3, 5, 10]:
 
 ---
 
-## Commit Details
+## Release Notes
 
-- **Commit:** `40380df`
-- **Branch:** `master` (pushed to both `origin` and `fileshare`)
-- **Tests:** 9/9 passing
-- **Coverage:** 70%+ for batch modules
+- Batch helpers are now centralized under `britecore_sdk.api.workflows`
+- `britecore_sdk.api.api_calls.v2` re-exports batch helpers for compatibility
+- Prefer workflow imports in new code and docs examples
 
 ---
 
@@ -211,7 +215,7 @@ for workers in [3, 5, 10]:
 
 - **Full Guide:** `docs/BATCH_QUOTE_CREATION.md` (2700+ lines)
 - **Examples:** `examples/batch_quote_creation.py` (6 patterns)
-- **Tests:** `tests/unit/test_quotes_batch.py` & `tests/unit/test_async_quotes_batch.py`
+- **Tests:** `tests/unit/test_batch_helpers.py` & `tests/unit/test_async_batch_helpers.py`
 - **Rate Limiting:** `docs/RATE_LIMITING.md`
 
 ---
