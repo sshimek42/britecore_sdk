@@ -105,6 +105,67 @@ class TestLineMenu:
         }
 
     @pytest.mark.unit
+    def test_line_menu_all_returns_list_of_tuples(self, monkeypatch):
+        """Selecting 'all' returns a list of tuples in line and 'all' as line_name."""
+        ask_mock = MagicMock(return_value="all")
+        select_mock = MagicMock(return_value=SimpleNamespace(ask=ask_mock))
+        fake_questionary = SimpleNamespace(select=select_mock)
+        monkeypatch.setitem(__import__("sys").modules, "questionary", fake_questionary)
+
+        fake_client = MagicMock()
+        fake_client.do_request.side_effect = [MagicMock(), MagicMock(), MagicMock()]
+        fake_client.process_result.side_effect = [
+            [{"effective_date": "2026-01-01", "id": "date-1"}],
+            [{"name": "WI", "id": "state-1"}],
+            [
+                {"name": "Homeowners", "id": "line-1"},
+                {"name": "Auto", "id": "line-2"},
+            ],
+        ]
+        monkeypatch.setattr(interactive_menu, "API_CLIENT", fake_client)
+
+        result = interactive_menu.line_menu()
+
+        assert result == {
+            "line": [
+                ("date-1", "state-1", "line-1"),
+                ("date-1", "state-1", "line-2"),
+            ],
+            "line_name": "all",
+        }
+        # "all" should appear as a choice in the line selection menu
+        line_call_kwargs = select_mock.call_args.kwargs
+        assert "all" in line_call_kwargs["choices"]
+
+    @pytest.mark.unit
+    def test_line_menu_single_line_no_all_option(self, monkeypatch):
+        """When only one line exists, 'all' is not offered and the single line is auto-selected."""
+        fake_questionary = SimpleNamespace(
+            select=MagicMock(
+                return_value=SimpleNamespace(ask=MagicMock(return_value="2026-01-01"))
+            )
+        )
+        monkeypatch.setitem(__import__("sys").modules, "questionary", fake_questionary)
+
+        fake_client = MagicMock()
+        fake_client.do_request.side_effect = [MagicMock(), MagicMock(), MagicMock()]
+        fake_client.process_result.side_effect = [
+            [{"effective_date": "2026-01-01", "id": "date-1"}],
+            [{"name": "WI", "id": "state-1"}],
+            [{"name": "Homeowners", "id": "line-1"}],
+        ]
+        monkeypatch.setattr(interactive_menu, "API_CLIENT", fake_client)
+
+        result = interactive_menu.line_menu()
+
+        # Single line: result is a plain tuple, not a list
+        assert result == {
+            "line": ("date-1", "state-1", "line-1"),
+            "line_name": "Homeowners",
+        }
+        assert result["line_name"] != "all"
+
+    @pytest.mark.unit
     def test_select_option_raises_keyboard_interrupt_when_selection_is_none(
         self, monkeypatch
     ):

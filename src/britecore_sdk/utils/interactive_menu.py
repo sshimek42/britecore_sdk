@@ -62,10 +62,24 @@ def line_menu(
         **kwargs: Request parameters (timeout, retries, etc.) passed to API client.
 
     Returns:
-        By default, returns a dict that can be passed directly to
-        ``lines.get_export_line_file(**selection)``:
+        A dict with ``line`` and ``line_name`` keys.
 
-        ``{"line": (date_id, state_id, line_id), "line_name": str}``
+        When a specific line is selected (normal case)::
+
+            {"line": (date_id, state_id, line_id), "line_name": str}
+
+        This form can be passed directly to
+        ``lines.get_export_line_file(**selection)``.
+
+        When **all** lines are selected (only offered when more than one line
+        exists for the chosen date + location)::
+
+            {"line": [(date_id, state_id, line_id), ...], "line_name": "all"}
+
+        Here ``line`` is a list of tuples — one per available line — and
+        ``line_name`` is the string ``"all"``.  Callers should check
+        ``result["line_name"] == "all"`` to distinguish this case and iterate
+        ``result["line"]``.
 
     Uses questionary when available and falls back to plain stdin input when
     a console backend is unavailable (for example in some IDE run consoles).
@@ -165,12 +179,37 @@ def line_menu(
     for make_menu in all_lines:
         line_menu_options.update({make_menu["name"]: make_menu["id"]})
         line_menu_names.append(make_menu["name"])
-    eff_line = print_menu("Line", line_menu_options, line_menu_names[0])
 
-    return {
-        "line": (eff_date[0], eff_state[0], eff_line[0]),
-        "line_name": eff_line[1],
-    }
+    print("\nChoose line")
+    print("=" * len("Choose line"))
+
+    if len(line_menu_options) > 1:
+        line_choices = line_menu_names + ["all"]
+        selected_line = _select_option("Line", line_choices)
+        if selected_line == "all":
+            print("all selected")
+            return {
+                "line": [
+                    (eff_date[0], eff_state[0], line_menu_options[name])
+                    for name in line_menu_names
+                ],
+                "line_name": "all",
+            }
+        line_id = line_menu_options[selected_line]
+        print(f"{selected_line} selected")
+        return {
+            "line": (eff_date[0], eff_state[0], line_id),
+            "line_name": selected_line,
+        }
+    else:
+        default_name = line_menu_names[0]
+        print("1. " + default_name)
+        line_id = line_menu_options[default_name]
+        print(f"{default_name} selected")
+        return {
+            "line": (eff_date[0], eff_state[0], line_id),
+            "line_name": default_name,
+        }
 
 
 def policy_menu(**kwargs: Unpack[RequestParameters]) -> Any:
