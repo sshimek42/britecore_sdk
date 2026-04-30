@@ -8,6 +8,7 @@ with a short TTL by default.  Mutation operations (create, cancel, reinstate,
 etc.) automatically invalidate the policy cache namespace on success.
 """
 
+import asyncio
 from logging import Logger
 from typing import Any, Literal, Unpack
 
@@ -733,8 +734,6 @@ async def acreate_policies_batch(
         ValueError: If ``max_concurrent`` is less than 1.
         Exception: First worker exception when ``fail_fast=True``.
     """
-    import asyncio
-
     if not policies_json or not isinstance(policies_json, list):
         raise BritecoreError.MissingParameter(
             "policies_json is required and must be a non-empty list"
@@ -840,8 +839,6 @@ async def acreate_risks_batch(
         ValueError: If ``max_concurrent`` is less than 1.
         Exception: First worker exception when ``fail_fast=True``.
     """
-    import asyncio
-
     if not risks_json or not isinstance(risks_json, list):
         raise BritecoreError.MissingParameter(
             "risks_json is required and must be a non-empty list"
