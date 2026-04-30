@@ -217,6 +217,6 @@ Keep log levels at INFO or WARNING in production. DEBUG mode may expose sensitiv
 
 ## More Information
 
-- See [CONFIG_MANAGEMENT.md](../CONFIG_MANAGEMENT.md) for detailed configuration management
-- See [GETTING_STARTED.md](../GETTING_STARTED.md) for first-time setup
-- See [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) for common issues
+- See [CONFIG_MANAGEMENT.md](../../../CONFIG_MANAGEMENT.md) for detailed configuration management
+- See [GETTING_STARTED.md](../../../GETTING_STARTED.md) for first-time setup
+- See [TROUBLESHOOTING.md](../../../TROUBLESHOOTING.md) for common issues

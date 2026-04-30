@@ -11,6 +11,38 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.0] — 2026-04-30
+
+### Added
+
+- New workflow batch helper modules for contacts and policies/risks:
+  - `britecore_sdk.api.workflows.batch_contacts`
+  - `britecore_sdk.api.workflows.async_batch_contacts`
+  - `britecore_sdk.api.workflows.batch_policies`
+  - `britecore_sdk.api.workflows.async_batch_policies`
+- New client convenience methods for workflow batch operations:
+  - `BritecoreAPIClient.create_contacts_batch(...)`
+  - `BritecoreAPIClient.create_policies_batch(...)`
+  - `BritecoreAPIClient.create_risks_batch(...)`
+  - `AsyncBritecoreAPIClient.acreate_contacts_batch(...)`
+  - `AsyncBritecoreAPIClient.acreate_policies_batch(...)`
+  - `AsyncBritecoreAPIClient.acreate_risks_batch(...)`
+- Typed batch result contracts are now reusable across sync/async modules:
+  `BatchContactCreateResult`, `BatchPolicyCreateResult`,
+  `BatchRiskCreateResult`, and `BatchQuoteCreateResult`.
+
+### Changed
+
+- Batch workflow helpers are now consistently housed under
+  `britecore_sdk.api.workflows` (quotes, contacts, policies, and risks).
+- `britecore_sdk.api.api_calls.v2` continues to re-export batch helpers for
+  backwards compatibility, while single-item endpoint wrappers remain in domain
+  modules.
+- Documentation and tests now reference workflow-first imports for batch helper
+  usage.
+
+---
+
 ## [1.3.1] — 2026-04-29
 
 ### Added

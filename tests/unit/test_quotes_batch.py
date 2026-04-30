@@ -24,7 +24,9 @@ class TestQuotesBatchEndpoints:
             return {"id": quote_id}, quote_id
 
         with patch.object(batch_quotes, "create_full_quote", side_effect=_mock_create):
-            batch_result = batch_quotes.create_full_quotes_batch(payloads, max_workers=3)
+            batch_result = batch_quotes.create_full_quotes_batch(
+                payloads, max_workers=3
+            )
 
         assert batch_result["total"] == 3
         assert batch_result["succeeded"] == 3
@@ -54,7 +56,9 @@ class TestQuotesBatchEndpoints:
             return {"id": quote_id}, quote_id
 
         with patch.object(batch_quotes, "create_full_quote", side_effect=_mock_create):
-            batch_result = batch_quotes.create_full_quotes_batch(payloads, max_workers=2)
+            batch_result = batch_quotes.create_full_quotes_batch(
+                payloads, max_workers=2
+            )
 
         assert batch_result["total"] == 3
         assert batch_result["succeeded"] == 2
@@ -106,7 +110,7 @@ class TestBritecoreAPIClientBatchMethod:
     @pytest.mark.unit
     def test_client_method_delegates_to_workflow(self):
         """Client method delegates to the workflow batch function."""
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import patch
 
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 

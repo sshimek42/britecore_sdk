@@ -78,9 +78,7 @@ def create_policies_batch(
     worker_count = min(max_workers, len(policies_json))
     results: list[BatchPolicyCreateResult | None] = [None] * len(policies_json)
 
-    def _create_one(
-        index: int, payload: dict[str, Any]
-    ) -> tuple[int, Any, str | None]:
+    def _create_one(index: int, payload: dict[str, Any]) -> tuple[int, Any, str | None]:
         policy_data, revision_id = create_policy(**payload, **kwargs)
         return index, policy_data, revision_id
 
@@ -170,9 +168,7 @@ def create_risks_batch(
     worker_count = min(max_workers, len(risks_json))
     results: list[BatchRiskCreateResult | None] = [None] * len(risks_json)
 
-    def _create_one(
-        index: int, payload: dict[str, Any]
-    ) -> tuple[int, Any, str | None]:
+    def _create_one(index: int, payload: dict[str, Any]) -> tuple[int, Any, str | None]:
         risk_data = create_risk(**payload, **kwargs)
         risk_id: str | None = None
         if isinstance(risk_data, dict):
@@ -221,5 +217,9 @@ def create_risks_batch(
     }
 
 
-__all__ = ["BatchPolicyCreateResult", "BatchRiskCreateResult", "create_policies_batch", "create_risks_batch"]
-
+__all__ = [
+    "BatchPolicyCreateResult",
+    "BatchRiskCreateResult",
+    "create_policies_batch",
+    "create_risks_batch",
+]

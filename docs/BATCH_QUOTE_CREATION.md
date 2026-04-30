@@ -81,7 +81,7 @@ result = await create_batch_quotes()
 
 ### Synchronous: `create_full_quotes_batch()`
 
-**Location:** `britecore_sdk.api.api_calls.v2.quotes`
+**Location:** `britecore_sdk.api.workflows.batch_quotes`
 
 ```python
 def create_full_quotes_batch(
@@ -131,7 +131,7 @@ def create_full_quotes_batch(
 
 ### Asynchronous: `acreate_full_quotes_batch()`
 
-**Location:** `britecore_sdk.api.api_calls.v2.async_quotes`
+**Location:** `britecore_sdk.api.workflows.async_batch_quotes`
 
 ```python
 async def acreate_full_quotes_batch(

@@ -68,9 +68,7 @@ def create_contacts_batch(
     worker_count = min(max_workers, len(contacts_json))
     results: list[BatchContactCreateResult | None] = [None] * len(contacts_json)
 
-    def _create_one(
-        index: int, payload: dict[str, Any]
-    ) -> tuple[int, Any, str | None]:
+    def _create_one(index: int, payload: dict[str, Any]) -> tuple[int, Any, str | None]:
         contact_data, contact_id = new_contact(
             name=payload["name"],
             address=payload["address"],
@@ -124,4 +122,3 @@ def create_contacts_batch(
 
 
 __all__ = ["BatchContactCreateResult", "create_contacts_batch"]
-

@@ -675,10 +675,8 @@ async def aretrieve_policy_snapshot(
 
 __all__ = [
     "aadd_line_item",
-    "acreate_policies_batch",
     "acreate_policy",
     "acreate_risk",
-    "acreate_risks_batch",
     "anew_mortgagee",
     "anew_revision_contact",
     "arate_revision",
@@ -695,4 +693,3 @@ __all__ = [
     "aupdate_property_location",
     "aupdate_rating_information",
 ]
-

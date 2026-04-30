@@ -20,7 +20,7 @@ helper does.
 
 ## Important: Timeout Guidance
 
-> ⚠️ **Always pass an explicit `request_timeout`.**  
+> ⚠️ **Always pass an explicit `request_timeout`.**
 > The default SDK timeout is 5 seconds, which is far too short for line file
 > extracts. Set `request_timeout` to at least 90 seconds, and ideally 120–180.
 

@@ -92,7 +92,7 @@ async def _run_stage_async(
             raise
     else:
         task_results = await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore[assignment]
-        for idx, tr in zip(pending_indices, task_results):
+        for idx, tr in zip(pending_indices, task_results, strict=True):
             if isinstance(tr, Exception):
                 had_error = True
                 result = per_item_results[idx]

@@ -103,7 +103,9 @@ class TestAsyncContactsBatchEndpoints:
     def test_acreate_contacts_batch_invalid_inputs(self):
         """Async batch helper validates required list and concurrent count."""
         from britecore_sdk import BritecoreError
-        from britecore_sdk.api.workflows.async_batch_contacts import acreate_contacts_batch
+        from britecore_sdk.api.workflows.async_batch_contacts import (
+            acreate_contacts_batch,
+        )
 
         async def _run():
             with pytest.raises(BritecoreError.MissingParameter):
