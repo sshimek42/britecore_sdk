@@ -216,6 +216,77 @@ This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `
 - Fewer abstraction layers: `requests` is built on top of `urllib3`.
 - Operational consistency: easier to keep transport behavior explicit in a reusable library.
 
+### API Workflows
+
+**Purpose:** Higher-level orchestration helpers for bulk and multi-stage object creation
+
+**Location:** `src/britecore_sdk/api/workflows/`
+
+**Two patterns are provided:**
+
+#### Batch helpers (single-domain, parallel bulk create)
+
+Run many independent payloads concurrently. One helper per domain:
+
+| Helper | Sync | Async |
+|---|---|---|
+| Contacts | `create_contacts_batch` | `acreate_contacts_batch` |
+| Quotes | `create_full_quotes_batch` | `acreate_full_quotes_batch` |
+| Policies | `create_policies_batch` | `acreate_policies_batch` |
+| Risks | `create_risks_batch` | `acreate_risks_batch` |
+
+- **Sync** variants use `concurrent.futures.ThreadPoolExecutor` (tuned with
+  `max_workers`, default 5).
+- **Async** variants use `asyncio` + `asyncio.Semaphore` (tuned with
+  `max_concurrent`, default 5).
+- Both variants support `fail_fast=True` to abort on the first error.
+- Return shape: `{"total": int, "succeeded": int, "failed": int, "results": list}`
+
+#### Staged workflow helpers (dependency-ordered multi-stage pipeline)
+
+Execute creation stages in dependency order so IDs produced by earlier stages
+are automatically forwarded to later ones:
+
+```text
+Stage 1: Contacts  (optional) → produces contact_id
+Stage 2: Quotes    (optional) → produces quote_id
+Stage 3: Policies  (optional) → produces revision_id
+Stage 4: Risks     (optional) → consumes revision_id from Stage 3
+```
+
+Each stage runs its items concurrently; stages execute sequentially.
+
+- `create_entities_staged_batch` — sync, uses `ThreadPoolExecutor` per stage
+- `acreate_entities_staged_batch` — async, uses `asyncio.Semaphore` per stage
+- Per-stage concurrency tuned with `contact_max_workers` / `policy_max_workers` /
+  `risk_max_workers` (sync) or the equivalent `max_concurrent` parameter (async).
+- `fail_fast=True` aborts the entire pipeline on the first stage failure.
+- Return shape includes per-job `StagedWorkflowResult` (with `failed_stage`
+  indicator) and aggregated `stage_totals` mapping.
+
+**Imports:**
+
+```python
+from britecore_sdk.api.workflows import (
+    # Staged
+    create_entities_staged_batch,
+    acreate_entities_staged_batch,
+    # Batch
+    create_contacts_batch,
+    create_full_quotes_batch,
+    create_policies_batch,
+    create_risks_batch,
+    acreate_contacts_batch,
+    acreate_full_quotes_batch,
+    acreate_policies_batch,
+    acreate_risks_batch,
+)
+```
+
+See [docs/STAGED_WORKFLOWS.md](docs/STAGED_WORKFLOWS.md) and
+[BATCH_QUOTE_CREATION.md](BATCH_QUOTE_CREATION.md) for detailed tuning
+guidance and examples.
+
 ---
 
 ### 3. Infrastructure Layer
@@ -227,11 +298,12 @@ This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `
 ```text
 
 src/britecore_sdk/
-├── config/
-│   ├── config.py            # Dynaconf settings loader + LoadClientSettings
-│   ├── settings.toml        # Default runtime settings (API timeouts/retries)
-│   ├── .secrets.toml        # All credentials: base_url, api_key, client_id,
-│   │                        # client_secret — gitignored, never committed
+├── settings/
+│   ├── config.py            # Dynaconf settings loader (_discover_settings_files)
+│   ├── defaults.py          # DEFAULTS dict + calculate_long_timeout
+│   ├── settings.toml.example # Default runtime settings (API timeouts/retries)
+│   ├── .secrets.toml.example # All credentials: base_url, api_key, client_id,
+│   │                          # client_secret — gitignored, never committed
 │   └── __init__.py
 ├── utils/
 │   ├── interactive_menu.py  # CLI menu helpers (optional: questionary)
@@ -241,6 +313,10 @@ src/britecore_sdk/
 └── exceptions.py            # Custom exception hierarchy
 
 ```
+
+**Note:** `LoadClientSettings` lives in
+`src/britecore_sdk/api/britecore_api_client.py` and reads from
+`britecore_sdk.settings`.
 
 **Configuration Loading:**
 
@@ -252,7 +328,7 @@ src/britecore_sdk/
 # 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long)
 # 4. Built-in defaults
 
-from britecore_sdk.settings.config import LoadClientSettings
+from britecore_sdk.api.britecore_api_client import LoadClientSettings
 
 loader = LoadClientSettings("my_site")
 site_config = loader.load_config()
@@ -278,7 +354,7 @@ Utility-specific validation boundaries:
 ```text
 
 1. Check environment/config for api_key
-2. Set header: "Authorization: ApiKey <api_key>"
+2. Inject api_key into request JSON body: {"api_key": "<api_key>", ...}
 3. Send request to endpoint
 4. Receive response
 
@@ -703,7 +779,7 @@ logger.error("Errors with context")
 
 ## Documentation Freshness
 
-- Last verified: `2026-04-07`
+- Last verified: `2026-04-28`
 - Verified against: `src/britecore_sdk/` directory structure and `exceptions.py`
 
 ---
