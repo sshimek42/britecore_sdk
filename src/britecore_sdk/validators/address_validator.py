@@ -12,6 +12,19 @@ from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.maps import get_common_regexes
 from britecore_sdk.utils.zip_code_lookup import zip_codes
 
+# Map legacy / non-BC address type strings to canonical BC quick-code values.
+# Valid BC address types: Mailing/Billing (default), Mailing, Billing, Other
+_ADDRESS_TYPE_NORMALIZER: dict[str, str] = {
+    "mailing/billing": "Mailing/Billing",
+    "mailing": "Mailing",
+    "mail": "Mailing",
+    "billing": "Billing",
+    "other": "Other",
+    "home": "Mailing/Billing",
+    "physical": "Mailing/Billing",
+    "residential": "Mailing/Billing",
+}
+
 LOGGER = logging.getLogger("britecore_sdk")
 FIX_ADDRESS = False
 NO_ADDRESS_CHANGE = "NO CHANGES MADE"
@@ -222,6 +235,8 @@ class AddressValidator:
         property_name: str,
     ) -> list[dict[str, str]]:
         """Build the normalized address payload returned by process."""
+        raw_type = full_address.get("type", DEFAULT_ADDRESS_TYPE) or DEFAULT_ADDRESS_TYPE
+        address_type = _ADDRESS_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
         return [
             {
                 "address_line1": self.normalize_address_line(address1),
@@ -229,7 +244,7 @@ class AddressValidator:
                 "address_state": self.validate_state(state, zip_code),
                 "address_country": "USA",
                 "address_zip": zip_code,
-                "type": full_address.get("type", DEFAULT_ADDRESS_TYPE),
+                "type": address_type,
                 "address_county": self.validate_county(county, zip_code[:5]),
                 "address_city": self.validate_city(city, zip_code),
                 "property": property_name,
