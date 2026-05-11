@@ -10,6 +10,17 @@ from britecore_sdk.constants import DEFAULT_EMAIL_TYPE
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.maps import get_common_regexes
 
+# Map legacy / non-BC email type strings to the canonical BC quick-code values.
+# Valid BC email types: Work, Personal, Notifications, Other
+_EMAIL_TYPE_NORMALIZER: dict[str, str] = {
+    "home": "Personal",
+    "personal": "Personal",
+    "work": "Work",
+    "business": "Work",
+    "notifications": "Notifications",
+    "other": "Other",
+}
+
 LOGGER = logging.getLogger("britecore_sdk")
 
 
@@ -63,6 +74,9 @@ class EmailValidator:
             # Set default type if empty
             if email_type == "":
                 email_type = DEFAULT_EMAIL_TYPE
+
+            # Normalise to BC-accepted quick-code values
+            email_type = _EMAIL_TYPE_NORMALIZER.get(email_type.lower(), email_type)
 
             normalized = self.normalize_email(email_address)
 

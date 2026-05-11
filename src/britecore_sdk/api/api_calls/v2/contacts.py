@@ -16,6 +16,10 @@ from britecore_sdk.api.api_calls import (
     api_client,
 )
 from britecore_sdk.models.contact import ROLETYPES
+from britecore_sdk.validators.address_validator import _ADDRESS_TYPE_NORMALIZER
+from britecore_sdk.validators.email_validator import _EMAIL_TYPE_NORMALIZER
+from britecore_sdk.validators.phone_validator import _PHONE_TYPE_NORMALIZER
+from britecore_sdk.constants import DEFAULT_ADDRESS_TYPE, DEFAULT_EMAIL_TYPE, DEFAULT_PHONE_TYPE
 
 LOGGER: Logger = logger
 API_CLIENT: BritecoreAPIClient = api_client
@@ -52,6 +56,46 @@ def new_contact(
         phone = [{}]
     if not email:
         email = [{}]
+
+    # Normalise address types to BC-accepted quick-code values before sending.
+    normalized_address: list[dict[str, str]] = []
+    for entry in address:
+        if not isinstance(entry, dict):
+            normalized_address.append(entry)
+            continue
+        raw_type = entry.get("type", DEFAULT_ADDRESS_TYPE) or DEFAULT_ADDRESS_TYPE
+        mapped_type = _ADDRESS_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
+        normalized_address.append({**entry, "type": mapped_type})
+    address = normalized_address
+
+    # Normalise phone types to BC-accepted quick-code values before sending.
+    # Entries that are empty dicts (placeholder) are left untouched.
+    normalized_phone: list[dict[str, str] | None] = []
+    for entry in phone:
+        if not entry or not isinstance(entry, dict):
+            normalized_phone.append(entry)
+            continue
+        raw_type = entry.get("type", "") or ""
+        if not raw_type:
+            raw_type = DEFAULT_PHONE_TYPE
+        mapped_type = _PHONE_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
+        normalized_phone.append({**entry, "type": mapped_type})
+    phone = normalized_phone
+
+    # Normalise email types to BC-accepted quick-code values before sending.
+    # Entries that are empty dicts (placeholder) are left untouched.
+    normalized_email: list[dict[str, str] | None] = []
+    for entry in email:
+        if not entry or not isinstance(entry, dict):
+            normalized_email.append(entry)
+            continue
+        raw_type = entry.get("type", "") or ""
+        if not raw_type:
+            raw_type = DEFAULT_EMAIL_TYPE
+        mapped_type = _EMAIL_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
+        normalized_email.append({**entry, "type": mapped_type})
+    email = normalized_email
+
     contact_request_json: dict[str, Any] = {
         "name": name,
         "addresses": address,

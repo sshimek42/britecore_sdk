@@ -8,6 +8,20 @@ from britecore_sdk.constants import DEFAULT_PHONE_TYPE
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.maps import get_common_regexes
 
+# Map legacy / non-BC phone type strings to the canonical BC quick-code values.
+# Valid BC phone types: Home, Work, Cell, Fax, Other
+_PHONE_TYPE_NORMALIZER: dict[str, str] = {
+    "home": "Home",
+    "work": "Work",
+    "business": "Work",
+    "office": "Work",
+    "cell": "Cell",
+    "mobile": "Cell",
+    "cellular": "Cell",
+    "fax": "Fax",
+    "other": "Other",
+}
+
 
 @lru_cache(maxsize=1)
 def _get_regexes() -> dict[str, Pattern[str]]:
@@ -56,6 +70,9 @@ class PhoneValidator:
             # Set default type if empty
             if phone_type == "":
                 phone_type = DEFAULT_PHONE_TYPE
+
+            # Normalise to BC-accepted quick-code values
+            phone_type = _PHONE_TYPE_NORMALIZER.get(phone_type.lower(), phone_type)
 
             # Skip invalid/empty phone numbers
             if self._is_invalid_phone(phone_number):

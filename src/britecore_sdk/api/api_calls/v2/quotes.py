@@ -9,13 +9,14 @@ response normalization where needed.
 from logging import Logger
 from typing import Any, Unpack
 
-from urllib3 import BaseHTTPResponse, HTTPResponse
+from urllib3 import BaseHTTPResponse, HTTPResponse, Timeout
 
 from britecore_sdk import BritecoreError, logger
 from britecore_sdk.api.api_calls import (
     BritecoreAPIClient,
     RequestParameters,
     api_client,
+    web_timeout_long,
 )
 
 LOGGER: Logger = logger
@@ -43,6 +44,13 @@ def create_full_quote(
         raise BritecoreError.MissingParameter(
             "quote_json is required and must be a dict"
         )
+
+    # Quote creation is a long-running write; apply the long timeout unless the
+    # caller has already provided an explicit request_timeout override.
+    provided_timeout: Timeout | None = kwargs.get("request_timeout")
+    if not provided_timeout:
+        kwargs.update({"request_timeout": Timeout(web_timeout_long)})
+
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
     )
