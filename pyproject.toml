@@ -29,7 +29,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "dynaconf~=3.2.13",
+    "dynaconf>=3.2.13,<3.4.0",
     "typing_extensions>=4.15.0",
     "urllib3~=2.6.3",
     "toml>=0.10.2,<1.0.0",
