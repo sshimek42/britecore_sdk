@@ -1206,14 +1206,12 @@ class RequestParameters(TypedDict):
         request_timeout (urllib3.util.Timeout): Timeout settings
         request_retries (urllib3.util.Retry): Retry settings
         request_headers (dict[str, Any]): Request headers
-        method (str): Request method (Default: "POST")
         rate_limiter_bypass (bool): Skip rate limiting for this request
     """
 
     request_timeout: NotRequired[urllib3.util.Timeout]
     request_retries: NotRequired[urllib3.util.Retry]
     request_headers: NotRequired[dict[str, Any]]
-    method: NotRequired[str]
     cache_enabled: NotRequired[bool]
     cache_ttl_seconds: NotRequired[int]
     cache_namespace: NotRequired[str]

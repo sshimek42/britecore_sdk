@@ -75,29 +75,29 @@ def new_contact(
     # Normalise phone types to BC-accepted quick-code values before sending.
     # Entries that are empty dicts (placeholder) are left untouched.
     normalized_phone: list[dict[str, str] | None] = []
-    for entry in phone:
-        if not entry or not isinstance(entry, dict):
-            normalized_phone.append(entry)
+    for phone_entry in phone:
+        if not phone_entry or not isinstance(phone_entry, dict):
+            normalized_phone.append(phone_entry)
             continue
-        raw_type = entry.get("type", "") or ""
+        raw_type = phone_entry.get("type", "") or ""
         if not raw_type:
             raw_type = DEFAULT_PHONE_TYPE
         mapped_type = _PHONE_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
-        normalized_phone.append({**entry, "type": mapped_type})
+        normalized_phone.append({**phone_entry, "type": mapped_type})
     phone = normalized_phone
 
     # Normalise email types to BC-accepted quick-code values before sending.
     # Entries that are empty dicts (placeholder) are left untouched.
     normalized_email: list[dict[str, str] | None] = []
-    for entry in email:
-        if not entry or not isinstance(entry, dict):
-            normalized_email.append(entry)
+    for email_entry in email:
+        if not email_entry or not isinstance(email_entry, dict):
+            normalized_email.append(email_entry)
             continue
-        raw_type = entry.get("type", "") or ""
+        raw_type = email_entry.get("type", "") or ""
         if not raw_type:
             raw_type = DEFAULT_EMAIL_TYPE
         mapped_type = _EMAIL_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
-        normalized_email.append({**entry, "type": mapped_type})
+        normalized_email.append({**email_entry, "type": mapped_type})
     email = normalized_email
 
     contact_request_json: dict[str, Any] = {
