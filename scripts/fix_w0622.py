@@ -4,6 +4,7 @@ import pathlib
 
 
 def patch(path: str, old: str, new: str) -> None:
+    """Replace one exact snippet in a file and log whether the patch applied."""
     f = pathlib.Path(path)
     text = f.read_text(encoding="utf-8")
     if old not in text:
@@ -61,8 +62,20 @@ patch(
 )
 patch(
     "src/britecore_sdk/api/api_calls/v2/claim_exposures.py",
-    '        "type": type,\n    }\n    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n    request_result = API_CLIENT.do_request(\n        path="/api/v2/claim_exposures/get_broken_limits"',
-    '        "type": exposure_type,\n    }\n    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n    request_result = API_CLIENT.do_request(\n        path="/api/v2/claim_exposures/get_broken_limits"',
+    (
+        '        "type": type,\n'
+        "    }\n"
+        "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
+        "    request_result = API_CLIENT.do_request(\n"
+        '        path="/api/v2/claim_exposures/get_broken_limits"'
+    ),
+    (
+        '        "type": exposure_type,\n'
+        "    }\n"
+        "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
+        "    request_result = API_CLIENT.do_request(\n"
+        '        path="/api/v2/claim_exposures/get_broken_limits"'
+    ),
 )
 
 # --- v2/contacts.py ---
@@ -148,14 +161,38 @@ patch(
 )
 patch(
     "src/britecore_sdk/api/api_calls/v2/quote.py",
-    '    request_json: dict[str, Any] = {\n        "id": id,\n    }\n    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n    request_result = API_CLIENT.do_request(\n        path="/api/v2/quote/delete_quote_wizard_flow"',
-    '    request_json: dict[str, Any] = {\n        "id": id_,\n    }\n    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n    request_result = API_CLIENT.do_request(\n        path="/api/v2/quote/delete_quote_wizard_flow"',
+    (
+        "    request_json: dict[str, Any] = {\n"
+        '        "id": id,\n'
+        "    }\n"
+        "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
+        "    request_result = API_CLIENT.do_request(\n"
+        '        path="/api/v2/quote/delete_quote_wizard_flow"'
+    ),
+    (
+        "    request_json: dict[str, Any] = {\n"
+        '        "id": id_,\n'
+        "    }\n"
+        "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
+        "    request_result = API_CLIENT.do_request(\n"
+        '        path="/api/v2/quote/delete_quote_wizard_flow"'
+    ),
 )
 # patch_flow_definition: id -> id_
 patch(
     "src/britecore_sdk/api/api_calls/v2/quote.py",
-    "def patch_flow_definition(\n    definition: Any | None = None,\n    is_endorsement: Any | None = None,\n    id: Any | None = None,",
-    "def patch_flow_definition(\n    definition: Any | None = None,\n    is_endorsement: Any | None = None,\n    id_: Any | None = None,",
+    (
+        "def patch_flow_definition(\n"
+        "    definition: Any | None = None,\n"
+        "    is_endorsement: Any | None = None,\n"
+        "    id: Any | None = None,"
+    ),
+    (
+        "def patch_flow_definition(\n"
+        "    definition: Any | None = None,\n"
+        "    is_endorsement: Any | None = None,\n"
+        "    id_: Any | None = None,"
+    ),
 )
 patch(
     "src/britecore_sdk/api/api_calls/v2/quote.py",
@@ -225,8 +262,22 @@ patch(
 )
 patch(
     "src/britecore_sdk/api/api_calls/v2/settings.py",
-    '    request_json: dict[str, Any] = {\n        "id": id,\n    }\n    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n    request_result = API_CLIENT.do_request(\n        path="/api/v2/settings/delete_carbone_custom_deliverable"',
-    '    request_json: dict[str, Any] = {\n        "id": id_,\n    }\n    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n    request_result = API_CLIENT.do_request(\n        path="/api/v2/settings/delete_carbone_custom_deliverable"',
+    (
+        "    request_json: dict[str, Any] = {\n"
+        '        "id": id,\n'
+        "    }\n"
+        "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
+        "    request_result = API_CLIENT.do_request(\n"
+        '        path="/api/v2/settings/delete_carbone_custom_deliverable"'
+    ),
+    (
+        "    request_json: dict[str, Any] = {\n"
+        '        "id": id_,\n'
+        "    }\n"
+        "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
+        "    request_result = API_CLIENT.do_request(\n"
+        '        path="/api/v2/settings/delete_carbone_custom_deliverable"'
+    ),
 )
 
 print("\nAll W0622 patches applied.")
