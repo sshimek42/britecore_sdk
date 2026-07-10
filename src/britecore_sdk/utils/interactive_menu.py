@@ -201,15 +201,14 @@ def line_menu(
             "line": (eff_date[0], eff_state[0], line_id),
             "line_name": selected_line,
         }
-    else:
-        default_name = line_menu_names[0]
-        print("1. " + default_name)
-        line_id = line_menu_options[default_name]
-        print(f"{default_name} selected")
-        return {
-            "line": (eff_date[0], eff_state[0], line_id),
-            "line_name": default_name,
-        }
+    default_name = line_menu_names[0]
+    print("1. " + default_name)
+    line_id = line_menu_options[default_name]
+    print(f"{default_name} selected")
+    return {
+        "line": (eff_date[0], eff_state[0], line_id),
+        "line_name": default_name,
+    }
 
 
 def policy_menu(**kwargs: Unpack[RequestParameters]) -> Any:

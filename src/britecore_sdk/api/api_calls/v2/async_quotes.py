@@ -67,18 +67,18 @@ async def acreate_full_quote(
     return json_info, json_info.get("id")
 
 
-async def aget_quote(id: str, **kwargs: Unpack[RequestParameters]) -> Any:
+async def aget_quote(quote_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve a quote by ID with short-lived async caching enabled by default.
 
-    The request uses ``id`` to fetch the quote through the async quote client and
+    The request uses ``quote_id`` to fetch the quote through the async quote client and
     enables the default quote read cache unless the caller overrides it. Returns
     the async ``aprocess_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` plus cache override settings.
     """
-    quote_json: dict[str, str] = {"id": id}
+    quote_json: dict[str, str] = {"id": quote_id}
     LOGGER.debug("Getting quote")
     request_kwargs = _apply_quote_read_cache(
-        dict(kwargs), cache_key_parts=[f"quote:{id}"]
+        dict(kwargs), cache_key_parts=[f"quote:{quote_id}"]
     )
     request_result: Any = await API_CLIENT.ado_request(
         path="/api/v2/quotes/get_quote",

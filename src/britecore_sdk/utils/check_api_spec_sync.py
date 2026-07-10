@@ -5,7 +5,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from urllib.error import URLError
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -67,10 +67,13 @@ def get_remote_spec_version(
     spec_url: str = SPEC_SOURCE_URL, timeout_seconds: float = 10.0
 ) -> str | None:
     """Fetch the remote spec and return ``info.version`` when available."""
+    parsed = urlparse(spec_url)
+    if parsed.scheme not in ("http", "https"):
+        return None
     try:
         with urlopen(spec_url, timeout=timeout_seconds) as response:  # noqa: S310
             spec_data = json.loads(response.read().decode("utf-8"))
-    except (URLError, TimeoutError, OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError):
         return None
     return spec_data.get("info", {}).get("version")
 

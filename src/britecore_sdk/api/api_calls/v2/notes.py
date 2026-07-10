@@ -41,7 +41,7 @@ def store_note(
 
 
 def retrieve_notes(
-    id: str,
+    entity_id: str,
     pageSize: int | None = 1000,
     searchString: str | None = None,
     aggregateAll: bool | None = False,
@@ -76,6 +76,8 @@ def retrieve_notes(
         if v:
             if k == "note_type":
                 k = "type"
+            if k == "entity_id":
+                k = "id"
             notes_json.update({k: v})
 
     provided_timeout: Timeout | None = kwargs.get("request_timeout")
