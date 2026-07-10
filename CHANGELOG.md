@@ -9,6 +9,25 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **mypy / DeepSource Python analyzer findings** (6 files, 12 errors):
+  - `utils/_config_common.py`: removed stale `# type: ignore[import-untyped]` for
+    `toml` — the package now ships type stubs.
+  - `api/api_calls/__init__.py`: replaced stale `type: ignore[assignment]` comments
+    with proper `cast(str, ...)` where `target_site`'s `str | None | object` union
+    was not narrowed, and direct assignment where `isinstance` already narrowed it;
+    removed unused `type: ignore[arg-type]` on `init_client` call.
+  - `api/api_calls/v2/contacts.py` + `async_contacts.py`: corrected return type of
+    `new_contact` / `anew_contact` from `tuple[str | None, str | None]` to
+    `tuple[Any, str | None]` — the first element is the raw `process_result()` /
+    `aprocess_result()` payload, which is typed `Any`.
+  - `utils/config_manager.py`: added explicit `value: Any` annotation in the
+    JSON-parse helper to allow mixed `bool | None | str | Any` assignments without
+    mypy narrowing errors.
+  - `api/workflows/async_staged_creation.py`: removed stale
+    `type: ignore[assignment]` on `asyncio.gather(..., return_exceptions=True)` call.
+
 ---
 
 ## [1.5.0] - 2026-07-10
