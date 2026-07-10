@@ -54,7 +54,7 @@ async def anew_contact(
     email: list[dict[str, str] | None] | None = None,
     contact_type: Literal["individual", "organization"] | None = "individual",
     **kwargs: Unpack[RequestParameters],
-    ) -> tuple[Any, str | None]:
+) -> tuple[Any, str | None]:
     """Create a new contact record asynchronously.
 
     The request uses the provided name, addresses, optional phones and emails,

@@ -9,7 +9,9 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### Fixed
+---
+
+## [1.5.1] - 2026-07-10
 
 - **mypy / DeepSource Python analyzer findings** (6 files, 12 errors):
   - `utils/_config_common.py`: removed stale `# type: ignore[import-untyped]` for
