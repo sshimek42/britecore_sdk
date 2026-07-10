@@ -9,6 +9,10 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.5.0] - 2026-07-10
+
 ### Added
 
 - `britecore_sdk.utils.check_api_spec_sync` now performs upstream spec-version
