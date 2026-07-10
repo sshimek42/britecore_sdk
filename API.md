@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: April 30, 2026*
+*Last updated: July 10, 2026*
 *Document type: Living reference guide*
 
 **BriteCore Libraries** - API endpoint reference
@@ -153,14 +153,16 @@ from `src/britecore_sdk/api/request_cache.py`.
 Use module-level wrappers under `britecore_sdk.api.api_calls.v2`.
 Current domains include:
 
-- `accounting`, `attachments`, `billing`, `claims`, `commissions`, `contacts`
-- `dashboards`, `data`, `deliverables`, `errors`, `inspections`, `insured`
-- `intacct`, `lines`, `nightly_jobs`, `notes`, `notifications`, `payments`
-- `policies`, `quotes`, `reports`, `return_premium`, `search`, `settings`
-- `signatures`, `uploads`, `utils`, `vendors`
+- `accounting`, `agentcy`, `attachments`, `auth`, `authority_limits`, `background_jobs`, `billing`
+- `claim_adjuster_assignment_configs`, `claim_catastrophes`, `claim_changes`, `claim_contacts`, `claim_dates`, `claim_estimations`, `claim_exposures`, `claim_injuries`, `claim_properties`, `claim_vehicles`, `claims`, `commissions`
+- `configurations`, `contacts`, `coverages`, `custom_data`, `dashboards`, `data`, `deliverables`, `disputes`, `drivers`, `errors`, `files`
+- `geometries`, `geometry`, `imports`, `ingestion_job`, `inspections`, `insured`, `intacct`, `integrations`, `jobrunner`, `lines`, `named_insureds`, `nightly_jobs`, `notes`, `notifications`
+- `payments`, `permissions`, `policies`, `policy_types`, `premium_finance_companies`, `prior_policies`, `quick_code_values`, `quick_codes`, `quick_quote_templates`, `quote`, `quotes`, `related_policies`, `reports`, `return_premium`, `rules`
+- `search`, `settings`, `signatures`, `statement_of_value`, `subjectivities`, `suspensions`, `tasks`, `term_credit_scores`, `uploads`, `user_groups`, `utils`, `vehicles`, `vendors`, `violations`, `watercrafts`
 
-`v1`-only endpoint modules (import from `britecore_sdk.api.api_calls.v1`):
+`v1` compatibility modules (import from `britecore_sdk.api.api_calls.v1`):
 
+- `contacts`, `deliverables`, `notes`, `payments`, `policies`, `reports`
 - `custom_ui`
 - `printing`
 - `payments.makemanualpolicypayment` / `payments.make_manual_policy_payment`
