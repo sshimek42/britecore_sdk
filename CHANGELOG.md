@@ -9,6 +9,27 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `britecore_sdk.utils.check_api_spec_sync` now performs upstream spec-version
+  checks against
+  `https://api.britecore.com/specifications/BriteCore/2.0.0/openapi.json`
+  in addition to local freshness checks.
+- Added unit-test coverage for local/remote API spec version parsing and version
+  comparison behavior in `tests/unit/test_check_api_spec_sync.py`.
+
+### Changed
+
+- Expanded and refreshed API wrapper documentation to reflect July 2026
+  wrapper-domain additions:
+  - `API.md`
+  - `docs/api_reference.md`
+  - `README.md`
+  - `GETTING_STARTED.md`
+  - `TROUBLESHOOTING.md`
+  - `UNIMPLEMENTED_API_STUBS.md`
+  - `api_specs/README.md`
+
 ---
 
 ## [1.4.0] — 2026-04-30

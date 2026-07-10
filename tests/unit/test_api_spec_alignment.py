@@ -84,6 +84,25 @@ def _format_path_list(paths: list[str]) -> str:
     return "\n".join(f"- {path}" for path in paths)
 
 
+def _filter_paths_for_scope(paths: set[str], scope: str) -> list[str] | None:
+    normalized = scope.strip().lower()
+    if normalized in {"1", "all"}:
+        return sorted(paths)
+
+    if ":" in normalized:
+        version, domain = normalized.split(":", 1)
+        if version in {"v1", "v2"} and domain:
+            prefix = f"/api/{version}/{domain}/"
+            return sorted(path for path in paths if path.startswith(prefix))
+        return None
+
+    if normalized in {"v1", "v2"}:
+        prefix = f"/api/{normalized}/"
+        return sorted(path for path in paths if path.startswith(prefix))
+
+    return None
+
+
 @pytest.mark.unit
 def test_wrapper_paths_exist_in_api_spec() -> None:
     """Ensure wrapper endpoint paths are present in the checked-in API specification."""
@@ -110,11 +129,30 @@ def test_spec_paths_have_wrappers_report_only() -> None:
     spec_paths = _spec_paths()
     uncovered = sorted(spec_paths - wrapper_paths)
 
-    strict_mode = os.getenv("BRITECORE_STRICT_SPEC_COVERAGE", "").strip() == "1"
-    if strict_mode:
-        msg = "Spec endpoints without wrapper implementations:\n" + _format_path_list(
-            uncovered
+    strict_raw = os.getenv("BRITECORE_STRICT_SPEC_COVERAGE", "").strip()
+    scopes = [scope.strip() for scope in strict_raw.split(",") if scope.strip()]
+    if not scopes:
+        assert True
+        return
+
+    for scope in scopes:
+        scoped_uncovered = _filter_paths_for_scope(set(uncovered), scope)
+        assert scoped_uncovered is not None, (
+            "Invalid BRITECORE_STRICT_SPEC_COVERAGE scope: "
+            f"'{scope}'. Use one of: 1, all, v1, v2, v1:<domain>, v2:<domain>."
         )
-        assert not uncovered, msg
+        if scope in {"1", "all"}:
+            coverage_message = (
+                "Spec endpoints without wrapper implementations:\n"
+                + _format_path_list(scoped_uncovered)
+            )
+            assert not scoped_uncovered, coverage_message
+            continue
+
+        coverage_message = (
+            f"Spec endpoints without wrapper implementations for scope '{scope}':\n"
+            + _format_path_list(scoped_uncovered)
+        )
+        assert not scoped_uncovered, coverage_message
 
     assert True

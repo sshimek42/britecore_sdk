@@ -1,5 +1,7 @@
 # API Reference
 
+*Last updated: July 10, 2026*
+
 This page is the generated symbol-level API reference. For narrative usage
 guidance, examples, and broader endpoint notes, see the repository-level
 `API.md` guide.
@@ -75,6 +77,9 @@ guidance, examples, and broader endpoint notes, see the repository-level
 ```
 
 ## V2 Synchronous Endpoint Modules
+
+The sections below are representative core modules. For the complete current
+module inventory, see `API.md` and `src/britecore_sdk/api/api_calls/v2/`.
 
 ### Accounting
 
@@ -195,6 +200,21 @@ guidance, examples, and broader endpoint notes, see the repository-level
 :undoc-members:
 :show-inheritance:
 ```
+
+### Additional v2 modules (July 2026)
+
+`agentcy`, `auth`, `authority_limits`, `background_jobs`,
+`claim_adjuster_assignment_configs`, `claim_catastrophes`, `claim_changes`,
+`claim_contacts`, `claim_dates`, `claim_estimations`, `claim_exposures`,
+`claim_injuries`, `claim_properties`, `claim_vehicles`, `configurations`,
+`coverages`, `custom_data`, `disputes`, `drivers`, `files`, `geometries`,
+`geometry`, `imports`, `ingestion_job`, `integrations`, `jobrunner`,
+`named_insureds`, `permissions`, `policy_types`,
+`premium_finance_companies`, `prior_policies`, `quick_code_values`,
+`quick_codes`, `quick_quote_templates`, `quote`, `related_policies`,
+`rules`, `statement_of_value`, `subjectivities`, `suspensions`, `tasks`,
+`term_credit_scores`, `user_groups`, `vehicles`, `violations`,
+`watercrafts`
 
 ## V2 Asynchronous Endpoint Modules
 

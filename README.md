@@ -2,7 +2,7 @@
 
 A professional **Python SDK for the BriteCore API** — complete endpoint coverage, async support, OAuth/API key authentication, and type hints.
 
-> No existing BriteCore client library? Look no further. This SDK provides everything you need: 374+ endpoints, domain models, validators, and clean async wrappers.
+> No existing BriteCore client library? Look no further. This SDK provides spec-aligned wrappers, domain models, validators, and clean async helpers.
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -165,7 +165,7 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 
 ## Features
 
-✅ **Complete API coverage** — 374/374 endpoints across v1 and v2
+✅ **Spec-aligned API coverage** — wrapper/spec alignment checks against `api_specs/current/britecore.json`
 ✅ **Async-ready** — Cache-aware async wrappers for high-concurrency workflows
 ✅ **Flexible auth** — Automatic API key or OAuth2 token management
 ✅ **Type hints** — Full PEP 561 type information for IDE support
@@ -364,6 +364,12 @@ britecore-check-config
 python -m britecore_sdk.utils.check_site_configs
 ```
 
+Check whether the checked-in local API spec is current and whether upstream has a newer version:
+
+```sh
+python -m britecore_sdk.utils.check_api_spec_sync
+```
+
 Run an end-user readiness check (config + auth + safe API ping):
 
 ```sh
@@ -383,7 +389,7 @@ Validation rule: each site needs `base_url` and either a full OAuth pair
 
 ### API Wrappers
 
-- **Endpoint modules:** 30 modules covering policies, contacts, quotes, payments, and more (374+ endpoints)
+- **Endpoint modules:** broad v2 domain coverage plus v1 compatibility wrappers (see `API.md` for current module inventory)
 - **Async wrappers:** Cache-aware async versions of key endpoint workflows
 
 ### Utilities

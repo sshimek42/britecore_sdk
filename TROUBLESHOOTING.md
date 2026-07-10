@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-*Last updated: April 28, 2026*
+*Last updated: July 10, 2026*
 *Document type: Living troubleshooting guide*
 
 **BriteCore Libraries** - Common issues and solutions
@@ -174,6 +174,12 @@ britecore-check-config
 
 # Or via python -m:
 python -m britecore_sdk.utils.check_site_configs
+```
+
+Check local API spec freshness and upstream version drift:
+
+```sh
+python -m britecore_sdk.utils.check_api_spec_sync
 ```
 
 Interpretation:

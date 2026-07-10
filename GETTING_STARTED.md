@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: April 30, 2026*
+*Last updated: July 10, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -261,6 +261,7 @@ Or via `python -m` (works in both bash and PowerShell):
 ```sh
 python -m britecore_sdk.utils.check_site_configs
 python -m britecore_sdk.utils.healthcheck --site your_site
+python -m britecore_sdk.utils.check_api_spec_sync
 ```
 
 ## First API call

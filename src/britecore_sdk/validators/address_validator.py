@@ -235,7 +235,9 @@ class AddressValidator:
         property_name: str,
     ) -> list[dict[str, str]]:
         """Build the normalized address payload returned by process."""
-        raw_type = full_address.get("type", DEFAULT_ADDRESS_TYPE) or DEFAULT_ADDRESS_TYPE
+        raw_type = (
+            full_address.get("type", DEFAULT_ADDRESS_TYPE) or DEFAULT_ADDRESS_TYPE
+        )
         address_type = _ADDRESS_TYPE_NORMALIZER.get(raw_type.lower(), raw_type)
         return [
             {

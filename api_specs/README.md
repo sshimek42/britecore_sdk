@@ -21,6 +21,9 @@ api_specs/
   drift-detection tooling should use `api_specs/current/britecore.json`.
 - `tests/unit/test_api_spec_alignment.py` validates wrapper paths against the
   current spec only.
+- `python -m britecore_sdk.utils.check_api_spec_sync` checks local spec freshness
+  and compares the local `info.version` to the upstream spec at
+  `https://api.britecore.com/specifications/BriteCore/2.0.0/openapi.json`.
 
 ## Archived specs
 
