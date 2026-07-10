@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_sdk"
-version = "1.4.0"
+version = "1.5.0"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -31,7 +31,7 @@ classifiers = [
 dependencies = [
     "dynaconf~=3.2.13",
     "typing_extensions>=4.15.0",
-    "urllib3~=2.6.3",
+    "urllib3>=2.7.0,<3.0.0",
     "toml>=0.10.2,<1.0.0",
 ]
 
@@ -74,6 +74,10 @@ omit = [
     "*/tests/*",
     "*/site-packages/*",
     "*/__pycache__/*",
+    "src/britecore_sdk/api/api_calls/v1/*.py",
+    "src/britecore_sdk/api/api_calls/v2/*.py",
+    "src/britecore_sdk/utils/config_manager.py",
+    "src/britecore_sdk/utils/generate_spec_wrappers.py",
 ]
 
 [tool.coverage.report]
