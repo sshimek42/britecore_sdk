@@ -37,4 +37,3 @@ t = t.replace(
 )
 f.write_text(t, encoding="utf-8")
 print("fixed smoke tests")
-

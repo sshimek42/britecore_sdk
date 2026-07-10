@@ -48,4 +48,3 @@ for path in files:
     print(f"  ok: {f.name}")
 
 print("\nDone.")
-

@@ -85,13 +85,11 @@ def fix_file(path: str) -> None:
         # Just add API_CLIENT line after whatever britecore_sdk.api.api_calls import exists
         m = re.search(r"from britecore_sdk\.api\.api_calls import [^\n]+\n", text)
         if m:
-            end = m.end()
-            # Check if BritecoreAPIClient is already in the import
             if "BritecoreAPIClient" not in m.group() and "api_client" not in m.group():
                 # We need to expand the import
                 old_import = m.group().rstrip()
                 # Build new import by adding BritecoreAPIClient and api_client
-                new_text = text[:m.start()] + old_import.replace(
+                new_text = text[: m.start()] + old_import.replace(
                     "from britecore_sdk.api.api_calls import ",
                     "from britecore_sdk.api.api_calls import (\n    BritecoreAPIClient,\n    ",
                 )
@@ -105,16 +103,24 @@ def fix_file(path: str) -> None:
             if "from britecore_sdk.api.api_calls" in line:
                 # Find the end of this import (may be multi-line)
                 j = i
-                while j < len(lines) and (lines[j].startswith(" ") or lines[j].startswith("from") or lines[j].strip().endswith(",")):
+                while j < len(lines) and (
+                    lines[j].startswith(" ")
+                    or lines[j].startswith("from")
+                    or lines[j].strip().endswith(",")
+                ):
                     j += 1
                 insert_after = j
                 break
         # Insert after the import block
-        new_lines = lines[:insert_after] + [
-            "from britecore_sdk.api.api_calls import BritecoreAPIClient, api_client\n",
-            "\n",
-            "API_CLIENT: BritecoreAPIClient = api_client\n",
-        ] + lines[insert_after:]
+        new_lines = (
+            lines[:insert_after]
+            + [
+                "from britecore_sdk.api.api_calls import BritecoreAPIClient, api_client\n",
+                "\n",
+                "API_CLIENT: BritecoreAPIClient = api_client\n",
+            ]
+            + lines[insert_after:]
+        )
         f.write_text("".join(new_lines), encoding="utf-8")
         print(f"  inserted new import block: {f.name}")
         return
@@ -129,4 +135,3 @@ for p in bad_files:
     fix_file(p)
 
 print("\nDone.")
-

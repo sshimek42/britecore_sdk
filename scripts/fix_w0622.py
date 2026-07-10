@@ -230,4 +230,3 @@ patch(
 )
 
 print("\nAll W0622 patches applied.")
-

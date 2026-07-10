@@ -558,7 +558,11 @@ class TestReturnPremiumEndpoints:
 SEARCH_CASES = [
     (
         "add_to_index",
-        {"document": {"title": "Policy"}, "document_id": "DOC-1", "index_name": "policies"},
+        {
+            "document": {"title": "Policy"},
+            "document_id": "DOC-1",
+            "index_name": "policies",
+        },
         {"document": {"title": "Policy"}, "id": "DOC-1", "index_name": "policies"},
         "/api/v2/search/add_to_index",
     ),

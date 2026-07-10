@@ -50,7 +50,9 @@ def test_background_jobs_search_smoke() -> None:
     assert "kwargs" in signature.parameters
 
     mock_client = _mock_api_client()
-    with patch("britecore_sdk.api.api_calls.v2.background_jobs.API_CLIENT", mock_client):
+    with patch(
+        "britecore_sdk.api.api_calls.v2.background_jobs.API_CLIENT", mock_client
+    ):
         result = background_jobs.search()
 
     assert result == {"ok": True}
