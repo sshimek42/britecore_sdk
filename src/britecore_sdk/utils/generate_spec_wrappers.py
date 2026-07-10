@@ -197,13 +197,13 @@ def _append_missing_endpoints(
                 "    from britecore_sdk.api.api_calls import api_client as _api_client\n\n"
                 "    request_json: dict[str, Any] = {}\n"
                 "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
-                "    request_result = _api_client.do_request(\n"
+                "    request_result = API_CLIENT.do_request(\n"
                 f'        path="{endpoint.path}",\n'
                 "        json=filtered_json,\n"
                 f'        method="{endpoint.method}",\n'
                 "        **kwargs,\n"
                 "    )\n"
-                f'    return _api_client.process_result(request_result, endpoint="{endpoint.path}")\n'
+                f'    return API_CLIENT.process_result(request_result, endpoint="{endpoint.path}")\n'
             )
 
         has_all = "__all__ =" in prefix
@@ -406,13 +406,13 @@ def _render_autogen_function(
         "    from britecore_sdk.api.api_calls import api_client as _api_client\n\n"
         f"{request_json}"
         "    filtered_json = {k: v for k, v in request_json.items() if v is not None}\n"
-        "    request_result = _api_client.do_request(\n"
+        "    request_result = API_CLIENT.do_request(\n"
         f'        path="{endpoint.path}",\n'
         "        json=filtered_json,\n"
         f'        method="{endpoint.method}",\n'
         "        **kwargs,\n"
         "    )\n"
-        f'    return _api_client.process_result(request_result, endpoint="{endpoint.path}")\n'
+        f'    return API_CLIENT.process_result(request_result, endpoint="{endpoint.path}")\n'
     )
 
 

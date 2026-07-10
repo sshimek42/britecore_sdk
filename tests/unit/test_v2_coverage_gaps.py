@@ -239,7 +239,7 @@ class TestNotesRetrieveNotes:
 
         client = _client(mock_settings)
         with patch.object(client, "do_request", return_value=response):
-            result = notes.retrieve_notes(id="POL-1")
+            result = notes.retrieve_notes(entity_id="POL-1")
 
         assert result == records
 
@@ -248,7 +248,7 @@ class TestNotesRetrieveNotes:
 
         client = _client(mock_settings)
         with patch.object(client, "do_request", return_value=None):
-            result = notes.retrieve_notes(id="POL-1")
+            result = notes.retrieve_notes(entity_id="POL-1")
 
         assert result == []
 
@@ -263,7 +263,7 @@ class TestNotesRetrieveNotes:
 
         client = _client(mock_settings)
         with patch.object(client, "do_request", return_value=response):
-            result = notes.retrieve_notes(id="POL-1")
+            result = notes.retrieve_notes(entity_id="POL-1")
 
         assert result == []
 
@@ -275,7 +275,7 @@ class TestNotesRetrieveNotes:
 
         client = _client(mock_settings)
         with patch.object(client, "do_request", return_value=response) as mock_req:
-            notes.retrieve_notes(id="ENTITY-1")
+            notes.retrieve_notes(entity_id="ENTITY-1")
 
         call = mock_req.call_args
         assert call.kwargs["path"] == "/api/v2/notes/retrieveNotes"
