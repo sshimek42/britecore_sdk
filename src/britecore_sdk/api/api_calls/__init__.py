@@ -99,16 +99,18 @@ def init_api_client(
         ):
             resolved: str = "explicit"
         else:
-            resolved = target_site  # type: ignore[assignment]
+            resolved = target_site
     else:
-        resolved = (
-            get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
-        )  # type: ignore[assignment]
+        resolved = cast(
+            str,
+            get_target_site() if target_site is _TARGET_SITE_UNSET else target_site,
+        )
         if not isinstance(resolved, str) or not resolved:
             raise BritecoreError.ConfigurationError(
                 "target_site must be specified: pass a non-empty value, or omit the argument "
                 "to use configured fallback resolution."
             )
+
     client: BritecoreAPIClient = BritecoreAPIClient(resolved)
     kwargs: dict[str, object] = {"client_dry_run": client_dry_run}
     if base_url is not None:
@@ -185,11 +187,12 @@ def init_async_api_client(
         ):
             resolved = "explicit"
         else:
-            resolved = target_site  # type: ignore[assignment]
+            resolved = target_site
     else:
-        resolved = (
-            get_target_site() if target_site is _TARGET_SITE_UNSET else target_site
-        )  # type: ignore[assignment]
+        resolved = cast(
+            str,
+            get_target_site() if target_site is _TARGET_SITE_UNSET else target_site,
+        )
         if not isinstance(resolved, str) or not resolved:
             raise BritecoreError.ConfigurationError(
                 "target_site must be specified: pass a non-empty value, or omit the argument "

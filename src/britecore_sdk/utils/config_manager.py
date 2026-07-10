@@ -689,6 +689,7 @@ def _add_update_setting_interactive(manager: ConfigManager) -> None:
     # Try to parse as JSON for complex types, otherwise use as string
     import json
 
+    value: Any
     try:
         # Try JSON first for numbers, booleans, lists, dicts
         if value_str.lower() in ("true", "false"):
