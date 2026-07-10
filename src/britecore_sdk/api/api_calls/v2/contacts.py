@@ -36,7 +36,7 @@ def new_contact(
     email: list[dict[str, str] | None] | None = None,
     contact_type: Literal["individual", "organization"] | None = "individual",
     **kwargs: Unpack[RequestParameters],
-) -> tuple[str | None, str | None]:
+) -> tuple[Any, str | None]:
     """Create a contact record.
 
     This wrapper sends the contact name, addresses, optional phone and email
