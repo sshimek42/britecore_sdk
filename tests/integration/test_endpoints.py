@@ -41,10 +41,15 @@ class TestQuotesEndpoints:
 
             assert result == {"id": "q-123", "number": "Q001"}
             assert quote_id == "q-123"
-            mock.do_request.assert_called_once_with(
-                path="/api/v2/quotes/create_full_quote",
-                json={"number": "Q001", "policy_type_id": "pt-1"},
+            mock.do_request.assert_called_once()
+            assert (
+                mock.do_request.call_args.kwargs["path"]
+                == "/api/v2/quotes/create_full_quote"
             )
+            assert mock.do_request.call_args.kwargs["json"] == {
+                "number": "Q001",
+                "policy_type_id": "pt-1",
+            }
 
     @pytest.mark.integration
     def test_create_full_quote_no_data_returns_none_tuple(self):
