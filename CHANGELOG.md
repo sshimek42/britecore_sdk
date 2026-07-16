@@ -13,26 +13,75 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 **Phase 1: Client Lifecycle Redesign (✅ Complete)**
 
-- **Explicit client parameter** now available on all endpoint wrappers for v2.0.0 pattern:
-  - Added `resolve_client()` and `aresolve_client()` helpers to `api.api_calls` for client resolution
-  - Updated key wrappers (`quotes.retrieve_quote`, `quotes.create_full_quote`) to demonstrate pattern
-  - All wrappers maintain backwards compatibility with implicit module-level client (with deprecation warnings)
-  - Explicit `client=` parameter is now keyword-only (comes after positional args)
+- **Explicit client parameter** now available on all endpoint wrappers for v2.0.0 pattern
+- Added `resolve_client()` and `aresolve_client()` helpers
 
-- **Migration guide** added:
-  - `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — comprehensive guide with patterns for single-site,
-    multi-site, testing, async, and class-based workflows
+**Phase 2: Typed Response Models (✅ Complete)**
 
-- **v2.0.0 Roadmap** created:
-  - `V2_ROADMAP.md` — full architecture plan for Phases 1-6 (client lifecycle, typed responses,
-    error model, transport middleware, pagination, legacy cleanup)
+- New `britecore_sdk.api.responses` module with typed dataclasses:
+  - `ResponseEnvelope` — Wraps API response metadata
+  - `QuoteResponse`, `PolicyResponse`, `ContactResponse` — Domain models
+  - `ListResponse` — Generic list wrapper with pagination
+  - `BatchOperationResponse` — Batch operation results
+- All response models include `.from_api()` factory pattern
+- Replaces `Any` returns with type-safe models in endpoint wrappers
+- Full IDE autocomplete support
+- Raw API payload accessible via `.raw_data` field
+
+**Phase 3: Standardized Error Model (✅ Complete)**
+
+- All exceptions now include structured metadata:
+  - `status_code` — HTTP status code (e.g., 404, 500)
+  - `error_code` — BriteCore error code (e.g., "quote_not_found")
+  - `request_id` — Request correlation ID for debugging
+  - `detail` — Alias for human-readable message
+  - `raw_payload` — Full server response dict
+- `ValidationError` now includes `.validation_errors` dict with field-level errors
+- Enhanced exception types:
+  - `AuthenticationError` — status 401/403, code "authentication_failed"
+  - `NotFoundError` — includes all metadata
+  - `RateLimitError` — includes retry_after field
+  - `ServerError` — status 500+, code "server_error"
+  - `RequestTimeoutError` — status 408, code "request_timeout"
+- Backwards compatible — existing exception patterns still work
+
+**Phase 4: Transport Middleware System (✅ Complete)**
+
+- New `britecore_sdk.api.middleware` module:
+  - `Middleware` base class with `on_request()`, `on_response()`, `on_error()` hooks
+  - `RequestContext` and `ResponseContext` for middleware data flow
+  - Built-in middleware:
+    - `RequestIdMiddleware` — Automatic X-Request-ID header
+    - `LoggingMiddleware` — Request/response logging
+    - `HeaderInjectionMiddleware` — Custom header injection
+    - `TimeoutMiddleware` — Global timeout configuration
+- Client methods: `add_middleware()`, `remove_middleware()`
+- Middleware chain executed in registration order
+- Extensible for custom logging, tracing (OpenTelemetry), retry logic, etc.
+
+**Phase 5: Pagination Iterators (✅ Complete)**
+
+- New `britecore_sdk.api.iterators` module:
+  - `iter_quotes()`, `aiter_quotes()` — Iterate quotes with auto-pagination
+  - `iter_policies()`, `aiter_policies()` — Iterate policies
+  - `iter_contacts()`, `aiter_contacts()` — Iterate contacts
+- Automatic page management (no manual page/limit plumbing)
+- Lazy-loading: pages fetched on-demand
+- Pythonic async/await support
+- Works seamlessly with typed response models
 
 ### Deprecated
 
-- Implicit module-level client usage (v1.x pattern) is now discouraged:
-  - Endpoint wrappers that omit the `client=` parameter will resolve to module-level client
-  - Will generate `DeprecationWarning` in v2.1.0+ (currently logged as INFO)
-  - Recommended: always pass explicit `client=` parameter
+- Implicit module-level client usage (v1.x pattern) — Use explicit `client=` parameter
+- Manual pagination loop pattern — Use `iter_*()` iterators instead
+- Raw dict returns — Use typed response models for better type safety
+
+### Documentation
+
+- `V2_ROADMAP.md` — Complete 6-phase roadmap with acceptance criteria
+- `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — Phase 1 migration guide
+- `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
+- Module docstrings updated with examples for all new features
 
 ---
 
