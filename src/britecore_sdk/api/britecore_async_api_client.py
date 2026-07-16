@@ -360,9 +360,11 @@ class AsyncBritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.async_batch_quotes import (
-            acreate_full_quotes_batch as _acreate_full_quotes_batch,
-        )
+        from importlib import import_module
+
+        _acreate_full_quotes_batch = import_module(
+            "britecore_sdk.api.workflows.async_batch_quotes"
+        ).acreate_full_quotes_batch
 
         return await _acreate_full_quotes_batch(
             quotes_json,
@@ -396,9 +398,11 @@ class AsyncBritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.async_batch_contacts import (
-            acreate_contacts_batch as _acreate_contacts_batch,
-        )
+        from importlib import import_module
+
+        _acreate_contacts_batch = import_module(
+            "britecore_sdk.api.workflows.async_batch_contacts"
+        ).acreate_contacts_batch
 
         return await _acreate_contacts_batch(
             contacts_json,
@@ -432,9 +436,11 @@ class AsyncBritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.async_batch_policies import (
-            acreate_policies_batch as _acreate_policies_batch,
-        )
+        from importlib import import_module
+
+        _acreate_policies_batch = import_module(
+            "britecore_sdk.api.workflows.async_batch_policies"
+        ).acreate_policies_batch
 
         return await _acreate_policies_batch(
             policies_json,
@@ -468,9 +474,11 @@ class AsyncBritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.async_batch_policies import (
-            acreate_risks_batch as _acreate_risks_batch,
-        )
+        from importlib import import_module
+
+        _acreate_risks_batch = import_module(
+            "britecore_sdk.api.workflows.async_batch_policies"
+        ).acreate_risks_batch
 
         return await _acreate_risks_batch(
             risks_json,

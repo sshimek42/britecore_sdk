@@ -1079,9 +1079,11 @@ class BritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.batch_quotes import (
-            create_full_quotes_batch as _create_full_quotes_batch,
-        )
+        from importlib import import_module
+
+        _create_full_quotes_batch = import_module(
+            "britecore_sdk.api.workflows.batch_quotes"
+        ).create_full_quotes_batch
 
         return _create_full_quotes_batch(
             quotes_json,
@@ -1115,9 +1117,11 @@ class BritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.batch_contacts import (
-            create_contacts_batch as _create_contacts_batch,
-        )
+        from importlib import import_module
+
+        _create_contacts_batch = import_module(
+            "britecore_sdk.api.workflows.batch_contacts"
+        ).create_contacts_batch
 
         return _create_contacts_batch(
             contacts_json,
@@ -1151,9 +1155,11 @@ class BritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.batch_policies import (
-            create_policies_batch as _create_policies_batch,
-        )
+        from importlib import import_module
+
+        _create_policies_batch = import_module(
+            "britecore_sdk.api.workflows.batch_policies"
+        ).create_policies_batch
 
         return _create_policies_batch(
             policies_json,
@@ -1187,9 +1193,11 @@ class BritecoreAPIClient:
         Returns:
             dict with ``total``, ``succeeded``, ``failed``, and ``results`` keys.
         """
-        from britecore_sdk.api.workflows.batch_policies import (
-            create_risks_batch as _create_risks_batch,
-        )
+        from importlib import import_module
+
+        _create_risks_batch = import_module(
+            "britecore_sdk.api.workflows.batch_policies"
+        ).create_risks_batch
 
         return _create_risks_batch(
             risks_json,
