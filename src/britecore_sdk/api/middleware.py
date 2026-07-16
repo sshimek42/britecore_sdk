@@ -68,10 +68,10 @@ extensibility for logging, tracing, retry logic, header injection, and more.
             return ctx
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Optional
 import time
 from abc import ABC, abstractmethod
+from dataclasses import dataclass, field
+from typing import Any
 
 
 @dataclass
@@ -81,8 +81,8 @@ class RequestContext:
     method: str  # "GET", "POST", "PUT", "DELETE"
     path: str  # "/api/v2/quotes/get_quote"
     headers: dict[str, Any] = field(default_factory=dict)
-    body: Optional[dict[str, Any]] = None
-    timeout: Optional[float] = None
+    body: dict[str, Any] | None = None
+    timeout: float | None = None
     timestamp: float = field(default_factory=time.time)
 
     # Middleware can attach arbitrary context
@@ -97,14 +97,14 @@ class ResponseContext:
     path: str
     method: str
     headers: dict[str, Any] = field(default_factory=dict)
-    body: Optional[Any] = None
+    body: Any | None = None
     timestamp: float = field(default_factory=time.time)
-    request_context: Optional[RequestContext] = None
+    request_context: RequestContext | None = None
 
     @property
     def elapsed_ms(self) -> float:
         """Elapsed time since request in milliseconds."""
-        if self.request_context and hasattr(self.request_context, 'timestamp'):
+        if self.request_context and hasattr(self.request_context, "timestamp"):
             return (self.timestamp - self.request_context.timestamp) * 1000
         return 0
 
@@ -180,11 +180,13 @@ class NoOpMiddleware(Middleware):
 # BUILT-IN MIDDLEWARE
 # ============================================================================
 
+
 class RequestIdMiddleware(Middleware):
     """Adds X-Request-ID header to all requests."""
 
     def on_request(self, ctx: RequestContext) -> RequestContext:
         import secrets
+
         request_id = secrets.token_hex(6)  # 12 character hex string
         ctx.headers["X-Request-ID"] = request_id
         ctx.extra["request_id"] = request_id
@@ -203,8 +205,9 @@ class RequestIdMiddleware(Middleware):
 class LoggingMiddleware(Middleware):
     """Logs all requests and responses."""
 
-    def __init__(self, logger: Optional[Any] = None):
+    def __init__(self, logger: Any | None = None):
         from britecore_sdk import logger as default_logger
+
         self.logger = logger or default_logger
 
     def on_request(self, ctx: RequestContext) -> RequestContext:
@@ -267,4 +270,3 @@ __all__ = [
     "HeaderInjectionMiddleware",
     "TimeoutMiddleware",
 ]
-

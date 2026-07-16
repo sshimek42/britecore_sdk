@@ -16,6 +16,7 @@ v2.0.0 introduces **breaking changes** focused on moving away from implicit glob
 **Goal:** Move away from module-global implicit client state; make explicit client instances the default API.
 
 #### Current State (v1.x)
+
 ```python
 # Implicit global client - hard to test, unclear dependencies
 from britecore_sdk.api.api_calls import retrieve_quote
@@ -29,6 +30,7 @@ with use_api_client(client):
 ```
 
 #### v2.0.0 Target
+
 ```python
 # Explicit client is now primary pattern
 from britecore_sdk import BritecoreAPIClient
@@ -63,6 +65,7 @@ with BritecoreAPIClient("site").init_client() as client:
 **Goal:** Reduce `Any` returns; provide typed response models (or typed envelopes) for sync + async parity.
 
 #### Current State (v1.x)
+
 ```python
 # Returns `Any` - no IDE autocomplete, runtime surprises
 result = retrieve_quote(quote_number="Q123")
@@ -73,6 +76,7 @@ result = await aretrieve_quote(quote_number="Q123")  # Same Any return
 ```
 
 #### v2.0.0 Target
+
 ```python
 # Typed response models with autocomplete
 from britecore_sdk.api.responses import QuoteResponse
@@ -86,6 +90,7 @@ quote: QuoteResponse = await quotes.aretrieve_quote(quote_number="Q123", client=
 ```
 
 #### Response Model Structure
+
 ```python
 # britecore_sdk/api/responses/__init__.py
 from dataclasses import dataclass
@@ -111,7 +116,7 @@ class QuoteResponse:
     term_days: int
     effective_date: str
     # ... other fields
-    
+
     @classmethod
     def from_api(cls, data: dict) -> "QuoteResponse":
         """Parse API response dict into typed model."""
@@ -145,6 +150,7 @@ class QuoteResponse:
 **Goal:** Standardize exceptions with `status_code`, `error_code`, `request_id`, and raw payload attached.
 
 #### Current State (v1.x)
+
 ```python
 # Error details scattered across exception message
 try:
@@ -155,6 +161,7 @@ except AuthenticationError as e:
 ```
 
 #### v2.0.0 Target
+
 ```python
 # Rich exception context
 from britecore_sdk.exceptions import NotFoundError, ValidationError
@@ -167,7 +174,7 @@ except NotFoundError as e:
     print(e.request_id)       # "abc123def456"
     print(e.detail)           # "Quote INVALID does not exist"
     print(e.raw_payload)      # Full server response dict
-    
+
 except ValidationError as e:
     print(e.status_code)      # 400
     print(e.error_code)       # "invalid_field"
@@ -175,6 +182,7 @@ except ValidationError as e:
 ```
 
 #### Exception Hierarchy (v2.0.0)
+
 ```python
 class BritecoreError(Exception):
     """Base exception - now with structured metadata."""
@@ -183,7 +191,7 @@ class BritecoreError(Exception):
     request_id: Optional[str]
     detail: str
     raw_payload: dict
-    
+
     def __init__(
         self,
         detail: str,
@@ -233,6 +241,7 @@ class ValidationError(BritecoreError):
 **Goal:** Introduce pluggable transport/middleware hooks for retry, logging, tracing, custom headers.
 
 #### Current State (v1.x)
+
 ```python
 # Limited customization - stuck with built-in retry/rate limit logic
 client = BritecoreAPIClient("site").init_client()
@@ -240,6 +249,7 @@ client = BritecoreAPIClient("site").init_client()
 ```
 
 #### v2.0.0 Target
+
 ```python
 # Rich middleware/hook system
 from britecore_sdk.transport import Middleware, RequestContext, ResponseContext
@@ -249,12 +259,12 @@ class TracingMiddleware(Middleware):
         """Before request is sent."""
         ctx.headers["X-Trace-ID"] = self.tracer.start_span()
         return ctx
-    
+
     def on_response(self, ctx: ResponseContext) -> ResponseContext:
         """After response received."""
         self.tracer.end_span(status=ctx.status_code)
         return ctx
-    
+
     def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
         """On request error."""
         self.tracer.record_error(error)
@@ -303,6 +313,7 @@ client.add_middleware(LoggingMiddleware(logger=my_logger))
 **Goal:** Add iterator helpers for list endpoints instead of manual page plumbing.
 
 #### Current State (v1.x)
+
 ```python
 # Manual pagination - error-prone
 page = 1
@@ -316,6 +327,7 @@ while True:
 ```
 
 #### v2.0.0 Target
+
 ```python
 # Iterator-based pagination - Pythonic
 from britecore_sdk.api.api_calls.v2 import quotes
@@ -333,6 +345,7 @@ async for quote in quotes.aiter_quotes(client=client):
 ```
 
 #### Iterator Implementation
+
 ```python
 from typing import Iterator, AsyncIterator
 from britecore_sdk.api.responses import QuoteResponse
@@ -395,6 +408,7 @@ async def aiter_quotes(
 **Goal:** Remove/deprecate v1-only or compatibility shims from core path; keep migration helpers in separate module.
 
 #### Current State (v1.x)
+
 ```
 src/britecore_sdk/
 ├── classes/           # Legacy compatibility layer (deprecated)
@@ -405,6 +419,7 @@ src/britecore_sdk/
 ```
 
 #### v2.0.0 Target
+
 ```
 src/britecore_sdk/
 ├── api/api_calls/
@@ -423,6 +438,7 @@ src/britecore_sdk/
 ```
 
 #### What Gets Removed
+
 ```python
 # REMOVED in v2.0.0:
 from britecore_sdk.classes.quote import Quote  # ❌ Use models instead
@@ -435,6 +451,7 @@ from britecore_sdk.api.api_calls.v2.quotes import retrieve_quote  # ✅
 ```
 
 #### Migration Helpers Module
+
 ```
 src/britecore_sdk/api/_compat/
 ├── __init__.py
@@ -542,4 +559,3 @@ For each phase:
 - [DEPRECATION.md](DEPRECATION.md) — Deprecation policy
 - [AGENTS.md](AGENTS.md) — Development workflow
 - [CONTRIBUTING.md](CONTRIBUTING.md) — Maintainer guidelines
-

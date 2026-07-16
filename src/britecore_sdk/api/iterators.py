@@ -32,14 +32,18 @@ eliminating manual page management.
     all_quotes = [q async for q in aiter_quotes(client=client)]
 """
 
-from typing import Any, AsyncIterator, Iterator, Optional
+from collections.abc import AsyncIterator, Iterator
 from logging import Logger
+from typing import Any, Unpack
 
 from britecore_sdk import logger
+from britecore_sdk.api.api_calls import (
+    RequestParameters,
+    aresolve_client,
+    resolve_client,
+)
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 from britecore_sdk.api.britecore_async_api_client import AsyncBritecoreAPIClient
-from britecore_sdk.api.api_calls import RequestParameters, resolve_client, aresolve_client
-from typing import Unpack
 
 LOGGER: Logger = logger
 
@@ -47,6 +51,7 @@ LOGGER: Logger = logger
 # ============================================================================
 # QUOTES ITERATORS
 # ============================================================================
+
 
 def iter_quotes(
     *,
@@ -84,13 +89,14 @@ def iter_quotes(
         # Import here to avoid circular dependency
         from britecore_sdk.api.api_calls.v2 import quotes
 
-        response = quotes.list_quotes(page=page, limit=limit, client=effective_client, **kwargs)
+        response = quotes.list_quotes(
+            page=page, limit=limit, client=effective_client, **kwargs
+        )
 
         if not response or not response.get("data"):
             break
 
-        for item in response["data"]:
-            yield item
+        yield from response["data"]
 
         # Check if we've reached the last page
         if len(response.get("data", [])) < limit:
@@ -140,8 +146,7 @@ async def aiter_quotes(
         if not response or not response.get("data"):
             break
 
-        for item in response["data"]:
-            yield item
+        yield from response["data"]
 
         # Check if we've reached the last page
         if len(response.get("data", [])) < limit:
@@ -153,6 +158,7 @@ async def aiter_quotes(
 # ============================================================================
 # POLICIES ITERATORS
 # ============================================================================
+
 
 def iter_policies(
     *,
@@ -167,13 +173,14 @@ def iter_policies(
     while True:
         from britecore_sdk.api.api_calls.v2 import policies
 
-        response = policies.list_policies(page=page, limit=limit, client=effective_client, **kwargs)
+        response = policies.list_policies(
+            page=page, limit=limit, client=effective_client, **kwargs
+        )
 
         if not response or not response.get("data"):
             break
 
-        for item in response["data"]:
-            yield item
+        yield from response["data"]
 
         if len(response.get("data", [])) < limit:
             break
@@ -201,8 +208,7 @@ async def aiter_policies(
         if not response or not response.get("data"):
             break
 
-        for item in response["data"]:
-            yield item
+        yield from response["data"]
 
         if len(response.get("data", [])) < limit:
             break
@@ -213,6 +219,7 @@ async def aiter_policies(
 # ============================================================================
 # CONTACTS ITERATORS
 # ============================================================================
+
 
 def iter_contacts(
     *,
@@ -227,13 +234,14 @@ def iter_contacts(
     while True:
         from britecore_sdk.api.api_calls.v2 import contacts
 
-        response = contacts.list_contacts(page=page, limit=limit, client=effective_client, **kwargs)
+        response = contacts.list_contacts(
+            page=page, limit=limit, client=effective_client, **kwargs
+        )
 
         if not response or not response.get("data"):
             break
 
-        for item in response["data"]:
-            yield item
+        yield from response["data"]
 
         if len(response.get("data", [])) < limit:
             break
@@ -278,4 +286,3 @@ __all__ = [
     "iter_contacts",
     "aiter_contacts",
 ]
-

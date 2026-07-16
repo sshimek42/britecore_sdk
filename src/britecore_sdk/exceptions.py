@@ -23,7 +23,7 @@ Example:
         print(f"Raw: {e.raw_payload}")         # {"success": false, ...}
 """
 
-from typing import Any, Optional
+from typing import Any
 
 
 class BritecoreError:
@@ -45,9 +45,9 @@ class BritecoreError:
             message: str,
             *,
             status_code: int = 500,
-            error_code: Optional[str] = None,
-            request_id: Optional[str] = None,
-            raw_payload: Optional[dict[str, Any]] = None,
+            error_code: str | None = None,
+            request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
         ) -> None:
             self.message = message
             self.detail = message  # Alias for clarity

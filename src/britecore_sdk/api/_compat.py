@@ -27,14 +27,15 @@ See PHASES2-5-FEATURES.md and PHASE1-CLIENT-LIFECYCLE.md for migration guides.
 """
 
 import warnings
-from typing import Any, Optional
 
 from britecore_sdk import logger
 
 LOGGER = logger
 
 
-def _warn_deprecated(old_pattern: str, new_pattern: str, version_removed: str = "v3.0.0"):
+def _warn_deprecated(
+    old_pattern: str, new_pattern: str, version_removed: str = "v3.0.0"
+):
     """Log deprecation warning for legacy pattern.
 
     Args:
@@ -60,17 +61,14 @@ def _warn_deprecated(old_pattern: str, new_pattern: str, version_removed: str = 
 
 V1_TO_V2_ROUTING = {
     # v1.x endpoint import paths → v2.0.0 replacement
-    "britecore_sdk.api.api_calls.v1.contacts.get_contact":
-        "britecore_sdk.api.api_calls.v2.contacts.get_contact",
-    "britecore_sdk.api.api_calls.v1.policies.retrieve_policy":
-        "britecore_sdk.api.api_calls.v2.policies.retrieve_policy",
-    "britecore_sdk.api.api_calls.v1.quotes.create_quote":
-        "britecore_sdk.api.api_calls.v2.quotes.create_full_quote",
+    "britecore_sdk.api.api_calls.v1.contacts.get_contact": "britecore_sdk.api.api_calls.v2.contacts.get_contact",
+    "britecore_sdk.api.api_calls.v1.policies.retrieve_policy": "britecore_sdk.api.api_calls.v2.policies.retrieve_policy",
+    "britecore_sdk.api.api_calls.v1.quotes.create_quote": "britecore_sdk.api.api_calls.v2.quotes.create_full_quote",
     # Add more mappings as needed
 }
 
 
-def get_v2_path(v1_path: str) -> Optional[str]:
+def get_v2_path(v1_path: str) -> str | None:
     """Get v2.0.0 import path for v1.x endpoint.
 
     Args:
@@ -89,6 +87,7 @@ def get_v2_path(v1_path: str) -> Optional[str]:
 # ============================================================================
 # LEGACY IMPORT COMPATIBILITY
 # ============================================================================
+
 
 def import_v1_class_with_warning(class_name: str, module_path: str) -> type:
     """Dynamically import v1.x class with deprecation warning.
@@ -110,6 +109,7 @@ def import_v1_class_with_warning(class_name: str, module_path: str) -> type:
 
     # Import from v2.0.0 location
     import importlib
+
     module = importlib.import_module(module_path)
     return getattr(module, class_name)
 
@@ -117,6 +117,7 @@ def import_v1_class_with_warning(class_name: str, module_path: str) -> type:
 # ============================================================================
 # IMPLICIT CLIENT HELPER (v1.x pattern)
 # ============================================================================
+
 
 def use_implicit_client_with_warning():
     """Helper for v1.x implicit client usage.
@@ -127,7 +128,7 @@ def use_implicit_client_with_warning():
     _warn_deprecated(
         "Implicit module-level client (v1.x pattern)",
         "Explicit client= parameter (v2.0.0 pattern)",
-        version_removed="v3.0.0"
+        version_removed="v3.0.0",
     )
 
 
@@ -138,4 +139,3 @@ __all__ = [
     "_warn_deprecated",
     "V1_TO_V2_ROUTING",
 ]
-

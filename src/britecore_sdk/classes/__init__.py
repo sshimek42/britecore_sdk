@@ -34,6 +34,7 @@ This module will be removed entirely in v3.0.0.
 import sys
 from typing import Any
 
+
 class _DeprecatedModuleError:
     """Raise helpful error when trying to import from removed module."""
 
@@ -47,6 +48,6 @@ class _DeprecatedModuleError:
             f"See docs/migrations/PHASES2-5-FEATURES.md for full migration guide."
         )
 
+
 # Replace this module with error raiser
 sys.modules[__name__] = _DeprecatedModuleError()  # type: ignore[assignment]
-

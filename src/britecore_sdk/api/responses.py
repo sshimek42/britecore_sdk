@@ -36,7 +36,7 @@ For complex responses, use ResponseEnvelope to access metadata:
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -57,13 +57,15 @@ class ResponseEnvelope:
 
     success: bool = True
     data: Any = None
-    message: Optional[str] = None
+    message: str | None = None
     messages: list[str] = field(default_factory=list)
     request_id: str = ""
     status_code: int = 200
 
     @classmethod
-    def from_api(cls, data: dict[str, Any], request_id: str = "", status_code: int = 200) -> "ResponseEnvelope":
+    def from_api(
+        cls, data: dict[str, Any], request_id: str = "", status_code: int = 200
+    ) -> "ResponseEnvelope":
         """Parse API response dict into ResponseEnvelope."""
         return cls(
             success=data.get("success", True),
@@ -79,6 +81,7 @@ class ResponseEnvelope:
 # QUOTE RESPONSES
 # ============================================================================
 
+
 @dataclass
 class QuoteResponse:
     """Typed response for quote operations."""
@@ -89,13 +92,13 @@ class QuoteResponse:
     premium: float
     term_days: int
     effective_date: str
-    expiration_date: Optional[str] = None
-    created_date: Optional[str] = None
-    modified_date: Optional[str] = None
-    quote_type: Optional[str] = None
-    carrier: Optional[str] = None
-    renewal_date: Optional[str] = None
-    renewal_premium: Optional[float] = None
+    expiration_date: str | None = None
+    created_date: str | None = None
+    modified_date: str | None = None
+    quote_type: str | None = None
+    carrier: str | None = None
+    renewal_date: str | None = None
+    renewal_premium: float | None = None
     raw_data: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -123,6 +126,7 @@ class QuoteResponse:
 # POLICY RESPONSES
 # ============================================================================
 
+
 @dataclass
 class PolicyResponse:
     """Typed response for policy operations."""
@@ -130,14 +134,14 @@ class PolicyResponse:
     id: str
     policy_number: str
     status: str
-    customer_id: Optional[str] = None
-    effective_date: Optional[str] = None
-    expiration_date: Optional[str] = None
-    created_date: Optional[str] = None
-    modified_date: Optional[str] = None
-    policy_type: Optional[str] = None
-    carrier: Optional[str] = None
-    premium: Optional[float] = None
+    customer_id: str | None = None
+    effective_date: str | None = None
+    expiration_date: str | None = None
+    created_date: str | None = None
+    modified_date: str | None = None
+    policy_type: str | None = None
+    carrier: str | None = None
+    premium: float | None = None
     raw_data: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -163,25 +167,26 @@ class PolicyResponse:
 # CONTACT RESPONSES
 # ============================================================================
 
+
 @dataclass
 class ContactResponse:
     """Typed response for contact operations."""
 
     id: str
     name: str
-    email: Optional[str] = None
-    phone: Optional[str] = None
-    phone_extension: Optional[str] = None
-    contact_type: Optional[str] = None
-    company: Optional[str] = None
-    title: Optional[str] = None
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state: Optional[str] = None
-    zip_code: Optional[str] = None
-    country: Optional[str] = None
-    created_date: Optional[str] = None
-    modified_date: Optional[str] = None
+    email: str | None = None
+    phone: str | None = None
+    phone_extension: str | None = None
+    contact_type: str | None = None
+    company: str | None = None
+    title: str | None = None
+    address: str | None = None
+    city: str | None = None
+    state: str | None = None
+    zip_code: str | None = None
+    country: str | None = None
+    created_date: str | None = None
+    modified_date: str | None = None
     raw_data: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -211,6 +216,7 @@ class ContactResponse:
 # LIST RESPONSES
 # ============================================================================
 
+
 @dataclass
 class ListResponse:
     """Generic list response wrapper with pagination metadata."""
@@ -234,7 +240,9 @@ class ListResponse:
             total_count=data.get("totalCount", data.get("total_count", len(items))),
             page=data.get("page", 1),
             page_size=data.get("pageSize", data.get("page_size", len(items))),
-            is_last_page=data.get("isLastPage", data.get("is_last_page", len(items) < 100)),
+            is_last_page=data.get(
+                "isLastPage", data.get("is_last_page", len(items) < 100)
+            ),
             raw_data=data,
         )
 
@@ -243,15 +251,16 @@ class ListResponse:
 # BATCH OPERATION RESPONSES
 # ============================================================================
 
+
 @dataclass
 class BatchOperationResult:
     """Result for a single item in a batch operation."""
 
     index: int
     success: bool
-    data: Optional[Any] = None
-    error: Optional[str] = None
-    error_code: Optional[str] = None
+    data: Any | None = None
+    error: str | None = None
+    error_code: str | None = None
 
 
 @dataclass
@@ -300,4 +309,3 @@ __all__ = [
     "BatchOperationResult",
     "BatchOperationResponse",
 ]
-

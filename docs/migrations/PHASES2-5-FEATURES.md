@@ -74,12 +74,14 @@ print(f"All data: {raw}")
 ### Migration Pattern
 
 **Before (v1.x):**
+
 ```python
 response = retrieve_quote(quote_number="Q123")
 premium = response.get("premium")  # No type checking
 ```
 
 **After (v2.0.0):**
+
 ```python
 quote: QuoteResponse = retrieve_quote(quote_number="Q123", client=client)
 premium = quote.premium  # Type-safe, IDE autocomplete
@@ -96,17 +98,17 @@ from dataclasses import dataclass
 @dataclass
 class EnrichedQuoteResponse(QuoteResponse):
     """Extended quote with custom business logic."""
-    
+
     is_profitable: bool = False
     profit_margin: float = 0.0
-    
+
     @classmethod
     def from_api(cls, data: dict) -> "EnrichedQuoteResponse":
         base = super().from_api(data)
         margin = 0.15  # 15% margin
         is_profitable = base.premium >= base.premium * margin
         profit_margin = margin
-        
+
         return cls(
             **{k: v for k, v in base.__dict__.items()},
             is_profitable=is_profitable,
@@ -160,7 +162,7 @@ except ValidationError as e:
     print(f"Validation failed: {e.detail}")
     for field, errors in e.validation_errors.items():
         print(f"  {field}: {errors}")
-    
+
     # Example output:
     # Validation failed: Quote validation failed
     #   premium: ["Must be positive"]
@@ -285,17 +287,17 @@ from britecore_sdk.api.middleware import Middleware, RequestContext, ResponseCon
 
 class MetricsMiddleware(Middleware):
     """Track request metrics."""
-    
+
     def __init__(self, metrics_client):
         self.metrics = metrics_client
-    
+
     def on_request(self, ctx: RequestContext) -> RequestContext:
         ctx.extra["start_time"] = time.time()
         return ctx
-    
+
     def on_response(self, ctx: ResponseContext) -> ResponseContext:
         elapsed = time.time() - ctx.request_context.extra.get("start_time", 0)
-        
+
         self.metrics.timing(
             f"http.{ctx.method.lower()}.duration_ms",
             elapsed * 1000,
@@ -305,9 +307,9 @@ class MetricsMiddleware(Middleware):
                 "status": ctx.status_code,
             }
         )
-        
+
         return ctx
-    
+
     def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
         self.metrics.increment(
             "http.errors",
@@ -327,10 +329,10 @@ from britecore_sdk.api.middleware import Middleware, RequestContext, ResponseCon
 
 class OTelMiddleware(Middleware):
     """Distributed tracing with OpenTelemetry."""
-    
+
     def __init__(self):
         self.tracer = trace.get_tracer(__name__)
-    
+
     def on_request(self, ctx: RequestContext) -> RequestContext:
         ctx.extra["span"] = self.tracer.start_as_current_span(
             f"http.{ctx.method.lower()}"
@@ -339,14 +341,14 @@ class OTelMiddleware(Middleware):
         span.set_attribute("http.method", ctx.method)
         span.set_attribute("http.url", ctx.path)
         return ctx
-    
+
     def on_response(self, ctx: ResponseContext) -> ResponseContext:
         span = ctx.request_context.extra.get("span")
         if span:
             span.set_attribute("http.status_code", ctx.status_code)
             span.end()
         return ctx
-    
+
     def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
         span = ctx.extra.get("span")
         if span:
@@ -436,6 +438,7 @@ for policy in iter_policies(
 ### Migration Pattern
 
 **Before (v1.x):**
+
 ```python
 page = 1
 all_quotes = []
@@ -448,6 +451,7 @@ while True:
 ```
 
 **After (v2.0.0):**
+
 ```python
 # Option 1: Iterator
 for quote in iter_quotes(client=client):
@@ -501,14 +505,14 @@ try:
         try:
             # Type-safe model
             quote = QuoteResponse.from_api(quote_dict)
-            
+
             # Process with known types
             if quote.premium > 1000:
                 print(f"High-value quote: {quote.quote_number}")
                 # Handle high-value quote
-            
+
             processed += 1
-            
+
         except ValidationError as e:
             logger.error(
                 f"Validation error processing quote: {e.detail}",
@@ -588,4 +592,3 @@ print(f"Errors: {len(errors)}")
 - [V2_ROADMAP.md](../V2_ROADMAP.md) — Full v2.0.0 roadmap
 - [PHASE1-CLIENT-LIFECYCLE.md](./PHASE1-CLIENT-LIFECYCLE.md) — Phase 1 details
 - [DEPRECATION.md](../DEPRECATION.md) — Deprecation policy
-

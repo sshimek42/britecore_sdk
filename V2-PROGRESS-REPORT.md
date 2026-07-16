@@ -25,6 +25,7 @@ The `release/v2.0.0` branch now contains **5 commits** implementing **Phases 1-6
 **Impact:** Eliminates implicit module-global state, enables multi-tenancy, improves testability
 
 **Pattern:**
+
 ```python
 # v2.0.0 Recommended
 with BritecoreAPIClient("site").init_client() as client:
@@ -49,6 +50,7 @@ with BritecoreAPIClient("site").init_client() as client:
 **Impact:** Type-safe API responses, IDE autocomplete, reduced runtime errors
 
 **Pattern:**
+
 ```python
 quote: QuoteResponse = quotes.retrieve_quote(..., client=client)
 print(f"Premium: {quote.premium}")  # Type-safe + autocomplete
@@ -73,6 +75,7 @@ print(f"Premium: {quote.premium}")  # Type-safe + autocomplete
 **Impact:** Better error handling, debugging, and monitoring
 
 **Pattern:**
+
 ```python
 try:
     retrieve_quote(...)
@@ -103,6 +106,7 @@ except NotFoundError as e:
 **Impact:** Extensibility for logging, tracing, retry, custom headers, metrics
 
 **Pattern:**
+
 ```python
 client.add_middleware(LoggingMiddleware())
 client.add_middleware(RequestIdMiddleware())
@@ -126,6 +130,7 @@ client.add_middleware(RequestIdMiddleware())
 **Impact:** Pythonic pagination, reduces boilerplate, enables efficient processing
 
 **Pattern:**
+
 ```python
 for quote in iter_quotes(client=client, limit=100):
     process_quote(quote)  # Auto-pagination
@@ -181,6 +186,7 @@ all_quotes = list(iter_quotes(client=client))  # Collect all
 ## Testing & Validation
 
 ✅ **All modules compiled successfully**
+
 ```
 src/britecore_sdk/exceptions.py        ✓
 src/britecore_sdk/api/responses.py     ✓
@@ -191,6 +197,7 @@ src/britecore_sdk/api/api_calls/v2/quotes.py ✓
 ```
 
 ✅ **All imports verified**
+
 ```
 from britecore_sdk.api.responses import QuoteResponse          ✓
 from britecore_sdk.api.middleware import LoggingMiddleware    ✓
@@ -222,6 +229,7 @@ from britecore_sdk.api.api_calls import resolve_client        ✓
 ## Next Steps
 
 ### To Push to Remote
+
 ```bash
 git push origin release/v2.0.0
 ```
@@ -303,7 +311,6 @@ git push origin release/v2.0.0
 
 ---
 
-**Created by:** GitHub Copilot  
-**Date:** July 16, 2026  
+**Created by:** GitHub Copilot
+**Date:** July 16, 2026
 **Status:** ✅ Phases 1-5 Complete | Ready for Phase 6 & PR Review
-

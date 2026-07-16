@@ -94,8 +94,10 @@ def create_full_quote(
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
-    request_result: BaseHTTPResponse | HTTPResponse | None = effective_client.do_request(
-        path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
+    request_result: BaseHTTPResponse | HTTPResponse | None = (
+        effective_client.do_request(
+            path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
+        )
     )
 
     json_info: Any = effective_client.process_result(
@@ -164,8 +166,10 @@ def get_quote(
 
     LOGGER.debug("Getting quote")
 
-    request_result: BaseHTTPResponse | HTTPResponse | None = effective_client.do_request(
-        path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
+    request_result: BaseHTTPResponse | HTTPResponse | None = (
+        effective_client.do_request(
+            path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
+        )
     )
 
     return effective_client.process_result(

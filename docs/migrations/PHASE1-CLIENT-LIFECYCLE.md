@@ -30,6 +30,7 @@
 ### Pattern 1: Simple One-Site Script
 
 #### Before (v1.x)
+
 ```python
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import quotes, policies
@@ -46,6 +47,7 @@ print(f"Policy: {policy['status']}")
 ```
 
 #### After (v2.0.0)
+
 ```python
 from britecore_sdk import BritecoreAPIClient
 from britecore_sdk.api.api_calls.v2 import quotes, policies
@@ -74,7 +76,7 @@ from britecore_sdk.api.api_calls.v2 import quotes, policies
 with BritecoreAPIClient("production").init_client() as client:
     quote = quotes.retrieve_quote(quote_number="Q123", client=client)
     policy = policies.retrieve_policy(policy_number="P456", client=client)
-    
+
     print(f"Quote: {quote['premium']}")
     print(f"Policy: {policy['status']}")
 # Cleanup happens automatically on context exit
@@ -85,6 +87,7 @@ with BritecoreAPIClient("production").init_client() as client:
 ### Pattern 2: Multi-Site or Multi-Environment
 
 #### Before (v1.x)
+
 ```python
 from britecore_sdk.api.api_calls import (
     init_api_client,
@@ -112,6 +115,7 @@ with use_api_client(client_staging):
 ```
 
 #### After (v2.0.0)
+
 ```python
 from britecore_sdk import BritecoreAPIClient
 from britecore_sdk.api.api_calls.v2 import quotes
@@ -131,7 +135,7 @@ client_staging.close()
 # Or use context managers for safety
 with BritecoreAPIClient("production").init_client() as client_prod, \
      BritecoreAPIClient("staging").init_client() as client_staging:
-    
+
     quote_prod = quotes.retrieve_quote(quote_number="Q123", client=client_prod)
     quote_staging = quotes.retrieve_quote(quote_number="Q123", client=client_staging)
 ```
@@ -141,6 +145,7 @@ with BritecoreAPIClient("production").init_client() as client_prod, \
 ### Pattern 3: Testing & Mocking
 
 #### Before (v1.x)
+
 ```python
 from unittest.mock import patch, MagicMock
 from britecore_sdk.api.api_calls import init_api_client, reset_api_client
@@ -148,19 +153,20 @@ from britecore_sdk.api.api_calls.v2 import quotes
 
 def test_quote_retrieval():
     init_api_client(target_site="test")
-    
+
     # Messy: need to mock the module-level api_client
     with patch("britecore_sdk.api.api_calls.v2.quotes.API_CLIENT") as mock_client:
         mock_client.do_request.return_value = MagicMock()
         mock_client.process_result.return_value = {"id": "Q123", "premium": 100}
-        
+
         result = quotes.retrieve_quote(quote_number="Q123")
         assert result["premium"] == 100
-    
+
     reset_api_client()
 ```
 
 #### After (v2.0.0)
+
 ```python
 from unittest.mock import MagicMock
 from britecore_sdk import BritecoreAPIClient
@@ -171,11 +177,11 @@ def test_quote_retrieval():
     mock_client = MagicMock(spec=BritecoreAPIClient)
     mock_client.do_request.return_value = MagicMock()
     mock_client.process_result.return_value = {"id": "Q123", "premium": 100}
-    
+
     # Pass mock client explicitly - no patching needed
     result = quotes.retrieve_quote(quote_number="Q123", client=mock_client)
     assert result["premium"] == 100
-    
+
     # Verify calls
     mock_client.do_request.assert_called_once()
     mock_client.process_result.assert_called_once()
@@ -186,6 +192,7 @@ def test_quote_retrieval():
 ### Pattern 4: Async Workflows
 
 #### Before (v1.x)
+
 ```python
 import asyncio
 from britecore_sdk.api.api_calls import init_async_api_client
@@ -193,7 +200,7 @@ from britecore_sdk.api.api_calls.v2 import async_quotes
 
 async def fetch_quotes():
     init_async_api_client(target_site="production")
-    
+
     # Implicit global async client
     quotes = await asyncio.gather(
         async_quotes.aretrieve_quote(quote_number="Q1"),
@@ -205,6 +212,7 @@ asyncio.run(fetch_quotes())
 ```
 
 #### After (v2.0.0)
+
 ```python
 import asyncio
 from britecore_sdk import AsyncBritecoreAPIClient
@@ -212,7 +220,7 @@ from britecore_sdk.api.api_calls.v2 import async_quotes
 
 async def fetch_quotes():
     client = AsyncBritecoreAPIClient("production").init_client()
-    
+
     try:
         # Explicit client passed to async wrappers
         quotes = await asyncio.gather(
@@ -243,6 +251,7 @@ async def fetch_quotes():
 ### Pattern 5: Class-Based Workflows
 
 #### Before (v1.x)
+
 ```python
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import quotes
@@ -251,13 +260,14 @@ class QuoteManager:
     def __init__(self, site: str):
         self.site = site
         init_api_client(target_site=site)
-    
+
     def get_quote(self, quote_id: str):
         # Relies on module-level client being initialized
         return quotes.retrieve_quote(quote_number=quote_id)
 ```
 
 #### After (v2.0.0)
+
 ```python
 from britecore_sdk import BritecoreAPIClient
 from britecore_sdk.api.api_calls.v2 import quotes
@@ -266,11 +276,11 @@ class QuoteManager:
     def __init__(self, site: str):
         self.site = site
         self.client = BritecoreAPIClient(site).init_client()
-    
+
     def get_quote(self, quote_id: str):
         # Explicit client stored as instance variable
         return quotes.retrieve_quote(quote_number=quote_id, client=self.client)
-    
+
     def close(self):
         self.client.close()
 
@@ -286,13 +296,13 @@ class QuoteManager:
     def __init__(self, site: str):
         self.site = site
         self.client = BritecoreAPIClient(site).init_client()
-    
+
     def __enter__(self):
         return self
-    
+
     def __exit__(self, *args):
         self.client.close()
-    
+
     def get_quote(self, quote_id: str):
         return quotes.retrieve_quote(quote_number=quote_id, client=self.client)
 
@@ -447,4 +457,3 @@ with BritecoreAPIClient("site").init_client() as client:
 - [V2_ROADMAP.md](V2_ROADMAP.md) — Full v2.0.0 architecture roadmap
 - [DEPRECATION.md](DEPRECATION.md) — Deprecation policy
 - [AGENTS.md](AGENTS.md) — Development workflow
-
