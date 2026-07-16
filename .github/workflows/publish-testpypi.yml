@@ -73,13 +73,15 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import os
           import tomllib
 
           with open("pyproject.toml", "rb") as f:
               data = tomllib.load(f)
 
           project = data["project"]
-          with open("$GITHUB_OUTPUT", "a", encoding="utf-8") as out:
+          github_output = os.environ["GITHUB_OUTPUT"]
+          with open(github_output, "a", encoding="utf-8") as out:
               out.write(f"name={project['name']}\n")
               out.write(f"version={project['version']}\n")
           PY
@@ -88,8 +90,19 @@ jobs:
         shell: bash
         run: |
           python -m pip install --upgrade pip
+          PACKAGE_NAME="${{ steps.package.outputs.name }}"
+          PACKAGE_VERSION="${{ steps.package.outputs.version }}"
+
+          if [ -z "$PACKAGE_NAME" ] || [ -z "$PACKAGE_VERSION" ]; then
+            echo "Package metadata outputs were empty. name='$PACKAGE_NAME' version='$PACKAGE_VERSION'"
+            exit 1
+          fi
+
+          REQUIREMENT="${PACKAGE_NAME}==${PACKAGE_VERSION}"
+          echo "Attempting to install $REQUIREMENT from TestPyPI"
+
           for attempt in 1 2 3 4 5; do
-            python -m pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple "${{ steps.package.outputs.name }}==${{ steps.package.outputs.version }}" && break
+            python -m pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple "$REQUIREMENT" && break
             if [ "$attempt" -eq 5 ]; then
               echo "Package did not become available on TestPyPI in time."
               exit 1
