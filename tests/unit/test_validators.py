@@ -67,6 +67,36 @@ class TestNameValidator:
 
         assert result == "III"
 
+    @pytest.mark.unit
+    def test_normalize_suffix_repeating_char_over_two(self):
+        """normalize_suffix uppercases when a char appears more than twice (e.g. 'iiii')."""
+        result = NameValidator.normalize_suffix("iiii")
+        assert result == "IIII"
+
+    @pytest.mark.unit
+    def test_normalize_suffix_plain_passthrough(self):
+        """normalize_suffix returns the original suffix when no char repeats more than twice."""
+        result = NameValidator.normalize_suffix("Jr")
+        assert result == "Jr"
+
+    @pytest.mark.unit
+    def test_get_business_name_regex_raises_when_missing(self):
+        """_get_business_name_regex raises ValueError when regex is not a Pattern."""
+        from unittest.mock import patch
+
+        from britecore_sdk.validators import name_validator
+
+        with patch.object(
+            name_validator,
+            "_get_regexes",
+            return_value={},  # no reg_business_name key
+        ):
+            # Clear lru_cache so the patched _get_regexes is used
+            name_validator._get_business_name_regex.cache_clear()
+            with pytest.raises(ValueError, match="Missing or invalid"):
+                name_validator._get_business_name_regex()
+            name_validator._get_business_name_regex.cache_clear()
+
 
 class TestEmailValidator:
     """Tests for EmailValidator."""
@@ -158,6 +188,38 @@ class TestPhoneValidator:
         result = validator.process()
 
         assert result is not None
+
+    # --- validate_phone classmethod ---
+
+    @pytest.mark.unit
+    def test_validate_phone_classmethod_valid(self):
+        """validate_phone returns True for a well-formed 10-digit number."""
+        assert PhoneValidator.validate_phone("(555) 123-4567") is True
+
+    @pytest.mark.unit
+    def test_validate_phone_classmethod_invalid_format(self):
+        """validate_phone returns False when normalize_phone returns None."""
+        assert PhoneValidator.validate_phone("123") is False
+
+    @pytest.mark.unit
+    def test_validate_phone_classmethod_zero_skipped(self):
+        """validate_phone returns False for '0' (invalid sentinel value)."""
+        assert PhoneValidator.validate_phone("0") is False
+
+    @pytest.mark.unit
+    def test_validate_phone_classmethod_dash_skipped(self):
+        """validate_phone returns False for '-' (invalid sentinel value)."""
+        assert PhoneValidator.validate_phone("-") is False
+
+    @pytest.mark.unit
+    def test_is_invalid_phone_zero(self):
+        """_is_invalid_phone returns True for the string '0'."""
+        assert PhoneValidator._is_invalid_phone("0") is True
+
+    @pytest.mark.unit
+    def test_is_invalid_phone_dash(self):
+        """_is_invalid_phone returns True for the string '-'."""
+        assert PhoneValidator._is_invalid_phone("-") is True
 
 
 class TestAddressValidator:
@@ -439,3 +501,24 @@ class TestAddressValidator:
         )
 
         assert fix_suffix_capitalization(suffix) == expected
+
+    # --- normalize_address_line coverage ---
+
+    @pytest.mark.unit
+    def test_normalize_address_line_tax_parcel_id_returned_as_is(self):
+        """normalize_address_line skips processing for tax-parcel-ID addresses."""
+        result = AddressValidator.normalize_address_line("T:12345 Parcel Road")
+        # title() is applied first, so T:1 is preserved; value returned unchanged after that
+        assert result.startswith("T:")
+
+    @pytest.mark.unit
+    def test_normalize_address_line_removes_repeated_punctuation(self):
+        """normalize_address_line calls _remove_repeated_punctuation on normal addresses."""
+        result = AddressValidator.normalize_address_line("123  Main  St")
+        # Multiple spaces collapsed; result should not have double spaces
+        assert "  " not in result
+
+    @pytest.mark.unit
+    def test_normalize_address_line_empty_returns_empty(self):
+        """normalize_address_line returns '' for blank input."""
+        assert AddressValidator.normalize_address_line("   ") == ""
