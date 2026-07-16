@@ -16,6 +16,7 @@ from britecore_sdk.api.api_calls import (
     BritecoreAPIClient,
     RequestParameters,
     api_client,
+    resolve_client,
     web_timeout_long,
 )
 
@@ -25,7 +26,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def create_full_quote(
-    quote_json: dict[str, Any], **kwargs: Unpack[RequestParameters]
+    quote_json: dict[str, Any],
+    *,
+    client: BritecoreAPIClient | None = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> tuple[dict[str, Any] | None, str | None]:
     """Create a quote from the supplied quote payload.
 
@@ -36,8 +40,44 @@ def create_full_quote(
     ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
     headers, or retry settings.
 
+    **v2.0.0 Explicit Client Pattern:**
+
+    In v2.0.0, the explicit ``client`` parameter is now the recommended approach:
+
+    .. code-block:: python
+
+        from britecore_sdk import BritecoreAPIClient
+        from britecore_sdk.api.api_calls.v2 import quotes
+
+        client = BritecoreAPIClient("site").init_client()
+        quote_data, quote_id = quotes.create_full_quote(
+            quote_json={"...": "..."},
+            client=client,
+        )
+
+    **v1.x Implicit Client Pattern (still supported but deprecated):**
+
+    .. code-block:: python
+
+        from britecore_sdk.api.api_calls import init_api_client
+        from britecore_sdk.api.api_calls.v2 import quotes
+
+        init_api_client(target_site="site")
+        quote_data, quote_id = quotes.create_full_quote(quote_json={"...": "..."})
+
+    Args:
+        quote_json: The quote payload to create.
+        client: Optional explicit client instance. If omitted, uses the module-level client.
+        **kwargs: RequestParameters overrides (timeout, headers, retry, etc.)
+
+    Returns:
+        tuple: ``(quote_data, quote_id)`` where quote_id is extracted from the payload,
+            or ``(None, None)`` if the response could not be processed.
+
     Raises:
         BritecoreError.MissingParameter: If quote_json is missing or empty.
+        BritecoreError.ConfigurationError: If no explicit client is provided and the
+            module-level client has not been initialized.
     """
     # Validate required parameters
     if not quote_json or not isinstance(quote_json, dict):
@@ -45,17 +85,20 @@ def create_full_quote(
             "quote_json is required and must be a dict"
         )
 
+    # Resolve the effective client (explicit or module-level)
+    effective_client: BritecoreAPIClient = resolve_client(client)
+
     # Quote creation is a long-running write; apply the long timeout unless the
     # caller has already provided an explicit request_timeout override.
     provided_timeout: Timeout | None = kwargs.get("request_timeout")
     if not provided_timeout:
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = effective_client.do_request(
         path="/api/v2/quotes/create_full_quote", json=quote_json, **kwargs
     )
 
-    json_info: Any = API_CLIENT.process_result(
+    json_info: Any = effective_client.process_result(
         request_result, endpoint="/api/v2/quotes/create_full_quote"
     )
 
@@ -65,7 +108,12 @@ def create_full_quote(
     return json_info, json_info["id"]
 
 
-def get_quote(quote_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
+def get_quote(
+    quote_id: str,
+    *,
+    client: BritecoreAPIClient | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
     """Retrieve a quote by quote identifier.
 
     This wrapper sends ``quote_id`` to ``/api/v2/quotes/get_quote`` and returns the
@@ -73,21 +121,54 @@ def get_quote(quote_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
     headers, or retry settings.
 
+    **v2.0.0 Explicit Client Pattern:**
+
+    .. code-block:: python
+
+        from britecore_sdk import BritecoreAPIClient
+        from britecore_sdk.api.api_calls.v2 import quotes
+
+        client = BritecoreAPIClient("site").init_client()
+        quote = quotes.get_quote(quote_id="Q123", client=client)
+
+    **v1.x Implicit Client Pattern (still supported but deprecated):**
+
+    .. code-block:: python
+
+        from britecore_sdk.api.api_calls import init_api_client
+        from britecore_sdk.api.api_calls.v2 import quotes
+
+        init_api_client(target_site="site")
+        quote = quotes.get_quote(quote_id="Q123")
+
+    Args:
+        quote_id: The quote ID to retrieve.
+        client: Optional explicit client instance. If omitted, uses the module-level client.
+        **kwargs: RequestParameters overrides (timeout, headers, retry, etc.)
+
+    Returns:
+        dict: The normalized quote response.
+
     Raises:
         BritecoreError.MissingParameter: If quote_id is missing.
+        BritecoreError.ConfigurationError: If no explicit client is provided and the
+            module-level client has not been initialized.
     """
     # Validate required parameters
     if not quote_id or not quote_id.strip():
         raise BritecoreError.MissingParameter("quote id is required")
     quote_json: dict[str, str] = {"id": quote_id}
 
+    # Resolve the effective client (explicit or module-level)
+    effective_client: BritecoreAPIClient = resolve_client(client)
+
     LOGGER.debug("Getting quote")
 
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+    request_result: BaseHTTPResponse | HTTPResponse | None = effective_client.do_request(
         path="/api/v2/quotes/get_quote", json=quote_json, **kwargs
     )
 
-    return API_CLIENT.process_result(
+    return effective_client.process_result(
         request_result, endpoint="/api/v2/quotes/get_quote"
     )
 

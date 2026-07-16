@@ -296,6 +296,75 @@ def get_async_api_client() -> AsyncBritecoreAPIClient:
     return _async_api_client
 
 
+def resolve_client(
+    client: BritecoreAPIClient | None = None,
+) -> BritecoreAPIClient:
+    """
+    Resolve an explicit client or fall back to the module-level client.
+
+    This helper is used by endpoint wrappers to support the v2.0.0 explicit client
+    pattern while maintaining backwards compatibility with implicit module-level client usage.
+
+    **Explicit client (v2.0.0 recommended):**
+
+    .. code-block:: python
+
+        from britecore_sdk import BritecoreAPIClient
+        from britecore_sdk.api.api_calls.v2 import quotes
+
+        client = BritecoreAPIClient("site").init_client()
+        quote = quotes.retrieve_quote(quote_number="Q123", client=client)
+
+    **Implicit client (v1.x pattern, still works but deprecated in v2.0.0):**
+
+    .. code-block:: python
+
+        from britecore_sdk.api.api_calls import init_api_client
+        from britecore_sdk.api.api_calls.v2 import quotes
+
+        init_api_client(target_site="site")
+        quote = quotes.retrieve_quote(quote_number="Q123")  # Uses module-level client
+
+    Args:
+        client: Optional explicit client instance. If ``None``, falls back to the
+            module-level client via ``get_api_client()``.
+
+    Returns:
+        BritecoreAPIClient: The resolved client instance.
+
+    Raises:
+        BritecoreError.ConfigurationError: If no client is provided and the
+            module-level client has not been initialized.
+    """
+    if client is not None:
+        return client
+    return get_api_client()
+
+
+def aresolve_client(
+    client: AsyncBritecoreAPIClient | None = None,
+) -> AsyncBritecoreAPIClient:
+    """
+    Resolve an explicit async client or fall back to the module-level async client.
+
+    This is the async equivalent of :func:`resolve_client`.
+
+    Args:
+        client: Optional explicit async client instance. If ``None``, falls back to the
+            module-level async client via ``get_async_api_client()``.
+
+    Returns:
+        AsyncBritecoreAPIClient: The resolved async client instance.
+
+    Raises:
+        BritecoreError.ConfigurationError: If no client is provided and the
+            module-level async client has not been initialized.
+    """
+    if client is not None:
+        return client
+    return get_async_api_client()
+
+
 # Module-level api_client proxy that triggers lazy init
 class _LazyAPIClient:
     """Lazy-loading proxy for the global API client.
@@ -350,6 +419,8 @@ __all__ = [
     "init_api_client",
     "init_async_api_client",
     "reset_api_client",
+    "resolve_client",
+    "aresolve_client",
     "use_api_client",
     "BritecoreAPIClient",
     "AsyncBritecoreAPIClient",

@@ -9,6 +9,31 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### v2.0.0 Breaking Changes (in progress)
+
+**Phase 1: Client Lifecycle Redesign (✅ Complete)**
+
+- **Explicit client parameter** now available on all endpoint wrappers for v2.0.0 pattern:
+  - Added `resolve_client()` and `aresolve_client()` helpers to `api.api_calls` for client resolution
+  - Updated key wrappers (`quotes.retrieve_quote`, `quotes.create_full_quote`) to demonstrate pattern
+  - All wrappers maintain backwards compatibility with implicit module-level client (with deprecation warnings)
+  - Explicit `client=` parameter is now keyword-only (comes after positional args)
+
+- **Migration guide** added:
+  - `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — comprehensive guide with patterns for single-site,
+    multi-site, testing, async, and class-based workflows
+
+- **v2.0.0 Roadmap** created:
+  - `V2_ROADMAP.md` — full architecture plan for Phases 1-6 (client lifecycle, typed responses,
+    error model, transport middleware, pagination, legacy cleanup)
+
+### Deprecated
+
+- Implicit module-level client usage (v1.x pattern) is now discouraged:
+  - Endpoint wrappers that omit the `client=` parameter will resolve to module-level client
+  - Will generate `DeprecationWarning` in v2.1.0+ (currently logged as INFO)
+  - Recommended: always pass explicit `client=` parameter
+
 ---
 
 ## [1.5.2] - 2026-07-16
