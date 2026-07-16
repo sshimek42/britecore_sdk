@@ -70,17 +70,17 @@ Starting from `1.0.0` the library follows **semantic versioning**:
 
 ## Dependency Version Policy
 
-Runtime dependencies are pinned with `~=` (compatible-release) constraints:
+Runtime dependencies are pinned with bounded ranges in `pyproject.toml`:
 
 ```toml
 
-urllib3~=2.6          # HTTP transport
-dynaconf~=3.2         # Configuration management
+urllib3>=2.7.0,<3.0.0       # HTTP transport
+dynaconf>=3.2.13,<3.4.0     # Configuration management
 
 ```
 
-This means patch-level updates are picked up automatically; minor upgrades
-require an explicit update to `pyproject.toml`.
+This keeps dependency upgrades explicit and predictable while allowing vetted
+updates inside the configured bounds.
 
 ---
 

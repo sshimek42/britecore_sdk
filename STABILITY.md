@@ -131,7 +131,7 @@ Example:
 [project]
 dependencies = [
     "urllib3~=2.6.3",    # Allow 2.6.x, not 2.7.x
-    "dynaconf~=3.2.13",  # Allow 3.2.x, not 3.3.x
+    "dynaconf>=3.2.13,<3.4.0",  # Allow 3.2.x and 3.3.x
 ]
 
 ```
