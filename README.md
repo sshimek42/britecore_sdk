@@ -8,7 +8,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg?token=REDACTED_CODECOV_TOKEN)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
-**Status:** Stable (v1.4.0) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v1.5.1) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 
@@ -454,6 +454,25 @@ ruff check src/
 black --check src/
 mypy src/britecore_sdk/api/britecore_api_client.py
 ```
+
+### Release Publishing (GitHub Actions)
+
+- TestPyPI dry-run workflow: `.github/workflows/publish-testpypi.yml` (manual trigger)
+- Production PyPI workflow: `.github/workflows/publish.yml` (release published trigger)
+
+Both workflows use OIDC trusted publishing and include build + publish + install smoke tests.
+
+1. Create GitHub environments: `testpypi` and `pypi`.
+2. In TestPyPI, add a Trusted Publisher entry for:
+   - Repository: `sshimek42/britecore_sdk`
+   - Workflow: `.github/workflows/publish-testpypi.yml`
+   - Environment: `testpypi`
+3. In PyPI, add a Trusted Publisher entry for:
+   - Repository: `sshimek42/britecore_sdk`
+   - Workflow: `.github/workflows/publish.yml`
+   - Environment: `pypi`
+4. Run `Publish to TestPyPI` from the Actions tab before cutting a production release.
+5. Create a GitHub Release to trigger production publish.
 
 ### Contributing
 
