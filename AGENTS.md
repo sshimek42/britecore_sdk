@@ -26,7 +26,7 @@ For a compact version, see `AGENTS.quickstart.md`.
 - Follow `src/britecore_sdk/api/api_calls/v2/quotes.py`: build request dict, call `API_CLIENT.do_request(path=..., json=..., **kwargs)`, then return `API_CLIENT.process_result(...)`.
 - Use `RequestParameters` (`TypedDict` in `britecore_api_client.py`) with `**kwargs: Unpack[RequestParameters]` for timeout/retry/header overrides.
 - For mutually exclusive identifiers, reuse `API_CLIENT.multiple_parameter_verification(...)` (example: `retrieve_policy` in `v2/policies.py`).
-- Keep endpoints under `api/api_calls/v2` for active SDK development; supported v1 wrappers remain where no v2 equivalent exists.
+- Keep endpoints under `api/api_calls/v2` for active SDK development; v1 wrappers remain supported (not legacy) where no v2 equivalent exists in the reference API.
 
 ## Docstring source policy
 
@@ -99,6 +99,6 @@ logging.basicConfig(level=logging.INFO)  # Global config
 - `do_request(...)` accepts `dry_run=True` (part of `RequestParameters`) — logs request details without sending. Document this in any debugging section.
 - Flat exception aliases are exported from `britecore_sdk.exceptions` and the top-level package (`NotFoundError`, `AuthenticationError`, etc.). Prefer these in new example code; the nested `BritecoreError.X` form still works.
 - Every outbound request carries an `X-SDK-Request-ID` header (short hex correlation ID). The same ID appears in `[req_id] → METHOD /path` debug log lines.
-- `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; some v1 wrappers with no v2 equivalent may parse raw payloads directly.
+- `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; some supported v1 wrappers with no v2 equivalent may parse raw payloads directly.
 - Keep public exports updated via `__all__` in package `__init__.py` files when adding new top-level functionality.
 - CLI entry points (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are registered in `pyproject.toml [project.scripts]`; re-run `pip install -e .` after adding new ones.
