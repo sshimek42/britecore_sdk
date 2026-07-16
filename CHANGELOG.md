@@ -9,7 +9,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### v2.0.0 Breaking Changes (in progress)
+### v2.0.0 Breaking Changes (✅ COMPLETE - 6/6 Phases)
 
 **Phase 1: Client Lifecycle Redesign (✅ Complete)**
 
@@ -70,16 +70,36 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Pythonic async/await support
 - Works seamlessly with typed response models
 
+**Phase 6: Legacy Cleanup (✅ Complete)**
+
+- Enhanced `britecore_sdk.classes.__init__.py` with comprehensive deprecation guidance
+- New `britecore_sdk.api._compat` module for migration helpers:
+  - `get_v2_path()` — Get v2.0.0 path for v1.x endpoints
+  - `V1_TO_V2_ROUTING` — v1→v2 endpoint mapping dictionary
+  - `import_v1_class_with_warning()` — Load legacy classes with deprecation warnings
+  - `use_implicit_client_with_warning()` — Guide implicit client users
+- Comprehensive v2.0.0 migration guide: `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md`
+  - 5+ real-world migration examples (quotes, policies, pagination, error handling, testing, multi-site)
+  - Migration checklist with 6 steps
+  - Common issues and solutions
+  - Deprecation timeline
+- All deprecated patterns clearly guide users to v2.0.0 equivalents
+
 ### Deprecated
 
 - Implicit module-level client usage (v1.x pattern) — Use explicit `client=` parameter
 - Manual pagination loop pattern — Use `iter_*()` iterators instead
 - Raw dict returns — Use typed response models for better type safety
+- v1.x endpoint versions (v1 APIs still work, use v2 for all new code)
+- `britecore_sdk.classes` module — Import from `models` and `validators` instead
 
 ### Documentation
 
 - `V2_ROADMAP.md` — Complete 6-phase roadmap with acceptance criteria
 - `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — Phase 1 migration guide
+- `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
+- `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md` — **Phase 6: Complete end-to-end migration guide with 5+ real-world examples**
+- `V2-PROGRESS-REPORT.md` — v2.0.0 completion status and metrics
 - `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
 - Module docstrings updated with examples for all new features
 
