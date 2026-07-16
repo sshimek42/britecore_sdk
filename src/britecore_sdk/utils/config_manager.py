@@ -269,7 +269,7 @@ class ConfigManager:
         """Get a specific setting value.
 
         Args:
-            section: Section name (e.g., 'default', 'wausau').
+            section: Section name (e.g., 'default', 'production').
             key: Setting key.
 
         Returns:
@@ -285,7 +285,7 @@ class ConfigManager:
         """Add or update a non-secret setting.
 
         Args:
-            section: Section name (e.g., 'default', 'wausau').
+            section: Section name (e.g., 'default', 'production').
             key: Setting key name.
             value: Setting value (must be serializable to TOML).
 

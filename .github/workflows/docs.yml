@@ -35,3 +35,11 @@ jobs:
         with:
           name: docs-dummy-build
           path: docs/_build/dummy
+
+      - name: Trigger Read the Docs build
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && secrets.READTHEDOCS_BUILD_HOOK_URL != ''
+        env:
+          READTHEDOCS_BUILD_HOOK_URL: ${{ secrets.READTHEDOCS_BUILD_HOOK_URL }}
+        run: |
+          curl --fail --silent --show-error -X POST "$READTHEDOCS_BUILD_HOOK_URL"
+

@@ -11,6 +11,17 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.5.2] - 2026-07-16
+
+- Public-readiness cleanup:
+  - Removed tenant-specific docstring examples in `utils/config_manager.py`
+    and replaced them with neutral environment naming.
+  - Added `.readthedocs.yml` for Read the Docs project builds.
+  - Updated docs workflow to optionally trigger Read the Docs via
+    `READTHEDOCS_BUILD_HOOK_URL` secret on `main`/`master` pushes.
+
+---
+
 ## [1.5.1] - 2026-07-10
 
 - **mypy / DeepSource Python analyzer findings** (6 files, 12 errors):
