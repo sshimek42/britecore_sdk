@@ -6,7 +6,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg?token=REDACTED_CODECOV_TOKEN)](https://codecov.io/gh/sshimek42/britecore_sdk)
+[![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
 **Status:** Stable (v1.5.2) | **License:** Apache-2.0 | **Python:** 3.11+
 
