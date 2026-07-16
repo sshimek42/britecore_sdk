@@ -42,4 +42,3 @@ jobs:
           READTHEDOCS_BUILD_HOOK_URL: ${{ secrets.READTHEDOCS_BUILD_HOOK_URL }}
         run: |
           curl --fail --silent --show-error -X POST "$READTHEDOCS_BUILD_HOOK_URL"
-
