@@ -6,10 +6,9 @@ Endpoint wrappers for individual calls live in
 """
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-from typing import Any, TypedDict, Unpack
+from typing import Any, TypedDict
 
 from britecore_sdk import BritecoreError
-from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.policies import create_policy, create_risk
 
 
@@ -37,7 +36,7 @@ def create_policies_batch(
     policies_json: list[dict[str, Any]],
     max_workers: int = 3,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create many policies concurrently and return per-item outcomes.
 
@@ -128,7 +127,7 @@ def create_risks_batch(
     risks_json: list[dict[str, Any]],
     max_workers: int = 3,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create many risks concurrently and return per-item outcomes.
 

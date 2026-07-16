@@ -1055,8 +1055,8 @@ class BritecoreAPIClient:
     # Workflow: batch helpers
     # ------------------------------------------------------------------
 
+    @staticmethod
     def create_full_quotes_batch(
-        self,
         quotes_json: list[Any],
         max_workers: int = 5,
         fail_fast: bool = False,
@@ -1090,8 +1090,8 @@ class BritecoreAPIClient:
             **kwargs,
         )
 
+    @staticmethod
     def create_contacts_batch(
-        self,
         contacts_json: list[Any],
         max_workers: int = 5,
         fail_fast: bool = False,
@@ -1126,8 +1126,8 @@ class BritecoreAPIClient:
             **kwargs,
         )
 
+    @staticmethod
     def create_policies_batch(
-        self,
         policies_json: list[Any],
         max_workers: int = 3,
         fail_fast: bool = False,
@@ -1162,8 +1162,8 @@ class BritecoreAPIClient:
             **kwargs,
         )
 
+    @staticmethod
     def create_risks_batch(
-        self,
         risks_json: list[Any],
         max_workers: int = 3,
         fail_fast: bool = False,

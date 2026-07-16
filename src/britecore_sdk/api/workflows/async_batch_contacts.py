@@ -6,10 +6,9 @@ Endpoint wrappers for individual contact calls live in
 """
 
 import asyncio
-from typing import Any, Unpack
+from typing import Any
 
 from britecore_sdk import BritecoreError
-from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
 from britecore_sdk.api.workflows.batch_contacts import BatchContactCreateResult
 
@@ -18,7 +17,7 @@ async def acreate_contacts_batch(
     contacts_json: list[dict[str, Any]],
     max_concurrent: int = 5,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create many contacts concurrently and return per-item outcomes.
 

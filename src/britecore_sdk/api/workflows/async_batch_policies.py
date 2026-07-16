@@ -6,10 +6,9 @@ creation. Endpoint wrappers for individual calls live in
 """
 
 import asyncio
-from typing import Any, Unpack
+from typing import Any
 
 from britecore_sdk import BritecoreError
-from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.async_policies import acreate_policy, acreate_risk
 from britecore_sdk.api.workflows.batch_policies import (
     BatchPolicyCreateResult,
@@ -21,7 +20,7 @@ async def acreate_policies_batch(
     policies_json: list[dict[str, Any]],
     max_concurrent: int = 3,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create many policies concurrently and return per-item outcomes.
 
@@ -126,7 +125,7 @@ async def acreate_risks_batch(
     risks_json: list[dict[str, Any]],
     max_concurrent: int = 3,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create many risks concurrently and return per-item outcomes.
 

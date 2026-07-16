@@ -40,10 +40,9 @@ See ``docs/STAGED_WORKFLOWS.md`` for tuning guidance and integration notes.
 
 import asyncio
 from logging import Logger
-from typing import Any, Unpack
+from typing import Any
 
 from britecore_sdk import BritecoreError, logger
-from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
 from britecore_sdk.api.api_calls.v2.async_policies import acreate_policy, acreate_risk
 from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quote
@@ -120,7 +119,7 @@ async def acreate_entities_staged_batch(
     policy_max_concurrent: int = 3,
     risk_max_concurrent: int = 3,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create contacts, quotes, policies, and risks in a staged async batch workflow.
 

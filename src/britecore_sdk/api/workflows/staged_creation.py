@@ -45,10 +45,9 @@ See ``docs/STAGED_WORKFLOWS.md`` for tuning guidance and integration notes.
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from logging import Logger
-from typing import Any, TypedDict, Unpack
+from typing import Any, TypedDict
 
 from britecore_sdk import BritecoreError, logger
-from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.contacts import new_contact
 from britecore_sdk.api.api_calls.v2.policies import create_policy, create_risk
 from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
@@ -182,7 +181,7 @@ def create_entities_staged_batch(
     policy_max_workers: int = 3,
     risk_max_workers: int = 3,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create contacts, quotes, policies, and risks in a staged batch workflow.
 

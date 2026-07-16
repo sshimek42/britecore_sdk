@@ -336,8 +336,8 @@ class AsyncBritecoreAPIClient:
     # Workflow: batch helpers
     # ------------------------------------------------------------------
 
+    @staticmethod
     async def acreate_full_quotes_batch(
-        self,
         quotes_json: list[Any],
         max_concurrent: int = 5,
         fail_fast: bool = False,
@@ -371,8 +371,8 @@ class AsyncBritecoreAPIClient:
             **kwargs,
         )
 
+    @staticmethod
     async def acreate_contacts_batch(
-        self,
         contacts_json: list[Any],
         max_concurrent: int = 5,
         fail_fast: bool = False,
@@ -407,8 +407,8 @@ class AsyncBritecoreAPIClient:
             **kwargs,
         )
 
+    @staticmethod
     async def acreate_policies_batch(
-        self,
         policies_json: list[Any],
         max_concurrent: int = 3,
         fail_fast: bool = False,
@@ -443,8 +443,8 @@ class AsyncBritecoreAPIClient:
             **kwargs,
         )
 
+    @staticmethod
     async def acreate_risks_batch(
-        self,
         risks_json: list[Any],
         max_concurrent: int = 3,
         fail_fast: bool = False,

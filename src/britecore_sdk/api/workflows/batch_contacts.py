@@ -6,10 +6,9 @@ Endpoint wrappers for individual contact calls live in
 """
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-from typing import Any, TypedDict, Unpack
+from typing import Any, TypedDict
 
 from britecore_sdk import BritecoreError
-from britecore_sdk.api.api_calls import RequestParameters
 from britecore_sdk.api.api_calls.v2.contacts import new_contact
 
 
@@ -27,7 +26,7 @@ def create_contacts_batch(
     contacts_json: list[dict[str, Any]],
     max_workers: int = 5,
     fail_fast: bool = False,
-    **kwargs: Unpack[RequestParameters],
+    **kwargs: Any,
 ) -> dict[str, Any]:
     """Create many contacts concurrently and return per-item outcomes.
 
