@@ -74,8 +74,10 @@ Runtime dependencies are pinned with bounded ranges in `pyproject.toml`:
 
 ```toml
 
-urllib3>=2.7.0,<3.0.0       # HTTP transport
-dynaconf>=3.2.13,<3.4.0     # Configuration management
+dynaconf>=3.2.13,<3.4.0         # Configuration management
+typing_extensions>=4.15.0,<5.0.0 # Compatibility typing helpers
+urllib3>=2.7.0,<3.0.0           # HTTP transport
+toml>=0.10.2,<0.11.0            # TOML config parsing
 
 ```
 

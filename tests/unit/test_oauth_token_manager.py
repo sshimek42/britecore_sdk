@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from unittest.mock import patch
+from urllib.parse import urlparse
 
 import pytest
 
@@ -19,7 +20,7 @@ class TestOAuthTokenInit:
 
         assert token.client_id == "client_id"
         assert token.client_secret == "client_secret"
-        assert "https://api.example.com" in token.url
+        assert urlparse(token.url).hostname == "api.example.com"
         assert "/api/auth/oauth2/token" in token.url
 
     @pytest.mark.unit
@@ -28,7 +29,7 @@ class TestOAuthTokenInit:
         token = OAuthToken("client_id", "client_secret", "api.example.com")
 
         assert token.client_id == "client_id"
-        assert "api.example.com" in token.url
+        assert token.url == "https://api.example.com/api/auth/oauth2/token"
 
     @pytest.mark.unit
     def test_init_defaults(self):

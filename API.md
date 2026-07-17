@@ -270,6 +270,28 @@ Available top-level aliases: `AuthenticationError`, `ConfigurationError`,
 `ValidationError`. The full set (including `NoDataReturned`, `NoTokenReturned`,
 `BritecoreKeyError`, etc.) is available from `britecore_sdk.exceptions`.
 
+### Exception diagnostic fields
+
+All SDK exceptions derived from `BritecoreError.Base` include two optional
+diagnostic fields:
+
+- `request_id` (`str | None`) - Correlation ID that matches the `X-SDK-Request-ID`
+  header for the associated request.
+- `sanitized_body` (`Any | None`) - Redacted request payload context for debugging
+  without exposing secret values.
+
+```python
+from britecore_sdk import ValidationError
+from britecore_sdk.api.api_calls.v2 import policies
+
+try:
+    policies.retrieve_policy(policy_number="INVALID")
+except ValidationError as exc:
+    print(f"Validation error: {exc}")
+    print(f"Correlation ID: {exc.request_id}")
+    print(f"Redacted request payload: {exc.sanitized_body}")
+```
+
 ---
 
 ## Debug / Dry-Run Mode (v1.1+)

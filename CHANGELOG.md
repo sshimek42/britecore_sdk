@@ -85,6 +85,20 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   - Deprecation timeline
 - All deprecated patterns clearly guide users to v2.0.0 equivalents
 
+---
+
+## [1.5.4] - 2026-07-17
+
+### Changed
+
+- Fixed `.github/workflows/docs.yml` validation by moving the Read the Docs hook secret to job-level `env`.
+- Tightened packaging dependency metadata:
+  - `typing_extensions>=4.15.0,<5.0.0`
+  - `toml>=0.10.2,<0.11.0`
+  - Kept `setuptools>=83.0.0` in `dev` extras so CI audits run against a non-vulnerable build toolchain.
+- Aligned docs packaging requirements with `pyproject.toml`:
+  - `docs/requirements.txt` now matches the `docs` extra Sphinx constraint.
+
 ### Deprecated
 
 - Implicit module-level client usage (v1.x pattern) — Use explicit `client=` parameter
@@ -102,6 +116,18 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - `V2-PROGRESS-REPORT.md` — v2.0.0 beta readiness status and metrics
 - `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
 - Module docstrings updated with examples for all new features
+
+
+## [1.5.3] - 2026-07-17
+
+### Changed
+
+- Packaging metadata now marks the project as stable in `pyproject.toml`:
+  - `Development Status :: 4 - Beta` -> `Development Status :: 5 - Production/Stable`
+- Updated docs to reflect current exception diagnostics and security behavior:
+  - `API.md` now documents exception `request_id` and `sanitized_body` fields.
+  - `docs/OBSERVABILITY.md` now includes exception-based request correlation examples.
+  - `SECURITY.md` now clarifies redacted exception request context via `sanitized_body`.
 
 ---
 

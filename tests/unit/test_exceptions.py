@@ -106,6 +106,170 @@ class TestBritecoreExceptions:
             raise BritecoreError.NotFoundError("not found")
 
 
+class TestRequestContextOnExceptions:
+    """Tests for request_id and sanitized_body fields on SDK exceptions."""
+
+    # ------------------------------------------------------------------
+    # BritecoreError.Base
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_base_has_request_id_field(self):
+        """`Base` stores request_id when provided."""
+        exc = BritecoreError.Base("msg", request_id="abc123")
+        assert exc.request_id == "abc123"
+
+    @pytest.mark.unit
+    def test_base_request_id_defaults_none(self):
+        """`Base` request_id defaults to None."""
+        exc = BritecoreError.Base("msg")
+        assert exc.request_id is None
+
+    @pytest.mark.unit
+    def test_base_has_sanitized_body_field(self):
+        """`Base` stores sanitized_body when provided."""
+        body = {"policy_number": "P123", "amount": 500}
+        exc = BritecoreError.Base("msg", sanitized_body=body)
+        assert exc.sanitized_body == body
+
+    @pytest.mark.unit
+    def test_base_sanitized_body_defaults_none(self):
+        """`Base` sanitized_body defaults to None."""
+        exc = BritecoreError.Base("msg")
+        assert exc.sanitized_body is None
+
+    # ------------------------------------------------------------------
+    # NoDataReturned (and subclasses via inheritance)
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_no_data_returned_carries_request_id(self):
+        exc = BritecoreError.NoDataReturned("error", request_id="req-001")
+        assert exc.request_id == "req-001"
+
+    @pytest.mark.unit
+    def test_no_data_returned_str_includes_request_id(self):
+        exc = BritecoreError.NoDataReturned("error", request_id="req-001")
+        assert "req-001" in str(exc)
+        assert "Request-ID" in str(exc)
+
+    @pytest.mark.unit
+    def test_no_data_returned_str_omits_request_id_when_none(self):
+        exc = BritecoreError.NoDataReturned("error")
+        assert "Request-ID" not in str(exc)
+
+    @pytest.mark.unit
+    def test_no_data_returned_carries_sanitized_body(self):
+        body = {"name": "Alice", "api_key": "***redacted***"}
+        exc = BritecoreError.NoDataReturned("error", sanitized_body=body)
+        assert exc.sanitized_body == body
+
+    @pytest.mark.unit
+    def test_validation_error_inherits_request_id(self):
+        exc = BritecoreError.ValidationError("bad input", request_id="v-99")
+        assert exc.request_id == "v-99"
+        assert "v-99" in str(exc)
+
+    @pytest.mark.unit
+    def test_not_found_error_inherits_sanitized_body(self):
+        body = {"id": "999"}
+        exc = BritecoreError.NotFoundError("not found", sanitized_body=body)
+        assert exc.sanitized_body == body
+
+    # ------------------------------------------------------------------
+    # AuthenticationError
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_authentication_error_carries_request_id(self):
+        exc = BritecoreError.AuthenticationError("unauth", request_id="auth-1")
+        assert exc.request_id == "auth-1"
+        assert "auth-1" in str(exc)
+
+    @pytest.mark.unit
+    def test_authentication_error_str_omits_request_id_when_none(self):
+        exc = BritecoreError.AuthenticationError("unauth")
+        assert "Request-ID" not in str(exc)
+
+    @pytest.mark.unit
+    def test_authentication_error_carries_sanitized_body(self):
+        exc = BritecoreError.AuthenticationError("unauth", sanitized_body={"x": 1})
+        assert exc.sanitized_body == {"x": 1}
+
+    # ------------------------------------------------------------------
+    # RateLimitError
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_rate_limit_error_carries_request_id(self):
+        exc = BritecoreError.RateLimitError("too many", request_id="rl-7")
+        assert exc.request_id == "rl-7"
+        assert "rl-7" in str(exc)
+
+    @pytest.mark.unit
+    def test_rate_limit_error_str_omits_request_id_when_none(self):
+        exc = BritecoreError.RateLimitError("too many")
+        assert "Request-ID" not in str(exc)
+
+    # ------------------------------------------------------------------
+    # ServerError
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_server_error_carries_request_id(self):
+        exc = BritecoreError.ServerError("500", request_id="srv-42")
+        assert exc.request_id == "srv-42"
+        assert "srv-42" in str(exc)
+
+    @pytest.mark.unit
+    def test_server_error_carries_sanitized_body(self):
+        exc = BritecoreError.ServerError("500", sanitized_body={"k": "v"})
+        assert exc.sanitized_body == {"k": "v"}
+
+    # ------------------------------------------------------------------
+    # RequestTimeoutError
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_request_timeout_error_carries_request_id(self):
+        exc = BritecoreError.RequestTimeoutError("timed out", request_id="to-3")
+        assert exc.request_id == "to-3"
+        assert "to-3" in str(exc)
+
+    @pytest.mark.unit
+    def test_request_timeout_error_carries_sanitized_body(self):
+        exc = BritecoreError.RequestTimeoutError("timed out", sanitized_body={"a": 1})
+        assert exc.sanitized_body == {"a": 1}
+
+    # ------------------------------------------------------------------
+    # NoTokenReturned
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_no_token_returned_carries_request_id(self):
+        exc = BritecoreError.NoTokenReturned("no token", request_id="tok-5")
+        assert exc.request_id == "tok-5"
+        assert "tok-5" in str(exc)
+
+    # ------------------------------------------------------------------
+    # Catch-all: simple Base subclasses still expose the fields
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_simple_subclass_exposes_request_id_field(self):
+        """`BritecoreKeyError` inherits request_id/sanitized_body from Base."""
+        exc = BritecoreError.BritecoreKeyError("missing key")
+        assert exc.request_id is None
+        assert exc.sanitized_body is None
+
+    @pytest.mark.unit
+    def test_sanitized_body_not_included_in_str_output(self):
+        """sanitized_body is intentionally omitted from __str__ to avoid flooding logs."""
+        body = {"field": "sensitive-looking-value"}
+        exc = BritecoreError.NoDataReturned("error", sanitized_body=body)
+        assert "sensitive-looking-value" not in str(exc)
+
+
 class TestClassesModuleRemoval:
     """Tests for removed classes compatibility module."""
 
