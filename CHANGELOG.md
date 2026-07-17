@@ -16,7 +16,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Tightened packaging dependency metadata:
   - `typing_extensions>=4.15.0,<5.0.0`
   - `toml>=0.10.2,<0.11.0`
-  - Removed redundant `setuptools` from `dev` extras.
+  - Kept `setuptools>=83.0.0` in `dev` extras so CI audits run against a non-vulnerable build toolchain.
 - Aligned docs packaging requirements with `pyproject.toml`:
   - `docs/requirements.txt` now matches the `docs` extra Sphinx constraint.
 
