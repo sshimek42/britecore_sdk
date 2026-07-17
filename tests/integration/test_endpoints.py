@@ -265,6 +265,7 @@ class TestClaimsEndpoints:
         with patch("britecore_sdk.api.api_calls.v2.claims.API_CLIENT") as mock:
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"claim_id": "clm-1", "status": "open"}
+            mock.multiple_parameter_verification.return_value = {"claim_id": "clm-1"}
 
             from britecore_sdk.api.api_calls.v2.claims import get_claim
 
@@ -274,6 +275,45 @@ class TestClaimsEndpoints:
             call_kwargs = mock.do_request.call_args.kwargs
             assert call_kwargs["json"]["claim_id"] == "clm-1"
             assert call_kwargs["path"] == "/api/v2/claims/get_claim"
+
+    @pytest.mark.integration
+    def test_get_claim_supports_claim_number(self):
+        """get_claim can target claim_number when claim_id is not provided."""
+        with patch("britecore_sdk.api.api_calls.v2.claims.API_CLIENT") as mock:
+            mock.do_request.return_value = MagicMock()
+            mock.process_result.return_value = {
+                "claim_id": "clm-1",
+                "claim_number": "CLM-1001",
+            }
+            mock.multiple_parameter_verification.return_value = {
+                "claim_number": "CLM-1001"
+            }
+
+            from britecore_sdk.api.api_calls.v2.claims import get_claim
+
+            result = get_claim(claim_number="CLM-1001")
+
+            assert result["claim_number"] == "CLM-1001"
+            assert mock.do_request.call_args.kwargs["json"] == {
+                "claim_number": "CLM-1001"
+            }
+
+    @pytest.mark.integration
+    def test_get_claim_prefers_claim_id_when_both_identifiers_passed(self):
+        """get_claim uses claim_id as the preferred identifier when both are set."""
+        with patch("britecore_sdk.api.api_calls.v2.claims.API_CLIENT") as mock:
+            mock.do_request.return_value = MagicMock()
+            mock.process_result.return_value = {"claim_id": "clm-1"}
+            mock.multiple_parameter_verification.return_value = {"claim_id": "clm-1"}
+
+            from britecore_sdk.api.api_calls.v2.claims import get_claim
+
+            get_claim(claim_id="clm-1", claim_number="CLM-1001")
+
+            mock.multiple_parameter_verification.assert_called_once_with(
+                [{"claim_id": "clm-1"}, {"claim_number": "CLM-1001"}],
+                ["claim_id", "claim_number"],
+            )
 
     @pytest.mark.integration
     def test_get_claim_not_found_raises(self):
@@ -290,6 +330,31 @@ class TestClaimsEndpoints:
 
             with pytest.raises(BritecoreError.NoDataReturned, match="Claim not found"):
                 get_claim("missing")
+
+    @pytest.mark.integration
+    def test_get_all_claim_transactions_sends_expected_arguments(self):
+        """get_all_claim_transactions forwards claim/pagination fields."""
+        with patch("britecore_sdk.api.api_calls.v2.claims.API_CLIENT") as mock:
+            mock.do_request.return_value = MagicMock()
+            mock.process_result.return_value = {"transactions": []}
+
+            from britecore_sdk.api.api_calls.v2.claims import (
+                get_all_claim_transactions,
+            )
+
+            get_all_claim_transactions(
+                claim_id="clm-1",
+                page=2,
+                page_size=250,
+            )
+
+            call_kwargs = mock.do_request.call_args.kwargs
+            assert call_kwargs["path"] == "/api/v2/claims/get_all_claim_transactions"
+            assert call_kwargs["json"] == {
+                "claim_id": "clm-1",
+                "page": 2,
+                "page_size": 250,
+            }
 
 
 # ===========================================================================

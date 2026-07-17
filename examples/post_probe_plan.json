@@ -1,0 +1,23 @@
+{
+  "default_headers": {
+    "X-Probe-Run": "sdk-contract-discovery"
+  },
+  "probes": [
+    {
+      "name": "create_quote_missing_required_fields",
+      "path": "/api/v2/quotes/create_quote",
+      "payload": {},
+      "risk": "medium",
+      "notes": "Expected to return validation error describing required quote fields."
+    },
+    {
+      "name": "bind_policy_guarded",
+      "path": "/api/v2/policies/bind_policy",
+      "payload": {},
+      "risk": "high",
+      "enabled": false,
+      "notes": "High-risk action endpoint; keep disabled unless explicitly testing in sandbox."
+    }
+  ]
+}
+

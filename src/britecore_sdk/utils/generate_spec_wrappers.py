@@ -38,12 +38,36 @@ def _api_calls_root(repo_root: Path) -> Path:
     return repo_root / "src" / "britecore_sdk" / "api" / "api_calls"
 
 
-def _spec_paths(spec_path: Path) -> dict[str, dict[str, Any]]:
+def _load_spec(spec_path: Path) -> dict[str, Any]:
     payload = json.loads(spec_path.read_text(encoding="utf-8"))
-    paths = payload.get("paths", {})
+    if not isinstance(payload, dict):
+        raise ValueError("Spec payload is not a dictionary")
+    return payload
+
+
+def _spec_paths(spec_payload: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    paths = spec_payload.get("paths", {})
     if not isinstance(paths, dict):
         raise ValueError("Spec `paths` is not a dictionary")
     return paths
+
+
+def _resolve_local_schema_ref(
+    schema: dict[str, Any],
+    components: dict[str, Any],
+) -> dict[str, Any]:
+    ref = schema.get("$ref")
+    if not isinstance(ref, str) or not ref.startswith("#/components/schemas/"):
+        return schema
+
+    schema_name = ref.rsplit("/", 1)[-1]
+    schemas = components.get("schemas", {})
+    if not isinstance(schemas, dict):
+        return schema
+    resolved = schemas.get(schema_name)
+    if not isinstance(resolved, dict):
+        return schema
+    return resolved
 
 
 def _extract_path_literals(py_file: Path) -> set[str]:
@@ -330,7 +354,9 @@ def _infer_primitive_type(schema_type: str, schema: dict[str, Any]) -> str:
 
 
 def _operation_schema(
-    spec_paths: dict[str, dict[str, Any]], endpoint: Endpoint
+    spec_paths: dict[str, dict[str, Any]],
+    components: dict[str, Any],
+    endpoint: Endpoint,
 ) -> dict[str, Any]:
     operations = spec_paths.get(endpoint.path, {})
     if not isinstance(operations, dict):
@@ -348,7 +374,9 @@ def _operation_schema(
     if not isinstance(app_json, dict):
         return {}
     schema = app_json.get("schema", {})
-    return schema if isinstance(schema, dict) else {}
+    if not isinstance(schema, dict):
+        return {}
+    return _resolve_local_schema_ref(schema, components)
 
 
 def _parse_autogen_entries(section: str) -> list[tuple[str, Endpoint]]:
@@ -366,8 +394,9 @@ def _render_autogen_function(
     fn_name: str,
     endpoint: Endpoint,
     spec_paths: dict[str, dict[str, Any]],
+    components: dict[str, Any],
 ) -> str:
-    schema = _operation_schema(spec_paths, endpoint)
+    schema = _operation_schema(spec_paths, components, endpoint)
     properties = schema.get("properties", {})
     props = properties if isinstance(properties, dict) else {}
 
@@ -417,7 +446,9 @@ def _render_autogen_function(
 
 
 def _regenerate_autogen_sections(
-    api_calls_root: Path, spec_paths: dict[str, dict[str, Any]]
+    api_calls_root: Path,
+    spec_paths: dict[str, dict[str, Any]],
+    components: dict[str, Any],
 ) -> int:
     updated = 0
     for py_file in sorted((api_calls_root / "v1").glob("*.py")) + sorted(
@@ -434,7 +465,7 @@ def _regenerate_autogen_sections(
             continue
 
         rendered = "\n\n".join(
-            _render_autogen_function(fn_name, endpoint, spec_paths)
+            _render_autogen_function(fn_name, endpoint, spec_paths, components)
             for fn_name, endpoint in entries
         )
         names = [fn_name for fn_name, _ in entries]
@@ -491,7 +522,11 @@ def _restore_common_imports(api_calls_root: Path) -> int:
 def sync_wrappers(spec_path: Path) -> dict[str, int]:
     repo_root = _repo_root()
     api_calls_root = _api_calls_root(repo_root)
-    spec_paths = _spec_paths(spec_path)
+    spec_payload = _load_spec(spec_path)
+    spec_paths = _spec_paths(spec_payload)
+    components = spec_payload.get("components", {})
+    if not isinstance(components, dict):
+        components = {}
     method_map = _collect_method_map(spec_paths)
 
     implemented = _implemented_paths(api_calls_root)
@@ -500,7 +535,7 @@ def sync_wrappers(spec_path: Path) -> dict[str, int]:
     _update_version_init(api_calls_root, "v1", new_modules["v1"])
     _update_version_init(api_calls_root, "v2", new_modules["v2"])
     imports_restored = _restore_common_imports(api_calls_root)
-    rewritten = _regenerate_autogen_sections(api_calls_root, spec_paths)
+    rewritten = _regenerate_autogen_sections(api_calls_root, spec_paths, components)
 
     post_sync_implemented = _implemented_paths(api_calls_root)
     remaining = len(set(spec_paths.keys()) - post_sync_implemented)

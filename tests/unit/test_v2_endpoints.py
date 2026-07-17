@@ -1253,6 +1253,12 @@ class TestClaimsEndpoints:
         client = _get_initialized_client(mock_settings)
         mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
 
+        # Some wrappers (e.g. get_claim) call multiple_parameter_verification on
+        # API_CLIENT before do_request.  Since API_CLIENT resolves to the shared
+        # MagicMock in tests, configure its return_value to the expected payload so
+        # the json argument to do_request is a real dict, not a nested MagicMock.
+        client.multiple_parameter_verification.return_value = expected_json
+
         with (
             patch.object(
                 client, "do_request", return_value=mock_response
