@@ -9,6 +9,15 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Tightened packaging dependency metadata:
+  - `typing_extensions>=4.15.0,<5.0.0`
+  - `toml>=0.10.2,<0.11.0`
+  - Removed redundant `setuptools` from `dev` extras.
+- Aligned docs packaging requirements with `pyproject.toml`:
+  - `docs/requirements.txt` now matches the `docs` extra Sphinx constraint.
+
 ## [1.5.3] - 2026-07-17
 
 ### Changed
