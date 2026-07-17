@@ -269,6 +269,8 @@ class TestRequestContextOnExceptions:
         exc = BritecoreError.NoDataReturned("error", sanitized_body=body)
         assert "sensitive-looking-value" not in str(exc)
 
+
+class TestClassesModuleRemoval:
     """Tests for removed classes compatibility module."""
 
     @pytest.mark.unit
