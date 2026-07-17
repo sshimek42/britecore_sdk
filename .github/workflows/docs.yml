@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      READTHEDOCS_BUILD_HOOK_URL: ${{ secrets.READTHEDOCS_BUILD_HOOK_URL }}
 
     steps:
       - uses: actions/checkout@v6
@@ -37,8 +39,6 @@ jobs:
           path: docs/_build/dummy
 
       - name: Trigger Read the Docs build
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && secrets.READTHEDOCS_BUILD_HOOK_URL != ''
-        env:
-          READTHEDOCS_BUILD_HOOK_URL: ${{ secrets.READTHEDOCS_BUILD_HOOK_URL }}
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && env.READTHEDOCS_BUILD_HOOK_URL != ''
         run: |
           curl --fail --silent --show-error -X POST "$READTHEDOCS_BUILD_HOOK_URL"
