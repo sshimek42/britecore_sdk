@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_sdk"
-version = "1.5.2"
+version = "1.5.3"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -12,7 +12,7 @@ authors = [{ name = "sshimek" }]
 requires-python = ">=3.11"
 keywords = ["britecore", "api", "sdk", "insurance", "async", "oauth2", "rest-api"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",

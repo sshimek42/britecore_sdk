@@ -117,6 +117,28 @@ if "X-SDK-Request-ID" in result.get("_headers", {}):
     logger.info(f"Policy lookup: correlation_id={correlation_id}")
 ```
 
+### Accessing Correlation IDs from Exceptions
+
+When a request fails, SDK exceptions include `request_id` so you can correlate
+errors with request logs and server-side traces.
+
+```python
+import logging
+from britecore_sdk import NotFoundError
+from britecore_sdk.api.api_calls.v2 import policies
+
+logger = logging.getLogger(__name__)
+
+try:
+    policies.retrieve_policy(policy_number="INVALID")
+except NotFoundError as exc:
+    logger.error(
+        "Policy lookup failed (request_id=%s): %s",
+        exc.request_id,
+        exc,
+    )
+```
+
 ---
 
 ## Debug Logging Levels

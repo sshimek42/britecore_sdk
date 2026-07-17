@@ -9,6 +9,17 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.5.3] - 2026-07-17
+
+### Changed
+
+- Packaging metadata now marks the project as stable in `pyproject.toml`:
+  - `Development Status :: 4 - Beta` -> `Development Status :: 5 - Production/Stable`
+- Updated docs to reflect current exception diagnostics and security behavior:
+  - `API.md` now documents exception `request_id` and `sanitized_body` fields.
+  - `docs/OBSERVABILITY.md` now includes exception-based request correlation examples.
+  - `SECURITY.md` now clarifies redacted exception request context via `sanitized_body`.
+
 ---
 
 ## [1.5.2] - 2026-07-16

@@ -135,7 +135,7 @@ This SDK includes:
 ✅ **OAuth token refresh** — Automatic expiration handling
 ✅ **API key + OAuth support** — Flexible auth modes
 ✅ **Config validation** — Required keys checked before use
-✅ **Error masking** — Sensitive data redacted from error messages
+✅ **Error masking** — Sensitive data redacted from error messages, with redacted request context available as exception `sanitized_body` for safe debugging
 ✅ **Type hints** — Helps catch misuse at type-check time
 ✅ **Dependency scanning** — DeepSource + Dependabot
 ✅ **Secrets detection** — DeepSource flags credential-like patterns
