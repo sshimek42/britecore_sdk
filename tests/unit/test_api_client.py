@@ -269,7 +269,246 @@ class TestBritecoreAPIClientProcessResult:
                 client.process_result(response)
 
 
-class TestMultipleParameterVerification:
+
+class TestRequestContextAttachedToExceptions:
+    """Integration tests: request_id and sanitized_body are propagated to raised exceptions."""
+
+    def _make_client(self):
+        """Return an initialized API-key client with a mocked HTTP pool."""
+        from types import SimpleNamespace
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        client = BritecoreAPIClient("test_site")
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.api_key = "test-key"
+        client.client_dry_run = False
+        client.debug_include_request_body = False
+        client.token_class = None
+        client.rate_limiter = None
+        client.web_timeout = 30
+        client.web_retry = 0
+        client.site_settings = SimpleNamespace(api_key="test-key")
+        return client
+
+    # ------------------------------------------------------------------
+    # do_request: timeout carries request_id + sanitized_body
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_do_request_timeout_carries_request_id(self):
+        """RequestTimeoutError raised by do_request has request_id set."""
+        from unittest.mock import MagicMock, patch
+
+        from urllib3.exceptions import TimeoutError as urlTimeoutError
+
+        from britecore_sdk.exceptions import BritecoreError
+
+        client = self._make_client()
+        mock_http = MagicMock()
+        mock_http.request.side_effect = urlTimeoutError("timed out")
+        client.http = mock_http
+
+        with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+            client.do_request("/api/v2/policies", json={"filter": "all"})
+
+        err = exc_info.value
+        assert err.request_id is not None
+        assert len(err.request_id) == 8  # hex[:8]
+
+    @pytest.mark.unit
+    def test_do_request_timeout_carries_sanitized_body(self):
+        """RequestTimeoutError has sanitized (api_key redacted) body attached."""
+        from unittest.mock import MagicMock
+
+        from urllib3.exceptions import TimeoutError as urlTimeoutError
+
+        from britecore_sdk.exceptions import BritecoreError
+
+        client = self._make_client()
+        mock_http = MagicMock()
+        mock_http.request.side_effect = urlTimeoutError("timed out")
+        client.http = mock_http
+
+        with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+            client.do_request("/api/v2/policies", json={"policy_number": "P123"})
+
+        body = exc_info.value.sanitized_body
+        assert isinstance(body, dict)
+        assert body.get("api_key") == "***redacted***"
+        assert body.get("policy_number") == "P123"
+
+    @pytest.mark.unit
+    def test_do_request_network_error_carries_request_id(self):
+        """NoDataReturned from a network error has request_id set."""
+        from unittest.mock import MagicMock
+
+        from urllib3.exceptions import ProtocolError
+
+        from britecore_sdk.exceptions import BritecoreError
+
+        client = self._make_client()
+        mock_http = MagicMock()
+        mock_http.request.side_effect = ProtocolError("connection reset")
+        client.http = mock_http
+
+        with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
+            client.do_request("/api/v2/test", json={"x": 1})
+
+        assert exc_info.value.request_id is not None
+
+    @pytest.mark.unit
+    def test_do_request_debug_mode_stores_unredacted_body(self):
+        """With debug_include_request_body=True the raw body is attached to the exception."""
+        from unittest.mock import MagicMock
+
+        from urllib3.exceptions import TimeoutError as urlTimeoutError
+
+        from britecore_sdk.exceptions import BritecoreError
+
+        client = self._make_client()
+        client.debug_include_request_body = True
+        mock_http = MagicMock()
+        mock_http.request.side_effect = urlTimeoutError("timed out")
+        client.http = mock_http
+
+        with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+            client.do_request("/api/v2/policies", json={"policy_number": "P123"})
+
+        body = exc_info.value.sanitized_body
+        # In debug mode the api_key is NOT redacted
+        assert body.get("api_key") == "test-key"
+
+    # ------------------------------------------------------------------
+    # process_result: request_id extracted from dry-run response headers
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_process_result_extracts_request_id_from_response_headers(self):
+        """process_result picks up request_id from X-SDK-Request-ID response header."""
+        import urllib3
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
+
+        response = urllib3.HTTPResponse(
+            body=b'{"success": false, "message": "API Error"}',
+            status=200,
+            reason="OK",
+            headers={"Content-Type": "application/json", "X-SDK-Request-ID": "abcd1234"},
+            preload_content=True,
+        )
+
+        client = BritecoreAPIClient.__new__(BritecoreAPIClient)
+        client.rate_limiter = None
+
+        with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
+            client.process_result(response)
+
+        assert exc_info.value.request_id == "abcd1234"
+
+    @pytest.mark.unit
+    def test_process_result_caller_supplied_request_id_takes_precedence(self):
+        """Explicit request_id kwarg overrides any header value."""
+        import urllib3
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
+
+        response = urllib3.HTTPResponse(
+            body=b'{"success": false, "message": "err"}',
+            status=200,
+            reason="OK",
+            headers={"Content-Type": "application/json", "X-SDK-Request-ID": "from-header"},
+            preload_content=True,
+        )
+
+        client = BritecoreAPIClient.__new__(BritecoreAPIClient)
+        client.rate_limiter = None
+
+        with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
+            client.process_result(response, request_id="caller-supplied")
+
+        assert exc_info.value.request_id == "caller-supplied"
+
+    @pytest.mark.unit
+    def test_process_result_none_response_carries_request_id(self):
+        """NoDataReturned from a None response carries the supplied request_id."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
+
+        client = BritecoreAPIClient.__new__(BritecoreAPIClient)
+        client.rate_limiter = None
+
+        with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
+            client.process_result(None, request_id="none-req")
+
+        assert exc_info.value.request_id == "none-req"
+
+    @pytest.mark.unit
+    def test_process_result_http_error_carries_request_id_and_body(self):
+        """HTTP 400 response passes request_id and sanitized_body to the raised exception."""
+        from unittest.mock import MagicMock
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.exceptions import BritecoreError
+
+        response = MagicMock()
+        response.status = 400
+        response.reason = "Bad Request"
+        response.headers = {}
+
+        client = BritecoreAPIClient.__new__(BritecoreAPIClient)
+        client.rate_limiter = None
+
+        with pytest.raises(BritecoreError.ValidationError) as exc_info:
+            client.process_result(
+                response,
+                request_id="req-400",
+                sanitized_body={"field": "value"},
+            )
+
+        err = exc_info.value
+        assert err.request_id == "req-400"
+        assert err.sanitized_body == {"field": "value"}
+
+    # ------------------------------------------------------------------
+    # init_client: debug_include_request_body flag
+    # ------------------------------------------------------------------
+
+    @pytest.mark.unit
+    def test_init_client_debug_flag_defaults_false(self, env_api_key, mock_settings):
+        """debug_include_request_body defaults to False after init_client."""
+        from unittest.mock import MagicMock, patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader.return_value.load_config.return_value = mock_settings
+            client = BritecoreAPIClient("test_site").init_client()
+
+        assert client.debug_include_request_body is False
+
+    @pytest.mark.unit
+    def test_init_client_debug_flag_can_be_enabled(self, env_api_key, mock_settings):
+        """debug_include_request_body=True is stored on the client."""
+        from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader.return_value.load_config.return_value = mock_settings
+            client = BritecoreAPIClient("test_site").init_client(
+                debug_include_request_body=True
+            )
+
+        assert client.debug_include_request_body is True
+
     """Tests for parameter conflict resolution."""
 
     @pytest.mark.unit
