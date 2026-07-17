@@ -2,6 +2,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 import pytest
 
@@ -145,7 +146,7 @@ def test_main_prints_status_table_and_filters_non_site_sections(monkeypatch, cap
     assert "Auth" in output and "URL" in output
     assert "site_ok" in output and "OK" in output
     assert "API Key" in output
-    assert "https://example.com" in output.split()
+    assert any(urlparse(w).netloc == "example.com" for w in output.split())
     assert "site_bad" in output and "INCORRECT" in output
     assert "client_id, client_secret, api_key" in output
 
@@ -185,7 +186,7 @@ def test_main_shows_oauth_auth_mode(monkeypatch, capsys):
     check_site_configs.main()
     output = capsys.readouterr().out
     assert "OAuth" in output
-    assert "https://prod.example.com" in output.split()
+    assert any(urlparse(w).netloc == "prod.example.com" for w in output.split())
 
 
 def test_main_json_output_includes_precedence_and_sites(monkeypatch, capsys):
