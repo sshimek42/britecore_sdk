@@ -28,7 +28,7 @@ class TestOAuthTokenInit:
         token = OAuthToken("client_id", "client_secret", "api.example.com")
 
         assert token.client_id == "client_id"
-        assert "api.example.com" in token.url
+        assert token.url == "https://api.example.com/api/auth/oauth2/token"
 
     @pytest.mark.unit
     def test_init_defaults(self):
