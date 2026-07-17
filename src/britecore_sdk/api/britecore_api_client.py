@@ -898,7 +898,9 @@ class BritecoreAPIClient:
         # body is used; otherwise the sanitized (PII-redacted) copy is used.
         _debug_body = bool(getattr(self, "debug_include_request_body", False))
         _error_body: Any = (
-            dict(request_body) if _debug_body else self._sanitize_dry_run_body(request_body)
+            dict(request_body)
+            if _debug_body
+            else self._sanitize_dry_run_body(request_body)
         )
 
         if effective_dry_run:

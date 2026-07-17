@@ -269,7 +269,6 @@ class TestBritecoreAPIClientProcessResult:
                 client.process_result(response)
 
 
-
 class TestRequestContextAttachedToExceptions:
     """Integration tests: request_id and sanitized_body are propagated to raised exceptions."""
 
@@ -299,7 +298,7 @@ class TestRequestContextAttachedToExceptions:
     @pytest.mark.unit
     def test_do_request_timeout_carries_request_id(self):
         """RequestTimeoutError raised by do_request has request_id set."""
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import MagicMock
 
         from urllib3.exceptions import TimeoutError as urlTimeoutError
 
@@ -396,7 +395,10 @@ class TestRequestContextAttachedToExceptions:
             body=b'{"success": false, "message": "API Error"}',
             status=200,
             reason="OK",
-            headers={"Content-Type": "application/json", "X-SDK-Request-ID": "abcd1234"},
+            headers={
+                "Content-Type": "application/json",
+                "X-SDK-Request-ID": "abcd1234",
+            },
             preload_content=True,
         )
 
@@ -420,7 +422,10 @@ class TestRequestContextAttachedToExceptions:
             body=b'{"success": false, "message": "err"}',
             status=200,
             reason="OK",
-            headers={"Content-Type": "application/json", "X-SDK-Request-ID": "from-header"},
+            headers={
+                "Content-Type": "application/json",
+                "X-SDK-Request-ID": "from-header",
+            },
             preload_content=True,
         )
 
@@ -480,7 +485,7 @@ class TestRequestContextAttachedToExceptions:
     @pytest.mark.unit
     def test_init_client_debug_flag_defaults_false(self, env_api_key, mock_settings):
         """debug_include_request_body defaults to False after init_client."""
-        from unittest.mock import MagicMock, patch
+        from unittest.mock import patch
 
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 

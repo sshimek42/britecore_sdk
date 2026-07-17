@@ -40,7 +40,9 @@ class BritecoreError:
             self.http_error = http_error
             self.endpoint = endpoint
             self.http_status = http_status
-            super().__init__(message, request_id=request_id, sanitized_body=sanitized_body)
+            super().__init__(
+                message, request_id=request_id, sanitized_body=sanitized_body
+            )
 
         def __str__(self) -> str:
             parts = [f"No data returned - {self.message}"]
@@ -129,7 +131,9 @@ class BritecoreError:
         ) -> None:
             self.http_status = http_status
             self.endpoint = endpoint
-            super().__init__(message, request_id=request_id, sanitized_body=sanitized_body)
+            super().__init__(
+                message, request_id=request_id, sanitized_body=sanitized_body
+            )
 
         def __str__(self) -> str:
             parts = ["BriteCore authentication failed"]
@@ -176,7 +180,9 @@ class BritecoreError:
         ) -> None:
             self.http_status = http_status
             self.endpoint = endpoint
-            super().__init__(message, request_id=request_id, sanitized_body=sanitized_body)
+            super().__init__(
+                message, request_id=request_id, sanitized_body=sanitized_body
+            )
 
         def __str__(self) -> str:
             parts = ["BriteCore server error"]
@@ -217,7 +223,9 @@ class BritecoreError:
         ) -> None:
             self.timeout_seconds = timeout_seconds
             self.endpoint = endpoint
-            super().__init__(message, request_id=request_id, sanitized_body=sanitized_body)
+            super().__init__(
+                message, request_id=request_id, sanitized_body=sanitized_body
+            )
 
         def __str__(self) -> str:
             parts = ["Request timeout"]
