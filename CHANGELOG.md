@@ -13,6 +13,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Fixed `.github/workflows/docs.yml` validation by moving the Read the Docs hook secret to job-level `env`.
 - Tightened packaging dependency metadata:
   - `typing_extensions>=4.15.0,<5.0.0`
   - `toml>=0.10.2,<0.11.0`
