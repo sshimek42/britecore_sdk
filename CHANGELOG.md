@@ -9,6 +9,8 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.5.4] - 2026-07-17
+
 ### Changed
 
 - Tightened packaging dependency metadata:
