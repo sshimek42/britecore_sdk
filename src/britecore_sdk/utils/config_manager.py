@@ -556,7 +556,9 @@ def _update_site_interactive(manager: ConfigManager) -> None:
         return
 
     print(f"\nCurrent config for '{site_name}':")
-    print(f"  Base URL: {site.get('base_url', 'N/A')}")
+    base_url = str(site.get("base_url", "")).strip()
+    # Avoid echoing raw URL values in interactive output.
+    print(f"  Base URL: {'configured' if base_url else 'N/A'}")
     auth_mode = get_auth_mode(site)
     print(f"  Auth Mode: {auth_mode}")
 

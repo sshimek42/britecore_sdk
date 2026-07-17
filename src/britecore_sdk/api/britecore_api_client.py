@@ -566,6 +566,24 @@ class BritecoreAPIClient:
         return body
 
     @staticmethod
+    def _dry_run_body_summary(body: Any) -> dict[str, Any]:
+        """Return a log-safe summary of dry-run payload shape without values."""
+        if isinstance(body, dict):
+            keys = [str(key) for key in body.keys()]
+            return {
+                "type": "dict",
+                "key_count": len(keys),
+                "keys": sorted(keys)[:20],
+            }
+        if isinstance(body, list):
+            return {"type": "list", "length": len(body)}
+        if isinstance(body, tuple):
+            return {"type": "tuple", "length": len(body)}
+        if body is None:
+            return {"type": "none"}
+        return {"type": type(body).__name__}
+
+    @staticmethod
     def _has_header(headers: dict[str, Any], header_name: str) -> bool:
         """Return ``True`` when a header exists using case-insensitive matching."""
         target = header_name.strip().lower()
@@ -909,13 +927,14 @@ class BritecoreAPIClient:
                 include_sensitive=dry_run_include_sensitive_headers,
             )
             dry_run_body = self._sanitize_dry_run_body(request_body)
+            dry_run_body_summary = self._dry_run_body_summary(dry_run_body)
             auth_skipped = auth_mode == "oauth" and not caller_supplied_authorization
             LOGGER.info(
-                "[%s] DRY-RUN %s %s  body=%s  headers=%s",
+                "[%s] DRY-RUN %s %s  body_summary=%s  headers=%s",
                 request_id,
                 method,
                 request_url,
-                dumps(dry_run_body),
+                dumps(dry_run_body_summary, sort_keys=True),
                 dry_run_headers,
             )
             dry_run_envelope = {

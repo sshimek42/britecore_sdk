@@ -499,3 +499,23 @@ class TestSettingsManagement:
         defaults = manager.get_available_defaults()
         assert isinstance(defaults, dict)
         assert len(defaults) > 0
+
+
+def test_update_site_interactive_does_not_echo_raw_base_url(
+    manager_with_oauth_site, monkeypatch, capsys
+):
+    """Interactive update flow should not print the configured base_url value."""
+    from britecore_sdk.utils.config_manager import _update_site_interactive
+
+    manager_with_oauth_site.config["prod"][
+        "base_url"
+    ] = "https://user:pass@example.com/path?token=secret-token"
+    user_inputs = iter(["prod", "5"])
+    monkeypatch.setattr("builtins.input", lambda _prompt="": next(user_inputs))
+
+    _update_site_interactive(manager_with_oauth_site)
+
+    output = capsys.readouterr().out
+    assert "Base URL: configured" in output
+    assert "user:pass" not in output
+    assert "secret-token" not in output
