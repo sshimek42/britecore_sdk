@@ -507,9 +507,8 @@ def test_update_site_interactive_does_not_echo_raw_base_url(
     """Interactive update flow should not print the configured base_url value."""
     from britecore_sdk.utils.config_manager import _update_site_interactive
 
-    manager_with_oauth_site.config["prod"][
-        "base_url"
-    ] = "https://user:pass@example.com/path?token=secret-token"
+    site_config = manager_with_oauth_site.config["prod"]
+    site_config["base_url"] = "https://user:pass@example.com/path?token=secret-token"
     user_inputs = iter(["prod", "5"])
     monkeypatch.setattr("builtins.input", lambda _prompt="": next(user_inputs))
 
