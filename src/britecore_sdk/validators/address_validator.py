@@ -290,7 +290,7 @@ class AddressValidator:
             property_name,
         )
 
-        LOGGER.debug("Created address %s", fixed_address)
+        LOGGER.debug("Address processed successfully")
         return fixed_address
 
     @classmethod
@@ -321,16 +321,11 @@ class AddressValidator:
             county = county_lookup_value
 
         if county_lookup_value.lower() != county.lower() and county != "":
-            log_string = (
-                f"County '{county}' not found in zip code '{zipcode}' "
-                f"- zip code matches '{county_lookup_value}'"
-            )
-
             if FIX_ADDRESS:
                 county = county_lookup_value
-                LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
+                LOGGER.info("County corrected - %s", ADDRESS_CHANGE)
             else:
-                LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
+                LOGGER.debug("County mismatch detected - %s", NO_ADDRESS_CHANGE)
 
         return county
 
@@ -370,16 +365,11 @@ class AddressValidator:
             city = city_lookup_value
 
         if city_lookup_value.lower() != city.lower() and city != "":
-            log_string = (
-                f"City '{city}' not found in zip code '{zipcode}' "
-                f"- zip code matches '{city_lookup_value}'"
-            )
-
             if FIX_ADDRESS:
                 city = city_lookup_value
-                LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
+                LOGGER.info("City corrected - %s", ADDRESS_CHANGE)
             else:
-                LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
+                LOGGER.debug("City mismatch detected - %s", NO_ADDRESS_CHANGE)
         return city
 
     @staticmethod
@@ -462,9 +452,9 @@ class AddressValidator:
 
             if FIX_ADDRESS:
                 state = state_lookup_value
-                LOGGER.info("%s - %s", log_string, ADDRESS_CHANGE)
+                LOGGER.info("State corrected - %s", ADDRESS_CHANGE)
             else:
-                LOGGER.debug("%s - %s", log_string, NO_ADDRESS_CHANGE)
+                LOGGER.debug("State mismatch detected - %s", NO_ADDRESS_CHANGE)
                 raise BritecoreError.InvalidAddress(log_string)
 
         return state

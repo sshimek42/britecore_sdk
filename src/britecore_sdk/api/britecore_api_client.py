@@ -139,6 +139,7 @@ class BritecoreAPIClient:
         self.enable_timers: bool | None = None
         self.site_settings: Any = None
         self.client_dry_run: bool = False
+        self.debug_include_request_body: bool = False
         self.target_site = target_site
         self.rate_limiter: RateLimiter | None = None
 
@@ -146,6 +147,7 @@ class BritecoreAPIClient:
         self,
         *,
         client_dry_run: bool = False,
+        debug_include_request_body: bool = False,
         base_url: str | None = None,
         api_key: str | None = None,
         client_id: str | None = None,
@@ -209,6 +211,10 @@ class BritecoreAPIClient:
             client_dry_run: When ``True``, requests inherit dry-run behavior unless a
                 specific call passes ``dry_run=False``. This is useful for testing SDK
                 wrapper flow and payload shaping without sending requests.
+            debug_include_request_body: When ``True``, the unredacted request body is
+                attached to raised exceptions for interactive debugging. Defaults to
+                ``False``; the sanitized (PII-redacted) body is used instead. Do not
+                enable in production environments.
             base_url: Override (or supply) the site base URL directly.  When provided,
                 the file-based :class:`LoadClientSettings` lookup is bypassed.
             api_key: Explicit API key.  Used only when ``base_url`` is also given.
@@ -271,6 +277,7 @@ class BritecoreAPIClient:
                 raise
 
         self.client_dry_run = client_dry_run
+        self.debug_include_request_body = debug_include_request_body
 
         self.enable_timers = True
         self.bad_url_error = "Invalid URL"
@@ -570,6 +577,8 @@ class BritecoreAPIClient:
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
         endpoint: str | None = None,
         client: "BritecoreAPIClient | None" = None,
+        request_id: str | None = None,
+        sanitized_body: Any | None = None,
     ) -> None:
         """Raise SDK exceptions for non-success HTTP statuses with endpoint context."""
         if response.status in {401, 403}:
@@ -585,6 +594,8 @@ class BritecoreAPIClient:
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
 
         if response.status == 429:
@@ -608,6 +619,7 @@ class BritecoreAPIClient:
                     "Retry with backoff and reduce request burst rate.",
                 ),
                 retry_after=retry_after,
+                request_id=request_id,
             )
 
         if response.status >= 500:
@@ -619,6 +631,8 @@ class BritecoreAPIClient:
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
 
         if response.status == 404:
@@ -630,6 +644,8 @@ class BritecoreAPIClient:
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
 
         if response.status == 409:
@@ -641,6 +657,8 @@ class BritecoreAPIClient:
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
 
         if response.status in {400, 422}:
@@ -652,6 +670,8 @@ class BritecoreAPIClient:
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
 
         if response.status != 200:
@@ -663,6 +683,8 @@ class BritecoreAPIClient:
                 ),
                 http_status=response.status,
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
 
     @staticmethod
@@ -673,7 +695,11 @@ class BritecoreAPIClient:
         return loads(response.data.decode("utf-8"))
 
     @classmethod
-    def _extract_success_data(cls, json_result: Any) -> Any:
+    def _extract_success_data(
+        cls,
+        json_result: Any,
+        request_id: str | None = None,
+    ) -> Any:
         """Validate API success flag and return normalized data payload."""
         result = json_result.get("success")
         message = cls._extract_error_message(
@@ -686,7 +712,8 @@ class BritecoreAPIClient:
                 cls._with_hint(
                     f"Error - {message}",
                     "Inspect API response payload and required request parameters.",
-                )
+                ),
+                request_id=request_id,
             )
 
         return json_result.get("data")
@@ -696,6 +723,8 @@ class BritecoreAPIClient:
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse | None,
         logs: bool = False,
         endpoint: str | None = None,
+        request_id: str | None = None,
+        sanitized_body: Any | None = None,
     ) -> Any:
         """
         Process HTTP response and extract data from successful API calls.
@@ -709,6 +738,12 @@ class BritecoreAPIClient:
             response: HTTPResponse object containing the API response
             logs: Boolean flag to enable debug logging of the response data
             endpoint: Optional endpoint path for error context and diagnostics
+            request_id: Optional correlation ID from the originating ``do_request``
+                call. When provided (or discoverable from the response headers), it is
+                attached to every exception raised here so callers can cross-reference
+                the request in server-side logs.
+            sanitized_body: Optional sanitized request body to attach to raised
+                exceptions for offline inspection without logging PII.
 
         Returns:
             Parsed data from the API response if successful
@@ -717,6 +752,13 @@ class BritecoreAPIClient:
             BritecoreError.NoDataReturned: When response is None, status code is not 200,
                                            or the API returns a failure status
         """
+        # Best-effort: extract request_id from response headers when not supplied
+        # (dry-run responses always echo it; real servers may too)
+        if request_id is None and response is not None:
+            hdrs = getattr(response, "headers", None)
+            if hdrs:
+                request_id = hdrs.get("X-SDK-Request-ID")
+
         if response is None:
             LOGGER.error("Error - No response")
             raise BritecoreError.NoDataReturned(
@@ -725,8 +767,16 @@ class BritecoreAPIClient:
                     "Check network reachability, base_url, and client initialization.",
                 ),
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             )
-        self._raise_for_http_status(response, endpoint=endpoint, client=self)
+        self._raise_for_http_status(
+            response,
+            endpoint=endpoint,
+            client=self,
+            request_id=request_id,
+            sanitized_body=sanitized_body,
+        )
 
         try:
             json_result: Any = self._load_json_payload(response)
@@ -738,9 +788,11 @@ class BritecoreAPIClient:
                     "Enable debug logging and verify endpoint response content-type.",
                 ),
                 endpoint=endpoint,
+                request_id=request_id,
+                sanitized_body=sanitized_body,
             ) from parse_error
 
-        data: Any = self._extract_success_data(json_result)
+        data: Any = self._extract_success_data(json_result, request_id=request_id)
         if logs:
             LOGGER.debug(data)
 
@@ -841,6 +893,14 @@ class BritecoreAPIClient:
         if self.use_api_key:
             request_body.update({"api_key": self.site_settings.api_key})
 
+        # Compute the body to attach to any exception raised during this request.
+        # When debug_include_request_body is True (dev mode only) the unredacted
+        # body is used; otherwise the sanitized (PII-redacted) copy is used.
+        _debug_body = bool(getattr(self, "debug_include_request_body", False))
+        _error_body: Any = (
+            dict(request_body) if _debug_body else self._sanitize_dry_run_body(request_body)
+        )
+
         if effective_dry_run:
             dry_run_headers = self._sanitize_dry_run_headers(
                 resolved_request_headers,
@@ -929,6 +989,8 @@ class BritecoreAPIClient:
                     raise BritecoreError.RequestTimeoutError(
                         f"Rate limiter timeout: {rate_limit_timeout}",
                         timeout_seconds=self._timeout_seconds(request_timeout),
+                        request_id=request_id,
+                        sanitized_body=_error_body,
                     ) from rate_limit_timeout
 
             request_result: urllib3.BaseHTTPResponse = http_client.request(
@@ -953,6 +1015,8 @@ class BritecoreAPIClient:
                     "Increase request_timeout or retry settings for slow endpoints.",
                 ),
                 timeout_seconds=self._timeout_seconds(request_timeout),
+                request_id=request_id,
+                sanitized_body=_error_body,
             ) from timeout_error
         except (
             ProtocolError,
@@ -966,11 +1030,19 @@ class BritecoreAPIClient:
                 _elapsed_ms,
                 request_error,
             )
-            raise BritecoreError.NoDataReturned(str(request_error)) from request_error
+            raise BritecoreError.NoDataReturned(
+                str(request_error),
+                request_id=request_id,
+                sanitized_body=_error_body,
+            ) from request_error
 
         if not request_result:
             LOGGER.error("[%s] ✗ no result object returned", request_id)
-            raise BritecoreError.NoDataReturned("Error getting request")
+            raise BritecoreError.NoDataReturned(
+                "Error getting request",
+                request_id=request_id,
+                sanitized_body=_error_body,
+            )
 
         _elapsed_ms = (time.monotonic() - _start) * 1000
         LOGGER.debug(
