@@ -17,14 +17,18 @@ from britecore_sdk.utils import probe_post_requirements as probe
 def test_load_probe_plan_validates_required_fields(tmp_path: Path) -> None:
     """Plan loader raises clear errors when required fields are missing."""
     bad_plan = tmp_path / "bad_plan.json"
-    bad_plan.write_text(json.dumps({"probes": [{"path": "/api/v2/test"}]}), encoding="utf-8")
+    bad_plan.write_text(
+        json.dumps({"probes": [{"path": "/api/v2/test"}]}), encoding="utf-8"
+    )
 
     with pytest.raises(ValueError, match="missing 'name'"):
         probe._load_probe_plan(bad_plan)
 
 
 @pytest.mark.unit
-def test_load_probe_plan_returns_typed_probes_and_default_headers(tmp_path: Path) -> None:
+def test_load_probe_plan_returns_typed_probes_and_default_headers(
+    tmp_path: Path,
+) -> None:
     """Plan loader returns ProbeDefinition objects and normalized header values."""
     plan = tmp_path / "plan.json"
     plan.write_text(
@@ -311,7 +315,9 @@ def test_load_no_arg_post_probes_from_spec_detects_only_no_arg_posts(
                                     "application/json": {
                                         "schema": {
                                             "type": "object",
-                                            "properties": {"quote_number": {"type": "string"}},
+                                            "properties": {
+                                                "quote_number": {"type": "string"}
+                                            },
                                         }
                                     }
                                 }
@@ -334,7 +340,9 @@ def test_load_no_arg_post_probes_from_spec_detects_only_no_arg_posts(
                             "requestBody": {
                                 "content": {
                                     "application/json": {
-                                        "schema": {"$ref": "#/components/schemas/EmptyPayload"}
+                                        "schema": {
+                                            "$ref": "#/components/schemas/EmptyPayload"
+                                        }
                                     }
                                 }
                             }
@@ -342,9 +350,7 @@ def test_load_no_arg_post_probes_from_spec_detects_only_no_arg_posts(
                     },
                 },
                 "components": {
-                    "schemas": {
-                        "EmptyPayload": {"type": "object", "properties": {}}
-                    }
+                    "schemas": {"EmptyPayload": {"type": "object", "properties": {}}}
                 },
             }
         ),
@@ -358,7 +364,9 @@ def test_load_no_arg_post_probes_from_spec_detects_only_no_arg_posts(
 
 
 @pytest.mark.unit
-def test_main_can_run_in_spec_no_args_mode(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_can_run_in_spec_no_args_mode(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """main() supports --use-spec-no-args and writes the resolved generated plan."""
     spec_path = tmp_path / "spec.json"
     generated_plan = tmp_path / "generated_plan.json"
@@ -431,12 +439,17 @@ def test_main_handles_no_resolved_spec_probes_gracefully(
     output_json = tmp_path / "report.json"
     output_markdown = tmp_path / "report.md"
 
-    spec_path.write_text(json.dumps({"paths": {"/api/v2/x": {"post": {"parameters": [{}]}}}}), encoding="utf-8")
+    spec_path.write_text(
+        json.dumps({"paths": {"/api/v2/x": {"post": {"parameters": [{}]}}}}),
+        encoding="utf-8",
+    )
 
     monkeypatch.setattr(
         probe,
         "init_api_client",
-        lambda **kwargs: (_ for _ in ()).throw(AssertionError("client should not initialize")),
+        lambda **kwargs: (_ for _ in ()).throw(
+            AssertionError("client should not initialize")
+        ),
     )
 
     exit_code = probe.main(
@@ -595,7 +608,9 @@ def test_main_print_selected_paths_exits_before_client_init(
     monkeypatch.setattr(
         probe,
         "init_api_client",
-        lambda **kwargs: (_ for _ in ()).throw(AssertionError("client should not initialize")),
+        lambda **kwargs: (_ for _ in ()).throw(
+            AssertionError("client should not initialize")
+        ),
     )
 
     exit_code = probe.main(
@@ -675,7 +690,9 @@ def test_main_export_selected_paths_exits_before_client_init(
     monkeypatch.setattr(
         probe,
         "init_api_client",
-        lambda **kwargs: (_ for _ in ()).throw(AssertionError("client should not initialize")),
+        lambda **kwargs: (_ for _ in ()).throw(
+            AssertionError("client should not initialize")
+        ),
     )
 
     exit_code = probe.main(
@@ -704,9 +721,7 @@ def test_load_no_arg_post_probes_ignores_malformed_request_body(tmp_path: Path) 
         json.dumps(
             {
                 "paths": {
-                    "/api/v2/utils/bad_body": {
-                        "post": {"requestBody": "invalid"}
-                    },
+                    "/api/v2/utils/bad_body": {"post": {"requestBody": "invalid"}},
                     "/api/v2/utils/ok_body": {
                         "post": {
                             "requestBody": {
@@ -730,7 +745,9 @@ def test_load_no_arg_post_probes_ignores_malformed_request_body(tmp_path: Path) 
 
 
 @pytest.mark.unit
-def test_main_transport_error_does_not_block_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_main_transport_error_does_not_block_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """transport_error (e.g. timeout) is recorded but does not cause a non-zero exit."""
     plan_path = tmp_path / "plan.json"
     plan_path.write_text(
@@ -774,5 +791,3 @@ def test_parse_args_rejects_both_preview_modes() -> None:
                 "selected.json",
             ]
         )
-
-

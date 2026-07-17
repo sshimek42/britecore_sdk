@@ -17,7 +17,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Parametrize data
 # (api_path, module_dotpath, func_name, expected_outcome, mock_strategy)
@@ -27,8 +26,7 @@ import pytest
 #   "post_helper"  - wrapper delegates to the post() helper from _common
 # ---------------------------------------------------------------------------
 
-_ENDPOINTS: list[tuple[str, str, str, str, str]] = [
-]
+_ENDPOINTS: list[tuple[str, str, str, str, str]] = []
 
 _TEST_IDS = [f"{mod.rsplit('.', 1)[-1]}.{fn}" for _, mod, fn, _, _ in _ENDPOINTS]
 
@@ -99,7 +97,9 @@ def test_probe_endpoint_routes_to_correct_path(
             "the wrapper may be broken or the mock_strategy is wrong."
         )
         call_args = mock_post.call_args
-        actual_path: str | None = call_args.args[0] if call_args.args else call_args.kwargs.get("path")
+        actual_path: str | None = (
+            call_args.args[0] if call_args.args else call_args.kwargs.get("path")
+        )
     else:
         # Wrapper calls API_CLIENT.do_request directly.
         mock_client = Mock()

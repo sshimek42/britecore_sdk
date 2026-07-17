@@ -24,7 +24,9 @@ from britecore_sdk.exceptions import BritecoreError
 LOGGER = logging.getLogger("britecore_sdk")
 
 _ALLOWED_RISKS = {"low", "medium", "high"}
-_SPEC_PATH = Path(__file__).resolve().parents[3] / "api_specs" / "current" / "britecore.json"
+_SPEC_PATH = (
+    Path(__file__).resolve().parents[3] / "api_specs" / "current" / "britecore.json"
+)
 _HIGH_RISK_HINTS = (
     "bind",
     "issue",
@@ -70,8 +72,7 @@ class ProbeResult:
 class _SupportsDoRequest(Protocol):
     """Minimal protocol for probe execution clients."""
 
-    def do_request(self, **kwargs: Any) -> Any:
-        ...
+    def do_request(self, **kwargs: Any) -> Any: ...
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -219,7 +220,9 @@ def _has_documented_parameters(
     )
 
 
-def _resolve_local_schema_ref(schema: dict[str, Any], components: dict[str, Any]) -> dict[str, Any]:
+def _resolve_local_schema_ref(
+    schema: dict[str, Any], components: dict[str, Any]
+) -> dict[str, Any]:
     """Resolve local #/components/schemas refs, returning original schema on miss."""
     ref = schema.get("$ref")
     if not isinstance(ref, str) or not ref.startswith("#/components/schemas/"):
@@ -454,7 +457,9 @@ def _export_selected_probes(
     path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
 
 
-def _load_probe_plan(plan_path: str | Path) -> tuple[list[ProbeDefinition], dict[str, str]]:
+def _load_probe_plan(
+    plan_path: str | Path,
+) -> tuple[list[ProbeDefinition], dict[str, str]]:
     """Load and validate probe plan JSON into typed probe definitions."""
     path = Path(plan_path)
     with path.open("r", encoding="utf-8") as handle:
@@ -546,8 +551,13 @@ def _extract_messages(response_payload: Any) -> list[str]:
 def _infer_required_fields(messages: list[str]) -> list[str]:
     """Infer required field names from common API validation message patterns."""
     patterns = [
-        re.compile(r"(?:field|parameter)\s+'?([a-zA-Z0-9_.-]+)'?\s+is\s+required", re.I),
-        re.compile(r"missing\s+required\s+(?:field|parameter)s?\s*:?\s*([a-zA-Z0-9_,\s.-]+)", re.I),
+        re.compile(
+            r"(?:field|parameter)\s+'?([a-zA-Z0-9_.-]+)'?\s+is\s+required", re.I
+        ),
+        re.compile(
+            r"missing\s+required\s+(?:field|parameter)s?\s*:?\s*([a-zA-Z0-9_,\s.-]+)",
+            re.I,
+        ),
         re.compile(r"'([a-zA-Z0-9_.-]+)'\s+must\s+be\s+provided", re.I),
         re.compile(r"'([a-zA-Z0-9_.-]+)'\s+cannot\s+be\s+null", re.I),
     ]
@@ -759,7 +769,9 @@ def main(argv: list[str] | None = None) -> int:
         h for h in LOGGER.handlers if not isinstance(h, logging.NullHandler)
     ]
     _root_real_handlers = [
-        h for h in logging.getLogger().handlers if not isinstance(h, logging.NullHandler)
+        h
+        for h in logging.getLogger().handlers
+        if not isinstance(h, logging.NullHandler)
     ]
     if not _real_handlers and not _root_real_handlers:
         _cli_handler = logging.StreamHandler()
@@ -777,7 +789,10 @@ def main(argv: list[str] | None = None) -> int:
         LOGGER.info("Loaded %d probe(s) from plan.", len(plan_probes))
 
     if args.use_spec_no_args:
-        LOGGER.info("Scanning spec for POST operations with no documented arguments: %s", args.spec_path)
+        LOGGER.info(
+            "Scanning spec for POST operations with no documented arguments: %s",
+            args.spec_path,
+        )
         spec_probes = _load_no_arg_post_probes_from_spec(
             spec_path=args.spec_path,
             include_path_regex=args.include_path_regex,
@@ -786,13 +801,18 @@ def main(argv: list[str] | None = None) -> int:
         LOGGER.info("Selected %d probe(s) via --use-spec-no-args.", len(spec_probes))
 
     if args.use_spec_empty_properties:
-        LOGGER.info("Scanning spec for POST operations with empty JSON schema: %s", args.spec_path)
+        LOGGER.info(
+            "Scanning spec for POST operations with empty JSON schema: %s",
+            args.spec_path,
+        )
         spec_probes = _load_empty_property_post_probes_from_spec(
             spec_path=args.spec_path,
             include_path_regex=args.include_path_regex,
         )
         probes.extend(spec_probes)
-        LOGGER.info("Selected %d probe(s) via --use-spec-empty-properties.", len(spec_probes))
+        LOGGER.info(
+            "Selected %d probe(s) via --use-spec-empty-properties.", len(spec_probes)
+        )
 
     probes = _dedupe_probes(probes)
     if args.max_probes is not None:
@@ -813,7 +833,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.export_selected_paths:
         _export_selected_probes(args.export_selected_paths, probes)
-        LOGGER.info("Wrote selected probe preview (%d): %s", len(probes), args.export_selected_paths)
+        LOGGER.info(
+            "Wrote selected probe preview (%d): %s",
+            len(probes),
+            args.export_selected_paths,
+        )
         print(f"Wrote selected probe preview: {args.export_selected_paths}")
         return 0
 
@@ -832,12 +856,16 @@ def main(argv: list[str] | None = None) -> int:
         total = len(probes)
         for idx, probe in enumerate(probes, start=1):
             if not probe.enabled:
-                LOGGER.debug("[%d/%d] Skipping disabled probe: %s", idx, total, probe.path)
+                LOGGER.debug(
+                    "[%d/%d] Skipping disabled probe: %s", idx, total, probe.path
+                )
                 continue
             if probe.risk == "high" and not args.allow_high_risk:
                 LOGGER.info(
                     "[%d/%d] SKIPPED (high-risk, --allow-high-risk not set): %s",
-                    idx, total, probe.path,
+                    idx,
+                    total,
+                    probe.path,
                 )
                 results.append(
                     ProbeResult(
@@ -847,7 +875,9 @@ def main(argv: list[str] | None = None) -> int:
                         outcome="skipped_risk",
                         status_code=None,
                         request_id=None,
-                        messages=["Probe skipped because risk=high and --allow-high-risk was not set."],
+                        messages=[
+                            "Probe skipped because risk=high and --allow-high-risk was not set."
+                        ],
                         inferred_required_fields=[],
                         notes=probe.notes,
                     )
@@ -856,7 +886,10 @@ def main(argv: list[str] | None = None) -> int:
 
             LOGGER.info(
                 "[%d/%d] Probing POST %s (risk=%s)%s",
-                idx, total, probe.path, probe.risk,
+                idx,
+                total,
+                probe.path,
+                probe.risk,
                 " [dry-run]" if args.dry_run else "",
             )
             result = _run_probe(
@@ -873,11 +906,15 @@ def main(argv: list[str] | None = None) -> int:
             )
             _outcome_log(
                 "[%d/%d] -> %s  status=%s  outcome=%s",
-                idx, total, probe.path,
+                idx,
+                total,
+                probe.path,
                 result.status_code,
-                result.outcome + (
+                result.outcome
+                + (
                     "  inferred_fields=" + str(result.inferred_required_fields)
-                    if result.inferred_required_fields else ""
+                    if result.inferred_required_fields
+                    else ""
                 ),
             )
             results.append(result)
@@ -886,8 +923,12 @@ def main(argv: list[str] | None = None) -> int:
         "total": len(results),
         "genuine_success": sum(1 for r in results if r.outcome == "genuine_success"),
         "dry_run_success": sum(1 for r in results if r.outcome == "dry_run_success"),
-        "informative_error": sum(1 for r in results if r.outcome == "informative_error"),
-        "unexpected_success": sum(1 for r in results if r.outcome == "unexpected_success"),
+        "informative_error": sum(
+            1 for r in results if r.outcome == "informative_error"
+        ),
+        "unexpected_success": sum(
+            1 for r in results if r.outcome == "unexpected_success"
+        ),
         "auth_error": sum(1 for r in results if r.outcome == "auth_error"),
         "rate_limited": sum(1 for r in results if r.outcome == "rate_limited"),
         "server_error": sum(1 for r in results if r.outcome == "server_error"),
@@ -912,7 +953,9 @@ def main(argv: list[str] | None = None) -> int:
     }
 
     output_json = Path(args.output_json)
-    output_json.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    output_json.write_text(
+        json.dumps(report, indent=2, sort_keys=True), encoding="utf-8"
+    )
     LOGGER.info("Wrote JSON report: %s", output_json)
 
     output_markdown = Path(args.output_markdown)
@@ -948,4 +991,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
