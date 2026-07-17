@@ -9,7 +9,15 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-### v2.0.0 Beta Release (✅ COMPLETE - 6/6 Phases)
+---
+
+## [2.0.0] - 2026-07-17
+
+### Fixed
+
+- `britecore_sdk.api.iterators`: replaced invalid `yield from` inside async generators with explicit `for … yield` to resolve `SyntaxError` that prevented import.
+
+### v2.0.0 Release (✅ COMPLETE - 6/6 Phases)
 
 **Phase 1: Client Lifecycle Redesign (✅ Complete)**
 
