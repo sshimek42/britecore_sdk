@@ -20,8 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import textwrap
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -100,6 +99,7 @@ def _detect_mock_strategy(module_dotpath: str, func_name: str) -> str:
     # A bare `post(` call (not `API_CLIENT.post` or `_build_payload`) means
     # the function delegates to the _common.post() helper.
     import re
+
     if re.search(r"\bpost\(", snippet):
         return "post_helper"
     return "api_client"
@@ -254,7 +254,7 @@ def _generate(report_path: Path, output_path: Path) -> None:
         report = json.load(fh)
 
     results = report.get("results", [])
-    generated_at = report.get("generated_at_utc", datetime.now(tz=timezone.utc).isoformat())
+    generated_at = report.get("generated_at_utc", datetime.now(tz=UTC).isoformat())
 
     entries: list[tuple[str, str, str, str, str]] = []
     skipped: list[str] = []
@@ -347,4 +347,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
