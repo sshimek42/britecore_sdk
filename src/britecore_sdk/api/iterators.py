@@ -146,7 +146,8 @@ async def aiter_quotes(
         if not response or not response.get("data"):
             break
 
-        yield from response["data"]
+        for item in response["data"]:
+            yield item
 
         # Check if we've reached the last page
         if len(response.get("data", [])) < limit:
@@ -208,7 +209,8 @@ async def aiter_policies(
         if not response or not response.get("data"):
             break
 
-        yield from response["data"]
+        for item in response["data"]:
+            yield item
 
         if len(response.get("data", [])) < limit:
             break
