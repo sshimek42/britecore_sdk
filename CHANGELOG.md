@@ -9,6 +9,92 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [2.0.0] - 2026-07-17
+
+### Fixed
+
+- `britecore_sdk.api.iterators`: replaced invalid `yield from` inside async generators with explicit `for … yield` to resolve `SyntaxError` that prevented import.
+
+### v2.0.0 Release (✅ COMPLETE - 6/6 Phases)
+
+**Phase 1: Client Lifecycle Redesign (✅ Complete)**
+
+- **Explicit client parameter** now available on all endpoint wrappers for v2.0.0 pattern
+- Added `resolve_client()` and `aresolve_client()` helpers
+
+**Phase 2: Typed Response Models (✅ Complete)**
+
+- New `britecore_sdk.api.responses` module with typed dataclasses:
+  - `ResponseEnvelope` — Wraps API response metadata
+  - `QuoteResponse`, `PolicyResponse`, `ContactResponse` — Domain models
+  - `ListResponse` — Generic list wrapper with pagination
+  - `BatchOperationResponse` — Batch operation results
+- All response models include `.from_api()` factory pattern
+- Replaces `Any` returns with type-safe models in endpoint wrappers
+- Full IDE autocomplete support
+- Raw API payload accessible via `.raw_data` field
+
+**Phase 3: Standardized Error Model (✅ Complete)**
+
+- All exceptions now include structured metadata:
+  - `status_code` — HTTP status code (e.g., 404, 500)
+  - `error_code` — BriteCore error code (e.g., "quote_not_found")
+  - `request_id` — Request correlation ID for debugging
+  - `detail` — Alias for human-readable message
+  - `raw_payload` — Full server response dict
+- `ValidationError` now includes `.validation_errors` dict with field-level errors
+- Enhanced exception types:
+  - `AuthenticationError` — status 401/403, code "authentication_failed"
+  - `NotFoundError` — includes all metadata
+  - `RateLimitError` — includes retry_after field
+  - `ServerError` — status 500+, code "server_error"
+  - `RequestTimeoutError` — status 408, code "request_timeout"
+- Backwards compatible — existing exception patterns still work
+
+**Phase 4: Transport Middleware System (✅ Complete)**
+
+- New `britecore_sdk.api.middleware` module:
+  - `Middleware` base class with `on_request()`, `on_response()`, `on_error()` hooks
+  - `RequestContext` and `ResponseContext` for middleware data flow
+  - Built-in middleware:
+    - `RequestIdMiddleware` — Automatic X-Request-ID header
+    - `LoggingMiddleware` — Request/response logging
+    - `HeaderInjectionMiddleware` — Custom header injection
+    - `TimeoutMiddleware` — Global timeout configuration
+- Client methods: `add_middleware()`, `remove_middleware()`
+- Middleware chain executed in registration order
+- Extensible for custom logging, tracing (OpenTelemetry), retry logic, etc.
+
+**Phase 5: Pagination Iterators (✅ Complete)**
+
+- New `britecore_sdk.api.iterators` module:
+  - `iter_quotes()`, `aiter_quotes()` — Iterate quotes with auto-pagination
+  - `iter_policies()`, `aiter_policies()` — Iterate policies
+  - `iter_contacts()`, `aiter_contacts()` — Iterate contacts
+- Automatic page management (no manual page/limit plumbing)
+- Lazy-loading: pages fetched on-demand
+- Pythonic async/await support
+- Works seamlessly with typed response models
+
+**Phase 6: Legacy Cleanup (✅ Complete)**
+
+- Enhanced `britecore_sdk.classes.__init__.py` with comprehensive deprecation guidance
+- New `britecore_sdk.api._compat` module for migration helpers:
+  - `get_v2_path()` — Get v2.0.0 path for v1.x endpoints
+  - `V1_TO_V2_ROUTING` — v1→v2 endpoint mapping dictionary
+  - `import_v1_class_with_warning()` — Load legacy classes with deprecation warnings
+  - `use_implicit_client_with_warning()` — Guide implicit client users
+- Comprehensive v2.0.0 migration guide: `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md`
+  - 5+ real-world migration examples (quotes, policies, pagination, error handling, testing, multi-site)
+  - Migration checklist with 6 steps
+  - Common issues and solutions
+  - Deprecation timeline
+- All deprecated patterns clearly guide users to v2.0.0 equivalents
+
+---
+
 ## [1.5.4] - 2026-07-17
 
 ### Changed
@@ -20,6 +106,25 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
   - Kept `setuptools>=83.0.0` in `dev` extras so CI audits run against a non-vulnerable build toolchain.
 - Aligned docs packaging requirements with `pyproject.toml`:
   - `docs/requirements.txt` now matches the `docs` extra Sphinx constraint.
+
+### Deprecated
+
+- Implicit module-level client usage (v1.x pattern) — Use explicit `client=` parameter
+- Manual pagination loop pattern — Use `iter_*()` iterators instead
+- Raw dict returns — Use typed response models for better type safety
+- v1.x endpoint versions (v1 APIs still work, use v2 for all new code)
+- `britecore_sdk.classes` module — Import from `models` and `validators` instead
+
+### Documentation
+
+- `V2_ROADMAP.md` — Complete 6-phase roadmap with acceptance criteria
+- `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — Phase 1 migration guide
+- `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
+- `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md` — **Phase 6: Complete end-to-end migration guide with 5+ real-world examples**
+- `V2-PROGRESS-REPORT.md` — v2.0.0 beta readiness status and metrics
+- `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
+- Module docstrings updated with examples for all new features
+
 
 ## [1.5.3] - 2026-07-17
 

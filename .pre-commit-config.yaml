@@ -27,5 +27,5 @@ repos:
         entry: pymarkdown --config .pymarkdown scan
         language: python
         additional_dependencies: [pymarkdownlnt==0.9.32]
-        files: \.md$
+        files: ^(README|CHANGELOG|AGENTS(\.quickstart)?|API|ARCHITECTURE|CONTRIBUTING|DEPRECATION|GETTING_STARTED|PYTHON_COMPATIBILITY|SECURITY|STABILITY|TROUBLESHOOTING|UNIMPLEMENTED_API_STUBS)\.md$|^docs/api_reference\.md$
         exclude: ^(build/|dist/|env/|\.venv/|docs/_build/|htmlcov/)

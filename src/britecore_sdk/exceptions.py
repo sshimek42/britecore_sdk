@@ -1,4 +1,28 @@
-"""BriteCore custom exceptions."""
+"""BriteCore custom exceptions.
+
+v2.0.0 Enhanced Error Model
+=============================
+
+All exceptions now include structured metadata for better error handling:
+
+- **status_code**: HTTP status code (e.g., 400, 404, 500)
+- **error_code**: BriteCore error code (e.g., "quote_not_found", "invalid_field")
+- **request_id**: Request correlation ID for debugging (e.g., "abc123def456")
+- **detail**: Human-readable error message
+- **raw_payload**: Full server response dict for debugging
+- **sanitized_body**: Redacted request body for safe debugging
+
+Example:
+
+    try:
+        retrieve_quote(quote_number="INVALID", client=client)
+    except NotFoundError as e:
+        print(f"Status: {e.status_code}")      # 404
+        print(f"Code: {e.error_code}")         # "quote_not_found"
+        print(f"Request ID: {e.request_id}")   # "abc123def456"
+        print(f"Detail: {e.detail}")           # "Quote INVALID does not exist"
+        print(f"Raw: {e.raw_payload}")         # {"success": false, ...}
+"""
 
 from typing import Any
 
@@ -7,21 +31,42 @@ class BritecoreError:
     """Namespace for custom exceptions related to BriteCore operations."""
 
     class Base(Exception):
-        """Base class for all SDK-originated exceptions."""
+        """Base class for all SDK-originated exceptions.
+
+        v2.0.0 Enhanced with structured metadata:
+        - status_code: HTTP status code
+        - error_code: BriteCore error code
+        - request_id: Request correlation ID
+        - detail: Human-readable error message
+        - raw_payload: Full server response
+        """
 
         def __init__(
             self,
             message: str,
+            *,
+            status_code: int = 500,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
         ) -> None:
             self.message = message
+            self.detail = message  # Alias for clarity
+            self.status_code = status_code
+            self.error_code = error_code
             self.request_id = request_id
+            self.raw_payload = raw_payload or {}
             self.sanitized_body = sanitized_body
             super().__init__(self.message)
 
         def __str__(self) -> str:
-            return str(self.message)
+            parts = [str(self.message)]
+            if self.request_id:
+                parts.append(f"[Request-ID: {self.request_id}]")
+            if self.error_code:
+                parts.append(f"[Error Code: {self.error_code}]")
+            return " ".join(parts)
 
     class NoDataReturned(Base):
         """Raised when BriteCore API returns no usable data."""
@@ -33,15 +78,26 @@ class BritecoreError:
             http_error: str | None = None,
             endpoint: str | None = None,
             http_status: int | None = None,
+            *,
+            status_code: int | None = None,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
         ) -> None:
             self.request = request
             self.http_error = http_error
             self.endpoint = endpoint
             self.http_status = http_status
+            # v2.0.0: Use status_code parameter, fall back to http_status
+            resolved_status = status_code or http_status or 500
             super().__init__(
-                message, request_id=request_id, sanitized_body=sanitized_body
+                message,
+                status_code=resolved_status,
+                error_code=error_code,
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
             )
 
         def __str__(self) -> str:
@@ -50,6 +106,8 @@ class BritecoreError:
                 parts.append(f"Endpoint: {self.endpoint}")
             if self.http_status:
                 parts.append(f"HTTP Status: {self.http_status}")
+            if self.error_code:
+                parts.append(f"Error Code: {self.error_code}")
             if self.request_id:
                 parts.append(f"Request-ID: {self.request_id}")
             if self.request:
@@ -67,12 +125,24 @@ class BritecoreError:
             request: str | None = None,
             http_error: str | None = None,
             http_status: int | None = None,
+            *,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
+            sanitized_body: Any | None = None,
         ) -> None:
             self.request = request
             self.http_error = http_error
             self.http_status = http_status
-            super().__init__(message, request_id=request_id)
+            resolved_status = http_status or 500
+            super().__init__(
+                message,
+                status_code=resolved_status,
+                error_code=error_code,
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
+            )
 
         def __str__(self) -> str:
             parts = [
@@ -80,6 +150,8 @@ class BritecoreError:
             ]
             if self.http_status:
                 parts.append(f"HTTP Status: {self.http_status}")
+            if self.error_code:
+                parts.append(f"Error Code: {self.error_code}")
             if self.request_id:
                 parts.append(f"Request-ID: {self.request_id}")
             if self.request:
@@ -126,13 +198,22 @@ class BritecoreError:
             message: str,
             http_status: int | None = None,
             endpoint: str | None = None,
+            *,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
         ) -> None:
             self.http_status = http_status
             self.endpoint = endpoint
+            resolved_status = http_status or 401
             super().__init__(
-                message, request_id=request_id, sanitized_body=sanitized_body
+                message,
+                status_code=resolved_status,
+                error_code=error_code or "authentication_failed",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
             )
 
         def __str__(self) -> str:
@@ -140,10 +221,12 @@ class BritecoreError:
             if self.http_status:
                 parts[0] += f" (HTTP {self.http_status})"
             parts[0] += f" - {self.message}"
-            if self.endpoint:
-                parts.append(f"Endpoint: {self.endpoint}")
+            if self.error_code:
+                parts.append(f"Error Code: {self.error_code}")
             if self.request_id:
                 parts.append(f"Request-ID: {self.request_id}")
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
             return "\n".join(parts)
 
     class RateLimitError(Base):
@@ -153,19 +236,30 @@ class BritecoreError:
             self,
             message: str,
             retry_after: int | None = None,
+            *,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
+            sanitized_body: Any | None = None,
         ) -> None:
             self.retry_after = retry_after
-            super().__init__(message, request_id=request_id)
+            super().__init__(
+                message,
+                status_code=429,
+                error_code=error_code or "rate_limit_exceeded",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
+            )
 
         def __str__(self) -> str:
             retry_info = (
                 f" Retry after {self.retry_after}s." if self.retry_after else ""
             )
-            base = f"BriteCore rate limit exceeded - {self.message}.{retry_info}"
+            msg = f"BriteCore rate limit exceeded - {self.message}.{retry_info}"
             if self.request_id:
-                base += f"\nRequest-ID: {self.request_id}"
-            return base
+                msg += f" [Request-ID: {self.request_id}]"
+            return msg
 
     class ServerError(Base):
         """Raised when the API returns a 5xx server error."""
@@ -175,13 +269,22 @@ class BritecoreError:
             message: str,
             http_status: int | None = None,
             endpoint: str | None = None,
+            *,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
         ) -> None:
             self.http_status = http_status
             self.endpoint = endpoint
+            resolved_status = http_status or 500
             super().__init__(
-                message, request_id=request_id, sanitized_body=sanitized_body
+                message,
+                status_code=resolved_status,
+                error_code=error_code or "server_error",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
             )
 
         def __str__(self) -> str:
@@ -189,14 +292,60 @@ class BritecoreError:
             if self.http_status:
                 parts[0] += f" (HTTP {self.http_status})"
             parts[0] += f" - {self.message}"
-            if self.endpoint:
-                parts.append(f"Endpoint: {self.endpoint}")
+            if self.error_code:
+                parts.append(f"Error Code: {self.error_code}")
             if self.request_id:
                 parts.append(f"Request-ID: {self.request_id}")
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
             return "\n".join(parts)
 
     class ValidationError(NoDataReturned):
-        """Raised when API validation fails (for example HTTP 400/422)."""
+        """Raised when API validation fails (for example HTTP 400/422).
+
+        v2.0.0 Enhancement: includes validation_errors dict with field-level details.
+        """
+
+        def __init__(
+            self,
+            message: str,
+            request: str | None = None,
+            http_error: str | None = None,
+            endpoint: str | None = None,
+            http_status: int | None = None,
+            *,
+            validation_errors: dict[str, Any] | None = None,
+            error_code: str | None = None,
+            request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
+            sanitized_body: Any | None = None,
+        ) -> None:
+            self.validation_errors = validation_errors or {}
+            resolved_status = http_status or 400
+            super().__init__(
+                message,
+                request=request,
+                http_error=http_error,
+                endpoint=endpoint,
+                http_status=resolved_status,
+                status_code=resolved_status,
+                error_code=error_code or "validation_error",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
+            )
+
+        def __str__(self) -> str:
+            base = super().__str__()
+            if self.validation_errors:
+                base += "\nValidation Errors:"
+                for field, errors in self.validation_errors.items():
+                    if isinstance(errors, list):
+                        for error in errors:
+                            base += f"\n  {field}: {error}"
+                    else:
+                        base += f"\n  {field}: {errors}"
+            return base
 
     class NotFoundError(NoDataReturned):
         """Raised when an API resource is not found (HTTP 404)."""
@@ -206,6 +355,24 @@ class BritecoreError:
 
     class ConfigurationError(Base):
         """Raised when the client is misconfigured (missing base_url, api_key, etc.)."""
+
+        def __init__(
+            self,
+            message: str,
+            *,
+            error_code: str | None = None,
+            request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
+            sanitized_body: Any | None = None,
+        ) -> None:
+            super().__init__(
+                message,
+                status_code=400,
+                error_code=error_code or "configuration_error",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
+            )
 
         def __str__(self) -> str:
             return f"BriteCore configuration error - {self.message}"
@@ -218,13 +385,21 @@ class BritecoreError:
             message: str,
             timeout_seconds: int | float | None = None,
             endpoint: str | None = None,
+            *,
+            error_code: str | None = None,
             request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
         ) -> None:
             self.timeout_seconds = timeout_seconds
             self.endpoint = endpoint
             super().__init__(
-                message, request_id=request_id, sanitized_body=sanitized_body
+                message,
+                status_code=408,
+                error_code=error_code or "request_timeout",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
             )
 
         def __str__(self) -> str:
@@ -232,10 +407,12 @@ class BritecoreError:
             if self.timeout_seconds:
                 parts[0] += f" ({self.timeout_seconds}s)"
             parts[0] += f" - {self.message}"
-            if self.endpoint:
-                parts.append(f"Endpoint: {self.endpoint}")
+            if self.error_code:
+                parts.append(f"Error Code: {self.error_code}")
             if self.request_id:
                 parts.append(f"Request-ID: {self.request_id}")
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
             return "\n".join(parts)
 
 
