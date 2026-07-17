@@ -1,4 +1,4 @@
-"""
+r"""
 Generate pytest regression tests from post_probe_report.json.
 
 Each probe-confirmed endpoint (genuine_success or informative_error) becomes a
@@ -8,8 +8,8 @@ correct API path.  Re-run this script after a new probe run to refresh the suite
 Usage::
 
     python generate_probe_regression_tests.py              # default paths
-    python generate_probe_regression_tests.py \\
-        --report post_probe_report.json \\
+    python generate_probe_regression_tests.py \
+        --report post_probe_report.json \
         --output tests/unit/test_probe_endpoint_regression.py
 
 The generated file is committed to source control and run as part of the normal
@@ -335,6 +335,14 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Entry point for generating pytest regression tests from probe report.
+
+    Args:
+        argv: Command-line arguments (default: sys.argv).
+
+    Returns:
+        Exit code (0 for success, 1 for failure).
+    """
     args = _parse_args(argv)
 
     if not args.report.exists():
