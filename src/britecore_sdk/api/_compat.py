@@ -51,7 +51,10 @@ def _warn_deprecated(
         stacklevel=3,
     )
     LOGGER.warning(
-        f"Deprecated v1.x pattern: {old_pattern} → {new_pattern} (removal: {version_removed})"
+        "Deprecated v1.x pattern: %s -> %s (removal: %s)",
+        old_pattern,
+        new_pattern,
+        version_removed,
     )
 
 
@@ -61,9 +64,15 @@ def _warn_deprecated(
 
 V1_TO_V2_ROUTING = {
     # v1.x endpoint import paths → v2.0.0 replacement
-    "britecore_sdk.api.api_calls.v1.contacts.get_contact": "britecore_sdk.api.api_calls.v2.contacts.get_contact",
-    "britecore_sdk.api.api_calls.v1.policies.retrieve_policy": "britecore_sdk.api.api_calls.v2.policies.retrieve_policy",
-    "britecore_sdk.api.api_calls.v1.quotes.create_quote": "britecore_sdk.api.api_calls.v2.quotes.create_full_quote",
+    "britecore_sdk.api.api_calls.v1.contacts.get_contact": (
+        "britecore_sdk.api.api_calls.v2.contacts.get_contact"
+    ),
+    "britecore_sdk.api.api_calls.v1.policies.retrieve_policy": (
+        "britecore_sdk.api.api_calls.v2.policies.retrieve_policy"
+    ),
+    "britecore_sdk.api.api_calls.v1.quotes.create_quote": (
+        "britecore_sdk.api.api_calls.v2.quotes.create_full_quote"
+    ),
     # Add more mappings as needed
 }
 

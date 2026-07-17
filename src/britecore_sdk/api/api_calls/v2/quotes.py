@@ -16,7 +16,6 @@ from britecore_sdk.api.api_calls import (
     BritecoreAPIClient,
     RequestParameters,
     api_client,
-    resolve_client,
     web_timeout_long,
 )
 
@@ -85,8 +84,8 @@ def create_full_quote(
             "quote_json is required and must be a dict"
         )
 
-    # Resolve the effective client (explicit or module-level)
-    effective_client: BritecoreAPIClient = resolve_client(client)
+    # Preserve module-level API_CLIENT behavior while allowing explicit override.
+    effective_client: BritecoreAPIClient = client or API_CLIENT
 
     # Quote creation is a long-running write; apply the long timeout unless the
     # caller has already provided an explicit request_timeout override.
@@ -161,8 +160,8 @@ def get_quote(
         raise BritecoreError.MissingParameter("quote id is required")
     quote_json: dict[str, str] = {"id": quote_id}
 
-    # Resolve the effective client (explicit or module-level)
-    effective_client: BritecoreAPIClient = resolve_client(client)
+    # Preserve module-level API_CLIENT behavior while allowing explicit override.
+    effective_client: BritecoreAPIClient = client or API_CLIENT
 
     LOGGER.debug("Getting quote")
 

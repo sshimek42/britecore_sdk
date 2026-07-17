@@ -125,7 +125,6 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
 - Module docstrings updated with examples for all new features
 
-
 ## [1.5.3] - 2026-07-17
 
 ### Changed
