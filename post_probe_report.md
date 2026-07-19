@@ -1,25 +1,25 @@
 # POST Probe Report
 
-- Generated: 2026-07-17T20:35:52.827269+00:00
+- Generated: 2026-07-19T02:34:29.529410+00:00
 - Site: dev
 - Dry run: False
 - Probes total: 1
 - Genuine success (no args needed): 0
 - Informative errors (args discovered): 0
-- Unexpected success (unknown body): 0
+- Unexpected success (unknown body): 1
 - Dry-run responses: 0
 - Auth errors: 0
 - Server errors: 0
-- Transport errors (timeout/network): 1
+- Transport errors (timeout/network): 0
 - Skipped (risk): 0
 
 ## Results
 
-### broken_probe
-- Path: `/api/v2/utils/broken`
-- Outcome: `transport_error`
-- Status: `None`
-- Request ID: `None`
+### unknown_endpoint
+- Path: `/api/v2/contacts/create_contact`
+- Outcome: `unexpected_success`
+- Status: `200`
+- Request ID: `ok123456`
 - Inferred required fields: (none)
 - Messages:
-  - BriteCore configuration error - boom
+  - {'result': 'ok'}
