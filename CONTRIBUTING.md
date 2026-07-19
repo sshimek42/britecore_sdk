@@ -7,6 +7,8 @@ This guide covers the project workflow for contributing changes safely and consi
 
 ## Start here
 
+- Read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before participating in project discussions or
+  reviews.
 - Read `AGENTS.md` first for repository-specific coding patterns.
 - Install in editable mode with dev dependencies.
 - Run targeted tests for changed modules, then run full test suite.
@@ -14,6 +16,7 @@ This guide covers the project workflow for contributing changes safely and consi
 Related docs:
 
 - [README.md](README.md) for project overview
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community expectations
 - [GETTING_STARTED.md](GETTING_STARTED.md) for setup and first run
 - [API.md](API.md) for endpoint behavior and examples
 - [ARCHITECTURE.md](ARCHITECTURE.md) for system design
