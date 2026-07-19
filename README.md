@@ -194,6 +194,7 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 | **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | **Python compatibility** | [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) |
 | **Contributing** | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| **Code of Conduct** | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) |
 | **Troubleshooting** | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) |
 | **Security policy** | [SECURITY.md](SECURITY.md) |
 
@@ -477,6 +478,7 @@ Both workflows use OIDC trusted publishing and include build + publish + install
 ### Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
 - Workflow and branch conventions
 - Endpoint wrapper patterns
 - Code quality expectations

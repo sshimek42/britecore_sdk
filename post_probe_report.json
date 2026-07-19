@@ -8,27 +8,27 @@
     "server_error": 0,
     "skipped_risk": 0,
     "total": 1,
-    "transport_error": 1,
-    "unexpected_success": 0
+    "transport_error": 0,
+    "unexpected_success": 1
   },
   "dry_run": false,
-  "generated_at_utc": "2026-07-17T20:35:52.827269+00:00",
+  "generated_at_utc": "2026-07-19T02:34:29.529410+00:00",
   "generated_from_spec_empty_properties": false,
   "generated_from_spec_no_args": false,
-  "plan": "C:\\Users\\shauns\\AppData\\Local\\Temp\\pytest-of-shauns\\pytest-32\\test_main_transport_error_does0\\plan.json",
+  "plan": "/tmp/pytest-of-runner/pytest-0/test_main_returns_nonzero_for_0/plan.json",
   "results": [
     {
       "inferred_required_fields": [],
       "messages": [
-        "BriteCore configuration error - boom"
+        "{'result': 'ok'}"
       ],
-      "name": "broken_probe",
+      "name": "unknown_endpoint",
       "notes": null,
-      "outcome": "transport_error",
-      "path": "/api/v2/utils/broken",
-      "request_id": null,
+      "outcome": "unexpected_success",
+      "path": "/api/v2/contacts/create_contact",
+      "request_id": "ok123456",
       "risk": "low",
-      "status_code": null
+      "status_code": 200
     }
   ],
   "site": "dev",
