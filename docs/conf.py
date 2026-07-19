@@ -43,12 +43,18 @@ autosummary_generate = True
 autodoc_member_order = "bysource"
 autodoc_typehints = "description"
 
-# Keep docs build stable in isolated CI environments.
-autodoc_mock_imports = [
-    "dynaconf",
-    "sclogging",
-    "urllib3",
-]
+# Napoleon settings for Google-style docstrings used throughout the SDK.
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_use_param = True
+napoleon_use_rtype = True
+napoleon_attr_annotations = True
+
+# Only mock packages that are not installed in the docs build environment.
+# urllib3 and dynaconf are runtime dependencies and are available, so they
+# must not be mocked — mocking them causes urllib3 types (Timeout, Retry, etc.)
+# to render as MagicMock in the generated API docs.
+autodoc_mock_imports: list[str] = []
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
