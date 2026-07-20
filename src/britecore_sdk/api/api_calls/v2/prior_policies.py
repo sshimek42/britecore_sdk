@@ -16,20 +16,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 def list_prior_policies(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Prior Policies.
-
-    Send a request to POST /api/v2/prior_policies/list_prior_policies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Prior Policies (POST /api/v2/prior_policies/list_prior_policies)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -47,20 +34,7 @@ def update_prior_policy(
     prior_policy: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Prior Policy.
-
-    Send a request to POST /api/v2/prior_policies/update_prior_policy. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Prior Policy (POST /api/v2/prior_policies/update_prior_policy)."""
     request_json: dict[str, Any] = {"prior_policy": prior_policy}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

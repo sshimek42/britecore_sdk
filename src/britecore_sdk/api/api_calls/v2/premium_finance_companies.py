@@ -17,20 +17,7 @@ def create(
     premium_finance_company: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create.
-
-    Send a request to POST /api/v2/premium_finance_companies/create. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create (POST /api/v2/premium_finance_companies/create)."""
     request_json: dict[str, Any] = {"premium_finance_company": premium_finance_company}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -47,20 +34,7 @@ def create(
 def delete(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete.
-
-    Send a request to POST /api/v2/premium_finance_companies/delete. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete (POST /api/v2/premium_finance_companies/delete)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -78,20 +52,7 @@ def get(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get.
-
-    Send a request to POST /api/v2/premium_finance_companies/get. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get (POST /api/v2/premium_finance_companies/get)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -109,20 +70,7 @@ def list_for_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List For Quote.
-
-    Send a request to POST /api/v2/premium_finance_companies/list_for_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List For Quote (POST /api/v2/premium_finance_companies/list_for_quote)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -140,20 +88,7 @@ def update(
     premium_finance_company: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update.
-
-    Send a request to POST /api/v2/premium_finance_companies/update. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update (POST /api/v2/premium_finance_companies/update)."""
     request_json: dict[str, Any] = {"premium_finance_company": premium_finance_company}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

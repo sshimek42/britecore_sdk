@@ -19,20 +19,7 @@ def import_note(
     force_create: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Note.
-
-    Send a request to POST /api/v2/imports/import_note. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Import Note (POST /api/v2/imports/import_note)."""
     request_json: dict[str, Any] = {
         "note": note,
         "create_only": create_only,
@@ -55,20 +42,7 @@ def import_policy_number(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Policy Number.
-
-    Send a request to POST /api/v2/imports/import_policy_number. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Import Policy Number (POST /api/v2/imports/import_policy_number)."""
     request_json: dict[str, Any] = {
         "policy_number": policy_number,
         "policy_id": policy_id,

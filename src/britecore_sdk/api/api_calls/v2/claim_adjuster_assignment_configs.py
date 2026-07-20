@@ -17,20 +17,7 @@ def create_adjuster_assignment_config(
     adjuster_assignment_config: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Adjuster Assignment Config.
-
-    Send a request to POST /api/v2/claim_adjuster_assignment_configs/create_adjuster_assignment_config. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Adjuster Assignment Config (POST /api/v2/claim_adjuster_assignment_configs/create_adjuster_assignment_config)."""
     request_json: dict[str, Any] = {
         "adjuster_assignment_config": adjuster_assignment_config,
     }
@@ -51,20 +38,7 @@ def get_adjuster_assignment_config(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Adjuster Assignment Config.
-
-    Send a request to POST /api/v2/claim_adjuster_assignment_configs/get_adjuster_assignment_config. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Adjuster Assignment Config (POST /api/v2/claim_adjuster_assignment_configs/get_adjuster_assignment_config)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -85,20 +59,7 @@ def update_adjuster_assignment_config(
     adjuster_assignment_config: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Adjuster Assignment Config.
-
-    Send a request to POST /api/v2/claim_adjuster_assignment_configs/update_adjuster_assignment_config. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Adjuster Assignment Config (POST /api/v2/claim_adjuster_assignment_configs/update_adjuster_assignment_config)."""
     request_json: dict[str, Any] = {
         "adjuster_assignment_config": adjuster_assignment_config,
     }

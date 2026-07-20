@@ -75,20 +75,7 @@ def fetch_json_report_result(
     report_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Fetch Json Report Result.
-
-    Send a request to POST /api/v2/data/fetch_json_report_result. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Fetch Json Report Result (POST /api/v2/data/fetch_json_report_result)."""
     request_json: dict[str, Any] = {
         "params": params,
         "report_name": report_name,
@@ -108,20 +95,7 @@ def fetch_json_report_result(
 def get_logical_catalog(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Logical Catalog.
-
-    Send a request to POST /api/v2/data/get_logical_catalog. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Logical Catalog (POST /api/v2/data/get_logical_catalog)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -140,20 +114,7 @@ def preview_sql_check(
     params: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Preview Sql Check.
-
-    Send a request to POST /api/v2/data/preview_sql_check. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Preview Sql Check (POST /api/v2/data/preview_sql_check)."""
     request_json: dict[str, Any] = {
         "query": query,
         "params": params,
@@ -175,20 +136,7 @@ def preview_sql_result(
     params: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Preview Sql Result.
-
-    Send a request to POST /api/v2/data/preview_sql_result. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Preview Sql Result (POST /api/v2/data/preview_sql_result)."""
     request_json: dict[str, Any] = {
         "query": query,
         "params": params,

@@ -18,20 +18,7 @@ def get_installed_integrations(
     integration_point_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Installed Integrations.
-
-    Send a request to POST /api/v2/integrations/get_installed_integrations. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Installed Integrations (POST /api/v2/integrations/get_installed_integrations)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "integration_point_code": integration_point_code,
@@ -53,20 +40,7 @@ def get_integration_dependencies(
     include_optionals: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Integration Dependencies.
-
-    Send a request to POST /api/v2/integrations/get_integration_dependencies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Integration Dependencies (POST /api/v2/integrations/get_integration_dependencies)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "include_optionals": include_optionals,
@@ -88,20 +62,7 @@ def get_integration_dependencies_stored(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Integration Dependencies Stored.
-
-    Send a request to POST /api/v2/integrations/get_integration_dependencies_stored. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Integration Dependencies Stored (POST /api/v2/integrations/get_integration_dependencies_stored)."""
     request_json: dict[str, Any] = {
         "integration_id": integration_id,
         "policy_type_id": policy_type_id,
@@ -123,20 +84,7 @@ def get_policy_types_for_integration_instance(
     integration_instance_external_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policy Types For Integration Instance.
-
-    Send a request to POST /api/v2/integrations/get_policy_types_for_integration_instance. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Policy Types For Integration Instance (POST /api/v2/integrations/get_policy_types_for_integration_instance)."""
     request_json: dict[str, Any] = {
         "integration_instance_external_id": integration_instance_external_id,
     }
@@ -158,20 +106,7 @@ def is_integration_point_installed(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Is Integration Point Installed.
-
-    Send a request to POST /api/v2/integrations/is_integration_point_installed. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Is Integration Point Installed (POST /api/v2/integrations/is_integration_point_installed)."""
     request_json: dict[str, Any] = {
         "integration_point_code": integration_point_code,
         "policy_type_id": policy_type_id,
@@ -192,20 +127,7 @@ def list_integration_points(
     None_: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Integration Points.
-
-    Send a request to POST /api/v2/integrations/list_integration_points. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Integration Points (POST /api/v2/integrations/list_integration_points)."""
     request_json: dict[str, Any] = {
         "None": None_,
     }
@@ -228,20 +150,7 @@ def make_note(
     title: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make Note.
-
-    Send a request to POST /api/v2/integrations/make_note. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Make Note (POST /api/v2/integrations/make_note)."""
     request_json: dict[str, Any] = {
         "integration_instance_external_id": integration_instance_external_id,
         "reference_id": reference_id,
@@ -267,20 +176,7 @@ def persist_file(
     title: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Persist File.
-
-    Send a request to POST /api/v2/integrations/persist_file. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Persist File (POST /api/v2/integrations/persist_file)."""
     request_json: dict[str, Any] = {
         "file_data_base64": file_data_base64,
         "integration_instance_external_id": integration_instance_external_id,
@@ -311,20 +207,7 @@ def send_britecore_email(
     html_body: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Send Britecore Email.
-
-    Send a request to POST /api/v2/integrations/send_britecore_email. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Send Britecore Email (POST /api/v2/integrations/send_britecore_email)."""
     request_json: dict[str, Any] = {
         "plain_body": plain_body,
         "reply_to_emails": reply_to_emails,
@@ -354,20 +237,7 @@ def send_integration_alert_email(
     email_body: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Send Integration Alert Email.
-
-    Send a request to POST /api/v2/integrations/send_integration_alert_email. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Send Integration Alert Email (POST /api/v2/integrations/send_integration_alert_email)."""
     request_json: dict[str, Any] = {
         "email_subject": email_subject,
         "integration_instance_external_id": integration_instance_external_id,
@@ -391,20 +261,7 @@ def store_integration_dependencies(
     dependencies: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Integration Dependencies.
-
-    Send a request to POST /api/v2/integrations/store_integration_dependencies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Store Integration Dependencies (POST /api/v2/integrations/store_integration_dependencies)."""
     request_json: dict[str, Any] = {
         "integration_id": integration_id,
         "policy_type_id": policy_type_id,

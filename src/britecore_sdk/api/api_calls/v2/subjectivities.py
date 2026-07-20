@@ -24,20 +24,7 @@ def create_subjectivity(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Subjectivity.
-
-    Send a request to POST /api/v2/subjectivities/create_subjectivity. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Subjectivity (POST /api/v2/subjectivities/create_subjectivity)."""
     request_json: dict[str, Any] = {
         "status": status,
         "due_date": due_date,
@@ -71,20 +58,7 @@ def create_subjectivity_definition(
     description: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Subjectivity Definition.
-
-    Send a request to POST /api/v2/subjectivities/create_subjectivity_definition. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Subjectivity Definition (POST /api/v2/subjectivities/create_subjectivity_definition)."""
     request_json: dict[str, Any] = {
         "due_date_type": due_date_type,
         "mandatory": mandatory,
@@ -111,20 +85,7 @@ def delete_subjectivity(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Subjectivity.
-
-    Send a request to POST /api/v2/subjectivities/delete_subjectivity. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Subjectivity (POST /api/v2/subjectivities/delete_subjectivity)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -150,20 +111,7 @@ def filter_subjectivities(
     external_system_references: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Filter Subjectivities.
-
-    Send a request to POST /api/v2/subjectivities/filter_subjectivities. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Filter Subjectivities (POST /api/v2/subjectivities/filter_subjectivities)."""
     request_json: dict[str, Any] = {
         "end_date": end_date,
         "revision_ids": revision_ids,
@@ -190,20 +138,7 @@ def list_subjectivities(
     external_system_reference: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Subjectivities.
-
-    Send a request to POST /api/v2/subjectivities/list_subjectivities. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Subjectivities (POST /api/v2/subjectivities/list_subjectivities)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "external_system_reference": external_system_reference,
@@ -223,20 +158,7 @@ def list_subjectivities(
 def list_subjectivity_definitions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Subjectivity Definitions.
-
-    Send a request to POST /api/v2/subjectivities/list_subjectivity_definitions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Subjectivity Definitions (POST /api/v2/subjectivities/list_subjectivity_definitions)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -259,20 +181,7 @@ def modify_subjectivity(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Subjectivity.
-
-    Send a request to POST /api/v2/subjectivities/modify_subjectivity. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Modify Subjectivity (POST /api/v2/subjectivities/modify_subjectivity)."""
     request_json: dict[str, Any] = {
         "status": status,
         "due_date": due_date,
@@ -305,20 +214,7 @@ def modify_subjectivity_definition(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Subjectivity Definition.
-
-    Send a request to POST /api/v2/subjectivities/modify_subjectivity_definition. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Modify Subjectivity Definition (POST /api/v2/subjectivities/modify_subjectivity_definition)."""
     request_json: dict[str, Any] = {
         "due_date_type": due_date_type,
         "mandatory": mandatory,
@@ -346,20 +242,7 @@ def retrieve_subjectivity(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Subjectivity.
-
-    Send a request to POST /api/v2/subjectivities/retrieve_subjectivity. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Subjectivity (POST /api/v2/subjectivities/retrieve_subjectivity)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -379,20 +262,7 @@ def retrieve_subjectivity_definition(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Subjectivity Definition.
-
-    Send a request to POST /api/v2/subjectivities/retrieve_subjectivity_definition. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Subjectivity Definition (POST /api/v2/subjectivities/retrieve_subjectivity_definition)."""
     request_json: dict[str, Any] = {
         "id": id,
     }

@@ -16,20 +16,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 def list_latest(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Latest.
-
-    Send a request to POST /api/v2/related_policies/list_latest. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Latest (POST /api/v2/related_policies/list_latest)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -47,20 +34,7 @@ def update_related_policy(
     related_policy: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Related Policy.
-
-    Send a request to POST /api/v2/related_policies/update_related_policy. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Related Policy (POST /api/v2/related_policies/update_related_policy)."""
     request_json: dict[str, Any] = {"related_policy": related_policy}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -16,20 +16,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 def get_agentcies(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Agentcies.
-
-    Send a request to POST /api/v2/agentcy/get_agentcies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Agentcies (POST /api/v2/agentcy/get_agentcies)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -47,20 +34,7 @@ def get_assign_agentcy(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Assign Agentcy.
-
-    Send a request to POST /api/v2/agentcy/get_assign_agentcy. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Assign Agentcy (POST /api/v2/agentcy/get_assign_agentcy)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

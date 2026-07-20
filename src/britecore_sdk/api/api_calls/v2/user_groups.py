@@ -17,20 +17,7 @@ def add_group(
     user_group: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Group.
-
-    Send a request to POST /api/v2/user_groups/add_group. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add Group (POST /api/v2/user_groups/add_group)."""
     request_json: dict[str, Any] = {"user_group": user_group}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -48,20 +35,7 @@ def delete_group(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Group.
-
-    Send a request to POST /api/v2/user_groups/delete_group. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Group (POST /api/v2/user_groups/delete_group)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -79,20 +53,7 @@ def get_group(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Group.
-
-    Send a request to POST /api/v2/user_groups/get_group. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Group (POST /api/v2/user_groups/get_group)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -109,20 +70,7 @@ def get_group(
 def list_groups(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Groups.
-
-    Send a request to POST /api/v2/user_groups/list_groups. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Groups (POST /api/v2/user_groups/list_groups)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -140,20 +88,7 @@ def update_group(
     user_group: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Group.
-
-    Send a request to POST /api/v2/user_groups/update_group. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Group (POST /api/v2/user_groups/update_group)."""
     request_json: dict[str, Any] = {"user_group": user_group}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

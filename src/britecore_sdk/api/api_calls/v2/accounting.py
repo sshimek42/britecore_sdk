@@ -148,20 +148,7 @@ def export_account_histories(
     policy_term_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Account Histories.
-
-    Send a request to POST /api/v2/accounting/export_account_histories. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Export Account Histories (POST /api/v2/accounting/export_account_histories)."""
     request_json: dict[str, Any] = {
         "policy_term_ids": policy_term_ids,
     }
@@ -181,20 +168,7 @@ def retrieve_outstanding_invoices(
     transaction_date_time_from: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Outstanding Invoices.
-
-    Send a request to POST /api/v2/accounting/retrieve_outstanding_invoices. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Outstanding Invoices (POST /api/v2/accounting/retrieve_outstanding_invoices)."""
     request_json: dict[str, Any] = {
         "transaction_date_time_from": transaction_date_time_from,
     }
@@ -214,20 +188,7 @@ def set_return_premium_to_export(
     return_premium_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Return Premium To Export.
-
-    Send a request to POST /api/v2/accounting/set_return_premium_to_export. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set Return Premium To Export (POST /api/v2/accounting/set_return_premium_to_export)."""
     request_json: dict[str, Any] = {"return_premium_id": return_premium_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

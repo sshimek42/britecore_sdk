@@ -185,20 +185,7 @@ def associate_agentcy_to_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Associate Agentcy To Quote.
-
-    Send a request to POST /api/v2/quotes/associate_agentcy_to_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Associate Agentcy To Quote (POST /api/v2/quotes/associate_agentcy_to_quote)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -218,20 +205,7 @@ def bind_full_quote(
     submit_bound: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bind Full Quote.
-
-    Send a request to POST /api/v2/quotes/bind_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Bind Full Quote (POST /api/v2/quotes/bind_full_quote)."""
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -253,20 +227,7 @@ def copy_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy Quote.
-
-    Send a request to POST /api/v2/quotes/copy_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Copy Quote (POST /api/v2/quotes/copy_quote)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -286,20 +247,7 @@ def create_and_rate_full_quote(
     rate_quote: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create And Rate Full Quote.
-
-    Send a request to POST /api/v2/quotes/create_and_rate_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create And Rate Full Quote (POST /api/v2/quotes/create_and_rate_full_quote)."""
     request_json: dict[str, Any] = {
         "quote": quote,
         "stateless": stateless,
@@ -323,20 +271,7 @@ def create_endorsement_quote(
     endorsement_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Endorsement Quote.
-
-    Send a request to POST /api/v2/quotes/create_endorsement_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Endorsement Quote (POST /api/v2/quotes/create_endorsement_quote)."""
     request_json: dict[str, Any] = {
         "quote_external_system_reference": quote_external_system_reference,
         "quote_id": quote_id,
@@ -360,20 +295,7 @@ def create_renewal_quote(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Renewal Quote.
-
-    Send a request to POST /api/v2/quotes/create_renewal_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Renewal Quote (POST /api/v2/quotes/create_renewal_quote)."""
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "quote_id": quote_id,
@@ -396,20 +318,7 @@ def delete_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Full Quote.
-
-    Send a request to POST /api/v2/quotes/delete_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Full Quote (POST /api/v2/quotes/delete_full_quote)."""
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -429,20 +338,7 @@ def delete_full_quote(
 def delete_quote(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Quote.
-
-    Send a request to POST /api/v2/quotes/delete_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Quote (POST /api/v2/quotes/delete_quote)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -462,20 +358,7 @@ def get_estimated_quote(
     stateless: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Estimated Quote.
-
-    Send a request to POST /api/v2/quotes/get_estimated_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Estimated Quote (POST /api/v2/quotes/get_estimated_quote)."""
     request_json: dict[str, Any] = {
         "rate_quote": rate_quote,
         "quote_id": quote_id,
@@ -497,20 +380,7 @@ def get_quote_properties_summary(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Properties Summary.
-
-    Send a request to POST /api/v2/quotes/get_quote_properties_summary. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Quote Properties Summary (POST /api/v2/quotes/get_quote_properties_summary)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -531,20 +401,7 @@ def get_quote_wizard_plugin(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Wizard Plugin.
-
-    Send a request to POST /api/v2/quotes/get_quote_wizard_plugin. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Quote Wizard Plugin (POST /api/v2/quotes/get_quote_wizard_plugin)."""
     request_json: dict[str, Any] = {
         "integration_point_code": integration_point_code,
         "revision_id": revision_id,
@@ -567,20 +424,7 @@ def get_risks(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Risks.
-
-    Send a request to POST /api/v2/quotes/get_risks. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Risks (POST /api/v2/quotes/get_risks)."""
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -601,20 +445,7 @@ def issue_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Issue Full Quote.
-
-    Send a request to POST /api/v2/quotes/issue_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Issue Full Quote (POST /api/v2/quotes/issue_full_quote)."""
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -635,20 +466,7 @@ def list_available_offers(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Available Offers.
-
-    Send a request to POST /api/v2/quotes/list_available_offers. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Available Offers (POST /api/v2/quotes/list_available_offers)."""
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -668,20 +486,7 @@ def modify_full_quote(
     success: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Full Quote.
-
-    Send a request to POST /api/v2/quotes/modify_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Modify Full Quote (POST /api/v2/quotes/modify_full_quote)."""
     request_json: dict[str, Any] = {
         "messages": messages,
         "data": data,
@@ -703,20 +508,7 @@ def prefill_loss_history(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Loss History.
-
-    Send a request to POST /api/v2/quotes/prefill_loss_history. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Prefill Loss History (POST /api/v2/quotes/prefill_loss_history)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -735,20 +527,7 @@ def prefill_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Quote.
-
-    Send a request to POST /api/v2/quotes/prefill_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Prefill Quote (POST /api/v2/quotes/prefill_quote)."""
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "id": id,
@@ -769,20 +548,7 @@ def prefill_violations(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Violations.
-
-    Send a request to POST /api/v2/quotes/prefill_violations. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Prefill Violations (POST /api/v2/quotes/prefill_violations)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -802,20 +568,7 @@ def rate_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Rate Full Quote.
-
-    Send a request to POST /api/v2/quotes/rate_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Rate Full Quote (POST /api/v2/quotes/rate_full_quote)."""
     request_json: dict[str, Any] = {
         "debug": debug,
         "external_system_reference": external_system_reference,
@@ -837,20 +590,7 @@ def rate_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Rate Quote.
-
-    Send a request to POST /api/v2/quotes/rate_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Rate Quote (POST /api/v2/quotes/rate_quote)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -869,20 +609,7 @@ def retrieve_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Full Quote.
-
-    Send a request to POST /api/v2/quotes/retrieve_full_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Full Quote (POST /api/v2/quotes/retrieve_full_quote)."""
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -902,20 +629,7 @@ def retrieve_full_quote(
 def submit_application(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Application.
-
-    Send a request to POST /api/v2/quotes/submit_application. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Submit Application (POST /api/v2/quotes/submit_application)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -932,20 +646,7 @@ def submit_application(
 def submit_change(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Change.
-
-    Send a request to POST /api/v2/quotes/submit_change. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Submit Change (POST /api/v2/quotes/submit_change)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -963,20 +664,7 @@ def summary(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Summary.
-
-    Send a request to POST /api/v2/quotes/summary. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Summary (POST /api/v2/quotes/summary)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -992,20 +680,7 @@ def turn_quote_into_application(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Turn Quote Into Application.
-
-    Send a request to POST /api/v2/quotes/turn_quote_into_application. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Turn Quote Into Application (POST /api/v2/quotes/turn_quote_into_application)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1023,20 +698,7 @@ def update_e_delivery_enabled(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update E Delivery Enabled.
-
-    Send a request to POST /api/v2/quotes/update_e_delivery_enabled. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update E Delivery Enabled (POST /api/v2/quotes/update_e_delivery_enabled)."""
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

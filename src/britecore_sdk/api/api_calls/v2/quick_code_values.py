@@ -17,20 +17,7 @@ def list_quick_code_values(
     quick_codes: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Quick Code Values.
-
-    Send a request to POST /api/v2/quick_code_values/list_quick_code_values. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Quick Code Values (POST /api/v2/quick_code_values/list_quick_code_values)."""
     request_json: dict[str, Any] = {"quick_codes": quick_codes}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -48,20 +35,7 @@ def update_quick_code_value(
     quick_code_value: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Code Value.
-
-    Send a request to POST /api/v2/quick_code_values/update_quick_code_value. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Quick Code Value (POST /api/v2/quick_code_values/update_quick_code_value)."""
     request_json: dict[str, Any] = {"quick_code_value": quick_code_value}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

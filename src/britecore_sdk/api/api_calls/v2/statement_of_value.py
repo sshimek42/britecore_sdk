@@ -17,20 +17,7 @@ def create_sov(
     sov_import: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Sov.
-
-    Send a request to POST /api/v2/statement_of_value/create_sov. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Sov (POST /api/v2/statement_of_value/create_sov)."""
     request_json: dict[str, Any] = {"sov_import": sov_import}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -47,20 +34,7 @@ def create_sov(
 def delete_sov(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Sov.
-
-    Send a request to POST /api/v2/statement_of_value/delete_sov. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Sov (POST /api/v2/statement_of_value/delete_sov)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -77,20 +51,7 @@ def delete_sov(
 def delete_sov_file(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Sov File.
-
-    Send a request to POST /api/v2/statement_of_value/delete_sov_file. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Sov File (POST /api/v2/statement_of_value/delete_sov_file)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -108,20 +69,7 @@ def execute_sov_job(
     sov_import_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Execute Sov Job.
-
-    Send a request to POST /api/v2/statement_of_value/execute_sov_job. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Execute Sov Job (POST /api/v2/statement_of_value/execute_sov_job)."""
     request_json: dict[str, Any] = {"sov_import_id": sov_import_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -140,20 +88,7 @@ def export_sov_template(
     policy_numbers: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Sov Template.
-
-    Send a request to POST /api/v2/statement_of_value/export_sov_template. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Export Sov Template (POST /api/v2/statement_of_value/export_sov_template)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "policy_numbers": policy_numbers,
@@ -174,20 +109,7 @@ def get_policies_from_sov(
     page: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies From Sov.
-
-    Send a request to POST /api/v2/statement_of_value/get_policies_from_sov. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Policies From Sov (POST /api/v2/statement_of_value/get_policies_from_sov)."""
     request_json: dict[str, Any] = {"page": page}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -205,20 +127,7 @@ def get_sov_info(
     sov_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Sov Info.
-
-    Send a request to POST /api/v2/statement_of_value/get_sov_info. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Sov Info (POST /api/v2/statement_of_value/get_sov_info)."""
     request_json: dict[str, Any] = {"sov_id": sov_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -236,20 +145,7 @@ def get_sovs(
     page: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Sovs.
-
-    Send a request to POST /api/v2/statement_of_value/get_sovs. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Sovs (POST /api/v2/statement_of_value/get_sovs)."""
     request_json: dict[str, Any] = {"page": page}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -267,20 +163,7 @@ def update_elastic_search_index(
     policy_ids: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Elastic Search Index.
-
-    Send a request to POST /api/v2/statement_of_value/update_elastic_search_index. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Elastic Search Index (POST /api/v2/statement_of_value/update_elastic_search_index)."""
     request_json: dict[str, Any] = {"policy_ids": policy_ids}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -299,20 +182,7 @@ def update_sov(
     sov_import: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Sov.
-
-    Send a request to POST /api/v2/statement_of_value/update_sov. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Sov (POST /api/v2/statement_of_value/update_sov)."""
     request_json: dict[str, Any] = {"sov_import": sov_import}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -330,20 +200,7 @@ def validate_sov(
     sov_import_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Validate Sov.
-
-    Send a request to POST /api/v2/statement_of_value/validate_sov. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Validate Sov (POST /api/v2/statement_of_value/validate_sov)."""
     request_json: dict[str, Any] = {"sov_import_id": sov_import_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

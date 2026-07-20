@@ -345,20 +345,7 @@ def import_credit_report(
     warning: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Credit Report.
-
-    Send a request to POST /api/v2/vendors/import_credit_report. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Import Credit Report (POST /api/v2/vendors/import_credit_report)."""
     request_json: dict[str, Any] = {
         "report_number": report_number,
         "contact_id": contact_id,
@@ -388,20 +375,7 @@ def import_motor_vehicle_report(
     date_added: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Motor Vehicle Report.
-
-    Send a request to POST /api/v2/vendors/import_motor_vehicle_report. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Import Motor Vehicle Report (POST /api/v2/vendors/import_motor_vehicle_report)."""
     request_json: dict[str, Any] = {
         "report_number": report_number,
         "drivers_license_number": drivers_license_number,
@@ -426,20 +400,7 @@ def stripe_replay_missed_webhooks(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Stripe Replay Missed Webhooks.
-
-    Send a request to POST /api/v2/vendors/stripe_replay_missed_webhooks. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Stripe Replay Missed Webhooks (POST /api/v2/vendors/stripe_replay_missed_webhooks)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -460,20 +421,7 @@ def sungard_retry_send_file(
     file_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Sungard Retry Send File.
-
-    Send a request to POST /api/v2/vendors/sungard_retry_send_file. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Sungard Retry Send File (POST /api/v2/vendors/sungard_retry_send_file)."""
     request_json: dict[str, Any] = {
         "file_name": file_name,
         "file_date": file_date,

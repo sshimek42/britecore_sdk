@@ -129,20 +129,7 @@ def auto_assign_claim(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Auto Assign Claim.
-
-    Send a request to POST /api/v2/claims/auto_assign_claim. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Auto Assign Claim (POST /api/v2/claims/auto_assign_claim)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -162,20 +149,7 @@ def bifurcate_claim(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bifurcate Claim.
-
-    Send a request to POST /api/v2/claims/bifurcate_claim. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Bifurcate Claim (POST /api/v2/claims/bifurcate_claim)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -194,20 +168,7 @@ def bifurcate_claim(
 def bulk_assign(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bulk Assign.
-
-    Send a request to POST /api/v2/claims/bulk_assign. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Bulk Assign (POST /api/v2/claims/bulk_assign)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -224,20 +185,7 @@ def bulk_assign(
 def bulk_reassign(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bulk Reassign.
-
-    Send a request to POST /api/v2/claims/bulk_reassign. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Bulk Reassign (POST /api/v2/claims/bulk_reassign)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -254,20 +202,7 @@ def bulk_reassign(
 def bulk_unassign(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bulk Unassign.
-
-    Send a request to POST /api/v2/claims/bulk_unassign. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Bulk Unassign (POST /api/v2/claims/bulk_unassign)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -287,20 +222,7 @@ def create_claim_date(
     claim_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Claim Date.
-
-    Send a request to POST /api/v2/claims/create_claim_date. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Claim Date (POST /api/v2/claims/create_claim_date)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "claim_date_type": claim_date_type,
@@ -322,20 +244,7 @@ def export_batch_claims(
     claim_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Batch Claims.
-
-    Send a request to POST /api/v2/claims/export_batch_claims. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Export Batch Claims (POST /api/v2/claims/export_batch_claims)."""
     request_json: dict[str, Any] = {
         "claim_ids": claim_ids,
     }
@@ -355,20 +264,7 @@ def get_all_associated_claims_parties(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get All Associated Claims Parties.
-
-    Send a request to POST /api/v2/claims/get_all_associated_claims_parties. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get All Associated Claims Parties (POST /api/v2/claims/get_all_associated_claims_parties)."""
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -388,20 +284,7 @@ def get_all_claim_transactions(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get All Claim Transactions.
-
-    Send a request to POST /api/v2/claims/get_all_claim_transactions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get All Claim Transactions (POST /api/v2/claims/get_all_claim_transactions)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -428,20 +311,7 @@ def get_claim_change_logs(
     field: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Change Logs.
-
-    Send a request to POST /api/v2/claims/get_claim_change_logs. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claim Change Logs (POST /api/v2/claims/get_claim_change_logs)."""
     request_json: dict[str, Any] = {
         "transaction": transaction,
         "standard_error": standard_error,
@@ -466,20 +336,7 @@ def get_claim_date_types(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Date Types.
-
-    Send a request to POST /api/v2/claims/get_claim_date_types. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claim Date Types (POST /api/v2/claims/get_claim_date_types)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -499,20 +356,7 @@ def get_claim_dates(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Dates.
-
-    Send a request to POST /api/v2/claims/get_claim_dates. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claim Dates (POST /api/v2/claims/get_claim_dates)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -532,20 +376,7 @@ def get_claims_tabs_visibility(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claims Tabs Visibility.
-
-    Send a request to POST /api/v2/claims/get_claims_tabs_visibility. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claims Tabs Visibility (POST /api/v2/claims/get_claims_tabs_visibility)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -569,20 +400,7 @@ def get_contacts_claims(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contacts Claims.
-
-    Send a request to POST /api/v2/claims/get_contacts_claims. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contacts Claims (POST /api/v2/claims/get_contacts_claims)."""
     request_json: dict[str, Any] = {
         "active": active,
         "contact_external_refs": contact_external_refs,
@@ -608,20 +426,7 @@ def get_contacts_claims_count(
     contact_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contacts Claims Count.
-
-    Send a request to POST /api/v2/claims/get_contacts_claims_count. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contacts Claims Count (POST /api/v2/claims/get_contacts_claims_count)."""
     request_json: dict[str, Any] = {
         "active": active,
         "contact_external_refs": contact_external_refs,
@@ -645,20 +450,7 @@ def new_claim(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """New Claim.
-
-    Send a request to POST /api/v2/claims/new_claim. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """New Claim (POST /api/v2/claims/new_claim)."""
     request_json: dict[str, Any] = {
         "claim_number": claim_number,
         "claim_number_origin": claim_number_origin,
@@ -681,20 +473,7 @@ def remove_claim(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Claim.
-
-    Send a request to POST /api/v2/claims/remove_claim. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Claim (POST /api/v2/claims/remove_claim)."""
     request_json: dict[str, Any] = {
         "hard_delete": hard_delete,
         "claim_id": claim_id,
@@ -721,20 +500,7 @@ def retrieve_claim_change_logs(
     policy_type_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Claim Change Logs.
-
-    Send a request to POST /api/v2/claims/retrieve_claim_change_logs. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Claim Change Logs (POST /api/v2/claims/retrieve_claim_change_logs)."""
     request_json: dict[str, Any] = {
         "claim_ids": claim_ids,
         "transactions": transactions,
@@ -765,20 +531,7 @@ def retrieve_claim_payments(
     transaction_date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Claim Payments.
-
-    Send a request to POST /api/v2/claims/retrieve_claim_payments. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Claim Payments (POST /api/v2/claims/retrieve_claim_payments)."""
     request_json: dict[str, Any] = {
         "transaction_date_from": transaction_date_from,
         "voided": voided,
@@ -808,20 +561,7 @@ def set_claim_loss_address(
     property_address_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Claim Loss Address.
-
-    Send a request to POST /api/v2/claims/set_claim_loss_address. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set Claim Loss Address (POST /api/v2/claims/set_claim_loss_address)."""
     request_json: dict[str, Any] = {
         "not found": not_found,
         "Raises": Raises,
@@ -849,20 +589,7 @@ def update_claim_date(
     claim_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Claim Date.
-
-    Send a request to POST /api/v2/claims/update_claim_date. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Claim Date (POST /api/v2/claims/update_claim_date)."""
     request_json: dict[str, Any] = {
         "claim_date_id": claim_date_id,
         "claim_id": claim_id,

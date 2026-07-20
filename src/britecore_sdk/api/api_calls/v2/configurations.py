@@ -17,20 +17,7 @@ def create_custom_error_code(
     custom_error_code: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Custom Error Code.
-
-    Send a request to POST /api/v2/configurations/create_custom_error_code. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Custom Error Code (POST /api/v2/configurations/create_custom_error_code)."""
     request_json: dict[str, Any] = {
         "custom_error_code": custom_error_code,
     }
@@ -50,20 +37,7 @@ def delete_custom_error_code(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Custom Error Code.
-
-    Send a request to POST /api/v2/configurations/delete_custom_error_code. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Custom Error Code (POST /api/v2/configurations/delete_custom_error_code)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -83,20 +57,7 @@ def list_custom_error_codes(
     module: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Custom Error Codes.
-
-    Send a request to POST /api/v2/configurations/list_custom_error_codes. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Custom Error Codes (POST /api/v2/configurations/list_custom_error_codes)."""
     request_json: dict[str, Any] = {
         "module": module,
     }
@@ -116,20 +77,7 @@ def update_custom_error_code(
     custom_error_code: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Custom Error Code.
-
-    Send a request to POST /api/v2/configurations/update_custom_error_code. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Custom Error Code (POST /api/v2/configurations/update_custom_error_code)."""
     request_json: dict[str, Any] = {
         "custom_error_code": custom_error_code,
     }

@@ -17,20 +17,7 @@ def list_claim_changes(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Claim Changes.
-
-    Send a request to POST /api/v2/claim_changes/list_claim_changes. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Claim Changes (POST /api/v2/claim_changes/list_claim_changes)."""
     request_json: dict[str, Any] = {
         "id": id,
     }

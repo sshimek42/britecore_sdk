@@ -81,20 +81,7 @@ def retrieve_return_premiums(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Return Premiums.
-
-    Send a request to POST /api/v2/return_premium/retrieve_return_premiums. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Return Premiums (POST /api/v2/return_premium/retrieve_return_premiums)."""
     request_json: dict[str, Any] = {
         "authorized": authorized,
         "transferred": transferred,

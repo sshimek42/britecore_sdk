@@ -17,20 +17,7 @@ def add_custom_data(
     data: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Custom Data.
-
-    Send a request to POST /api/v2/custom_data/add_custom_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add Custom Data (POST /api/v2/custom_data/add_custom_data)."""
     request_json: dict[str, Any] = {
         "data": data,
     }
@@ -50,20 +37,7 @@ def delete_custom_data(
     ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Custom Data.
-
-    Send a request to POST /api/v2/custom_data/delete_custom_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Custom Data (POST /api/v2/custom_data/delete_custom_data)."""
     request_json: dict[str, Any] = {
         "ids": ids,
     }
@@ -86,20 +60,7 @@ def get_custom_data(
     ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Custom Data.
-
-    Send a request to POST /api/v2/custom_data/get_custom_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Custom Data (POST /api/v2/custom_data/get_custom_data)."""
     request_json: dict[str, Any] = {
         "reference_id": reference_id,
         "id": id,
@@ -121,20 +82,7 @@ def get_custom_data(
 def summarize_custom_data(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Summarize Custom Data.
-
-    Send a request to POST /api/v2/custom_data/summarize_custom_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Summarize Custom Data (POST /api/v2/custom_data/summarize_custom_data)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -152,20 +100,7 @@ def update_custom_data(
     data: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Custom Data.
-
-    Send a request to POST /api/v2/custom_data/update_custom_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Custom Data (POST /api/v2/custom_data/update_custom_data)."""
     request_json: dict[str, Any] = {
         "data": data,
     }

@@ -20,20 +20,7 @@ def user_has_permission(
     permission: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """User Has Permission.
-
-    Send a request to POST /api/v2/permissions/user_has_permission. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """User Has Permission (POST /api/v2/permissions/user_has_permission)."""
     request_json: dict[str, Any] = {
         "username": username,
         "access_level": access_level,

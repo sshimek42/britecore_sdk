@@ -17,20 +17,7 @@ def get_zip_geometry(
     zip_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Zip Geometry.
-
-    Send a request to POST /api/v2/geometry/get_zip_geometry. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Zip Geometry (POST /api/v2/geometry/get_zip_geometry)."""
     request_json: dict[str, Any] = {
         "zip_code": zip_code,
     }

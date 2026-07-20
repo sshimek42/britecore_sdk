@@ -18,20 +18,7 @@ def generate_download_url(
     file_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Download Url.
-
-    Send a request to POST /api/v2/files/generate_download_url. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Generate Download Url (POST /api/v2/files/generate_download_url)."""
     request_json: dict[str, Any] = {
         "expires_in": expires_in,
         "file_id": file_id,
@@ -56,20 +43,7 @@ def retrieve_active_file_objects(
     print_date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Active File Objects.
-
-    Send a request to POST /api/v2/files/retrieve_active_file_objects. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Active File Objects (POST /api/v2/files/retrieve_active_file_objects)."""
     request_json: dict[str, Any] = {
         "date_added_to": date_added_to,
         "label": label,

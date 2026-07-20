@@ -17,20 +17,7 @@ def create_driver_mvr_report_file(
     driver_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Driver Mvr Report File.
-
-    Send a request to POST /api/v2/violations/create_driver_mvr_report_file. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Driver Mvr Report File (POST /api/v2/violations/create_driver_mvr_report_file)."""
     request_json: dict[str, Any] = {"driver_id": driver_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -48,20 +35,7 @@ def create_violation(
     violation: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Violation.
-
-    Send a request to POST /api/v2/violations/create_violation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Violation (POST /api/v2/violations/create_violation)."""
     request_json: dict[str, Any] = {"violation": violation}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -79,20 +53,7 @@ def create_violations(
     violations: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Violations.
-
-    Send a request to POST /api/v2/violations/create_violations. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Violations (POST /api/v2/violations/create_violations)."""
     request_json: dict[str, Any] = {"violations": violations}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -110,20 +71,7 @@ def delete_violation(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Violation.
-
-    Send a request to POST /api/v2/violations/delete_violation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Violation (POST /api/v2/violations/delete_violation)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -141,20 +89,7 @@ def dispute_violation(
     violation_dispute: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Dispute Violation.
-
-    Send a request to POST /api/v2/violations/dispute_violation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Dispute Violation (POST /api/v2/violations/dispute_violation)."""
     request_json: dict[str, Any] = {"violation_dispute": violation_dispute}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -172,20 +107,7 @@ def get_violation(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Violation.
-
-    Send a request to POST /api/v2/violations/get_violation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Violation (POST /api/v2/violations/get_violation)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -203,20 +125,7 @@ def list_violation_for_driver(
     driver_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Violation For Driver.
-
-    Send a request to POST /api/v2/violations/list_violation_for_driver. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Violation For Driver (POST /api/v2/violations/list_violation_for_driver)."""
     request_json: dict[str, Any] = {"driver_id": driver_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -234,20 +143,7 @@ def remove_violation_dispute(
     violation_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Violation Dispute.
-
-    Send a request to POST /api/v2/violations/remove_violation_dispute. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Violation Dispute (POST /api/v2/violations/remove_violation_dispute)."""
     request_json: dict[str, Any] = {"violation_id": violation_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -265,20 +161,7 @@ def update_violation(
     violation: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Violation.
-
-    Send a request to POST /api/v2/violations/update_violation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Violation (POST /api/v2/violations/update_violation)."""
     request_json: dict[str, Any] = {"violation": violation}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

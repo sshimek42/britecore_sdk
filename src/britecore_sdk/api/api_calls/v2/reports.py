@@ -203,20 +203,7 @@ def check_report_process_status(
     report_process_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check Report Process Status.
-
-    Send a request to POST /api/v2/reports/check_report_process_status. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Check Report Process Status (POST /api/v2/reports/check_report_process_status)."""
     request_json: dict[str, Any] = {
         "report_process_id": report_process_id,
     }
@@ -236,20 +223,7 @@ def download_report_file(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Download Report File.
-
-    Send a request to POST /api/v2/reports/download_report_file. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Download Report File (POST /api/v2/reports/download_report_file)."""
     request_json: dict[str, Any] = {
         "file_id": file_id,
     }
@@ -269,20 +243,7 @@ def generate_consolidated_declaration(
     policy_group: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Consolidated Declaration.
-
-    Send a request to POST /api/v2/reports/generate_consolidated_declaration. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Generate Consolidated Declaration (POST /api/v2/reports/generate_consolidated_declaration)."""
     request_json: dict[str, Any] = {
         "policy_group": policy_group,
     }
@@ -301,20 +262,7 @@ def generate_consolidated_declaration(
 def retrieve_report_categories(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Report Categories.
-
-    Send a request to POST /api/v2/reports/retrieve_report_categories. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Report Categories (POST /api/v2/reports/retrieve_report_categories)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -331,20 +279,7 @@ def retrieve_report_categories(
 def retrieve_sql_reports(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Sql Reports.
-
-    Send a request to POST /api/v2/reports/retrieve_sql_reports. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Sql Reports (POST /api/v2/reports/retrieve_sql_reports)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -365,20 +300,7 @@ def run_report(
     report_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Report.
-
-    Send a request to POST /api/v2/reports/run_report. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Run Report (POST /api/v2/reports/run_report)."""
     request_json: dict[str, Any] = {
         "additional_report_configuration": additional_report_configuration,
         "start_date": start_date,
@@ -401,20 +323,7 @@ def save_report(
     report_data: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save Report.
-
-    Send a request to POST /api/v2/reports/save_report. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Save Report (POST /api/v2/reports/save_report)."""
     request_json: dict[str, Any] = {
         "report_data": report_data,
     }

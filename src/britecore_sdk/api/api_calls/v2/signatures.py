@@ -145,20 +145,7 @@ __all__ = [
 def flush_cache(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Flush Cache.
-
-    Send a request to POST /api/v2/signatures/flush_cache. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Flush Cache (POST /api/v2/signatures/flush_cache)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -177,20 +164,7 @@ def get_envelope(
     envelope_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Envelope.
-
-    Send a request to POST /api/v2/signatures/get_envelope. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Envelope (POST /api/v2/signatures/get_envelope)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "envelope_id": envelope_id,

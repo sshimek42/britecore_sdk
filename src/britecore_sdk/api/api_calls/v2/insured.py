@@ -279,20 +279,7 @@ def find_similar_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Find Similar Contact.
-
-    Send a request to POST /api/v2/insured/find_similar_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Find Similar Contact (POST /api/v2/insured/find_similar_contact)."""
     request_json: dict[str, Any] = {
         "contact_ids_to_check": contact_ids_to_check,
         "ssn_only_check": ssn_only_check,
@@ -313,20 +300,7 @@ def find_similar_contact(
 def get_contacts_with_insured_portal_user_role(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contacts With Insured Portal User Role.
-
-    Send a request to POST /api/v2/insured/get_contacts_with_insured_portal_user_role. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contacts With Insured Portal User Role (POST /api/v2/insured/get_contacts_with_insured_portal_user_role)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

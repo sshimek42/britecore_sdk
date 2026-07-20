@@ -17,20 +17,7 @@ def cancel_claim_estimation(
     estimation_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Cancel Claim Estimation.
-
-    Send a request to POST /api/v2/claim_estimations/cancel_claim_estimation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Cancel Claim Estimation (POST /api/v2/claim_estimations/cancel_claim_estimation)."""
     request_json: dict[str, Any] = {
         "estimation_id": estimation_id,
     }
@@ -50,20 +37,7 @@ def get_claim_estimation(
     estimation_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Estimation.
-
-    Send a request to POST /api/v2/claim_estimations/get_claim_estimation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claim Estimation (POST /api/v2/claim_estimations/get_claim_estimation)."""
     request_json: dict[str, Any] = {
         "estimation_id": estimation_id,
     }
@@ -83,20 +57,7 @@ def list_claim_estimations(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Claim Estimations.
-
-    Send a request to POST /api/v2/claim_estimations/list_claim_estimations. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Claim Estimations (POST /api/v2/claim_estimations/list_claim_estimations)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -117,20 +78,7 @@ def request_claim_estimation(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Request Claim Estimation.
-
-    Send a request to POST /api/v2/claim_estimations/request_claim_estimation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Request Claim Estimation (POST /api/v2/claim_estimations/request_claim_estimation)."""
     request_json: dict[str, Any] = {
         "assignment_type": assignment_type,
         "claim_id": claim_id,
@@ -151,20 +99,7 @@ def update_claim_estimation(
     claim_estimation: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Claim Estimation.
-
-    Send a request to POST /api/v2/claim_estimations/update_claim_estimation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Claim Estimation (POST /api/v2/claim_estimations/update_claim_estimation)."""
     request_json: dict[str, Any] = {
         "claim_estimation": claim_estimation,
     }

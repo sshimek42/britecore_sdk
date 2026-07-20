@@ -303,20 +303,7 @@ def edit_attachment(
     attachment: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Edit Attachment.
-
-    Send a request to POST /api/v2/attachments/edit_attachment. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Edit Attachment (POST /api/v2/attachments/edit_attachment)."""
     request_json: dict[str, Any] = {"attachment": attachment}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

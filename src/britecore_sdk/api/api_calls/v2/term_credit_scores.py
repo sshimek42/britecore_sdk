@@ -17,20 +17,7 @@ def get_options(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Options.
-
-    Send a request to POST /api/v2/term_credit_scores/get_options. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Options (POST /api/v2/term_credit_scores/get_options)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -51,20 +38,7 @@ def update_selection(
     selected_option: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Selection.
-
-    Send a request to POST /api/v2/term_credit_scores/update_selection. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Selection (POST /api/v2/term_credit_scores/update_selection)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "selected_option": selected_option,

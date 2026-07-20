@@ -673,20 +673,7 @@ def approve_pending_payment(
     vendor_processing_fee_in_cents: int | Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Approve Pending Payment.
-
-    Send a request to POST /api/v2/payments/approve_pending_payment. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Approve Pending Payment (POST /api/v2/payments/approve_pending_payment)."""
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
         "settlement_date_time": settlement_date_time,
@@ -711,20 +698,7 @@ def create_recurring_payment_consent(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Recurring Payment Consent.
-
-    Send a request to POST /api/v2/payments/create_recurring_payment_consent. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Recurring Payment Consent (POST /api/v2/payments/create_recurring_payment_consent)."""
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -745,20 +719,7 @@ def decline_pending_payment(
     reference_id: str | Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Decline Pending Payment.
-
-    Send a request to POST /api/v2/payments/decline_pending_payment. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Decline Pending Payment (POST /api/v2/payments/decline_pending_payment)."""
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
         "vendor_message": vendor_message,
@@ -787,20 +748,7 @@ def import_payment_method(
     vendor_customer_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Payment Method.
-
-    Send a request to POST /api/v2/payments/import_payment_method. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Import Payment Method (POST /api/v2/payments/import_payment_method)."""
     request_json: dict[str, Any] = {
         "policy_term_external_system_reference": policy_term_external_system_reference,
         "vendor_payment_method_id": vendor_payment_method_id,
@@ -825,20 +773,7 @@ def import_payment_method(
 def retrieve_active_payment_processor(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Active Payment Processor.
-
-    Send a request to POST /api/v2/payments/retrieve_active_payment_processor. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Active Payment Processor (POST /api/v2/payments/retrieve_active_payment_processor)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -856,20 +791,7 @@ def retrieve_payment_method_consent(
     payment_method_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Payment Method Consent.
-
-    Send a request to POST /api/v2/payments/retrieve_payment_method_consent. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Payment Method Consent (POST /api/v2/payments/retrieve_payment_method_consent)."""
     request_json: dict[str, Any] = {"payment_method_id": payment_method_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -892,20 +814,7 @@ def retrieve_payment_method_creation_details(
     types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Payment Method Creation Details.
-
-    Send a request to POST /api/v2/payments/retrieve_payment_method_creation_details. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Payment Method Creation Details (POST /api/v2/payments/retrieve_payment_method_creation_details)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
         "requester_contact_id": requester_contact_id,
@@ -931,20 +840,7 @@ def retrieve_pending_payments_for_settlement(
     integration_instance_external_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Pending Payments For Settlement.
-
-    Send a request to POST /api/v2/payments/retrieve_pending_payments_for_settlement. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Pending Payments For Settlement (POST /api/v2/payments/retrieve_pending_payments_for_settlement)."""
     request_json: dict[str, Any] = {
         "integration_instance_external_id": integration_instance_external_id,
     }
@@ -965,20 +861,7 @@ def settle_payments(
     payments: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Settle Payments.
-
-    Send a request to POST /api/v2/payments/settle_payments. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Settle Payments (POST /api/v2/payments/settle_payments)."""
     request_json: dict[str, Any] = {
         "payments": payments,
     }
@@ -1001,20 +884,7 @@ def store_external_payment(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store External Payment.
-
-    Send a request to POST /api/v2/payments/store_external_payment. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Store External Payment (POST /api/v2/payments/store_external_payment)."""
     request_json: dict[str, Any] = {
         "transaction_date_time": transaction_date_time,
         "external_account_name": external_account_name,
@@ -1048,20 +918,7 @@ def store_payment(
     vendor_processing_fee_in_cents: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Payment.
-
-    Send a request to POST /api/v2/payments/store_payment. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Store Payment (POST /api/v2/payments/store_payment)."""
     request_json: dict[str, Any] = {
         "policy_numbers": policy_numbers,
         "transaction_amount_in_cents": transaction_amount_in_cents,
@@ -1098,20 +955,7 @@ def store_payment_nsf(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Payment Nsf.
-
-    Send a request to POST /api/v2/payments/store_payment_nsf. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Store Payment Nsf (POST /api/v2/payments/store_payment_nsf)."""
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
         "policy_term_external_system_reference": policy_term_external_system_reference,

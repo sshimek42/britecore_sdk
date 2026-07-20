@@ -237,20 +237,7 @@ def create_carbone_custom_deliverable(
     generated_per: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Carbone Custom Deliverable.
-
-    Send a request to POST /api/v2/settings/create_carbone_custom_deliverable. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Carbone Custom Deliverable (POST /api/v2/settings/create_carbone_custom_deliverable)."""
     request_json: dict[str, Any] = {
         "custom_name": custom_name,
         "module": module,
@@ -272,20 +259,7 @@ def create_system_tags(
     system_tags: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create System Tags.
-
-    Send a request to POST /api/v2/settings/create_system_tags. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create System Tags (POST /api/v2/settings/create_system_tags)."""
     request_json: dict[str, Any] = {
         "system_tags": system_tags,
     }
@@ -305,20 +279,7 @@ def delete_carbone_custom_deliverable(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Carbone Custom Deliverable.
-
-    Send a request to POST /api/v2/settings/delete_carbone_custom_deliverable. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Carbone Custom Deliverable (POST /api/v2/settings/delete_carbone_custom_deliverable)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -343,20 +304,7 @@ def get_deliverable_preview_json(
     location_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Deliverable Preview Json.
-
-    Send a request to POST /api/v2/settings/get_deliverable_preview_json. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Deliverable Preview Json (POST /api/v2/settings/get_deliverable_preview_json)."""
     request_json: dict[str, Any] = {
         "entity_id": entity_id,
         "deliverable_id": deliverable_id,
@@ -382,20 +330,7 @@ def list_cancellation_reasons(
     policy_life_cycle_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Cancellation Reasons.
-
-    Send a request to POST /api/v2/settings/list_cancellation_reasons. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Cancellation Reasons (POST /api/v2/settings/list_cancellation_reasons)."""
     request_json: dict[str, Any] = {
         "ids": ids,
         "policy_life_cycle_ids": policy_life_cycle_ids,
@@ -416,20 +351,7 @@ def list_system_tags(
     additionalProperties: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List System Tags.
-
-    Send a request to POST /api/v2/settings/list_system_tags. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List System Tags (POST /api/v2/settings/list_system_tags)."""
     request_json: dict[str, Any] = {
         "additionalProperties": additionalProperties,
     }
@@ -450,20 +372,7 @@ def new_permission_level_rule_dashboard(
     is_primary: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """New Permission Level Rule Dashboard.
-
-    Send a request to POST /api/v2/settings/new_permission_level_rule_dashboard. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """New Permission Level Rule Dashboard (POST /api/v2/settings/new_permission_level_rule_dashboard)."""
     request_json: dict[str, Any] = {
         "permission_level_id": permission_level_id,
         "is_primary": is_primary,
@@ -487,20 +396,7 @@ def persist_carbone_draft(
     prior_draft_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Persist Carbone Draft.
-
-    Send a request to POST /api/v2/settings/persist_carbone_draft. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Persist Carbone Draft (POST /api/v2/settings/persist_carbone_draft)."""
     request_json: dict[str, Any] = {
         "new_draft_filename": new_draft_filename,
         "deliverable_id": deliverable_id,
@@ -523,20 +419,7 @@ def remove_permission_level_rule_dashboard(
     permission_level_rule_dashboard_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Permission Level Rule Dashboard.
-
-    Send a request to POST /api/v2/settings/remove_permission_level_rule_dashboard. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Permission Level Rule Dashboard (POST /api/v2/settings/remove_permission_level_rule_dashboard)."""
     request_json: dict[str, Any] = {
         "permission_level_rule_dashboard_id": permission_level_rule_dashboard_id,
     }
@@ -557,20 +440,7 @@ def retrieve_permissions(
     prefixes: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Permissions.
-
-    Send a request to POST /api/v2/settings/retrieve_permissions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Permissions (POST /api/v2/settings/retrieve_permissions)."""
     request_json: dict[str, Any] = {
         "prefixes": prefixes,
     }
@@ -590,20 +460,7 @@ def retrieve_quick_code_value_tags(
     quick_code: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Quick Code Value Tags.
-
-    Send a request to POST /api/v2/settings/retrieve_quick_code_value_tags. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Quick Code Value Tags (POST /api/v2/settings/retrieve_quick_code_value_tags)."""
     request_json: dict[str, Any] = {
         "quick_code": quick_code,
     }
@@ -622,20 +479,7 @@ def retrieve_quick_code_value_tags(
 def retrieve_template_setup(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Template Setup.
-
-    Send a request to POST /api/v2/settings/retrieve_template_setup. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Template Setup (POST /api/v2/settings/retrieve_template_setup)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -653,20 +497,7 @@ def update_carbone_custom_deliverable(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Carbone Custom Deliverable.
-
-    Send a request to POST /api/v2/settings/update_carbone_custom_deliverable. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Carbone Custom Deliverable (POST /api/v2/settings/update_carbone_custom_deliverable)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -686,20 +517,7 @@ def update_permission_level_rule_dashboard(
     is_primary: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Permission Level Rule Dashboard.
-
-    Send a request to POST /api/v2/settings/update_permission_level_rule_dashboard. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Permission Level Rule Dashboard (POST /api/v2/settings/update_permission_level_rule_dashboard)."""
     request_json: dict[str, Any] = {
         "permission_level_rule_dashboard_id": permission_level_rule_dashboard_id,
         "dashboard_id": dashboard_id,

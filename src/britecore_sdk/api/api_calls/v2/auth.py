@@ -16,20 +16,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 def retrieve_permission_levels(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Permission Levels.
-
-    Send a request to POST /api/v2/auth/retrieve_permission_levels. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Permission Levels (POST /api/v2/auth/retrieve_permission_levels)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

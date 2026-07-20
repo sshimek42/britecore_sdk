@@ -25,20 +25,7 @@ def create_task(
     task_definition_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Task.
-
-    Send a request to POST /api/v2/tasks/create_task. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Task (POST /api/v2/tasks/create_task)."""
     request_json: dict[str, Any] = {
         "due_date": due_date,
         "mandatory": mandatory,
@@ -67,20 +54,7 @@ def create_task_definition(
     scope: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Task Definition.
-
-    Send a request to POST /api/v2/tasks/create_task_definition. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Task Definition (POST /api/v2/tasks/create_task_definition)."""
     request_json: dict[str, Any] = {
         "name": name,
         "scope": scope,
@@ -107,20 +81,7 @@ def modify_task(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Task.
-
-    Send a request to POST /api/v2/tasks/modify_task. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Modify Task (POST /api/v2/tasks/modify_task)."""
     request_json: dict[str, Any] = {
         "status": status,
         "due_date": due_date,
@@ -145,20 +106,7 @@ def modify_task(
 def retrieve_filter_options(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Filter Options.
-
-    Send a request to POST /api/v2/tasks/retrieve_filter_options. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Filter Options (POST /api/v2/tasks/retrieve_filter_options)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -176,20 +124,7 @@ def retrieve_task(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task.
-
-    Send a request to POST /api/v2/tasks/retrieve_task. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Task (POST /api/v2/tasks/retrieve_task)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -209,20 +144,7 @@ def retrieve_task_definition(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task Definition.
-
-    Send a request to POST /api/v2/tasks/retrieve_task_definition. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Task Definition (POST /api/v2/tasks/retrieve_task_definition)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -241,20 +163,7 @@ def retrieve_task_definition(
 def retrieve_task_definitions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task Definitions.
-
-    Send a request to POST /api/v2/tasks/retrieve_task_definitions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Task Definitions (POST /api/v2/tasks/retrieve_task_definitions)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -272,20 +181,7 @@ def retrieve_task_history(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task History.
-
-    Send a request to POST /api/v2/tasks/retrieve_task_history. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Task History (POST /api/v2/tasks/retrieve_task_history)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -308,20 +204,7 @@ def retrieve_tasks(
     filters: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Tasks.
-
-    Send a request to POST /api/v2/tasks/retrieve_tasks. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Tasks (POST /api/v2/tasks/retrieve_tasks)."""
     request_json: dict[str, Any] = {
         "query": query,
         "pagination": pagination,

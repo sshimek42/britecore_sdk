@@ -84,20 +84,7 @@ def get_named_insured(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insured.
-
-    Send a request to POST /api/v2/named_insureds/get_named_insured. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Named Insured (POST /api/v2/named_insureds/get_named_insured)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -115,20 +102,7 @@ def get_named_insured_by_id(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insured By Id.
-
-    Send a request to POST /api/v2/named_insureds/get_named_insured_by_id. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Named Insured By Id (POST /api/v2/named_insureds/get_named_insured_by_id)."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -146,20 +120,7 @@ def get_named_insureds(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insureds.
-
-    Send a request to POST /api/v2/named_insureds/get_named_insureds. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Named Insureds (POST /api/v2/named_insureds/get_named_insureds)."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -177,20 +138,7 @@ def run_score(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Score.
-
-    Send a request to POST /api/v2/named_insureds/run_score. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Run Score (POST /api/v2/named_insureds/run_score)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -208,20 +156,7 @@ def set_primary_insured(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Primary Insured.
-
-    Send a request to POST /api/v2/named_insureds/set_primary_insured. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set Primary Insured (POST /api/v2/named_insureds/set_primary_insured)."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

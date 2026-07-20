@@ -18,20 +18,7 @@ def create_watercraft(
     skip_rules: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Watercraft.
-
-    Send a request to POST /api/v2/watercrafts/create_watercraft. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Watercraft (POST /api/v2/watercrafts/create_watercraft)."""
     request_json: dict[str, Any] = {
         "watercraft": watercraft,
         "skip_rules": skip_rules,
@@ -52,20 +39,7 @@ def delete_watercraft(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Watercraft.
-
-    Send a request to POST /api/v2/watercrafts/delete_watercraft. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Watercraft (POST /api/v2/watercrafts/delete_watercraft)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -85,20 +59,7 @@ def get_watercraft(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Watercraft.
-
-    Send a request to POST /api/v2/watercrafts/get_watercraft. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Watercraft (POST /api/v2/watercrafts/get_watercraft)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -118,20 +79,7 @@ def list_custom_fields_types(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Custom Fields Types.
-
-    Send a request to POST /api/v2/watercrafts/list_custom_fields_types. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Custom Fields Types (POST /api/v2/watercrafts/list_custom_fields_types)."""
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -151,20 +99,7 @@ def list_watercrafts_for_quote(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Watercrafts For Quote.
-
-    Send a request to POST /api/v2/watercrafts/list_watercrafts_for_quote. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Watercrafts For Quote (POST /api/v2/watercrafts/list_watercrafts_for_quote)."""
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -185,20 +120,7 @@ def update_watercraft(
     skip_rules: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Watercraft.
-
-    Send a request to POST /api/v2/watercrafts/update_watercraft. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Watercraft (POST /api/v2/watercrafts/update_watercraft)."""
     request_json: dict[str, Any] = {
         "watercraft": watercraft,
         "skip_rules": skip_rules,

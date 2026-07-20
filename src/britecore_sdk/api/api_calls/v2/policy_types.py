@@ -20,20 +20,7 @@ def create_policy_type_relation(
     related_line_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Policy Type Relation.
-
-    Send a request to POST /api/v2/policy_types/create_policy_type_relation. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Policy Type Relation (POST /api/v2/policy_types/create_policy_type_relation)."""
     request_json: dict[str, Any] = {
         "relationship_type": relationship_type,
         "policy_type_id": policy_type_id,
@@ -56,20 +43,7 @@ def get_coverage_type(
     coverage_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Coverage Type.
-
-    Send a request to POST /api/v2/policy_types/get_coverage_type. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Coverage Type (POST /api/v2/policy_types/get_coverage_type)."""
     request_json: dict[str, Any] = {"coverage_id": coverage_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -88,20 +62,7 @@ def list_available_coverages(
     risk_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Available Coverages.
-
-    Send a request to POST /api/v2/policy_types/list_available_coverages. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Available Coverages (POST /api/v2/policy_types/list_available_coverages)."""
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
         "risk_id": risk_id,
@@ -121,20 +82,7 @@ def list_available_coverages(
 def list_available_sub_lines(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Available Sub Lines.
-
-    Send a request to POST /api/v2/policy_types/list_available_sub_lines. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Available Sub Lines (POST /api/v2/policy_types/list_available_sub_lines)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -152,20 +100,7 @@ def list_coverage_types(
     policy_type_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Coverage Types.
-
-    Send a request to POST /api/v2/policy_types/list_coverage_types. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Coverage Types (POST /api/v2/policy_types/list_coverage_types)."""
     request_json: dict[str, Any] = {"policy_type_id": policy_type_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -184,20 +119,7 @@ def list_filtered_policy_types(
     location_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Filtered Policy Types.
-
-    Send a request to POST /api/v2/policy_types/list_filtered_policy_types. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Filtered Policy Types (POST /api/v2/policy_types/list_filtered_policy_types)."""
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "location_id": location_id,
@@ -219,20 +141,7 @@ def remove_policy_type_relations(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Policy Type Relations.
-
-    Send a request to POST /api/v2/policy_types/remove_policy_type_relations. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Policy Type Relations (POST /api/v2/policy_types/remove_policy_type_relations)."""
     request_json: dict[str, Any] = {
         "relationship_type": relationship_type,
         "policy_type_id": policy_type_id,
@@ -252,20 +161,7 @@ def remove_policy_type_relations(
 def retrieve_policy_types(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Policy Types.
-
-    Send a request to POST /api/v2/policy_types/retrieve_policy_types. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Policy Types (POST /api/v2/policy_types/retrieve_policy_types)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -283,20 +179,7 @@ def update_quick_codes(
     policy_type_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Codes.
-
-    Send a request to POST /api/v2/policy_types/update_quick_codes. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Quick Codes (POST /api/v2/policy_types/update_quick_codes)."""
     request_json: dict[str, Any] = {"policy_type_id": policy_type_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

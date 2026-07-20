@@ -18,20 +18,7 @@ def add_template_to_policy_type(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Template To Policy Type.
-
-    Send a request to POST /api/v2/quick_quote_templates/add_template_to_policy_type. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add Template To Policy Type (POST /api/v2/quick_quote_templates/add_template_to_policy_type)."""
     request_json: dict[str, Any] = {
         "quick_quote_template_id": quick_quote_template_id,
         "policy_type_id": policy_type_id,
@@ -55,20 +42,7 @@ def create_quick_quote_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Quick Quote Template.
-
-    Send a request to POST /api/v2/quick_quote_templates/create_quick_quote_template. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Quick Quote Template (POST /api/v2/quick_quote_templates/create_quick_quote_template)."""
     request_json: dict[str, Any] = {
         "policy_type_ids": policy_type_ids,
         "quote_template": quote_template,
@@ -94,20 +68,7 @@ def create_template_risk_default_value(
     risk_defaults: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Template Risk Default Value.
-
-    Send a request to POST /api/v2/quick_quote_templates/create_template_risk_default_value. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Template Risk Default Value (POST /api/v2/quick_quote_templates/create_template_risk_default_value)."""
     request_json: dict[str, Any] = {
         "quick_quote_template_id": quick_quote_template_id,
         "version": version,
@@ -131,20 +92,7 @@ def delete_quick_quote_template(
     template_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Quick Quote Template.
-
-    Send a request to POST /api/v2/quick_quote_templates/delete_quick_quote_template. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Quick Quote Template (POST /api/v2/quick_quote_templates/delete_quick_quote_template)."""
     request_json: dict[str, Any] = {
         "template_id": template_id,
     }
@@ -165,20 +113,7 @@ def delete_template_risk_default_value(
     value_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Template Risk Default Value.
-
-    Send a request to POST /api/v2/quick_quote_templates/delete_template_risk_default_value. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Template Risk Default Value (POST /api/v2/quick_quote_templates/delete_template_risk_default_value)."""
     request_json: dict[str, Any] = {
         "value_id": value_id,
     }
@@ -199,20 +134,7 @@ def get_quick_quote_template(
     template_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quick Quote Template.
-
-    Send a request to POST /api/v2/quick_quote_templates/get_quick_quote_template. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Quick Quote Template (POST /api/v2/quick_quote_templates/get_quick_quote_template)."""
     request_json: dict[str, Any] = {
         "template_id": template_id,
     }
@@ -232,20 +154,7 @@ def get_quick_quote_template(
 def list_quick_quote_templates(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Quick Quote Templates.
-
-    Send a request to POST /api/v2/quick_quote_templates/list_quick_quote_templates. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Quick Quote Templates (POST /api/v2/quick_quote_templates/list_quick_quote_templates)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -268,20 +177,7 @@ def update_quick_quote_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Quote Template.
-
-    Send a request to POST /api/v2/quick_quote_templates/update_quick_quote_template. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Quick Quote Template (POST /api/v2/quick_quote_templates/update_quick_quote_template)."""
     request_json: dict[str, Any] = {
         "policy_type_ids": policy_type_ids,
         "quote_template": quote_template,
@@ -306,20 +202,7 @@ def update_template_risk_default_value(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Template Risk Default Value.
-
-    Send a request to POST /api/v2/quick_quote_templates/update_template_risk_default_value. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Template Risk Default Value (POST /api/v2/quick_quote_templates/update_template_risk_default_value)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -307,20 +307,7 @@ def add_member_to_agency(
     member_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Member To Agency.
-
-    Send a request to POST /api/v2/contacts/add_member_to_agency. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add Member To Agency (POST /api/v2/contacts/add_member_to_agency)."""
     request_json: dict[str, Any] = {
         "set_member_company": set_member_company,
         "agency_id": agency_id,
@@ -344,20 +331,7 @@ def assign_policy_contact(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Assign Policy Contact.
-
-    Send a request to POST /api/v2/contacts/assign_policy_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Assign Policy Contact (POST /api/v2/contacts/assign_policy_contact)."""
     request_json: dict[str, Any] = {
         "role": role,
         "contact_id": contact_id,
@@ -381,20 +355,7 @@ def assign_quote_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Assign Quote Contact.
-
-    Send a request to POST /api/v2/contacts/assign_quote_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Assign Quote Contact (POST /api/v2/contacts/assign_quote_contact)."""
     request_json: dict[str, Any] = {
         "role": role,
         "quote_id": quote_id,
@@ -418,20 +379,7 @@ def assign_risk_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Assign Risk Contact.
-
-    Send a request to POST /api/v2/contacts/assign_risk_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Assign Risk Contact (POST /api/v2/contacts/assign_risk_contact)."""
     request_json: dict[str, Any] = {
         "role": role,
         "risk_id": risk_id,
@@ -453,20 +401,7 @@ def check_username_availability(
     username: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check Username Availability.
-
-    Send a request to POST /api/v2/contacts/check_username_availability. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Check Username Availability (POST /api/v2/contacts/check_username_availability)."""
     request_json: dict[str, Any] = {
         "username": username,
     }
@@ -524,20 +459,7 @@ def create_contact(
     position: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Contact.
-
-    Send a request to POST /api/v2/contacts/create_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Contact (POST /api/v2/contacts/create_contact)."""
     request_json: dict[str, Any] = {
         "username": username,
         "source_update_date": source_update_date,
@@ -596,20 +518,7 @@ def create_credit_report_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Credit Report For Contact.
-
-    Send a request to POST /api/v2/contacts/create_credit_report_for_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Credit Report For Contact (POST /api/v2/contacts/create_credit_report_for_contact)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "contact_id": contact_id,
@@ -631,20 +540,7 @@ def credit_score_threshold_details(
     contact_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Credit Score Threshold Details.
-
-    Send a request to POST /api/v2/contacts/credit_score_threshold_details. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Credit Score Threshold Details (POST /api/v2/contacts/credit_score_threshold_details)."""
     request_json: dict[str, Any] = {
         "ref_contact_id": ref_contact_id,
         "contact_ids": contact_ids,
@@ -666,20 +562,7 @@ def enable_or_disable_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Enable Or Disable Contact.
-
-    Send a request to POST /api/v2/contacts/enable_or_disable_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Enable Or Disable Contact (POST /api/v2/contacts/enable_or_disable_contact)."""
     request_json: dict[str, Any] = {
         "active": active,
         "contact_id": contact_id,
@@ -700,20 +583,7 @@ def generate_contact_number(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Contact Number.
-
-    Send a request to POST /api/v2/contacts/generate_contact_number. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Generate Contact Number (POST /api/v2/contacts/generate_contact_number)."""
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -734,20 +604,7 @@ def get_aspect_data(
     role_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Aspect Data.
-
-    Send a request to POST /api/v2/contacts/get_aspect_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Aspect Data (POST /api/v2/contacts/get_aspect_data)."""
     request_json: dict[str, Any] = {
         "all": all,
         "id": id,
@@ -769,20 +626,7 @@ def get_aspect_data(
 def get_aspect_data_settings(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Aspect Data Settings.
-
-    Send a request to POST /api/v2/contacts/get_aspect_data_settings. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Aspect Data Settings (POST /api/v2/contacts/get_aspect_data_settings)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -801,20 +645,7 @@ def get_contact_associations(
     contact_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact Associations.
-
-    Send a request to POST /api/v2/contacts/get_contact_associations. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact Associations (POST /api/v2/contacts/get_contact_associations)."""
     request_json: dict[str, Any] = {
         "policy_type_ids": policy_type_ids,
         "contact_ids": contact_ids,
@@ -835,20 +666,7 @@ def get_contact_by_agency(
     agency_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Agency.
-
-    Send a request to POST /api/v2/contacts/get_contact_by_agency. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact By Agency (POST /api/v2/contacts/get_contact_by_agency)."""
     request_json: dict[str, Any] = {
         "agency_number": agency_number,
     }
@@ -868,20 +686,7 @@ def get_contact_by_agency_group(
     agency_group_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Agency Group.
-
-    Send a request to POST /api/v2/contacts/get_contact_by_agency_group. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact By Agency Group (POST /api/v2/contacts/get_contact_by_agency_group)."""
     request_json: dict[str, Any] = {
         "agency_group_number": agency_group_number,
     }
@@ -901,20 +706,7 @@ def get_contact_by_agent(
     producer_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Agent.
-
-    Send a request to POST /api/v2/contacts/get_contact_by_agent. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact By Agent (POST /api/v2/contacts/get_contact_by_agent)."""
     request_json: dict[str, Any] = {
         "producer_number": producer_number,
     }
@@ -934,20 +726,7 @@ def get_contact_by_cognito_username(
     cognito_username: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Cognito Username.
-
-    Send a request to POST /api/v2/contacts/get_contact_by_cognito_username. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact By Cognito Username (POST /api/v2/contacts/get_contact_by_cognito_username)."""
     request_json: dict[str, Any] = {
         "cognito_username": cognito_username,
     }
@@ -968,20 +747,7 @@ def get_contact_by_credentials(
     password: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Credentials.
-
-    Send a request to POST /api/v2/contacts/get_contact_by_credentials. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact By Credentials (POST /api/v2/contacts/get_contact_by_credentials)."""
     request_json: dict[str, Any] = {
         "username": username,
         "password": password,
@@ -1002,20 +768,7 @@ def get_contact_for_migration(
     search_str: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact For Migration.
-
-    Send a request to POST /api/v2/contacts/get_contact_for_migration. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Contact For Migration (POST /api/v2/contacts/get_contact_for_migration)."""
     request_json: dict[str, Any] = {
         "search_str": search_str,
     }
@@ -1035,20 +788,7 @@ def get_payment_methods(
     payment_method_ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Payment Methods.
-
-    Send a request to POST /api/v2/contacts/get_payment_methods. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Payment Methods (POST /api/v2/contacts/get_payment_methods)."""
     request_json: dict[str, Any] = {
         "payment_method_ids": payment_method_ids,
     }
@@ -1069,20 +809,7 @@ def get_resource_producer_id(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Resource Producer Id.
-
-    Send a request to POST /api/v2/contacts/get_resource_producer_id. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Resource Producer Id (POST /api/v2/contacts/get_resource_producer_id)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "policy_id": policy_id,
@@ -1104,20 +831,7 @@ def link_contact_to_cognito_user(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Link Contact To Cognito User.
-
-    Send a request to POST /api/v2/contacts/link_contact_to_cognito_user. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Link Contact To Cognito User (POST /api/v2/contacts/link_contact_to_cognito_user)."""
     request_json: dict[str, Any] = {
         "cognito_username": cognito_username,
         "contact_id": contact_id,
@@ -1137,20 +851,7 @@ def link_contact_to_cognito_user(
 def list_all_contacts(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List All Contacts.
-
-    Send a request to POST /api/v2/contacts/list_all_contacts. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List All Contacts (POST /api/v2/contacts/list_all_contacts)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1168,20 +869,7 @@ def list_credit_reports_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Credit Reports For Contact.
-
-    Send a request to POST /api/v2/contacts/list_credit_reports_for_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Credit Reports For Contact (POST /api/v2/contacts/list_credit_reports_for_contact)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1201,20 +889,7 @@ def list_emails_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Emails For Contact.
-
-    Send a request to POST /api/v2/contacts/list_emails_for_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Emails For Contact (POST /api/v2/contacts/list_emails_for_contact)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1270,20 +945,7 @@ def modify_contact(
     position: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Contact.
-
-    Send a request to POST /api/v2/contacts/modify_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Modify Contact (POST /api/v2/contacts/modify_contact)."""
     request_json: dict[str, Any] = {
         "username": username,
         "drivers_license": drivers_license,
@@ -1340,20 +1002,7 @@ def remove_contact_from_role(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Contact From Role.
-
-    Send a request to POST /api/v2/contacts/remove_contact_from_role. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Contact From Role (POST /api/v2/contacts/remove_contact_from_role)."""
     request_json: dict[str, Any] = {
         "role_name": role_name,
         "contact_id": contact_id,
@@ -1377,20 +1026,7 @@ def remove_contact_information(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Contact Information.
-
-    Send a request to POST /api/v2/contacts/remove_contact_information. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Contact Information (POST /api/v2/contacts/remove_contact_information)."""
     request_json: dict[str, Any] = {
         "contact_emails": contact_emails,
         "contact_addresses": contact_addresses,
@@ -1414,20 +1050,7 @@ def remove_contact_system_tags(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Contact System Tags.
-
-    Send a request to POST /api/v2/contacts/remove_contact_system_tags. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Contact System Tags (POST /api/v2/contacts/remove_contact_system_tags)."""
     request_json: dict[str, Any] = {
         "system_tags": system_tags,
         "contact_id": contact_id,
@@ -1450,20 +1073,7 @@ def remove_policy_contact(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Policy Contact.
-
-    Send a request to POST /api/v2/contacts/remove_policy_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Policy Contact (POST /api/v2/contacts/remove_policy_contact)."""
     request_json: dict[str, Any] = {
         "role": role,
         "contact_id": contact_id,
@@ -1487,20 +1097,7 @@ def remove_quote_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Quote Contact.
-
-    Send a request to POST /api/v2/contacts/remove_quote_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Quote Contact (POST /api/v2/contacts/remove_quote_contact)."""
     request_json: dict[str, Any] = {
         "role": role,
         "quote_id": quote_id,
@@ -1524,20 +1121,7 @@ def remove_risk_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Risk Contact.
-
-    Send a request to POST /api/v2/contacts/remove_risk_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove Risk Contact (POST /api/v2/contacts/remove_risk_contact)."""
     request_json: dict[str, Any] = {
         "role": role,
         "risk_id": risk_id,
@@ -1561,20 +1145,7 @@ def retrieveaddressinfo(
     addressLine1: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieveaddressinfo.
-
-    Send a request to POST /api/v2/contacts/retrieveAddressInfo. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieveaddressinfo (POST /api/v2/contacts/retrieveAddressInfo)."""
     request_json: dict[str, Any] = {
         "stateAbbr": stateAbbr,
         "zip": zip,
@@ -1602,20 +1173,7 @@ def retrieve_address_suggestions(
     address_zip: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Address Suggestions.
-
-    Send a request to POST /api/v2/contacts/retrieve_address_suggestions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Address Suggestions (POST /api/v2/contacts/retrieve_address_suggestions)."""
     request_json: dict[str, Any] = {
         "address_line2": address_line2,
         "address_city": address_city,
@@ -1641,20 +1199,7 @@ def retrieve_addresses(
     address_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Addresses.
-
-    Send a request to POST /api/v2/contacts/retrieve_addresses. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Addresses (POST /api/v2/contacts/retrieve_addresses)."""
     request_json: dict[str, Any] = {
         "address_ids": address_ids,
     }
@@ -1676,20 +1221,7 @@ def retrieve_agencies_near_zip(
     results: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Agencies Near Zip.
-
-    Send a request to POST /api/v2/contacts/retrieve_agencies_near_zip. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Agencies Near Zip (POST /api/v2/contacts/retrieve_agencies_near_zip)."""
     request_json: dict[str, Any] = {
         "max_distance": max_distance,
         "zipcode": zipcode,
@@ -1711,20 +1243,7 @@ def retrieve_all_roles(
     login_only: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve All Roles.
-
-    Send a request to POST /api/v2/contacts/retrieve_all_roles. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve All Roles (POST /api/v2/contacts/retrieve_all_roles)."""
     request_json: dict[str, Any] = {
         "login_only": login_only,
     }
@@ -1745,20 +1264,7 @@ def retrieve_contact(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact.
-
-    Send a request to POST /api/v2/contacts/retrieve_contact. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Contact (POST /api/v2/contacts/retrieve_contact)."""
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -1779,20 +1285,7 @@ def retrieve_contact_info(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact Info.
-
-    Send a request to POST /api/v2/contacts/retrieve_contact_info. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Contact Info (POST /api/v2/contacts/retrieve_contact_info)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1813,20 +1306,7 @@ def retrieve_contact_motor_vehicle_reports(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact Motor Vehicle Reports.
-
-    Send a request to POST /api/v2/contacts/retrieve_contact_motor_vehicle_reports. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Contact Motor Vehicle Reports (POST /api/v2/contacts/retrieve_contact_motor_vehicle_reports)."""
     request_json: dict[str, Any] = {
         "store_no_hit": store_no_hit,
         "contact_id": contact_id,
@@ -1848,20 +1328,7 @@ def retrieve_contact_system_tags(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact System Tags.
-
-    Send a request to POST /api/v2/contacts/retrieve_contact_system_tags. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Contact System Tags (POST /api/v2/contacts/retrieve_contact_system_tags)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1882,20 +1349,7 @@ def retrieve_credit_score_tier(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Credit Score Tier.
-
-    Send a request to POST /api/v2/contacts/retrieve_credit_score_tier. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Credit Score Tier (POST /api/v2/contacts/retrieve_credit_score_tier)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "contact_id": contact_id,
@@ -1916,20 +1370,7 @@ def retrieve_dob_and_ssn(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Dob And Ssn.
-
-    Send a request to POST /api/v2/contacts/retrieve_dob_and_ssn. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Dob And Ssn (POST /api/v2/contacts/retrieve_dob_and_ssn)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1949,20 +1390,7 @@ def retrieve_quoting_permissions(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Quoting Permissions.
-
-    Send a request to POST /api/v2/contacts/retrieve_quoting_permissions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Quoting Permissions (POST /api/v2/contacts/retrieve_quoting_permissions)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1986,20 +1414,7 @@ def retrieve_related_contacts(
     relations_required: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Related Contacts.
-
-    Send a request to POST /api/v2/contacts/retrieve_related_contacts. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Related Contacts (POST /api/v2/contacts/retrieve_related_contacts)."""
     request_json: dict[str, Any] = {
         "result_structure": result_structure,
         "attributes_required": attributes_required,
@@ -2024,20 +1439,7 @@ def search_names_emails(
     limit: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Search Names Emails.
-
-    Send a request to POST /api/v2/contacts/search_names_emails. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Search Names Emails (POST /api/v2/contacts/search_names_emails)."""
     request_json: dict[str, Any] = {
         "query": query,
         "limit": limit,
@@ -2083,20 +1485,7 @@ def set_aspect_data(
     termination: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Aspect Data.
-
-    Send a request to POST /api/v2/contacts/set_aspect_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set Aspect Data (POST /api/v2/contacts/set_aspect_data)."""
     request_json: dict[str, Any] = {
         "payments_issued": payments_issued,
         "agency_number": agency_number,
@@ -2142,20 +1531,7 @@ def set_contact_system_tags(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Contact System Tags.
-
-    Send a request to POST /api/v2/contacts/set_contact_system_tags. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set Contact System Tags (POST /api/v2/contacts/set_contact_system_tags)."""
     request_json: dict[str, Any] = {
         "system_tags": system_tags,
         "contact_id": contact_id,
@@ -2179,20 +1555,7 @@ def set_quoting_permissions(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Quoting Permissions.
-
-    Send a request to POST /api/v2/contacts/set_quoting_permissions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set Quoting Permissions (POST /api/v2/contacts/set_quoting_permissions)."""
     request_json: dict[str, Any] = {
         "states": states,
         "policy_types": policy_types,
@@ -2216,20 +1579,7 @@ def store_contact_gender(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Contact Gender.
-
-    Send a request to POST /api/v2/contacts/store_contact_gender. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Store Contact Gender (POST /api/v2/contacts/store_contact_gender)."""
     request_json: dict[str, Any] = {
         "gender": gender,
         "contact_id": contact_id,
@@ -2250,20 +1600,7 @@ def update_contact_number(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Contact Number.
-
-    Send a request to POST /api/v2/contacts/update_contact_number. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Contact Number (POST /api/v2/contacts/update_contact_number)."""
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -2281,20 +1618,7 @@ def update_contacts(
     contacts: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Contacts.
-
-    Send a request to POST /api/v2/contacts/update_contacts. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Contacts (POST /api/v2/contacts/update_contacts)."""
     request_json: dict[str, Any] = {
         "contacts": contacts,
     }
@@ -2315,20 +1639,7 @@ def validate_last_4_ssn_digits(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Validate Last 4 Ssn Digits.
-
-    Send a request to POST /api/v2/contacts/validate_last_4_ssn_digits. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Validate Last 4 Ssn Digits (POST /api/v2/contacts/validate_last_4_ssn_digits)."""
     request_json: dict[str, Any] = {
         "last_4_ssn_digits": last_4_ssn_digits,
         "contact_id": contact_id,

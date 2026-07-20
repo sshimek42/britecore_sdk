@@ -77,20 +77,7 @@ def initiate_property_inspection(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Initiate Property Inspection.
-
-    Send a request to POST /api/v2/inspections/initiate_property_inspection. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Initiate Property Inspection (POST /api/v2/inspections/initiate_property_inspection)."""
     request_json: dict[str, Any] = {
         "integration_instance_id": integration_instance_id,
         "property_id": property_id,
@@ -114,20 +101,7 @@ def update_property_inspection_data(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Property Inspection Data.
-
-    Send a request to POST /api/v2/inspections/update_property_inspection_data. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Property Inspection Data (POST /api/v2/inspections/update_property_inspection_data)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "integration_instance_id": integration_instance_id,

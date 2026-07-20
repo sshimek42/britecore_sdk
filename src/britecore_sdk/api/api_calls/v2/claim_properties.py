@@ -17,20 +17,7 @@ def create_claim_property(
     claim_property: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Claim Property.
-
-    Send a request to POST /api/v2/claim_properties/create_claim_property. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Claim Property (POST /api/v2/claim_properties/create_claim_property)."""
     request_json: dict[str, Any] = {"claim_property": claim_property}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -48,20 +35,7 @@ def delete_claim_property(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Claim Property.
-
-    Send a request to POST /api/v2/claim_properties/delete_claim_property. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Claim Property (POST /api/v2/claim_properties/delete_claim_property)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -79,20 +53,7 @@ def get_claim_properties(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Properties.
-
-    Send a request to POST /api/v2/claim_properties/get_claim_properties. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claim Properties (POST /api/v2/claim_properties/get_claim_properties)."""
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -110,20 +71,7 @@ def get_claim_property(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Property.
-
-    Send a request to POST /api/v2/claim_properties/get_claim_property. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Claim Property (POST /api/v2/claim_properties/get_claim_property)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -141,20 +89,7 @@ def update_claim_property(
     claim_property: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Claim Property.
-
-    Send a request to POST /api/v2/claim_properties/update_claim_property. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Claim Property (POST /api/v2/claim_properties/update_claim_property)."""
     request_json: dict[str, Any] = {"claim_property": claim_property}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

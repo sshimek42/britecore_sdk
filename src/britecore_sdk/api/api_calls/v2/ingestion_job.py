@@ -17,20 +17,7 @@ def create_ingestion_job(
     ingestion_job: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Ingestion Job.
-
-    Send a request to POST /api/v2/ingestion_job/create_ingestion_job. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Ingestion Job (POST /api/v2/ingestion_job/create_ingestion_job)."""
     request_json: dict[str, Any] = {"ingestion_job": ingestion_job}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -48,20 +35,7 @@ def delete_ingestion_job(
     ingestion_job_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Ingestion Job.
-
-    Send a request to POST /api/v2/ingestion_job/delete_ingestion_job. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Ingestion Job (POST /api/v2/ingestion_job/delete_ingestion_job)."""
     request_json: dict[str, Any] = {"ingestion_job_id": ingestion_job_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -79,20 +53,7 @@ def execute_import(
     ingestion_job_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Execute Import.
-
-    Send a request to POST /api/v2/ingestion_job/execute_import. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Execute Import (POST /api/v2/ingestion_job/execute_import)."""
     request_json: dict[str, Any] = {"ingestion_job_id": ingestion_job_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -110,20 +71,7 @@ def get_ingestion_job(
     ingestion_job_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Ingestion Job.
-
-    Send a request to POST /api/v2/ingestion_job/get_ingestion_job. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Ingestion Job (POST /api/v2/ingestion_job/get_ingestion_job)."""
     request_json: dict[str, Any] = {"ingestion_job_id": ingestion_job_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -140,20 +88,7 @@ def get_ingestion_job(
 def list_ingestion_jobs(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Ingestion Jobs.
-
-    Send a request to POST /api/v2/ingestion_job/list_ingestion_jobs. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Ingestion Jobs (POST /api/v2/ingestion_job/list_ingestion_jobs)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

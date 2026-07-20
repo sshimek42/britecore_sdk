@@ -17,20 +17,7 @@ def create_suspension(
     suspension: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Suspension.
-
-    Send a request to POST /api/v2/suspensions/create_suspension. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create Suspension (POST /api/v2/suspensions/create_suspension)."""
     request_json: dict[str, Any] = {"suspension": suspension}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -47,20 +34,7 @@ def create_suspension(
 def delete_suspension(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Suspension.
-
-    Send a request to POST /api/v2/suspensions/delete_suspension. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete Suspension (POST /api/v2/suspensions/delete_suspension)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -79,20 +53,7 @@ def get_policy_applicable_suspensions(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policy Applicable Suspensions.
-
-    Send a request to POST /api/v2/suspensions/get_policy_applicable_suspensions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Policy Applicable Suspensions (POST /api/v2/suspensions/get_policy_applicable_suspensions)."""
     request_json: dict[str, Any] = {
         "suspension_actions": suspension_actions,
         "policy_id": policy_id,
@@ -113,20 +74,7 @@ def get_revision_suspensions(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Revision Suspensions.
-
-    Send a request to POST /api/v2/suspensions/get_revision_suspensions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Revision Suspensions (POST /api/v2/suspensions/get_revision_suspensions)."""
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -145,20 +93,7 @@ def get_user_suspensions_with_geometries(
     state: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get User Suspensions With Geometries.
-
-    Send a request to POST /api/v2/suspensions/get_user_suspensions_with_geometries. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get User Suspensions With Geometries (POST /api/v2/suspensions/get_user_suspensions_with_geometries)."""
     request_json: dict[str, Any] = {
         "date": date,
         "state": state,
@@ -179,20 +114,7 @@ def get_user_suspensions_with_geometries(
 def list_suspensions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Suspensions.
-
-    Send a request to POST /api/v2/suspensions/list_suspensions. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List Suspensions (POST /api/v2/suspensions/list_suspensions)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -210,20 +132,7 @@ def update_suspension(
     suspension: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Suspension.
-
-    Send a request to POST /api/v2/suspensions/update_suspension. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Suspension (POST /api/v2/suspensions/update_suspension)."""
     request_json: dict[str, Any] = {"suspension": suspension}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

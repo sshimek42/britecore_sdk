@@ -84,20 +84,7 @@ def get_authority_limit(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Authority Limit.
-
-    Send a request to POST /api/v2/authority_limits/get_authority_limit. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Authority Limit (POST /api/v2/authority_limits/get_authority_limit)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -147,20 +134,7 @@ def update_all_authority_limits(
     authority_limits: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update All Authority Limits.
-
-    Send a request to POST /api/v2/authority_limits/update_all_authority_limits. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update All Authority Limits (POST /api/v2/authority_limits/update_all_authority_limits)."""
     request_json: dict[str, Any] = {"authority_limits": authority_limits}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
