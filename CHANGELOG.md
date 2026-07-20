@@ -11,6 +11,46 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.3] - 2026-07-20
+
+### Added
+
+- **85 new always-on tests** replacing the fully-skipped `test_workflows_integration.py`
+  template suite across 10 test classes:
+  - `TestPhoneValidatorProperties` (15): format normalization, sentinel rejection (`"0"`, `"-"`),
+    all type-map entries (`mobile→Cell`, `business→Work`, `office→Work`, `cellular→Cell`),
+    multi-entry list processing
+  - `TestEmailValidatorProperties` (12): lowercase normalization, `validate_email()`, type-map
+    entries (`home→Personal`, `business→Work`), `InvalidEmailAddress` guard, silent empty-entry skip
+  - `TestNameValidatorProperties` (6): apostrophe lowercasing, suffix handling (IV, III, Jr)
+  - `TestBritecoreQuoteModel` (6): `to_dict()` field completeness, auto-generated description,
+    explicit description preservation, inspection date include/exclude, `underwriting_questions` reset
+  - `TestBritecoreContactModel` (5): `process_contact()` name normalization, type defaulting,
+    organization type, policy number, key completeness
+  - `TestPolicyWorkflows` (3): `retrieve_policy` path routing, payload building, `revision_state`
+  - `TestContactWorkflows` (6): `new_contact` path, address/phone/email type normalization,
+    `MissingParameter` guards for empty name and empty address list
+  - `TestQuoteWorkflows` (6): `create_full_quote` tuple return, path routing, empty/`None` payload
+    guards, `None` response `(None, None)` tuple, explicit-client override
+  - `TestErrorHandlingWorkflows` (8): exception `status_code` metadata, flat-alias identity,
+    `BritecoreError.Base` hierarchy, `request_id`/`error_code` in `__str__`
+  - `TestMultiEnvironmentWorkflows` (4): `use_api_client` context manager, `init_api_client`,
+    `get_api_client` with autouse mock
+
+### Fixed
+
+- **`test_live_create_quote_round_trip`**: replaced unconditional `pytest.skip()` with a real
+  `create_full_quote` → `get_quote` round-trip test, gated on the new
+  `BRITECORE_SANDBOX_POLICY_TYPE_ID` env var; preserves skip behaviour when the variable is absent
+- **`test_interactive_menu_module_can_be_imported`**: removed catch-all `try/except pytest.skip()`;
+  the module uses a lazy proxy (`_LazyAPIClient`) that never requires config at import time
+- **black ↔ ruff-format formatting cycle** on `test_endpoints.py`: extracted long assertion
+  message into a local variable so the statement fits on one line and both formatters agree
+- **`post_probe_report.json` / `post_probe_report.md`**: fixed missing end-of-file newline and
+  mixed Windows/Unix line endings
+
+---
+
 ## [2.0.2] - 2026-07-20
 
 ### Fixed
