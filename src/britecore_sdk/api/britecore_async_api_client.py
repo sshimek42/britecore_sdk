@@ -93,13 +93,13 @@ class AsyncBritecoreAPIClient:
                     "client_dry_run": self._client_dry_run
                 }
                 if self._base_url is not None:
-                    init_kwargs["base_url"] = self._base_url  # type: ignore[typeddict-unknown-key]
+                    init_kwargs["base_url"] = self._base_url
                 if self._api_key is not None:
-                    init_kwargs["api_key"] = self._api_key  # type: ignore[typeddict-unknown-key]
+                    init_kwargs["api_key"] = self._api_key
                 if self._client_id is not None:
-                    init_kwargs["client_id"] = self._client_id  # type: ignore[typeddict-unknown-key]
+                    init_kwargs["client_id"] = self._client_id
                 if self._client_secret is not None:
-                    init_kwargs["client_secret"] = self._client_secret  # type: ignore[typeddict-unknown-key]
+                    init_kwargs["client_secret"] = self._client_secret
                 await asyncio.to_thread(client.init_client, **init_kwargs)
                 self._client = client
             self._client_dry_run = getattr(self._client, "client_dry_run", False)
