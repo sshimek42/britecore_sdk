@@ -56,12 +56,11 @@ napoleon_attr_annotations = True
 # to render as MagicMock in the generated API docs.
 autodoc_mock_imports: list[str] = []
 
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "migrations/*"]
 
 # Suppress warnings for relative .md links that point to files intentionally
-# outside the Sphinx source tree (e.g. tests/README.md, GETTING_STARTED.md,
-# TROUBLESHOOTING.md).  These are valid links for GitHub/local viewing but are
-# not part of the built docs.
+# outside the Sphinx source tree (for example, test-only docs and local notes).
+# Primary user guides are included in the docs tree via {include} wrappers.
 suppress_warnings = ["myst.xref_missing"]
 
 html_theme = "alabaster"

@@ -153,7 +153,7 @@ Supporting Python 3.11+ now. Dropping 3.11 support → Major version bump.
 
 Use this format for all deprecation notices:
 
-```python
+```text
 \"\"\"
 .. deprecated:: 1.2.0
     Use :func:`new_function` instead. This function will be removed in v2.0.0.

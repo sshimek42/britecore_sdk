@@ -9,6 +9,8 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+- No unreleased changes yet.
+
 ---
 
 ## [2.0.3] - 2026-07-20

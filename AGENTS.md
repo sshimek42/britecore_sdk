@@ -79,6 +79,17 @@ python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client imp
 
 ```
 
+- When changing `docs/` content or root Markdown files included via docs wrappers, run a strict
+  Sphinx build because `.readthedocs.yml` is configured with `fail_on_warning: true`:
+
+```powershell
+python -m sphinx -W --keep-going -b html .\docs .\docs\_build\html-strict
+```
+
+```bash
+python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
+```
+
 ## Logging
 
 - Logger is exposed as `britecore_sdk.logger` (standard Python `logging.Logger`).

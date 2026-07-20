@@ -22,9 +22,10 @@ Package exports
 ---------------
 
 .. automodule:: britecore_sdk
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+Top-level convenience exports (for example ``BritecoreError``, ``NotFoundError``,
+``get_api_client``) are documented in their source modules below to avoid duplicate
+symbol definitions in this page.
 
 API clients
 -----------
@@ -66,6 +67,7 @@ V2 Package Exports
 .. automodule:: britecore_sdk.api.api_calls.v2
    :members:
    :undoc-members:
+   :exclude-members: RequestParameters
    :show-inheritance:
 
 Workflow Package Exports

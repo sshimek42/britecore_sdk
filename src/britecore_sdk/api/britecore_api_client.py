@@ -167,6 +167,7 @@ class BritecoreAPIClient:
         with client initialization.
 
         **Logging behavior:**
+
         - ``DEBUG`` logs are emitted throughout for configuration discovery and auth mode selection
         - ``ERROR`` logs are emitted for any configuration validation failures (missing base_url,
           missing api_key, OAuth initialization errors, rate limiter configuration errors, etc.)
@@ -1301,14 +1302,7 @@ class BritecoreAPIClient:
 
 
 class RequestParameters(TypedDict):
-    """
-    Optional keyword parameters for HTTP request
-    Attributes:
-        request_timeout (urllib3.util.Timeout): Timeout settings
-        request_retries (urllib3.util.Retry): Retry settings
-        request_headers (dict[str, Any]): Request headers
-        rate_limiter_bypass (bool): Skip rate limiting for this request
-    """
+    """Optional keyword parameters accepted by API request wrapper functions."""
 
     request_timeout: NotRequired[urllib3.util.Timeout]
     request_retries: NotRequired[urllib3.util.Retry]

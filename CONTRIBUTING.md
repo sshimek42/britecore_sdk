@@ -142,13 +142,13 @@ Bypass file lookup entirely by passing credentials directly:
 from britecore_sdk import init_api_client
 
 # API key auth
-client = init_api_client(
+api_key_client = init_api_client(
     base_url="https://api.example.com",
     api_key="your_api_key"
 )
 
 # OAuth auth
-client = init_api_client(
+oauth_client = init_api_client(
     base_url="https://api.example.com",
     client_id="your_client_id",
     client_secret="your_client_secret"
@@ -200,6 +200,30 @@ Quality gates run in CI:
 - `black --check src tests`
 - `mypy` for core client and key endpoint modules
 - `pytest tests/unit -m unit --cov ...`
+
+### Documentation validation
+
+When you change files under `docs/` or public-facing root Markdown files included in the docs build
+(for example `README.md`, `GETTING_STARTED.md`, `TROUBLESHOOTING.md`, `CHANGELOG.md`), run a strict
+Sphinx build locally before opening a PR. Read the Docs is configured to fail on warnings.
+
+**Windows (PowerShell):**
+
+```powershell
+python -m sphinx -W --keep-going -b html .\docs .\docs\_build\html-strict
+```
+
+**Linux/macOS (bash):**
+
+```bash
+python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
+```
+
+If Sphinx is not installed in your current environment yet, install docs dependencies first:
+
+```bash
+python -m pip install -e ".[docs]"
+```
 
 ## Project-specific coding conventions
 

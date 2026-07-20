@@ -75,7 +75,7 @@ Starting from `1.0.0` the library follows **semantic versioning**:
 
 Runtime dependencies are pinned with bounded ranges in `pyproject.toml`:
 
-```toml
+```text
 
 dynaconf>=3.2.13,<3.4.0         # Configuration management
 typing_extensions>=4.15.0,<5.0.0 # Compatibility typing helpers
