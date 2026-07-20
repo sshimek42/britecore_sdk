@@ -1,5 +1,6 @@
 """Unit tests for API client and lazy initialization."""
 
+import logging
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -576,20 +577,27 @@ def test_dry_run_logging_omits_sensitive_body_values(
     """Dry-run logs include only summary metadata for payloads."""
     from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-    with patch(
-        "britecore_sdk.api.britecore_api_client.LoadClientSettings"
-    ) as mock_loader:
-        mock_loader_instance = MagicMock()
-        mock_loader_instance.load_config.return_value = mock_settings
-        mock_loader.return_value = mock_loader_instance
+    sdk_logger = logging.getLogger("britecore_sdk")
+    original_propagate = sdk_logger.propagate
+    sdk_logger.propagate = True
 
-        client = BritecoreAPIClient("test_site").init_client()
-        caplog.set_level("INFO", logger="britecore_sdk")
-        client.do_request(
-            "/api/v2/quotes",
-            json={"password": "super-secret", "nested": {"token": "abc123"}},
-            dry_run=True,
-        )
+    try:
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            caplog.set_level("INFO", logger="britecore_sdk")
+            client.do_request(
+                "/api/v2/quotes",
+                json={"password": "super-secret", "nested": {"token": "abc123"}},
+                dry_run=True,
+            )
+    finally:
+        sdk_logger.propagate = original_propagate
 
     assert "body_summary=" in caplog.text
     assert "super-secret" not in caplog.text
