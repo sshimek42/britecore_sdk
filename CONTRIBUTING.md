@@ -17,16 +17,16 @@ This guide covers the project workflow for contributing changes safely and consi
 
 Related docs:
 
-- [README.md](README.md) for project overview
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community expectations
-- [GETTING_STARTED.md](GETTING_STARTED.md) for setup and first run
-- [API.md](API.md) for endpoint behavior and examples
-- [ARCHITECTURE.md](ARCHITECTURE.md) for system design
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for known issues
-- [DEPRECATION.md](DEPRECATION.md) for deprecation policy
-- [docs/MULTI_TENANCY.md](docs/MULTI_TENANCY.md) for multi-site patterns
-- [docs/OBSERVABILITY.md](docs/OBSERVABILITY.md) for logging and monitoring
-- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for production deployment
+- [README.md](./README.md) for project overview
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) for community expectations
+- [GETTING_STARTED.md](./GETTING_STARTED.md) for setup and first run
+- [API.md](./API.md) for endpoint behavior and examples
+- [ARCHITECTURE.md](./ARCHITECTURE.md) for system design
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for known issues
+- [DEPRECATION.md](./DEPRECATION.md) for deprecation policy
+- [docs/MULTI_TENANCY.md](./docs/MULTI_TENANCY.md) for multi-site patterns
+- [docs/OBSERVABILITY.md](./docs/OBSERVABILITY.md) for logging and monitoring
+- [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md) for production deployment
 
 ## Development setup
 

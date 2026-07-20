@@ -356,5 +356,5 @@ client._default_cache_ttl_seconds = 60  # 1 minute instead of 5
 
 - [Request Timing Middleware](../timing_middleware.py)
 - [Common Patterns](COMMON_PATTERNS.md)
-- [Configuration Guide](../CONFIGURATION.md)
-- [Performance Optimization](../OBSERVABILITY.md)
+- [Configuration Guide](./CONFIGURATION.md)
+- [Performance Optimization](./OBSERVABILITY.md)

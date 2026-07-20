@@ -363,6 +363,6 @@ If you encounter migration issues:
 ## See Also
 
 - [Common Patterns](COMMON_PATTERNS.md)
-- [Configuration Guide](../CONFIGURATION.md)
+- [Configuration Guide](./CONFIGURATION.md)
 - [API Reference](../api_reference.rst)
 - [Error Handling](../TROUBLESHOOTING.md)

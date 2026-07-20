@@ -577,4 +577,4 @@ Typical execution times for 100 quotes (5-10 seconds each):
 
 - [Rate Limiting](./RATE_LIMITING.md) — Configure automatic backoff for 429 responses.
 - [Examples](../examples/batch_quote_creation.py) — Runnable code samples.
-- [API Reference](./api_reference.md) — Full endpoint documentation.
+- [API Reference](./api_reference.rst) — Full endpoint documentation.

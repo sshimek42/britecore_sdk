@@ -14,11 +14,11 @@ Use this guide for the fastest path from clone to first successful API call.
 
 Related docs:
 
-- [README.md](README.md) for a high-level overview
-- [API.md](API.md) for endpoint reference
-- [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async wrapper cache behavior
+- [README.md](./README.md) for a high-level overview
+- [API.md](./API.md) for endpoint reference
+- [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for async wrapper cache behavior
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
-- [ARCHITECTURE.md](ARCHITECTURE.md) for design details
+- [ARCHITECTURE.md](./ARCHITECTURE.md) for design details
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common errors
 
 ## Prerequisites
@@ -382,7 +382,7 @@ client = init_api_client(
 ```
 
 The rate limiter is **per-client instance**, so different sites or environments can have different limits.
-See [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for complete examples and behavior details.
+See [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) for complete examples and behavior details.
 
 ---
 
@@ -424,7 +424,7 @@ async def main():
 asyncio.run(main())
 ```
 
-See [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) for advanced options and real-world examples.
+See [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) for advanced options and real-world examples.
 
 ---
 

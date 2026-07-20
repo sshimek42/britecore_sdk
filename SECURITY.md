@@ -157,7 +157,7 @@ For security concerns or questions about this policy:
 
 - Contact the repository owner via a private GitHub channel (see above)
 - Do not open public issues for suspected vulnerabilities
-- See [STABILITY.md](STABILITY.md) for other support channels
+- See [STABILITY.md](./STABILITY.md) for other support channels
 
 ---
 

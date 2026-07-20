@@ -98,7 +98,7 @@ validated = contact.process_contact()
 
 > **Note:** Map files (`britecore_agency_map.py`, `britecore_field_map.py`,
 > `britecore_policy_map.py`) contain site-specific regex data and are gitignored.
-> See [docs/MAP_FILES.md](docs/MAP_FILES.md) for map module layout and expected format.
+> See [docs/MAP_FILES.md](https://github.com/sshimek42/britecore_sdk/blob/master/docs/MAP_FILES.md) for map module layout and expected format.
 
 ---
 
@@ -285,7 +285,7 @@ from britecore_sdk.api.workflows import (
 )
 ```
 
-See [docs/STAGED_WORKFLOWS.md](docs/STAGED_WORKFLOWS.md) and
+See [docs/STAGED_WORKFLOWS.md](https://github.com/sshimek42/britecore_sdk/blob/master/docs/STAGED_WORKFLOWS.md) and
 [BATCH_QUOTE_CREATION.md](BATCH_QUOTE_CREATION.md) for detailed tuning
 guidance and examples.
 
@@ -425,7 +425,7 @@ client = get_api_client()
 - **Per-call overrides:** `cache_enabled`, `cache_ttl_seconds`, `cache_bypass`,
   `cache_invalidate_on_success`, `dedupe_in_flight` via `RequestParameters`
 
-See [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for full behavior documentation.
+See [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for full behavior documentation.
 
 ---
 
@@ -788,4 +788,4 @@ logger.error("Errors with context")
 
 ---
 
-See [AGENTS.md](AGENTS.md) for developer patterns and best practices.
+See [AGENTS.md](./AGENTS.md) for developer patterns and best practices.

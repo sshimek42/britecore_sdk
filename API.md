@@ -30,9 +30,9 @@ For known wrapper/spec drift currently tracked in tests, see
 
 See also:
 
-- [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
-- [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) for rate limiter configuration
-- [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) for high-throughput quote creation
+- [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
+- [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) for rate limiter configuration
+- [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) for high-throughput quote creation
 
 ---
 
@@ -138,13 +138,13 @@ Some wrappers may return payloads shaped by `v1` API behavior where no `v2` equi
 
 ## Async Cached Wrappers (v2)
 
-Canonical guide: [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md)
+Canonical guide: [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md)
 
 Async wrappers are exported from `src/britecore_sdk/api/api_calls/v2/__init__.py`.
 These wrappers call `AsyncBritecoreAPIClient.ado_request(...)` and use in-memory TTL caching
 from `src/britecore_sdk/api/request_cache.py`.
 
-- Use this section as a quick pointer; implementation-level async cache behavior is documented in [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+- Use this section as a quick pointer; implementation-level async cache behavior is documented in [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md).
 - Read wrappers in async `v2` are cache-aware by default, and mutation wrappers invalidate related cache namespaces on successful requests.
 - Per-call cache tuning is available through `RequestParameters` (`cache_enabled`, `cache_ttl_seconds`, `cache_bypass`, `cache_invalidate_on_success`, `dedupe_in_flight`, etc.).
 
@@ -442,7 +442,7 @@ result = create_contacts_batch(contacts_payload, max_workers=5, fail_fast=False)
 print(result["succeeded"], result["failed"])
 ```
 
-See [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) for the full
+See [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) for the full
 batch quote guide and examples.
 
 ---
@@ -524,7 +524,7 @@ For maintained runnable examples, see `examples/README.md` and
 
 The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 
-See [README.md](README.md) for more examples and [CONTRIBUTING.md](CONTRIBUTING.md) for adding new endpoints.
+See [README.md](./README.md) for more examples and [CONTRIBUTING.md](./CONTRIBUTING.md) for adding new endpoints.
 
 ---
 

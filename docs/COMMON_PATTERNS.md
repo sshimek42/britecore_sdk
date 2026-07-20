@@ -347,5 +347,5 @@ with api_context("production"):
 ## See Also
 
 - [API Reference](../api_reference.rst)
-- [Configuration Guide](../CONFIGURATION.md)
+- [Configuration Guide](./CONFIGURATION.md)
 - [Error Handling](../TROUBLESHOOTING.md)

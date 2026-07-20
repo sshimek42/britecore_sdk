@@ -626,10 +626,10 @@ init_api_client("site_b")
 
 ### Get Help
 
-1. Check [README.md](README.md) for overview
-2. Review [AGENTS.md](AGENTS.md) for patterns
+1. Check [README.md](./README.md) for overview
+2. Review [AGENTS.md](./AGENTS.md) for patterns
 3. Look at test examples in `tests/`
-4. See [ARCHITECTURE.md](ARCHITECTURE.md) for system design
+4. See [ARCHITECTURE.md](./ARCHITECTURE.md) for system design
 5. Check [CONTRIBUTING.md](CONTRIBUTING.md) for development
 
 ---

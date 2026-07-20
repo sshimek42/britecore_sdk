@@ -192,7 +192,7 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 | **Async & caching** | [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) |
 | **Rate limiting** | [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) |
 | **Batch operations** | [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) |
-| **Architecture** | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| **Architecture** | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | **Python compatibility** | [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) |
 | **Contributing** | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | **Code of Conduct** | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) |
@@ -484,7 +484,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - Workflow and branch conventions
 - Endpoint wrapper patterns
 - Code quality expectations
-- Repository-specific guidance in [AGENTS.md](AGENTS.md)
+- Repository-specific guidance in [AGENTS.md](./AGENTS.md)
 
 ## Architecture
 
@@ -497,7 +497,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - **Lazy initialization** — API client initializes on first use to avoid import-time failures (see "About API Client Initialization" above)
 - **Flat exceptions** — Import `NotFoundError`, `AuthenticationError` etc. directly from `britecore_sdk`
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 
 ---
 
@@ -505,5 +505,5 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design.
 
 - **Issues & feedback:** [GitHub Issues](https://github.com/sshimek42/britecore_sdk/issues)
 - **Security concerns:** See [SECURITY.md](SECURITY.md)
-- **Roadmap & stability:** See [STABILITY.md](STABILITY.md)
+- **Roadmap & stability:** See [STABILITY.md](./STABILITY.md)
 - **External API docs:** [api.britecore.com](https://api.britecore.com/) (supplemental reference)
