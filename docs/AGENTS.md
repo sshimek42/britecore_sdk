@@ -6,4 +6,3 @@ orphan: true
 
 ```{include} ../AGENTS.md
 ```
-

@@ -77,11 +77,11 @@ Workflow package exports
    :undoc-members:
    :show-inheritance:
 
-Domain API references
----------------------
+API Domains
+-----------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    api_reference_quotes_policies
    api_reference_claims_contacts

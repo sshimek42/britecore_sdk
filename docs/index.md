@@ -15,7 +15,6 @@ Examples overview <examples>
 :maxdepth: 2
 :caption: Core Guides
 
-api_reference
 Python compatibility <python_compatibility>
 COMMON_PATTERNS
 CACHING_STRATEGY
@@ -23,6 +22,13 @@ ASYNC_CACHING
 Configuration <CONFIGURATION>
 Configuration management <config_management>
 Sensitive map files <MAP_FILES>
+```
+
+```{toctree}
+:maxdepth: 3
+:caption: API Reference
+
+Overview <api_reference>
 ```
 
 ```{toctree}
