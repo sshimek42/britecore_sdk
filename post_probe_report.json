@@ -12,10 +12,10 @@
     "unexpected_success": 1
   },
   "dry_run": false,
-  "generated_at_utc": "2026-07-19T02:34:29.529410+00:00",
+  "generated_at_utc": "2026-07-20T00:17:02.870538+00:00",
   "generated_from_spec_empty_properties": false,
   "generated_from_spec_no_args": false,
-  "plan": "/tmp/pytest-of-runner/pytest-0/test_main_returns_nonzero_for_0/plan.json",
+  "plan": "C:\\Users\\shauns\\AppData\\Local\\Temp\\pytest-of-shauns\\pytest-42\\test_main_returns_nonzero_for_0\\plan.json",
   "results": [
     {
       "inferred_required_fields": [],
