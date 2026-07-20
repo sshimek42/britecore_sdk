@@ -35,3 +35,35 @@ repos:
         additional_dependencies: [pymarkdownlnt==0.9.32]
         files: ^(README|CHANGELOG|AGENTS(\.quickstart)?|API|ARCHITECTURE|CONTRIBUTING|DEPRECATION|GETTING_STARTED|PYTHON_COMPATIBILITY|SECURITY|STABILITY|TROUBLESHOOTING|UNIMPLEMENTED_API_STUBS)\.md$|^docs/api_reference\.md$
         exclude: ^(build/|dist/|env/|\.venv/|docs/_build/|htmlcov/)
+      - id: mypy
+        name: Type check (mypy)
+        # Run the same file set as scripts/ci_typecheck.py so local commits
+        # catch type errors before CI does.  pass_filenames: false means the
+        # hook always checks the full set regardless of which files changed.
+        entry: mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+        args:
+          - src/britecore_sdk/exceptions.py
+          - src/britecore_sdk/api/britecore_api_client.py
+          - src/britecore_sdk/api/britecore_async_api_client.py
+          - src/britecore_sdk/api/britecore_oauth_token_manager.py
+          - src/britecore_sdk/api/request_cache.py
+          - src/britecore_sdk/api/types.py
+          - src/britecore_sdk/api/api_calls/v1
+          - src/britecore_sdk/api/api_calls/v2
+          - src/britecore_sdk/settings/config.py
+          - src/britecore_sdk/maps/__init__.py
+          - src/britecore_sdk/models
+          - src/britecore_sdk/validators
+      - id: pytest-unit
+        name: Unit tests (fast smoke)
+        # Run only the unit-marked tests without coverage collection so the
+        # hook completes quickly.  --no-cov overrides the addopts in pytest.ini
+        # so the coverage threshold does not block the commit; full coverage is
+        # still measured and enforced in CI.
+        entry: pytest tests/unit -m unit -q --no-header --tb=short --no-cov
+        language: system
+        types: [python]
+        pass_filenames: false
