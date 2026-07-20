@@ -57,4 +57,3 @@ Operations and Workflow APIs
 
 Related workflow modules: ``notifications``, ``subjectivities``, ``suspensions``,
 ``disputes``, and ``vendors``.
-

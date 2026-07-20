@@ -64,4 +64,9 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "migrations/*"]
 suppress_warnings = ["myst.xref_missing"]
 
 html_theme = "alabaster"
-html_static_path = []
+html_theme_options = {
+    "page_width": "100%",
+    "sidebar_width": "320px",
+}
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]

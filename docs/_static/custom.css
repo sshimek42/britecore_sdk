@@ -1,0 +1,14 @@
+/* Keep Alabaster wide, but cap line length for readability on ultrawide screens. */
+
+div.document,
+div.documentwrapper,
+div.bodywrapper {
+    max-width: none;
+}
+
+div.body {
+    width: auto;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
