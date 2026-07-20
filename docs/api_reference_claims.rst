@@ -26,4 +26,3 @@ Claims administration and claim sub-resource endpoints.
 Related claim modules: ``claim_adjuster_assignment_configs``, ``claim_catastrophes``,
 ``claim_changes``, ``claim_dates``, ``claim_estimations``, ``claim_exposures``, and
 ``claim_injuries``.
-

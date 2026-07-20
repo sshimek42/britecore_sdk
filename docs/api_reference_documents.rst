@@ -12,4 +12,3 @@ Documents and Deliverables APIs
    :show-inheritance:
 
 Related content modules: ``attachments``, ``signatures``, and ``uploads``.
-

@@ -13,4 +13,3 @@ Assets and Spatial APIs
 
 Related asset/location modules: ``violations``, ``watercrafts``, ``geometries``, and
 ``geometry``.
-

@@ -18,4 +18,3 @@ Reporting and Administration APIs
 
 Related administration modules: ``agentcy``, ``auth``, ``dashboards``, ``errors``,
 ``settings``, ``user_groups``, and ``utils``.
-

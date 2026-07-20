@@ -18,4 +18,3 @@ Data, Integrations, and Background Jobs APIs
 
 Related data/job modules: ``custom_data``, ``data``, ``ingestion_job``, ``intacct``,
 ``jobrunner``, ``nightly_jobs``, and ``search``.
-

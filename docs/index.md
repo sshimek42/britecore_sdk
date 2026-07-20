@@ -26,9 +26,11 @@ Sensitive map files <MAP_FILES>
 
 ```{toctree}
 :maxdepth: 3
+:titlesonly:
 :caption: API Reference
 
 Overview <api_reference>
+API Domains <api_domains>
 ```
 
 ```{toctree}

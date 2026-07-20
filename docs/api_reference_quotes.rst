@@ -15,4 +15,3 @@ Quote creation, retrieval, and quote-specific helper endpoints.
 
 Related quote modules: ``quick_quote_templates``, ``quick_codes``, and
 ``quick_code_values``.
-

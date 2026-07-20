@@ -18,4 +18,3 @@ Billing, Payments, and Commissions APIs
 
 Supporting finance modules: ``premium_finance_companies``, ``return_premium``,
 ``term_credit_scores``, and ``accounting``.
-

@@ -20,4 +20,3 @@ Policy lifecycle, line-level operations, and coverage structure endpoints.
 
 Related policy modules: ``policy_types``, ``prior_policies``, ``related_policies``,
 ``authority_limits``, ``rules``, and ``statement_of_value``.
-

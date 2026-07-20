@@ -67,6 +67,16 @@ html_theme = "alabaster"
 html_theme_options = {
     "page_width": "100%",
     "sidebar_width": "320px",
+    "sidebar_collapse": False,
+    "globaltoc_maxdepth": 3,
 }
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
+html_sidebars = {
+    "**": [
+        "about.html",
+        "navigation.html",
+        "relations.html",
+        "searchbox.html",
+    ]
+}

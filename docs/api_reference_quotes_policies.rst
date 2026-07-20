@@ -5,6 +5,7 @@ This section groups quote and policy lifecycle endpoints.
 
 .. toctree::
    :maxdepth: 1
+   :titlesonly:
 
    Quotes <api_reference_quotes>
    Policies <api_reference_policies>

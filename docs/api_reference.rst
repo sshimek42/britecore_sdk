@@ -80,10 +80,6 @@ Workflow package exports
 API Domains
 -----------
 
-.. toctree::
-   :maxdepth: 2
+Browse grouped endpoint docs from the dedicated domains page:
 
-   api_reference_quotes_policies
-   api_reference_claims_contacts
-   api_reference_financial_operations
-   api_reference_platform_async
+- :doc:`api_domains`
