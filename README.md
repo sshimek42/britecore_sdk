@@ -459,10 +459,10 @@ mypy src/britecore_sdk/api/britecore_api_client.py
 
 ### Release Publishing (GitHub Actions)
 
-- TestPyPI dry-run workflow: `.github/workflows/publish-testpypi.yml` (manual trigger)
-- Production PyPI workflow: `.github/workflows/publish.yml` (release published trigger)
+- TestPyPI dry-run workflow: `.github/workflows/publish-testpypi.yml` (**manual trigger only** via `workflow_dispatch`)
+- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** after `.github/workflows/release.yml` completes successfully, and also **manually runnable** via `workflow_dispatch`)
 
-Both workflows use OIDC trusted publishing and include build + publish + install smoke tests.
+Both workflows use OIDC trusted publishing and include build + publish + install smoke tests. Depending on your GitHub environment protection rules, the publish job may still pause for environment approval even when the workflow itself was triggered automatically.
 
 1. Create GitHub environments: `testpypi` and `pypi`.
 2. In TestPyPI, add a Trusted Publisher entry for:
@@ -474,7 +474,8 @@ Both workflows use OIDC trusted publishing and include build + publish + install
    - Workflow: `.github/workflows/publish.yml`
    - Environment: `pypi`
 4. Run `Publish to TestPyPI` from the Actions tab before cutting a production release.
-5. Create a GitHub Release to trigger production publish.
+5. Push a version tag (for example `v2.0.3`) to trigger `.github/workflows/release.yml`, which builds artifacts and creates the GitHub Release automatically.
+6. After `.github/workflows/release.yml` completes successfully, `.github/workflows/publish.yml` runs automatically and publishes to PyPI. You can also run `Publish to PyPI` manually from the Actions tab when needed.
 
 ### Contributing
 
