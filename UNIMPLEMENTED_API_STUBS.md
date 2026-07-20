@@ -1,8 +1,11 @@
 # Unimplemented API Stubs
 
-Canonical source: this file. `docs/unimplemented_api_stubs.md` includes this content.
+*Last updated: July 19, 2026*
+*Document type: Reference*
 
-*Last updated: July 10, 2026*
+For SDK developers and API consumers: track unimplemented endpoints and their reasons for exclusion or postponement.
+
+Canonical source: this file. `docs/unimplemented_api_stubs.md` includes this content.
 *Document type: Living implementation backlog*
 
 ## Status

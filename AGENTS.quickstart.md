@@ -1,5 +1,10 @@
 # AGENTS Quickstart
 
+*Last updated: July 19, 2026*
+*Document type: Development workflow guide*
+
+Quick reference for SDK contributors: essential repository patterns and conventions.
+
 For full guidance, see `AGENTS.md`.
 
 - Work in `src/britecore_sdk/`; ignore `build/`, `dist/`, `env/`, and `*.egg-info/` unless packaging is the task.

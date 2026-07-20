@@ -1,6 +1,9 @@
 # Security Policy
 
-*Last updated: April 7, 2026*
+*Last updated: July 19, 2026*
+*Document type: Governance policy*
+
+For security researchers and maintainers: report vulnerabilities safely, understand patching timelines, and security best practices.
 
 This document describes how `britecore_sdk` handles security vulnerabilities and the expectations for reporting and patching.
 

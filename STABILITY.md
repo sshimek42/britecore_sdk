@@ -1,6 +1,9 @@
 # Stability and Support Policy
 
-*Last updated: April 7, 2026*
+*Last updated: July 19, 2026*
+*Document type: Governance policy*
+
+For SDK users and operators: understand stability commitments, support expectations, and version support timelines.
 
 This document outlines the stability commitments, support expectations, and versioning practices for `britecore_sdk`.
 

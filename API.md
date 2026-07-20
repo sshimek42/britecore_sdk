@@ -3,7 +3,9 @@
 *Last updated: July 10, 2026*
 *Document type: Living reference guide*
 
-**BriteCore Libraries** - API endpoint reference
+**BriteCore SDK** - API endpoint reference
+
+For SDK users: browse implemented endpoint wrappers, understand parameter contracts, and reference examples for common operations.
 
 ---
 

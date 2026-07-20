@@ -1,4 +1,22 @@
-"""Settings config"""
+"""Configuration management for BriteCore SDK.
+
+This module implements a layered configuration system using Dynaconf to manage
+SDK settings from multiple sources with a defined priority order:
+
+1. **SDK package defaults** — ``settings.toml`` and ``.secrets.toml``
+2. **User-level config** — ``~/.britecore/settings.toml`` and ``.secrets.toml``
+3. **Project-local config** — ``britecore.toml`` and ``.britecore_secrets.toml``
+4. **Explicit file path** — ``BRITECORE_SDK_SETTINGS_FILE`` environment variable
+5. **Environment variables** — ``BRITECORE_SDK_*`` (highest priority)
+
+The module provides functions to discover and load configuration files, validate
+required settings, and access configuration values through the global settings object.
+
+Functions:
+    _discover_settings_files: Build ordered list of settings files to load.
+    _validate_site_settings: Verify required keys for a target site.
+    get_settings: Access the global settings object (Dynaconf instance).
+"""
 
 import logging
 import os

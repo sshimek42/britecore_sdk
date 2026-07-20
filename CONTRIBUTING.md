@@ -1,7 +1,9 @@
 # Contributing
 
-*Last updated: April 28, 2026*
+*Last updated: July 19, 2026*
 *Document type: Living contributor guide*
+
+For community contributors: workflow, setup, testing requirements, and coding conventions.
 
 This guide covers the project workflow for contributing changes safely and consistently.
 
@@ -206,6 +208,167 @@ Quality gates run in CI:
 - Use `RequestParameters` and `**kwargs: Unpack[RequestParameters]` in new endpoint functions where request overrides are supported.
 - Use `API_CLIENT.multiple_parameter_verification(...)` for mutually exclusive identifiers.
 - Use imports from `models` and `validators`; `classes` import paths are removed.
+
+## Documentation and Docstring Style Guide
+
+### Product and Package Naming
+
+| Usage Context | Format | Example | Notes |
+|---------------|--------|---------|-------|
+| Package/module name in code | `britecore_sdk` | `from britecore_sdk import ...` | Never change casing |
+| Product reference in prose | "BriteCore SDK" | "The BriteCore SDK provides..." | Standard capitalization |
+| Deprecated reference | ~~BriteCore Libraries~~ | **Do not use** | Always use "BriteCore SDK" instead |
+
+### Terminology Standards
+
+| Term | Definition | Usage | Example |
+|------|-----------|-------|---------|
+| **Endpoint wrapper** | A Python function in the SDK that calls an API endpoint | When describing SDK functions | "The `create_quote()` endpoint wrapper..." |
+| **API endpoint** | The BriteCore API resource path | When referring to the backend API | "The `/api/v2/quotes` API endpoint" |
+| **HTTP request** | Low-level transport operation via urllib3 | When describing protocol details | "The HTTP request includes headers..." |
+| **Configuration** / **Config** | Runtime settings loaded from files or environment | General usage | "Update your configuration in `britecore.toml`" |
+| **Target site** (prose) | Named site/environment reference | Documentation and examples | "Set your target site to `production`" |
+| **`target_site`** (code) | Configuration variable name | Code, config files, env vars | `BRITECORE_SDK_TARGET_SITE=production` |
+
+### Markdown Header Structure
+
+All root-level documentation files should follow this template:
+
+```markdown
+# Document Title
+
+*Last updated: [DATE]*
+*Document type: [Living guide | Reference | Planning | Development | Governance policy | Implementation guide]*
+
+One-sentence purpose statement: What is this document for? Who should read it?
+
+---
+
+## Major Section
+
+### Subsection
+
+Content...
+```
+
+**Document type categories:**
+- **Living guide** — Frequently updated, task-oriented (e.g., GETTING_STARTED.md, CONTRIBUTING.md)
+- **Reference** — Static reference material (e.g., API.md, ARCHITECTURE.md)
+- **Planning** — Roadmaps and roadmap-related docs (e.g., V2_ROADMAP.md)
+- **Development** — Developer workflow docs (e.g., AGENTS.md)
+- **Governance policy** — Policies and commitments (e.g., DEPRECATION.md, SECURITY.md)
+- **Implementation guide** — How-to and feature implementation summaries (e.g., BATCH_QUOTE_CREATION.md)
+
+### Code Examples in Markdown
+
+Use fenced code blocks with appropriate language tags:
+
+```markdown
+# Python examples
+\`\`\`python
+from britecore_sdk import init_api_client
+client = init_api_client(base_url="https://api.example.com", api_key="key")
+\`\`\`
+
+# Bash/shell examples
+\`\`\`bash
+python -m pip install britecore-sdk
+\`\`\`
+
+# PowerShell examples
+\`\`\`powershell
+python -m venv .venv
+.\\.venv\\Scripts\\Activate.ps1
+\`\`\`
+
+# Configuration/TOML examples
+\`\`\`toml
+[prod]
+base_url = "https://api.example.com"
+api_key = "your_key"
+\`\`\`
+```
+
+### Notes, Warnings, and Tips
+
+Use blockquote + bold prefix format for emphasis:
+
+```markdown
+> **Note:** Important information here.
+> Continue on new line if needed.
+
+> **Warning:** Critical caution to avoid mistakes.
+
+> **Tip:** Helpful suggestion or best practice.
+```
+
+### Lists and Formatting
+
+- Use `-` for unordered lists (not `*`)
+- Use `1. 2. 3.` for ordered lists
+- Maintain consistent indentation (2 spaces per level)
+- Use `**bold**` for emphasis on concepts
+- Use `` `code` `` for inline code/package names
+- Use tables for reference material with 3+ columns
+
+### Cross-References and Links
+
+Use consistent relative path patterns:
+
+- Links within root: `[File Name](./FILENAME.md)`
+- Links to docs/: `[docs/Feature](./docs/FEATURE.md)`
+- Links to code: `` `src/britecore_sdk/module/file.py` `` (inline code)
+- Links to functions: `` `init_api_client()` `` (inline code with parentheses)
+
+### Docstring Standards (Source Code)
+
+Use Google-style docstrings in all Python modules:
+
+```python
+def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
+    """One-line summary of what this function does.
+    
+    Extended description explaining behavior, side effects, or
+    important context. Mention any errors that might be raised
+    or special SDK behaviors (e.g., pagination, dry_run support).
+    
+    Args:
+        param1: Description of param1 and expected format/values
+        param2: Description of param2 and why it has this default
+    
+    Returns:
+        dict: Shape and structure of the returned data, including
+              any guarantees about keys/values
+    
+    Raises:
+        ValueError: When param1 is empty or invalid
+        AuthenticationError: When credentials are missing/invalid
+    
+    Examples:
+        **v2.0.0 Explicit Client Pattern:**
+        
+        .. code-block:: python
+        
+            from britecore_sdk import BritecoreAPIClient
+            client = BritecoreAPIClient("prod").init_client()
+            result = client.endpoint_wrapper(param1="value")
+    """
+```
+
+**Docstring checklist for all endpoint wrappers:**
+- ✓ One-line summary (imperative, e.g., "Create a quote..." not "Creates a quote...")
+- ✓ Extended description (context, behavior, side effects)
+- ✓ Args section with descriptions
+- ✓ Returns section with type and structure
+- ✓ Raises section with exception types
+- ✓ Examples section with v2.0.0 pattern
+
+### Prose Style Guidelines
+
+- **Imperative for guides**: "Install the package...", "Configure your site...", "Run the test..."
+- **Descriptive for references**: "The SDK surfaces endpoint wrappers...", "Architecture consists of..."
+- **Active voice**: "The SDK processes payloads" (not "Payloads are processed by the SDK")
+- **Second person when addressing readers**: "You can override timeout..." (not "Users can override...")
 
 ## Repo layout contract
 

@@ -1,8 +1,11 @@
 # Python Compatibility Matrix
 
-Canonical source: this file. `docs/python_compatibility.md` includes this content.
+*Last updated: July 19, 2026*
+*Document type: Reference*
 
-*Last updated: April 28, 2026*
+For SDK consumers: understand which Python versions are supported and what features are guaranteed.
+
+Canonical source: this file. `docs/python_compatibility.md` includes this content.
 *Document type: Living compatibility policy*
 
 **BriteCore Libraries** — supported Python versions and compatibility commitments.

@@ -176,6 +176,25 @@ def _mirror_in_module(module_path: Path, dry_run: bool = True) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Mirror delete_* function signatures from donor functions in v2 API modules.
+
+    Scans all API call modules in api_calls/v2 and for each delete_* function,
+    attempts to find a corresponding get_* or retrieve_* function (donor) with
+    the same core name. Mirrors the donor's signature parameters into the delete
+    function. Changes are applied conservatively (only replacing simple parameter
+    patterns). Supports dry-run mode to preview changes without writing.
+
+    Args:
+        argv: Optional command-line arguments. If None, parses sys.argv.
+              Supported: --dry-run to preview without writing files.
+
+    Returns:
+        int: Exit code (always 0 on success; argparse exits non-zero on error).
+
+    Example:
+        >>> main(["--dry-run"])  # Show proposed changes without writing
+        0
+    """
     parser = argparse.ArgumentParser(description="Mirror delete_* signatures from get_*/retrieve_* donors")
     parser.add_argument("--dry-run", action="store_true", help="Show changes but do not write files")
     args = parser.parse_args(argv)

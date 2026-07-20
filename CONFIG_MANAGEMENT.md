@@ -1,5 +1,10 @@
 # Configuration Management Guide
 
+*Last updated: July 19, 2026*
+*Document type: Living guide*
+
+For SDK operators and administrators: manage site configurations, validate credentials, and safely store secrets using the SDK's config utilities.
+
 ## Overview
 
 The BriteCore SDK provides utilities to safely manage site configurations stored in `.secrets.toml`. This guide covers:

@@ -62,6 +62,20 @@ async def anew_contact(
     ``/api/v2/contacts/new_contact``. Returns the async ``aprocess_result(...)``
     payload together with the extracted contact ID, and invalidates cached contact
     reads on success; ``**kwargs`` accepts ``RequestParameters`` overrides.
+
+    Args:
+        name: The contact name (required).
+        address: List of address dictionaries with location fields (street, city, state, zip, etc.).
+        phone: Optional list of phone number dictionaries with type and number fields.
+        email: Optional list of email dictionaries with type and address fields.
+        contact_type: Contact type, either 'individual' or 'organization' (default 'individual').
+        **kwargs: Additional request parameters and cache invalidation settings.
+
+    Returns:
+        tuple[Any, str | None]: A tuple of (contact_data, contact_id). contact_id is None if creation fails.
+
+    Raises:
+        RuntimeError: When ado_request returns None.
     """
     LOGGER.debug("Creating contact '%s'", name)
     if not phone:
@@ -112,6 +126,17 @@ async def aadd_contact_to_role(
     through ``/api/v2/contacts/add_contact_to_role``. Returns the async
     ``aprocess_result(...)`` payload, invalidates cached contact reads on success,
     and accepts ``RequestParameters`` overrides via ``**kwargs``.
+
+    Args:
+        contact_id: The contact identifier to assign to the role.
+        role: The role name to assign (e.g., 'Named Insured', 'Additional Interest'). Defaults to 'Named Insured'.
+        **kwargs: Additional request parameters and cache invalidation settings.
+
+    Returns:
+        Any: The processed result from the role assignment operation.
+
+    Raises:
+        RuntimeError: When ado_request returns None.
     """
     LOGGER.debug("Adding role '%s' to '%s'", role, contact_id)
     role_request_json: dict[str, str | ROLETYPES | None] = {
@@ -137,6 +162,16 @@ async def aupdate_contact(
     ``/api/v2/contacts/update_contact``. Returns the async
     ``aprocess_result(...)`` payload, invalidates cached contact reads on success,
     and accepts ``RequestParameters`` overrides via ``**kwargs``.
+
+    Args:
+        contact: Contact payload dictionary containing contact_id and fields to update (name, addresses, phones, emails, etc.).
+        **kwargs: Additional request parameters and cache invalidation settings.
+
+    Returns:
+        Any: The processed updated contact data.
+
+    Raises:
+        RuntimeError: When ado_request returns None.
     """
     LOGGER.debug("Updating contact information\n%s", contact)
     update_request_json: dict[str, Any] = {"contact": contact}
@@ -157,6 +192,16 @@ async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> 
     enables the default contact read cache unless the caller overrides it.
     Returns the async ``aprocess_result(...)`` payload, and ``**kwargs`` accepts
     ``RequestParameters`` plus cache override settings.
+
+    Args:
+        contact_id: The contact identifier to retrieve.
+        **kwargs: Additional request parameters and cache configuration options.
+
+    Returns:
+        Any: The processed contact data including name, addresses, phones, and emails.
+
+    Raises:
+        RuntimeError: When ado_request returns None.
     """
     LOGGER.debug("Retrieving contact id '%s'", contact_id)
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
@@ -184,6 +229,18 @@ async def afind_contact_by_params(
     ``/api/v2/contacts/find_contact_by_params``. Returns the async
     ``aprocess_result(...)`` payload, enables cacheable read lookups by default,
     and accepts ``RequestParameters`` plus cache override settings via ``**kwargs``.
+
+    Args:
+        name: The contact name to search for (required).
+        role_name: Optional role filter to narrow search results (e.g., 'Named Insured').
+        dob: Optional date of birth filter in ISO format (YYYY-MM-DD).
+        **kwargs: Additional request parameters and cache configuration options.
+
+    Returns:
+        Any: The processed search results containing matching contacts.
+
+    Raises:
+        RuntimeError: When ado_request returns None.
     """
     LOGGER.debug("Finding contact '%s'", name)
     contact_retrieve_json: dict[str, str | ROLETYPES | None] = {

@@ -1,7 +1,9 @@
 # Troubleshooting Guide
 
-*Last updated: July 10, 2026*
+*Last updated: July 19, 2026*
 *Document type: Living troubleshooting guide*
+
+For SDK users: diagnose and resolve common issues, understand error messages, and find workarounds.
 
 **BriteCore Libraries** - Common issues and solutions
 

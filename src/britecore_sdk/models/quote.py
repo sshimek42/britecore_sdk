@@ -1,4 +1,12 @@
-"""BriteCore policy model."""
+"""BriteCore quote data model.
+
+This module defines the :class:`BritecoreQuote` dataclass, which represents
+a BriteCore quote (quotation) with all required and optional fields for
+creating and managing quotes in the BriteCore API.
+
+Classes:
+    BritecoreQuote: Dataclass representing a complete quote entity.
+"""
 
 import logging
 from dataclasses import dataclass, field

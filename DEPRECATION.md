@@ -1,7 +1,9 @@
 # Deprecation Policy
 
-*Last updated: April 28, 2026*
+*Last updated: July 19, 2026*
 *Document type: Governance policy*
+
+For SDK users and maintainers: understand deprecation timelines, version support, and breaking change policies.
 
 This document outlines how `britecore_sdk` manages API deprecation, feature removal, and migration paths.
 

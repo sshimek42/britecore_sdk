@@ -1,9 +1,11 @@
 # System Architecture
 
-*Last updated: April 28, 2026*
+*Last updated: July 19, 2026*
 *Document type: Living design reference*
 
-**BriteCore Libraries** - Technical design and component overview
+**BriteCore SDK** - Technical design and component overview
+
+For developers and maintainers: understand how the SDK is structured, how requests flow through layers, and where domain logic lives.
 
 ---
 
@@ -13,7 +15,7 @@
 
 ┌────────────────────────────────────────────────────────────┐
 │                    Application Layer                       │
-│          (Your code using BriteCore Libraries)             │
+│          (Your code using BriteCore SDK)                   │
 └──────────────────────────────┬─────────────────────────────┘
                                │
                                ▼

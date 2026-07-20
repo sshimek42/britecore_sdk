@@ -114,6 +114,19 @@ def extract_wrapper_keys(src_path: Path, func_name: str) -> dict[str, Any]:
 
 
 def collect_spec_properties(spec_path: Path) -> dict[str, set[str]]:
+    """Extract request payload property names from OpenAPI specification.
+
+    Parses the OpenAPI spec JSON file and collects all properties declared
+    in the requestBody schema for each endpoint. Resolves $ref references and
+    includes both properties and required field lists.
+
+    Args:
+        spec_path: Path to the OpenAPI specification JSON file (e.g., britecore.json).
+
+    Returns:
+        dict[str, set[str]]: Mapping from API path (e.g., '/api/v2/quotes/get_quote')
+            to the set of property names expected in the request body.
+    """
     payload = json.loads(spec_path.read_text(encoding="utf-8"))
     components = payload.get("components", {}) if isinstance(payload, dict) else {}
     paths = payload.get("paths", {}) if isinstance(payload, dict) else {}
@@ -139,6 +152,16 @@ def collect_spec_properties(spec_path: Path) -> dict[str, set[str]]:
 
 
 def main() -> int:
+    """Check for mismatches between OpenAPI spec and wrapper function parameters.
+
+    Compares the request properties declared in the OpenAPI specification against
+    the actual request keys used by endpoint wrapper functions. Detects cases where
+    wrappers may be missing required parameters or using incorrect keys. Prints
+    a summary of mismatches for investigation.
+
+    Returns:
+        int: Exit code (0 if no mismatches found, 1 if mismatches detected).
+    """
     spec_props = collect_spec_properties(SPEC_PATH)
     mismatches: list[tuple[str, str, set[str], set[str], str]] = []
 
