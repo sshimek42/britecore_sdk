@@ -2,4 +2,3 @@
 
 ```{include} ../CONFIG_MANAGEMENT.md
 ```
-
