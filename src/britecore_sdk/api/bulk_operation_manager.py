@@ -5,7 +5,8 @@ Provides context manager for reliable bulk operations with automatic retries.
 
 import asyncio
 import time
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 
 class BulkOperationManager:
@@ -25,7 +26,7 @@ class BulkOperationManager:
         backoff_factor: float = 2.0,
         backoff_max_seconds: float = 60.0,
         retry_on: list[int] | None = None,
-        on_retry: Optional[Callable[[Exception, int, float], None]] = None,
+        on_retry: Callable[[Exception, int, float], None] | None = None,
     ):
         """Initialize bulk operation manager.
 
@@ -114,7 +115,7 @@ class BulkOperationManager:
         Returns:
             Result dictionary with success/error information.
         """
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(self.max_retries + 1):
             try:
@@ -138,7 +139,7 @@ class BulkOperationManager:
 
                 # Calculate backoff time
                 wait_time = min(
-                    self.backoff_factor ** attempt,
+                    self.backoff_factor**attempt,
                     self.backoff_max_seconds,
                 )
 
@@ -176,11 +177,16 @@ class BulkOperationManager:
                 return True
 
         # Check for rate limit related keywords
-        if any(keyword in error_str for keyword in ["rate limit", "throttle", "too many"]):
+        if any(
+            keyword in error_str for keyword in ["rate limit", "throttle", "too many"]
+        ):
             return True
 
         # Check for timeout/connection errors
-        if any(keyword in error_str for keyword in ["timeout", "connection", "refused", "temporary failure"]):
+        if any(
+            keyword in error_str
+            for keyword in ["timeout", "connection", "refused", "temporary failure"]
+        ):
             return True
 
         return False
@@ -204,7 +210,7 @@ class AsyncBulkOperationManager:
         backoff_factor: float = 2.0,
         backoff_max_seconds: float = 60.0,
         retry_on: list[int] | None = None,
-        on_retry: Optional[Callable[[Exception, int, float], None]] = None,
+        on_retry: Callable[[Exception, int, float], None] | None = None,
     ):
         """Initialize async bulk operation manager.
 
@@ -289,7 +295,7 @@ class AsyncBulkOperationManager:
         operation_index: int = 0,
     ) -> dict[str, Any]:
         """Execute async operation with retries."""
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
 
         for attempt in range(self.max_retries + 1):
             try:
@@ -312,7 +318,7 @@ class AsyncBulkOperationManager:
 
                 # Exponential backoff
                 wait_time = min(
-                    self.backoff_factor ** attempt,
+                    self.backoff_factor**attempt,
                     self.backoff_max_seconds,
                 )
 
@@ -337,10 +343,14 @@ class AsyncBulkOperationManager:
             if str(status_code) in error_str:
                 return True
 
-        if any(keyword in error_str for keyword in ["rate limit", "throttle", "too many"]):
+        if any(
+            keyword in error_str for keyword in ["rate limit", "throttle", "too many"]
+        ):
             return True
 
-        if any(keyword in error_str for keyword in ["timeout", "connection", "refused"]):
+        if any(
+            keyword in error_str for keyword in ["timeout", "connection", "refused"]
+        ):
             return True
 
         return False
@@ -350,4 +360,3 @@ __all__ = [
     "BulkOperationManager",
     "AsyncBulkOperationManager",
 ]
-

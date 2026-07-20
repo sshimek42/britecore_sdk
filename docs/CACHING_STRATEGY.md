@@ -14,7 +14,7 @@ The SDK includes an optional response caching layer that stores API responses in
    ```python
    # Perfect for caching - policy data changes infrequently
    from britecore_sdk.api.api_calls import get_async_api_client
-   
+
    client = get_async_api_client()
    # Cached for 3600 seconds
    policy = await client.aretrieve_policy(policy_number="POL-123", cache_ttl=3600)
@@ -162,7 +162,7 @@ Caches are invalidated by:
    client = get_async_api_client()
    # Clear entire cache
    client.clear_cache()
-   
+
    # Invalidate specific namespaces
    client.invalidate_cache_namespaces(["policies", "contacts"])
    ```
@@ -217,7 +217,7 @@ from britecore_sdk.api.response_helpers import paginate
 async def list_all_contacts(page_size=100):
     """List contacts with caching."""
     client = get_async_api_client()
-    
+
     # Each page is cached independently
     for contact in paginate(
         client.get_client(),
@@ -238,17 +238,17 @@ from britecore_sdk.api.api_calls.v2 import policies
 async def update_policy(policy_id, updates):
     """Update policy and clear cache."""
     client = get_async_api_client()
-    
+
     # Make write request (don't cache)
     result = await policies.update_policy(
         policy_id=policy_id,
         **updates,
         cache_ttl=0,  # Don't cache writes
     )
-    
+
     # Invalidate related cache entries
     client.invalidate_cache_namespaces(["policies"])
-    
+
     return result
 ```
 
@@ -263,7 +263,7 @@ from britecore_sdk.api.api_calls import get_async_api_client
 async def periodic_refresh(interval_seconds=3600):
     """Periodically clear cache to refresh data."""
     client = get_async_api_client()
-    
+
     while True:
         await asyncio.sleep(interval_seconds)
         client.clear_cache()
@@ -358,4 +358,3 @@ client._default_cache_ttl_seconds = 60  # 1 minute instead of 5
 - [Common Patterns](COMMON_PATTERNS.md)
 - [Configuration Guide](../CONFIGURATION.md)
 - [Performance Optimization](../OBSERVABILITY.md)
-

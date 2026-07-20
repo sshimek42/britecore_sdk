@@ -279,4 +279,3 @@ __all__ = [
     "ErrorCategory",
     "get_hint_for_error",
 ]
-

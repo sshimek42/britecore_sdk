@@ -14,6 +14,7 @@ def _try_import_questionary():
     """Try to import questionary, with helpful error message if missing."""
     try:
         import questionary
+
         return questionary
     except ImportError:
         print(
@@ -24,7 +25,9 @@ def _try_import_questionary():
         sys.exit(1)
 
 
-def _write_config_file(filepath: str, config: dict[str, Any], is_secrets: bool = False) -> bool:
+def _write_config_file(
+    filepath: str, config: dict[str, Any], is_secrets: bool = False
+) -> bool:
     """Write configuration to a TOML file.
 
     Args:
@@ -52,9 +55,9 @@ def _write_config_file(filepath: str, config: dict[str, Any], is_secrets: bool =
                 escaped = value.replace('"', '\\"')
                 content += f'{key} = "{escaped}"\n'
             elif isinstance(value, bool):
-                content += f'{key} = {"true" if value else "false"}\n'
-            elif isinstance(value, (int, float)):
-                content += f'{key} = {value}\n'
+                content += f"{key} = {'true' if value else 'false'}\n"
+            elif isinstance(value, int | float):
+                content += f"{key} = {value}\n"
 
         path = Path(filepath)
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -179,7 +182,6 @@ def main(argv: list[str] | None = None) -> int:
     print(f"\n✓ Writing configuration to {config_file}...")
 
     # Format as TOML section under target site
-    toml_config = {target_site: credentials}
 
     try:
         config_file.parent.mkdir(parents=True, exist_ok=True)
@@ -203,8 +205,8 @@ def main(argv: list[str] | None = None) -> int:
         if is_secrets:
             config_file.chmod(0o600)
 
-        print(f"✓ Configuration saved!\n")
-        print(f"Configuration Details:")
+        print("✓ Configuration saved!\n")
+        print("Configuration Details:")
         print(f"  Environment: {target_site}")
         print(f"  Auth Method: {auth_display}")
         print(f"  Base URL: {base_url}")
@@ -222,4 +224,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-

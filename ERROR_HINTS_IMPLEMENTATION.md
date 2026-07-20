@@ -1,7 +1,7 @@
 # Error Hints Enhancement - Implementation Example
 
-*Created: July 20, 2026*  
-*Improvement: P1.2 - Enhanced Error Messages with Hints*  
+*Created: July 20, 2026*
+*Improvement: P1.2 - Enhanced Error Messages with Hints*
 *Status: ✅ Implemented*
 
 ## Overview
@@ -28,7 +28,7 @@ raise ConfigurationError("base_url is required")
 
 # Output:
 # BriteCore configuration error - base_url is required
-# 💡 Hint: Set base_url via: ~/.britecore/.secrets.toml[site_name] or 
+# 💡 Hint: Set base_url via: ~/.britecore/.secrets.toml[site_name] or
 #          $env:BRITECORE_SDK_BASE_URL (Windows) / $BRITECORE_SDK_BASE_URL (Linux)
 ```
 
@@ -99,7 +99,7 @@ except ConfigurationError as e:
 **Output:**
 ```
 Error: BriteCore configuration error - base_url is required for site 'production'
-💡 Hint: Set base_url via: ~/.britecore/.secrets.toml[site_name] or 
+💡 Hint: Set base_url via: ~/.britecore/.secrets.toml[site_name] or
          $env:BRITECORE_SDK_BASE_URL (Windows) / $BRITECORE_SDK_BASE_URL (Linux)
 Hint available: True
 Status: 400
@@ -128,7 +128,7 @@ Error: BriteCore authentication failed (HTTP 401) - Invalid API key
 Error Code: authentication_failed
 Request-ID: abc123def456
 Endpoint: /api/v2/policies/retrieve
-💡 Hint: Credentials are invalid or expired. Verify api_key is correct or OAuth 
+💡 Hint: Credentials are invalid or expired. Verify api_key is correct or OAuth
          token is fresh. Run: britecore-check-config
 ```
 
@@ -196,7 +196,7 @@ class ConfigurationError(Base):
     def _generate_hint(message: str) -> str | None:
         """Generate helpful hints for common configuration errors."""
         msg_lower = message.lower()
-        
+
         if "base_url" in msg_lower:
             return "Set base_url via: ~/.britecore/.secrets.toml[site_name]..."
         # ... more patterns
@@ -379,4 +379,3 @@ This improvement transforms cryptic error messages into actionable guidance, sig
 **Status:** ✅ **COMPLETE AND TESTED**
 
 Next priority: Implement P1.3 (Structured Logging Levels) or P2.1 (CLI Quick Check tool).
-

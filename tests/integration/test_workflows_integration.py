@@ -18,8 +18,9 @@ Run only workflow tests:
     pytest tests/integration/test_workflows_integration.py -v
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 pytestmark = pytest.mark.integration
 
@@ -146,7 +147,9 @@ class TestEmailValidatorProperties:
     def test_valid_email_normalizes_to_lowercase(self):
         from britecore_sdk.validators.email_validator import EmailValidator
 
-        assert EmailValidator.normalize_email("  User@Example.COM  ") == "user@example.com"
+        assert (
+            EmailValidator.normalize_email("  User@Example.COM  ") == "user@example.com"
+        )
 
     @pytest.mark.unit
     def test_invalid_email_returns_empty_string(self):
@@ -176,28 +179,36 @@ class TestEmailValidatorProperties:
     def test_type_home_maps_to_personal(self):
         from britecore_sdk.validators.email_validator import EmailValidator
 
-        result = EmailValidator([{"email": "test@example.com", "type": "home"}]).process()
+        result = EmailValidator(
+            [{"email": "test@example.com", "type": "home"}]
+        ).process()
         assert result[0]["type"] == "Personal"
 
     @pytest.mark.unit
     def test_type_personal_maps_to_personal(self):
         from britecore_sdk.validators.email_validator import EmailValidator
 
-        result = EmailValidator([{"email": "test@example.com", "type": "personal"}]).process()
+        result = EmailValidator(
+            [{"email": "test@example.com", "type": "personal"}]
+        ).process()
         assert result[0]["type"] == "Personal"
 
     @pytest.mark.unit
     def test_type_business_maps_to_work(self):
         from britecore_sdk.validators.email_validator import EmailValidator
 
-        result = EmailValidator([{"email": "test@example.com", "type": "business"}]).process()
+        result = EmailValidator(
+            [{"email": "test@example.com", "type": "business"}]
+        ).process()
         assert result[0]["type"] == "Work"
 
     @pytest.mark.unit
     def test_type_work_maps_to_work(self):
         from britecore_sdk.validators.email_validator import EmailValidator
 
-        result = EmailValidator([{"email": "test@example.com", "type": "work"}]).process()
+        result = EmailValidator(
+            [{"email": "test@example.com", "type": "work"}]
+        ).process()
         assert result[0]["type"] == "Work"
 
     @pytest.mark.unit
@@ -519,9 +530,7 @@ class TestPolicyWorkflows:
 
     def test_retrieve_policy_by_id_passes_id_in_payload(self):
         with patch("britecore_sdk.api.api_calls.v2.policies.API_CLIENT") as mock:
-            mock.multiple_parameter_verification.return_value = {
-                "policy_id": "pid-999"
-            }
+            mock.multiple_parameter_verification.return_value = {"policy_id": "pid-999"}
             mock.do_request.return_value = MagicMock()
             mock.process_result.return_value = {"policy_id": "pid-999"}
 
@@ -563,13 +572,20 @@ class TestContactWorkflows:
 
             _, contact_id = new_contact(
                 name="Jane Smith",
-                address=[{"address": "123 Main St", "city": "Springfield", "state": "IL", "zip": "62701", "type": "mailing"}],
+                address=[
+                    {
+                        "address": "123 Main St",
+                        "city": "Springfield",
+                        "state": "IL",
+                        "zip": "62701",
+                        "type": "mailing",
+                    }
+                ],
             )
 
         assert contact_id == "con-001"
         assert (
-            mock.do_request.call_args.kwargs["path"]
-            == "/api/v2/contacts/new_contact"
+            mock.do_request.call_args.kwargs["path"] == "/api/v2/contacts/new_contact"
         )
 
     def test_new_contact_normalizes_address_type(self):
@@ -589,15 +605,15 @@ class TestContactWorkflows:
         assert sent_json["addresses"][0]["type"] != "home"
 
     def test_new_contact_missing_name_raises_missing_parameter(self):
-        from britecore_sdk.exceptions import BritecoreError
         from britecore_sdk.api.api_calls.v2.contacts import new_contact
+        from britecore_sdk.exceptions import BritecoreError
 
         with pytest.raises(BritecoreError.MissingParameter):
             new_contact(name="", address=[{"address": "123 Main", "type": "mailing"}])
 
     def test_new_contact_missing_address_raises_missing_parameter(self):
-        from britecore_sdk.exceptions import BritecoreError
         from britecore_sdk.api.api_calls.v2.contacts import new_contact
+        from britecore_sdk.exceptions import BritecoreError
 
         with pytest.raises(BritecoreError.MissingParameter):
             new_contact(name="Jane Smith", address=[])
@@ -669,15 +685,15 @@ class TestQuoteWorkflows:
         )
 
     def test_create_full_quote_empty_dict_raises_missing_parameter(self):
-        from britecore_sdk.exceptions import BritecoreError
         from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
+        from britecore_sdk.exceptions import BritecoreError
 
         with pytest.raises(BritecoreError.MissingParameter):
             create_full_quote({})
 
     def test_create_full_quote_none_raises_missing_parameter(self):
-        from britecore_sdk.exceptions import BritecoreError
         from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
+        from britecore_sdk.exceptions import BritecoreError
 
         with pytest.raises(BritecoreError.MissingParameter):
             create_full_quote(None)  # type: ignore[arg-type]

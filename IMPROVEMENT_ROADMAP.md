@@ -1,7 +1,7 @@
 # BriteCore SDK Improvement Roadmap
 
-*Created: July 20, 2026*  
-*Status: Strategic Planning Document*  
+*Created: July 20, 2026*
+*Status: Strategic Planning Document*
 *Audience: Development team and maintainers*
 
 ## Executive Summary
@@ -14,8 +14,8 @@ The BriteCore SDK is mature and production-ready with comprehensive docstrings (
 
 ### 1.1 Type Hint Resolution ⭐
 
-**Current State:** 9 `type: ignore` comments scattered across the codebase  
-**Impact:** Improve type safety and IDE auto-completion  
+**Current State:** 9 `type: ignore` comments scattered across the codebase
+**Impact:** Improve type safety and IDE auto-completion
 **Effort:** Medium (2-3 hours)
 
 **Files to Review:**
@@ -36,8 +36,8 @@ The BriteCore SDK is mature and production-ready with comprehensive docstrings (
 
 ### 1.2 Enhanced Error Messages with Hints ⭐
 
-**Current State:** Good error structure, but limited contextual hints  
-**Impact:** Faster troubleshooting for SDK users  
+**Current State:** Good error structure, but limited contextual hints
+**Impact:** Faster troubleshooting for SDK users
 **Effort:** 2-3 hours
 
 **Improvements:**
@@ -64,8 +64,8 @@ raise ConfigurationError(
 
 ### 1.3 Structured Logging Levels ⭐
 
-**Current State:** Basic logging with info/debug/error  
-**Impact:** Better observability in production  
+**Current State:** Basic logging with info/debug/error
+**Impact:** Better observability in production
 **Effort:** 1-2 hours
 
 **Add Logging Categories:**
@@ -94,8 +94,8 @@ LOGGER.debug(f"Request {req_id} took {elapsed_ms}ms", extra={"category": LogCate
 
 ### 2.1 CLI Tool: `britecore-quick-check` ⭐⭐
 
-**Current State:** `britecore-check-config` and `britecore-healthcheck` exist; missing quick verification  
-**Impact:** One-command environment verification  
+**Current State:** `britecore-check-config` and `britecore-healthcheck` exist; missing quick verification
+**Impact:** One-command environment verification
 **Effort:** 2-3 hours
 
 **Features:**
@@ -130,8 +130,8 @@ Status: Ready for production use
 
 ### 2.2 API Response Helpers and Utilities ⭐⭐
 
-**Current State:** `process_result()` handles response normalization  
-**Impact:** Cleaner user code  
+**Current State:** `process_result()` handles response normalization
+**Impact:** Cleaner user code
 **Effort:** 2-3 hours
 
 **Add Helper Module:** `src/britecore_sdk/api/response_helpers.py`
@@ -161,8 +161,8 @@ def batch_operations(operations: list, client, timeout=300):
 
 ### 2.3 Interactive Configuration Wizard ⭐
 
-**Current State:** Documentation-driven config  
-**Impact:** Faster onboarding  
+**Current State:** Documentation-driven config
+**Impact:** Faster onboarding
 **Effort:** 2-3 hours
 
 **Implementation:**
@@ -172,7 +172,7 @@ $ britecore-config-wizard
 ? Auth method: [API Key / OAuth] > API Key
 ? Base URL: > https://britecore.example.com
 ? API Key: > [hidden input]
-? Save to: [~/.britecore/secrets.toml / ./britecore.toml] > 
+? Save to: [~/.britecore/secrets.toml / ./britecore.toml] >
 ✓ Configuration saved and validated
 ```
 
@@ -186,8 +186,8 @@ $ britecore-config-wizard
 
 ### 3.1 Comprehensive Test Fixtures Library ⭐⭐
 
-**Current State:** Basic test structure  
-**Impact:** Faster test development, consistent mocking  
+**Current State:** Basic test structure
+**Impact:** Faster test development, consistent mocking
 **Effort:** 3-4 hours
 
 **Create:** `tests/fixtures/api_fixtures.py`
@@ -222,8 +222,8 @@ def rate_limit_scenario():
 
 ### 3.2 Integration Test Template Suite ⭐⭐
 
-**Current State:** Primarily unit tests  
-**Impact:** Catch integration issues early  
+**Current State:** Primarily unit tests
+**Impact:** Catch integration issues early
 **Effort:** 3-4 hours
 
 **Create:** `tests/integration/test_workflows_*.py`
@@ -244,8 +244,8 @@ def rate_limit_scenario():
 
 ### 3.3 Property-Based Testing with Hypothesis ⭐
 
-**Current State:** Manual test cases  
-**Impact:** Catch edge cases in validation  
+**Current State:** Manual test cases
+**Impact:** Catch edge cases in validation
 **Effort:** 2-3 hours
 
 **Example:**
@@ -271,8 +271,8 @@ def test_contact_validators_accept_valid_inputs(email, phone):
 
 ### 4.1 Request Timing Middleware ⭐⭐
 
-**Current State:** No built-in performance tracking  
-**Impact:** Identify slow endpoints  
+**Current State:** No built-in performance tracking
+**Impact:** Identify slow endpoints
 **Effort:** 2-3 hours
 
 **Add to:** `src/britecore_sdk/api/middleware.py`
@@ -280,10 +280,10 @@ def test_contact_validators_accept_valid_inputs(email, phone):
 ```python
 class TimingMiddleware:
     """Track and log request timing."""
-    
+
     def on_request_start(self, req_id, path, method):
         self._timings[req_id] = time.time()
-    
+
     def on_request_end(self, req_id, status_code):
         elapsed = time.time() - self._timings.pop(req_id)
         LOGGER.info(
@@ -299,8 +299,8 @@ class TimingMiddleware:
 
 ### 4.2 Response Caching Strategy Documentation ⭐
 
-**Current State:** `request_cache.py` exists but limited  
-**Impact:** Understand caching tradeoffs  
+**Current State:** `request_cache.py` exists but limited
+**Impact:** Understand caching tradeoffs
 **Effort:** 1-2 hours
 
 **Create:** `docs/CACHING_STRATEGY.md`
@@ -335,8 +335,8 @@ request_cache.enable_caching(ttl=3600, max_size=1000)
 
 ### 5.1 API Patterns & Recipes Documentation ⭐⭐
 
-**Current State:** Endpoint docs exist; patterns are scattered  
-**Impact:** Faster learning curve for common tasks  
+**Current State:** Endpoint docs exist; patterns are scattered
+**Impact:** Faster learning curve for common tasks
 **Effort:** 2-3 hours
 
 **Create:** `docs/COMMON_PATTERNS.md`
@@ -368,8 +368,8 @@ for contact_data in contacts_to_import:
 
 ### 5.2 Migration Guide: SDK v1 → v2 ⭐
 
-**Current State:** Breaking changes documented separately  
-**Impact:** Smooth upgrades from v1  
+**Current State:** Breaking changes documented separately
+**Impact:** Smooth upgrades from v1
 **Effort:** 2-3 hours
 
 **Create:** `docs/MIGRATION_v1_to_v2.md`
@@ -403,8 +403,8 @@ result = policies.retrieve_policy(...)
 
 ### 5.3 Troubleshooting Guide ⭐
 
-**Current State:** Documentation scattered  
-**Impact:** Self-service problem resolution  
+**Current State:** Documentation scattered
+**Impact:** Self-service problem resolution
 **Effort:** 2-3 hours
 
 **Expand:** `TROUBLESHOOTING.md` with sections:
@@ -434,8 +434,8 @@ result = policies.retrieve_policy(...)
 
 ### 6.1 Bulk Operation Retry with Exponential Backoff ⭐⭐
 
-**Current State:** Basic retry in urllib3  
-**Impact:** Reliable bulk operations  
+**Current State:** Basic retry in urllib3
+**Impact:** Reliable bulk operations
 **Effort:** 3-4 hours
 
 **Enhancement:**
@@ -456,8 +456,8 @@ with BulkOperationManager(
 
 ### 6.2 Webhook Event Handler Framework ⭐⭐
 
-**Current State:** No built-in webhook support  
-**Impact:** Real-time event processing  
+**Current State:** No built-in webhook support
+**Impact:** Real-time event processing
 **Effort:** 4-5 hours
 
 **New Module:** `src/britecore_sdk/webhooks/`
@@ -482,8 +482,8 @@ listener.start()
 
 ### 6.3 OpenAPI/Swagger UI Integration ⭐
 
-**Current State:** No interactive API documentation  
-**Impact:** Interactive API exploration  
+**Current State:** No interactive API documentation
+**Impact:** Interactive API exploration
 **Effort:** 3-4 hours
 
 **Features:**
@@ -497,8 +497,8 @@ listener.start()
 
 ### 7.1 Pre-commit Hooks for SDK Development ⭐
 
-**Current State:** General hooks exist  
-**Impact:** Prevent common mistakes  
+**Current State:** General hooks exist
+**Impact:** Prevent common mistakes
 **Effort:** 1-2 hours
 
 **Add Hooks:**
@@ -526,8 +526,8 @@ listener.start()
 
 ### 7.2 CI Coverage Enforcement ⭐
 
-**Current State:** Coverage tracked, not enforced  
-**Impact:** Maintain code quality  
+**Current State:** Coverage tracked, not enforced
+**Impact:** Maintain code quality
 **Effort:** 1-2 hours
 
 **Add to CI:**
@@ -592,11 +592,11 @@ After implementing these improvements, track:
 - **Developer Experience:**
   - Time to first successful API call (target: < 5 min)
   - Configuration validation time (target: < 30 sec)
-  
+
 - **Code Quality:**
   - Type-check success rate (target: 100%)
   - Test coverage (target: > 80%)
-  
+
 - **Production Readiness:**
   - Mean time to debug issue (target: < 10 min)
   - Configuration errors caught pre-deployment (target: 95%+)
@@ -620,4 +620,3 @@ For feature requests or discussions, refer to:
 - **Contributing setup:** `CONTRIBUTING.md`
 - **API patterns:** `API.md`
 - **Configuration help:** `README.md` (Configuration section)
-

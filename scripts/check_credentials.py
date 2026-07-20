@@ -4,7 +4,6 @@ import re
 import sys
 from pathlib import Path
 
-
 # Patterns for common credential types
 CREDENTIAL_PATTERNS = [
     (r"api_key\s*=\s*['\"]([a-zA-Z0-9_-]{20,})['\"]", "API Key"),
@@ -38,7 +37,7 @@ def check_file(filepath: str) -> list[str]:
 
     for pattern, cred_type in CREDENTIAL_PATTERNS:
         for match in re.finditer(pattern, content, re.IGNORECASE):
-            line_num = content[:match.start()].count("\n") + 1
+            line_num = content[: match.start()].count("\n") + 1
             issues.append(
                 f"{filepath}:{line_num}: Found potential {cred_type} credential"
             )
@@ -64,4 +63,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-

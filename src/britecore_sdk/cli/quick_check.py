@@ -6,10 +6,9 @@ without requiring extensive setup or API credentials.
 
 import argparse
 import sys
-from typing import Any
 
 from britecore_sdk import logger
-from britecore_sdk.api.api_calls import get_api_client, init_api_client
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import settings
 
@@ -146,7 +145,8 @@ Examples:
         help="Full health check including authentication (default if no options given)",
     )
     parser.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Verbose output with additional details",
     )
@@ -182,4 +182,3 @@ Examples:
 
 if __name__ == "__main__":
     sys.exit(main())
-

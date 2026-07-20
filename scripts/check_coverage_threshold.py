@@ -3,9 +3,9 @@
 This script checks test coverage and fails if it drops below the threshold.
 """
 
+import re
 import subprocess
 import sys
-import re
 
 
 def get_coverage_percentage() -> float:
@@ -67,4 +67,3 @@ def main(threshold: float = 75.0):
 if __name__ == "__main__":
     threshold = float(sys.argv[1]) if len(sys.argv) > 1 else 75.0
     sys.exit(main(threshold))
-

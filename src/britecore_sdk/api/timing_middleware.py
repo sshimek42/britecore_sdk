@@ -4,10 +4,11 @@ Tracks and logs request timing to identify bottlenecks.
 """
 
 import time
-from typing import Any, Callable
+from collections.abc import Callable
+from logging import Logger, getLogger
+from typing import Any
 
 from britecore_sdk.base_logger import LogCategory, log_with_category
-from logging import Logger, getLogger
 
 SLOW_REQUEST_THRESHOLD_MS = 1000  # Warn if request takes > 1 second
 
@@ -49,7 +50,9 @@ class TimingMiddleware:
             path=path,
         )
 
-    def on_request_end(self, req_id: str, method: str, path: str, status_code: int) -> None:
+    def on_request_end(
+        self, req_id: str, method: str, path: str, status_code: int
+    ) -> None:
         """Record request end and log timing.
 
         Args:
@@ -103,8 +106,10 @@ class TimingMiddleware:
         Returns:
             Wrapped function with timing.
         """
+
         def wrapper(*args, **kwargs) -> Any:
             import uuid
+
             req_id = str(uuid.uuid4())[:8]
 
             self.on_request_start(req_id, path, method)
@@ -113,7 +118,7 @@ class TimingMiddleware:
                 status_code = getattr(result, "status", 200)
                 self.on_request_end(req_id, method, path, status_code)
                 return result
-            except Exception as e:
+            except Exception:
                 # Still log timing on error
                 self.on_request_end(req_id, method, path, 0)
                 raise
@@ -153,4 +158,3 @@ __all__ = [
     "get_timing_middleware",
     "reset_timing_middleware",
 ]
-

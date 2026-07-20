@@ -14,21 +14,21 @@ from britecore_sdk.exceptions import NotFoundError
 def find_policy(policy_number=None, policy_id=None):
     """Find a policy by number or ID, trying both if available."""
     client = get_api_client()
-    
+
     # Try by policy number first (more common)
     if policy_number:
         try:
             return policies.retrieve_policy(policy_number=policy_number)
         except NotFoundError:
             pass
-    
+
     # Try by policy ID
     if policy_id:
         try:
             return policies.retrieve_policy(policy_id=policy_id)
         except NotFoundError:
             pass
-    
+
     raise ValueError("Could not find policy with provided identifiers")
 ```
 
@@ -49,17 +49,17 @@ def import_contacts_bulk(contact_list):
         "failed": 0,
         "errors": [],
     }
-    
+
     for idx, contact_data in enumerate(contact_list):
         try:
             # Validate the contact
             contact = BritecoreContact(**contact_data)
             validated = contact.process_contact()
-            
+
             # Create the contact
             result = contacts.new_contact(contact=validated)
             results["succeeded"] += 1
-            
+
         except ValidationError as e:
             results["failed"] += 1
             results["errors"].append({
@@ -74,7 +74,7 @@ def import_contacts_bulk(contact_list):
                 "data": contact_data,
                 "error": f"API error: {e}",
             })
-    
+
     return results
 ```
 
@@ -94,16 +94,16 @@ def process_policies_with_rate_limiting(policy_numbers, delay_ms=100):
         requests_per_second=10,  # Adjust to API limits
         burst_size=5,
     )
-    
+
     results = []
     for policy_num in policy_numbers:
         # Check rate limit before making request
         rate_limiter.acquire()
-        
+
         try:
             policy = policies.retrieve_policy(policy_number=policy_num)
             results.append(policy)
-            
+
         except RateLimitError:
             # Exponential backoff on rate limit
             wait_time = 1
@@ -117,7 +117,7 @@ def process_policies_with_rate_limiting(policy_numbers, delay_ms=100):
                     wait_time *= 2
                     if wait_time > 60:
                         raise  # Give up after 60 seconds
-    
+
     return results
 ```
 
@@ -133,7 +133,7 @@ from britecore_sdk.api.response_helpers import paginate
 def process_all_contacts(batch_size=100):
     """Process all contacts in the system."""
     client = get_api_client()
-    
+
     # Use paginate helper to automatically handle pagination
     for contact in paginate(
         client,
@@ -158,20 +158,20 @@ def create_policies_with_tracking(policy_list, show_progress=True):
     """Create multiple policies with progress tracking."""
     total = len(policy_list)
     results = []
-    
+
     for idx, policy_data in enumerate(policy_list, 1):
         try:
             result = policies.create_policy(**policy_data)
             results.append(result)
-            
+
             if show_progress:
                 percentage = (idx / total) * 100
                 print(f"Progress: {idx}/{total} ({percentage:.1f}%)")
-                
+
         except BritecoreError as e:
             print(f"Error creating policy {idx}: {e}")
             results.append({"error": str(e)})
-    
+
     return results
 ```
 
@@ -187,10 +187,10 @@ def update_expired_policies(policy_list, new_expiration_date):
     """Update expiration date for policies that match criteria."""
     updated = []
     skipped = []
-    
+
     for policy in policy_list:
         current_expiration = policy.get("expiration_date")
-        
+
         # Only update if expiration is before new date
         if current_expiration and current_expiration < new_expiration_date:
             try:
@@ -203,7 +203,7 @@ def update_expired_policies(policy_list, new_expiration_date):
                 print(f"Failed to update policy {policy['policy_id']}: {e}")
         else:
             skipped.append(policy["policy_id"])
-    
+
     return {"updated": updated, "skipped": skipped}
 ```
 
@@ -219,20 +219,20 @@ from britecore_sdk.exceptions import BritecoreError, RequestTimeoutError
 def create_quote_with_retry(quote_data, max_retries=3, backoff_factor=2):
     """Create a quote with automatic retry on failure."""
     last_error = None
-    
+
     for attempt in range(max_retries):
         try:
             quote = quotes.create_quote(**quote_data)
             if attempt > 0:
                 print(f"Quote created on retry {attempt + 1}")
             return quote
-            
+
         except RequestTimeoutError as e:
             last_error = e
             wait_time = backoff_factor ** attempt
             print(f"Timeout on attempt {attempt + 1}, waiting {wait_time}s before retry...")
             time.sleep(wait_time)
-            
+
         except BritecoreError as e:
             # Don't retry on validation or auth errors
             if "Validation" in str(type(e)) or "Authentication" in str(type(e)):
@@ -241,7 +241,7 @@ def create_quote_with_retry(quote_data, max_retries=3, backoff_factor=2):
             wait_time = backoff_factor ** attempt
             print(f"Error on attempt {attempt + 1}, waiting {wait_time}s before retry...")
             time.sleep(wait_time)
-    
+
     raise last_error or BritecoreError("Failed after retries")
 ```
 
@@ -256,10 +256,10 @@ from britecore_sdk.api.response_helpers import extract_data, transform_response
 def get_policy_summary(policy_number):
     """Get a simplified policy summary."""
     response = policies.retrieve_policy(policy_number=policy_number)
-    
+
     # Extract just the data
     data = extract_data(response)
-    
+
     # Transform into summary format
     return {
         "policy_number": data["policy_number"],
@@ -291,14 +291,14 @@ from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
 async def fetch_policies_concurrently(policy_numbers, max_concurrent=5):
     """Fetch multiple policies concurrently."""
     semaphore = asyncio.Semaphore(max_concurrent)
-    
+
     async def fetch_one(policy_number):
         async with semaphore:
             return await aretrieve_policy(policy_number=policy_number)
-    
+
     tasks = [fetch_one(pn) for pn in policy_numbers]
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    
+
     # Separate successful results from errors
     policies = []
     errors = []
@@ -307,7 +307,7 @@ async def fetch_policies_concurrently(policy_numbers, max_concurrent=5):
             errors.append(result)
         else:
             policies.append(result)
-    
+
     return policies, errors
 ```
 
@@ -349,4 +349,3 @@ with api_context("production"):
 - [API Reference](../api_reference.rst)
 - [Configuration Guide](../CONFIGURATION.md)
 - [Error Handling](../TROUBLESHOOTING.md)
-

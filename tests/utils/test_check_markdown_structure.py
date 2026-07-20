@@ -98,4 +98,3 @@ def test_main_returns_failure_for_bad_markdown(tmp_path, monkeypatch, capsys):
     output = capsys.readouterr().out
     assert "README.md:3" in output
     assert "Found 1 Markdown structure issue(s)." in output
-

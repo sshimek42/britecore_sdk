@@ -6,7 +6,8 @@ Provides a framework for receiving and handling webhook events from the BriteCor
 import hashlib
 import hmac
 import json
-from typing import Any, Callable, Dict, Optional
+from collections.abc import Callable
+from typing import Any
 
 from britecore_sdk import logger
 
@@ -14,7 +15,7 @@ from britecore_sdk import logger
 class WebhookEvent:
     """Represents a webhook event from BriteCore."""
 
-    def __init__(self, event_type: str, data: Dict[str, Any], timestamp: str):
+    def __init__(self, event_type: str, data: dict[str, Any], timestamp: str):
         """Initialize webhook event.
 
         Args:
@@ -53,7 +54,7 @@ class WebhookListener:
         """
         self.secret = secret
         self.logger = logger_instance or logger
-        self.handlers: Dict[str, list[Callable[[WebhookEvent], None]]] = {}
+        self.handlers: dict[str, list[Callable[[WebhookEvent], None]]] = {}
         self._running = False
 
     def on(self, event_type: str) -> Callable:
@@ -71,11 +72,13 @@ class WebhookListener:
             def handle_creation(event):
                 print(f"Policy created: {event.data}")
         """
+
         def decorator(func: Callable[[WebhookEvent], None]) -> Callable:
             if event_type not in self.handlers:
                 self.handlers[event_type] = []
             self.handlers[event_type].append(func)
             return func
+
         return decorator
 
     def verify_signature(self, payload: str, signature: str) -> bool:
@@ -96,7 +99,9 @@ class WebhookListener:
 
         return hmac.compare_digest(signature, expected_signature)
 
-    def process_webhook(self, payload: Dict[str, Any], signature: Optional[str] = None) -> bool:
+    def process_webhook(
+        self, payload: dict[str, Any], signature: str | None = None
+    ) -> bool:
         """Process incoming webhook payload.
 
         Args:
@@ -181,7 +186,7 @@ class WebhookManager:
         self.listeners[name] = listener
         return listener
 
-    def get_listener(self, name: str) -> Optional[WebhookListener]:
+    def get_listener(self, name: str) -> WebhookListener | None:
         """Get a listener by name.
 
         Args:
@@ -198,4 +203,3 @@ __all__ = [
     "WebhookListener",
     "WebhookManager",
 ]
-

@@ -1,11 +1,11 @@
 """Library-safe logging helpers built on Python's standard logging module."""
 
 import logging
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 
-class LogCategory(str, Enum):
+class LogCategory(StrEnum):
     """Standard logging categories for observability and filtering."""
 
     AUTH = "auth"  # OAuth token, credential validation

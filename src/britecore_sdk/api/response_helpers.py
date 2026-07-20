@@ -3,7 +3,8 @@
 Provides common patterns for data extraction, pagination, and batch operations.
 """
 
-from typing import Any, Callable, Generator, TypeVar, overload
+from collections.abc import Callable, Generator
+from typing import Any, TypeVar, overload
 
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 from britecore_sdk.exceptions import BritecoreError
@@ -41,7 +42,11 @@ def extract_data(response: Any) -> Any:
         response = policies.retrieve_policy(policy_number="POL-123")
         policy_data = extract_data(response)
     """
-    if isinstance(response, dict) and "data" in response and response["data"] is not None:
+    if (
+        isinstance(response, dict)
+        and "data" in response
+        and response["data"] is not None
+    ):
         return response["data"]
 
     if isinstance(response, dict) and "data" in response:
@@ -161,14 +166,13 @@ def paginate(
         # Extract data
         try:
             data = extract_data(response)
-        except BritecoreError as e:
+        except BritecoreError:
             # No more data available
             break
 
         # Handle data (could be list or dict)
         if isinstance(data, list):
-            for item in data:
-                yield item
+            yield from data
 
             # Check if we got fewer items than requested (last page)
             if len(data) < page_size:
@@ -215,8 +219,7 @@ def batch_items(
 def transform_response(
     response: Any,
     transform: Callable[[Any], T],
-) -> T:
-    ...
+) -> T: ...
 
 
 def transform_response(response: Any, transform: Callable[[Any], T]) -> T:
@@ -250,4 +253,3 @@ __all__ = [
     "batch_items",
     "transform_response",
 ]
-

@@ -46,7 +46,9 @@ def _is_excluded(path: Path) -> bool:
     path_text = path.as_posix()
     if ".egg-info" in path_text:
         return True
-    return any(part in path.parts for part in EXCLUDED_PARTS) or "docs/_build" in path_text
+    return (
+        any(part in path.parts for part in EXCLUDED_PARTS) or "docs/_build" in path_text
+    )
 
 
 def iter_markdown_files(root: Path, paths: Iterable[str] | None = None) -> list[Path]:
@@ -168,14 +170,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if issues:
         for issue in issues:
-            print(format_issue(issue, REPO_ROOT))
-        print(f"Found {len(issues)} Markdown structure issue(s).")
+            # Use sys.stdout.buffer to safely write UTF-8 on any platform (avoids
+            # UnicodeEncodeError on Windows cp1252 terminals when emoji are present).
+            sys.stdout.buffer.write(
+                (format_issue(issue, REPO_ROOT) + "\n").encode("utf-8")
+            )
+        sys.stdout.buffer.write(
+            f"Found {len(issues)} Markdown structure issue(s).\n".encode()
+        )
         return 1
 
-    print(f"Markdown structure check passed for {len(markdown_files)} file(s).")
+    sys.stdout.buffer.write(
+        f"Markdown structure check passed for {len(markdown_files)} file(s).\n".encode()
+    )
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

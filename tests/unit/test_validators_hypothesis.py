@@ -7,14 +7,16 @@ Run with:
 """
 
 import pytest
-from hypothesis import given, strategies as st
-from britecore_sdk.validators import (
-    EmailValidator,
-    PhoneValidator,
-    NameValidator,
-    AddressValidator,
-)
+from hypothesis import given
+from hypothesis import strategies as st
+
 from britecore_sdk.exceptions import ValidationError
+from britecore_sdk.validators import (
+    AddressValidator,
+    EmailValidator,
+    NameValidator,
+    PhoneValidator,
+)
 
 pytestmark = pytest.mark.skip(
     reason="Provisional property-based suite; validator APIs require dedicated strategy redesign."
@@ -62,7 +64,9 @@ class TestEmailValidatorProperties:
 class TestPhoneValidatorProperties:
     """Property-based tests for phone validation."""
 
-    @given(st.text(min_size=7, max_size=15).filter(lambda x: any(c.isdigit() for c in x)))
+    @given(
+        st.text(min_size=7, max_size=15).filter(lambda x: any(c.isdigit() for c in x))
+    )
     def test_phone_accepts_digit_strings(self, phone_str: str):
         """Phone strings with digits should be processable."""
         validator = PhoneValidator()
@@ -154,7 +158,9 @@ class TestValidatorCompositionProperties:
             dict,
             name=st.text(min_size=1, max_size=50),
             email=st.emails(),
-            phone=st.text(min_size=7, max_size=15).filter(lambda x: any(c.isdigit() for c in x)),
+            phone=st.text(min_size=7, max_size=15).filter(
+                lambda x: any(c.isdigit() for c in x)
+            ),
         )
     )
     def test_multiple_validators_on_same_data(self, contact_dict):
@@ -184,4 +190,3 @@ class TestValidatorCompositionProperties:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

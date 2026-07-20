@@ -3,9 +3,11 @@
 Provides reusable fixtures for mocking API responses and client behavior.
 """
 
-import pytest
+from collections.abc import Generator
+from typing import Any
 from unittest.mock import MagicMock, Mock, patch
-from typing import Any, Generator
+
+import pytest
 
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
@@ -29,7 +31,7 @@ def mock_policy_response() -> dict[str, Any]:
             "premium": 1250.00,
             "company_id": "comp_001",
         },
-        "message": "Policy retrieved successfully"
+        "message": "Policy retrieved successfully",
     }
 
 
@@ -47,9 +49,16 @@ def mock_contact_response() -> dict[str, Any]:
             "contact_type": "individual",
             "email": [{"email": "john@example.com", "email_type": "work"}],
             "phone": [{"phone": "555-1234", "phone_type": "work"}],
-            "address": [{"address": "123 Main St", "city": "Anytown", "state": "CA", "zip": "12345"}],
+            "address": [
+                {
+                    "address": "123 Main St",
+                    "city": "Anytown",
+                    "state": "CA",
+                    "zip": "12345",
+                }
+            ],
         },
-        "message": "Contact retrieved successfully"
+        "message": "Contact retrieved successfully",
     }
 
 
@@ -76,7 +85,7 @@ def mock_quote_response() -> dict[str, Any]:
                 }
             ],
         },
-        "message": "Quote created successfully"
+        "message": "Quote created successfully",
     }
 
 
@@ -263,4 +272,3 @@ __all__ = [
     "sample_contact_data",
     "sample_quote_data",
 ]
-
