@@ -503,6 +503,8 @@ except BritecoreError.AuthenticationError:
     logger.error("Auth failed — check credentials")
 except BritecoreError.Base as e:
     logger.error("SDK failure: %s", e)
+```
+
 ---
 
 ## Data Validation Pipeline

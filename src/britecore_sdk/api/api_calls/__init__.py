@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from contextvars import ContextVar
-from typing import cast
+from typing import NotRequired, TypedDict, cast
 
 from britecore_sdk.api.britecore_api_client import (
     BritecoreAPIClient,
@@ -9,6 +9,34 @@ from britecore_sdk.api.britecore_api_client import (
 from britecore_sdk.api.britecore_async_api_client import AsyncBritecoreAPIClient
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import get_target_site
+
+
+class InitClientParams(TypedDict):
+    """Typed parameters for BritecoreAPIClient.init_client()."""
+
+    client_dry_run: NotRequired[bool]
+    debug_include_request_body: NotRequired[bool]
+    base_url: NotRequired[str | None]
+    api_key: NotRequired[str | None]
+    client_id: NotRequired[str | None]
+    client_secret: NotRequired[str | None]
+    enable_rate_limiter: NotRequired[bool | None]
+    rate_limiter_requests_per_second: NotRequired[float | None]
+    rate_limiter_burst_size: NotRequired[int | None]
+    rate_limiter_adaptive_backoff: NotRequired[bool | None]
+    rate_limiter_backoff_timeout_seconds: NotRequired[float | None]
+
+
+class AsyncInitClientParams(TypedDict):
+    """Typed parameters for AsyncBritecoreAPIClient initialization."""
+
+    client_dry_run: NotRequired[bool]
+    debug_include_request_body: NotRequired[bool]
+    base_url: NotRequired[str | None]
+    api_key: NotRequired[str | None]
+    client_id: NotRequired[str | None]
+    client_secret: NotRequired[str | None]
+
 
 _TARGET_SITE_UNSET = object()
 _context_api_client: ContextVar[BritecoreAPIClient | None] = ContextVar(
@@ -112,34 +140,34 @@ def init_api_client(
             )
 
     client: BritecoreAPIClient = BritecoreAPIClient(resolved)
-    kwargs: dict[str, object] = {"client_dry_run": client_dry_run}
+    kwargs: InitClientParams = {"client_dry_run": client_dry_run}  # type: ignore[typeddict-unknown-key]
     if base_url is not None:
         # Explicit-credential mode: always pass all credential kwargs explicitly
-        kwargs["base_url"] = base_url
-        kwargs["api_key"] = api_key
-        kwargs["client_id"] = client_id
-        kwargs["client_secret"] = client_secret
+        kwargs["base_url"] = base_url  # type: ignore[typeddict-unknown-key]
+        kwargs["api_key"] = api_key  # type: ignore[typeddict-unknown-key]
+        kwargs["client_id"] = client_id  # type: ignore[typeddict-unknown-key]
+        kwargs["client_secret"] = client_secret  # type: ignore[typeddict-unknown-key]
     else:
         # File-based mode: only pass credentials if they're provided
         if api_key is not None:
-            kwargs["api_key"] = api_key
+            kwargs["api_key"] = api_key  # type: ignore[typeddict-unknown-key]
         if client_id is not None:
-            kwargs["client_id"] = client_id
+            kwargs["client_id"] = client_id  # type: ignore[typeddict-unknown-key]
         if client_secret is not None:
-            kwargs["client_secret"] = client_secret
+            kwargs["client_secret"] = client_secret  # type: ignore[typeddict-unknown-key]
     # Rate limiter options — always forwarded (None means "use settings default")
-    kwargs["enable_rate_limiter"] = enable_rate_limiter
+    kwargs["enable_rate_limiter"] = enable_rate_limiter  # type: ignore[typeddict-unknown-key]
     if rate_limiter_requests_per_second is not None:
-        kwargs["rate_limiter_requests_per_second"] = rate_limiter_requests_per_second
+        kwargs["rate_limiter_requests_per_second"] = rate_limiter_requests_per_second  # type: ignore[typeddict-unknown-key]
     if rate_limiter_burst_size is not None:
-        kwargs["rate_limiter_burst_size"] = rate_limiter_burst_size
+        kwargs["rate_limiter_burst_size"] = rate_limiter_burst_size  # type: ignore[typeddict-unknown-key]
     if rate_limiter_adaptive_backoff is not None:
-        kwargs["rate_limiter_adaptive_backoff"] = rate_limiter_adaptive_backoff
+        kwargs["rate_limiter_adaptive_backoff"] = rate_limiter_adaptive_backoff  # type: ignore[typeddict-unknown-key]
     if rate_limiter_backoff_timeout_seconds is not None:
-        kwargs["rate_limiter_backoff_timeout_seconds"] = (
+        kwargs["rate_limiter_backoff_timeout_seconds"] = (  # type: ignore[typeddict-unknown-key]
             rate_limiter_backoff_timeout_seconds
         )
-    client.init_client(**kwargs)  # type: ignore[arg-type]
+    client.init_client(**kwargs)
     _set_module_client_state("_api_client", client)
     return client
 
@@ -198,18 +226,18 @@ def init_async_api_client(
                 "target_site must be specified: pass a non-empty value, or omit the argument "
                 "to use configured fallback resolution."
             )
-    async_kwargs: dict[str, object] = {
+    async_kwargs: AsyncInitClientParams = {
         "client_dry_run": client_dry_run,
     }
     if base_url is not None:
-        async_kwargs["base_url"] = base_url
+        async_kwargs["base_url"] = base_url  # type: ignore[typeddict-unknown-key]
     if api_key is not None:
-        async_kwargs["api_key"] = api_key
+        async_kwargs["api_key"] = api_key  # type: ignore[typeddict-unknown-key]
     if client_id is not None:
-        async_kwargs["client_id"] = client_id
+        async_kwargs["client_id"] = client_id  # type: ignore[typeddict-unknown-key]
     if client_secret is not None:
-        async_kwargs["client_secret"] = client_secret
-    client = AsyncBritecoreAPIClient(resolved, **async_kwargs)  # type: ignore[arg-type]
+        async_kwargs["client_secret"] = client_secret  # type: ignore[typeddict-unknown-key]
+    client = AsyncBritecoreAPIClient(resolved, **async_kwargs)
     _set_module_client_state("_async_api_client", client)
     return client
 

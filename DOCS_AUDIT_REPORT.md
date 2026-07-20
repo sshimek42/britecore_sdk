@@ -108,7 +108,7 @@ Content here...
 **Impact:** LOW | **Files Affected:** GETTING_STARTED.md, ARCHITECTURE.md
 
 **Inconsistency:** Mix of dashes (`-`) and asterisks (`*`) for bullets
-- GETTING_STARTED.md line 10: Uses `-` 
+- GETTING_STARTED.md line 10: Uses `-`
 - ARCHITECTURE.md line 22: Uses bullet points in boxes (ASCII art)
 
 **Recommendation:** Standardize on `-` for all bullet lists (single standard)
@@ -249,17 +249,17 @@ One-line purpose statement: What is this document for? Who should read it?
 ```python
 def function(param1: str, param2: int) -> dict:
     """One-line summary.
-    
+
     Extended description if needed, explaining behavior,
     side effects, or context.
-    
+
     Args:
         param1: Description of param1
         param2: Description of param2
-    
+
     Returns:
         dict: Description of return value
-    
+
     Raises:
         ValueError: When this condition occurs
     """
@@ -298,24 +298,24 @@ def function(param1: str, param2: int) -> dict:
 ```python
 def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
     """One-line summary (imperative: "Retrieve...", "Create...", not "Retrieves...").
-    
+
     Extended description explaining behavior, side effects, or important context.
     Mention any errors that might be raised or special SDK behaviors.
-    
+
     Args:
         param1: Description of param1 and expected format/values
         param2: Description of param2 and why it has this default
-    
+
     Returns:
         dict: Shape and structure of returned data, including key/value guarantees
-    
+
     Raises:
         ValueError: When param1 is empty or invalid
         AuthenticationError: When credentials are missing/invalid
-    
+
     Examples:
         .. code-block:: python
-        
+
             from britecore_sdk import BritecoreAPIClient
             client = BritecoreAPIClient("prod").init_client()
             result = endpoint_wrapper(param1="value", param2=20)
@@ -327,7 +327,7 @@ def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
 ### 5.3 **Docstring Examples Format**
 **Impact:** LOW | **Files Affected:** quotes.py and other wrappers
 
-**Pattern Found:** 
+**Pattern Found:**
 - Uses `.. code-block:: python` (reStructuredText) — correct for Sphinx
 - Shows both v2.0.0 and v1.x patterns — good for migration
 - Clear labels: "**v2.0.0 Explicit Client Pattern**" — helpful
@@ -497,5 +497,3 @@ DOCSTRINGS:
   ✓ quotes.py (good)
   ? Other endpoint wrappers (needs audit)
 ```
-
-

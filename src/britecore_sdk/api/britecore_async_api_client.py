@@ -3,13 +3,23 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import Any, NotRequired, TypedDict
 
 from urllib3 import BaseHTTPResponse
 from urllib3.util import Retry, Timeout
 
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 from britecore_sdk.api.request_cache import RequestCache, build_cache_key
+
+
+class _AsyncInitClientParams(TypedDict):
+    """Typed parameters for async client initialization."""
+
+    client_dry_run: NotRequired[bool]
+    base_url: NotRequired[str | None]
+    api_key: NotRequired[str | None]
+    client_id: NotRequired[str | None]
+    client_secret: NotRequired[str | None]
 
 
 class AsyncBritecoreAPIClient:
@@ -79,18 +89,18 @@ class AsyncBritecoreAPIClient:
                     self.target_site if self.target_site is not None else ""
                 )
                 client = BritecoreAPIClient(target_site)
-                init_kwargs: dict[str, object] = {
+                init_kwargs: _AsyncInitClientParams = {
                     "client_dry_run": self._client_dry_run
                 }
                 if self._base_url is not None:
-                    init_kwargs["base_url"] = self._base_url
+                    init_kwargs["base_url"] = self._base_url  # type: ignore[typeddict-unknown-key]
                 if self._api_key is not None:
-                    init_kwargs["api_key"] = self._api_key
+                    init_kwargs["api_key"] = self._api_key  # type: ignore[typeddict-unknown-key]
                 if self._client_id is not None:
-                    init_kwargs["client_id"] = self._client_id
+                    init_kwargs["client_id"] = self._client_id  # type: ignore[typeddict-unknown-key]
                 if self._client_secret is not None:
-                    init_kwargs["client_secret"] = self._client_secret
-                await asyncio.to_thread(client.init_client, **init_kwargs)  # type: ignore[arg-type]
+                    init_kwargs["client_secret"] = self._client_secret  # type: ignore[typeddict-unknown-key]
+                await asyncio.to_thread(client.init_client, **init_kwargs)
                 self._client = client
             self._client_dry_run = getattr(self._client, "client_dry_run", False)
 

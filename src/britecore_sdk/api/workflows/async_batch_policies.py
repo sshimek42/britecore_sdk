@@ -6,7 +6,7 @@ creation. Endpoint wrappers for individual calls live in
 """
 
 import asyncio
-from typing import Any
+from typing import Any, cast
 
 from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls.v2.async_policies import acreate_policy, acreate_risk
@@ -14,6 +14,9 @@ from britecore_sdk.api.workflows.batch_policies import (
     BatchPolicyCreateResult,
     BatchRiskCreateResult,
 )
+
+PolicyTaskResult = tuple[int, Any, str | None]
+RiskTaskResult = tuple[int, Any, str | None]
 
 
 async def acreate_policies_batch(
@@ -63,7 +66,7 @@ async def acreate_policies_batch(
 
     async def _create_one_semaphored(
         index: int, payload: dict[str, Any]
-    ) -> tuple[int, Any, str | None]:
+    ) -> PolicyTaskResult:
         async with semaphore:
             policy_data, revision_id = await acreate_policy(**payload, **kwargs)
             return index, policy_data, revision_id
@@ -75,39 +78,45 @@ async def acreate_policies_batch(
 
     if fail_fast:
         try:
-            task_results = await asyncio.gather(*tasks)
+            task_results: list[PolicyTaskResult] = await asyncio.gather(*tasks)
             for result_idx, policy_data, revision_id in task_results:
-                results[result_idx] = {
+                success_result: BatchPolicyCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "policy_data": policy_data,
                     "revision_id": revision_id,
                     "error": None,
                 }
+                results[result_idx] = success_result
         except Exception:
             for task in tasks:
                 task.cancel()
             raise
     else:
-        task_results = await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore[assignment]
+        task_results = cast(
+            list[PolicyTaskResult | Exception],
+            await asyncio.gather(*tasks, return_exceptions=True),
+        )
         for idx, result in enumerate(task_results):
             if isinstance(result, Exception):
-                results[idx] = {
+                failed_result: BatchPolicyCreateResult = {
                     "index": idx,
                     "success": False,
                     "policy_data": None,
                     "revision_id": None,
                     "error": str(result),
                 }
+                results[idx] = failed_result
             else:
-                result_idx, policy_data, revision_id = result
-                results[result_idx] = {
+                result_idx, policy_data, revision_id = cast(PolicyTaskResult, result)
+                success_result: BatchPolicyCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "policy_data": policy_data,
                     "revision_id": revision_id,
                     "error": None,
                 }
+                results[result_idx] = success_result
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])
@@ -167,7 +176,7 @@ async def acreate_risks_batch(
 
     async def _create_one_semaphored(
         index: int, payload: dict[str, Any]
-    ) -> tuple[int, Any, str | None]:
+    ) -> RiskTaskResult:
         async with semaphore:
             risk_data = await acreate_risk(**payload, **kwargs)
             risk_id: str | None = None
@@ -182,39 +191,45 @@ async def acreate_risks_batch(
 
     if fail_fast:
         try:
-            task_results = await asyncio.gather(*tasks)
+            task_results: list[RiskTaskResult] = await asyncio.gather(*tasks)
             for result_idx, risk_data, risk_id in task_results:
-                results[result_idx] = {
+                success_result: BatchRiskCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "risk_data": risk_data,
                     "risk_id": risk_id,
                     "error": None,
                 }
+                results[result_idx] = success_result
         except Exception:
             for task in tasks:
                 task.cancel()
             raise
     else:
-        task_results = await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore[assignment]
+        task_results = cast(
+            list[RiskTaskResult | Exception],
+            await asyncio.gather(*tasks, return_exceptions=True),
+        )
         for idx, result in enumerate(task_results):
             if isinstance(result, Exception):
-                results[idx] = {
+                failed_result: BatchRiskCreateResult = {
                     "index": idx,
                     "success": False,
                     "risk_data": None,
                     "risk_id": None,
                     "error": str(result),
                 }
+                results[idx] = failed_result
             else:
-                result_idx, risk_data, risk_id = result
-                results[result_idx] = {
+                result_idx, risk_data, risk_id = cast(RiskTaskResult, result)
+                success_result: BatchRiskCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "risk_data": risk_data,
                     "risk_id": risk_id,
                     "error": None,
                 }
+                results[result_idx] = success_result
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])

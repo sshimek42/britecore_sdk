@@ -73,7 +73,7 @@ pre-commit run --all-files
 Notes:
 
 - Python hooks include `ruff`, `ruff-format`, and `black`.
-- Markdown structure linting runs via `pymarkdown` and only triggers when `*.md` files are changed.
+- Markdown structure linting runs via `pymarkdown` and only triggers when `*.md` files are changed.- A local Markdown structure check also runs on changed `*.md` files to catch unclosed fenced code blocks and checklist-style lines missing real list markers (for example, `✅ item` instead of `- ✅ item`).
 - CI also runs `Vale` on changed Markdown files for low-noise prose/style checks.
 - If you have `Vale` installed locally, you can run it manually with `vale --config=.vale.ini README.md`.
 
@@ -327,28 +327,28 @@ Use Google-style docstrings in all Python modules:
 ```python
 def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
     """One-line summary of what this function does.
-    
+
     Extended description explaining behavior, side effects, or
     important context. Mention any errors that might be raised
     or special SDK behaviors (e.g., pagination, dry_run support).
-    
+
     Args:
         param1: Description of param1 and expected format/values
         param2: Description of param2 and why it has this default
-    
+
     Returns:
         dict: Shape and structure of the returned data, including
               any guarantees about keys/values
-    
+
     Raises:
         ValueError: When param1 is empty or invalid
         AuthenticationError: When credentials are missing/invalid
-    
+
     Examples:
         **v2.0.0 Explicit Client Pattern:**
-        
+
         .. code-block:: python
-        
+
             from britecore_sdk import BritecoreAPIClient
             client = BritecoreAPIClient("prod").init_client()
             result = client.endpoint_wrapper(param1="value")

@@ -15,15 +15,13 @@ exactly and the donor function exists in the same module. Run with
 from __future__ import annotations
 
 import argparse
-import re
 from pathlib import Path
-from typing import Tuple
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 API_CALLS_V2 = REPO_ROOT / "src" / "britecore_sdk" / "api" / "api_calls" / "v2"
 
 
-def _collect_functions(source: str) -> dict[str, Tuple[str, str, str]]:
+def _collect_functions(source: str) -> dict[str, tuple[str, str, str]]:
     """Return mapping name -> (full_block, signature_block, request_json_block).
 
     signature_block is the text between the opening "def name(" and the
@@ -31,7 +29,7 @@ def _collect_functions(source: str) -> dict[str, Tuple[str, str, str]]:
     literal lines for the request_json assignment, e.g.
     "    request_json: dict[str, Any] = {}\n" or a multiline dict.
     """
-    functions: dict[str, Tuple[str, str, str]] = {}
+    functions: dict[str, tuple[str, str, str]] = {}
 
     # We'll scan function blocks and extract signature/request_json using
     # simpler, targeted regexes rather than one giant pattern to avoid
@@ -66,12 +64,14 @@ def _collect_functions(source: str) -> dict[str, Tuple[str, str, str]]:
             line_start = block.rfind("\n", 0, rq_idx) + 1
             if line_start == 0:  # rfind returns -1 if not found
                 line_start = 0
-            indent = block[line_start : rq_idx]
+            indent = block[line_start:rq_idx]
 
             # slice starting at assignment
             rq_slice = block[rq_idx:]
             # if it's the simple empty dict on the same line
-            if rq_slice.startswith(rq_key + " {}") or rq_slice.startswith(rq_key + " {}\n"):
+            if rq_slice.startswith(rq_key + " {}") or rq_slice.startswith(
+                rq_key + " {}\n"
+            ):
                 request_json_block = indent + "request_json: dict[str, Any] = {}\n"
             else:
                 # multiline dict — locate the opening '{' and closing brace
@@ -113,7 +113,7 @@ def _mirror_in_module(module_path: Path, dry_run: bool = True) -> list[str]:
             # has non-empty body
             continue
 
-        suffix = name[len("delete_"):]
+        suffix = name[len("delete_") :]
         donor = None
         for prefix in ("get_", "retrieve_"):
             cand = prefix + suffix
@@ -140,7 +140,9 @@ def _mirror_in_module(module_path: Path, dry_run: bool = True) -> list[str]:
             # Extract opening "def delete_...(" part from original signature
             opening_end = signature_block.find("(\n")
             if opening_end == -1:
-                changes.append(f"WARN {module_path.name}: could not parse opening in {name}")
+                changes.append(
+                    f"WARN {module_path.name}: could not parse opening in {name}"
+                )
                 continue
             opening = signature_block[: opening_end + 2]  # includes "def delete_...(\n"
 
@@ -150,19 +152,31 @@ def _mirror_in_module(module_path: Path, dry_run: bool = True) -> list[str]:
             donor_params_only = donor_params.rsplit(") -> Any:\n", 1)[0]
             # Remove trailing **kwargs line from donor_params (we'll add it back)
             if donor_params_only.endswith("    **kwargs: Unpack[RequestParameters],\n"):
-                donor_params_only = donor_params_only[: -len("    **kwargs: Unpack[RequestParameters],\n")]
+                donor_params_only = donor_params_only[
+                    : -len("    **kwargs: Unpack[RequestParameters],\n")
+                ]
             # Build replacement signature: keep opening, add donor params (without **kwargs), add **kwargs, add closing
-            replacement_signature = opening + donor_params_only + "    **kwargs: Unpack[RequestParameters],\n) -> Any:\n"
+            replacement_signature = (
+                opening
+                + donor_params_only
+                + "    **kwargs: Unpack[RequestParameters],\n) -> Any:\n"
+            )
             new_block = new_block.replace(signature_block, replacement_signature, 1)
         else:
-            changes.append(f"WARN {module_path.name}: could not locate **kwargs in {name}")
+            changes.append(
+                f"WARN {module_path.name}: could not locate **kwargs in {name}"
+            )
             continue
 
         # 2) Replace empty request_json with donor_request_json
         if "request_json: dict[str, Any] = {}" in new_block:
-            new_block = new_block.replace("    request_json: dict[str, Any] = {}\n", donor_request_json, 1)
+            new_block = new_block.replace(
+                "    request_json: dict[str, Any] = {}\n", donor_request_json, 1
+            )
         else:
-            changes.append(f"WARN {module_path.name}: could not locate empty request_json in {name}")
+            changes.append(
+                f"WARN {module_path.name}: could not locate empty request_json in {name}"
+            )
             continue
 
         if block != new_block:
@@ -195,8 +209,12 @@ def main(argv: list[str] | None = None) -> int:
         >>> main(["--dry-run"])  # Show proposed changes without writing
         0
     """
-    parser = argparse.ArgumentParser(description="Mirror delete_* signatures from get_*/retrieve_* donors")
-    parser.add_argument("--dry-run", action="store_true", help="Show changes but do not write files")
+    parser = argparse.ArgumentParser(
+        description="Mirror delete_* signatures from get_*/retrieve_* donors"
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show changes but do not write files"
+    )
     args = parser.parse_args(argv)
 
     all_changes: list[str] = []
@@ -211,11 +229,12 @@ def main(argv: list[str] | None = None) -> int:
     if not all_changes:
         print("No conservative mirroring changes detected.")
     else:
-        print(f"\n{'DRY-RUN ' if args.dry_run else ''}Done — {len(all_changes)} change(s) reported.")
+        print(
+            f"\n{'DRY-RUN ' if args.dry_run else ''}Done — {len(all_changes)} change(s) reported."
+        )
 
     return 0
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -70,7 +70,7 @@ base_url = "https://your-britecore-instance.com"
 api_key = "your_api_key_here"
 ```
 
-**Alternative: Environment variables**
+#### Alternative: Environment variables
 
 > **Note:** `target_site` is required for file/environment-driven initialization (the standard mode).
 > In explicit mode (`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults
@@ -131,6 +131,7 @@ client = get_api_client()
 # Retrieve a policy
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
+```
 
 See [examples/basic_api_usage.py](examples/basic_api_usage.py) for more detailed examples.
 
@@ -165,20 +166,20 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 
 ## Features
 
-✅ **Spec-aligned API coverage** — wrapper/spec alignment checks against `api_specs/current/britecore.json`
-✅ **Async-ready** — Cache-aware async wrappers for high-concurrency workflows
-✅ **Flexible auth** — Automatic API key or OAuth2 token management
-✅ **Type hints** — Full PEP 561 type information for IDE support
-✅ **Validators** — Email, phone, address, and name validation utilities
-✅ **Models** — Domain classes for Contact, Policy, and Quote payloads
-✅ **Config-first** — Dynaconf-based environment and secrets management
-✅ **Production-ready** — Stable API, comprehensive tests, security-focused
-✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
-✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
-✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
-✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
-✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses
-✅ **Batch operations** — workflow helpers for parallel quote/contact/policy/risk creation
+- ✅ **Spec-aligned API coverage** — wrapper/spec alignment checks against `api_specs/current/britecore.json`
+- ✅ **Async-ready** — Cache-aware async wrappers for high-concurrency workflows
+- ✅ **Flexible auth** — Automatic API key or OAuth2 token management
+- ✅ **Type hints** — Full PEP 561 type information for IDE support
+- ✅ **Validators** — Email, phone, address, and name validation utilities
+- ✅ **Models** — Domain classes for Contact, Policy, and Quote payloads
+- ✅ **Config-first** — Dynaconf-based environment and secrets management
+- ✅ **Production-ready** — Stable API, comprehensive tests, security-focused
+- ✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
+- ✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
+- ✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
+- ✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
+- ✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses
+- ✅ **Batch operations** — workflow helpers for parallel quote/contact/policy/risk creation
 
 ---
 
@@ -242,7 +243,7 @@ target_site = "production"
 
 **`~/.britecore/.secrets.toml`** (never commit):
 
-API key authentication:
+##### API key authentication
 
 ```toml
 [production]
@@ -254,7 +255,7 @@ base_url = "https://api-staging.britecore.example.com"
 api_key = "your_staging_api_key"
 ```
 
-Or OAuth authentication:
+##### OAuth authentication
 
 ```toml
 [production]

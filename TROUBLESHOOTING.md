@@ -660,6 +660,382 @@ Some features in britecore_sdk rely on map files (such as policy, field, or agen
 
 ---
 
+## Rate Limiting Issues
+
+### "RateLimitError: Too many requests" (HTTP 429)
+
+**Cause:** API rate limit exceeded
+
+**Solution:**
+
+```python
+import time
+from britecore_sdk.exceptions import RateLimitError
+from britecore_sdk.api.api_calls.v2 import policies
+
+# Option 1: Automatic retry with exponential backoff
+for attempt in range(3):
+    try:
+        policy = policies.retrieve_policy(policy_number="POL-123")
+        break
+    except RateLimitError:
+        wait_time = 2 ** attempt
+        print(f"Rate limited, waiting {wait_time}s...")
+        time.sleep(wait_time)
+
+# Option 2: Enable client-side rate limiting
+from britecore_sdk.api.api_calls import init_api_client
+client = init_api_client(
+    "production",
+    enable_rate_limiter=True,
+    rate_limiter_requests_per_second=5,
+)
+
+# Option 3: Check rate limit status before making requests
+if client.rate_limiter:
+    # Don't make request if rate limited
+    pass
+```
+
+**Prevention:**
+- Reduce request frequency
+- Use batch operations when possible
+- Implement request queuing
+- Monitor rate limit headers in responses
+
+---
+
+## Performance Issues
+
+### "Requests are very slow" / "High latency"
+
+**Cause:** Network issues, API performance, or inefficient code
+
+**Solution:**
+
+```python
+from britecore_sdk import configure_logging, LogCategory
+import logging
+
+# 1. Enable performance logging
+configure_logging(level=logging.DEBUG)
+
+# 2. Use async for concurrent operations
+import asyncio
+from britecore_sdk.api.workflows.async_batch_policies import acreate_policies_batch
+
+result = asyncio.run(acreate_policies_batch(policies, max_concurrent=5))
+
+# 3. Use response caching for repeated lookups
+from britecore_sdk.api.api_calls import get_async_api_client
+client = get_async_api_client()
+# Cache TTL can be set per request via cache_ttl parameter
+
+# 4. Batch operations instead of individual requests
+from britecore_sdk.api.response_helpers import batch_items
+for batch in batch_items(large_list, batch_size=100):
+    process_batch(batch)
+```
+
+**Diagnosis:**
+
+```bash
+# Check network connectivity
+ping api.britecore.example.com
+
+# Test DNS resolution
+nslookup api.britecore.example.com
+
+# Check SSL/TLS handshake time
+curl -w "@curl_format.txt" -o /dev/null -s https://api.britecore.example.com
+```
+
+---
+
+## Type Checking and IDE Issues
+
+### "Type hints not working in IDE"
+
+**Cause:** Using v1 endpoints or IDE not properly configured
+
+**Solution:**
+
+```python
+# Use v2 endpoints for better type hints
+from britecore_sdk.api.api_calls.v2 import policies  # ✓ Good type hints
+# NOT: from britecore_sdk.api.api_calls.v1 import policies  # ✗ Limited type hints
+
+# Ensure pyright/mypy is configured
+# In pyproject.toml:
+[tool.mypy]
+python_version = "3.11"
+```
+
+Run type checking:
+
+```bash
+mypy src/britecore_sdk --strict
+```
+
+---
+
+## Async Operation Issues
+
+### "asyncio.gather return type error"
+
+**Cause:** Type checker doesn't understand gather with return_exceptions=True
+
+**Solution:** Already fixed in SDK - use cast:
+
+```python
+import asyncio
+from typing import cast
+
+results = cast(
+    list,
+    await asyncio.gather(*tasks, return_exceptions=True)
+)
+```
+
+### "RuntimeError: no running event loop"
+
+**Cause:** Trying to use async functions outside an event loop
+
+**Solution:**
+
+```python
+import asyncio
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+# Option 1: Use asyncio.run()
+async def main():
+    policy = await aretrieve_policy(policy_number="POL-123")
+    return policy
+
+result = asyncio.run(main())
+
+# Option 2: Run in existing event loop context
+if asyncio.get_event_loop().is_running():
+    # Already in event loop, use await directly
+    policy = await aretrieve_policy(policy_number="POL-123")
+else:
+    # Not in event loop, use asyncio.run()
+    result = asyncio.run(main())
+```
+
+---
+
+## Validation and Data Issues
+
+### "ValidationError: Invalid email format"
+
+**Cause:** Email validation failed
+
+**Solution:**
+
+```python
+from britecore_sdk.validators import EmailValidator
+
+validator = EmailValidator()
+try:
+    valid_email = validator.validate("user@example.com")
+except ValidationError as e:
+    print(f"Invalid email: {e}")
+    # Fix the email format
+```
+
+### "ValidationError: Invalid phone format"
+
+**Cause:** Phone number validation failed
+
+**Solution:**
+
+```python
+from britecore_sdk.validators import PhoneValidator
+
+validator = PhoneValidator()
+try:
+    valid_phone = validator.validate("555-1234")
+except ValidationError as e:
+    # Try different format: (555) 123-4567, +1-555-123-4567, etc
+    pass
+```
+
+### "Model initialization fails with missing fields"
+
+**Cause:** Required fields are missing from input data
+
+**Solution:**
+
+```python
+from britecore_sdk.models import BritecoreContact
+
+# Check required fields before initialization
+required = ["name", "address"]
+for field in required:
+    if field not in contact_data:
+        print(f"Missing required field: {field}")
+        contact_data[field] = get_default_for_field(field)
+
+contact = BritecoreContact(**contact_data)
+```
+
+---
+
+## Credential and Authentication Issues
+
+### "AuthenticationError: Invalid API key"
+
+**Cause:** API key is incorrect, expired, or missing
+
+**Solution:**
+
+```bash
+# 1. Verify API key is set
+echo $BRITECORE_SDK_API_KEY  # Linux/macOS
+echo $env:BRITECORE_SDK_API_KEY  # PowerShell
+
+# 2. Check settings file
+cat ~/.britecore/.secrets.toml
+
+# 3. Verify key is in correct format
+# Keys usually start with specific prefix depending on environment
+
+# 4. Regenerate key if necessary
+britecore-config-wizard
+```
+
+### "AuthenticationError: OAuth token expired"
+
+**Cause:** OAuth token refresh failed
+
+**Solution:**
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+# Reinitialize to refresh token
+client = init_api_client("production").init_client()
+
+# Or enable debug logging to see token refresh attempts
+from britecore_sdk import configure_logging
+configure_logging(level="DEBUG")
+```
+
+### "ConfigurationError: base_url is required"
+
+**Cause:** Base URL not configured
+
+**Solution:**
+
+```bash
+# Quick setup wizard
+britecore-config-wizard
+
+# OR manually configure settings.toml
+cat > ~/.britecore/settings.toml << EOF
+[production]
+base_url = "https://api.example.com"
+api_key = "your_api_key"
+EOF
+```
+
+---
+
+## Logging and Debugging
+
+### "Debug output not showing"
+
+**Cause:** Logging not configured
+
+**Solution:**
+
+```python
+from britecore_sdk import configure_logging
+
+# Enable debug logging with console output
+logger = configure_logging(level="DEBUG")
+
+# Or to file
+logger = configure_logging(level="DEBUG", log_to_file=True)
+
+# Or filter by category
+from britecore_sdk.base_logger import LogCategory
+# Logs include 'category' field for filtering
+```
+
+### "How to get request/response details"
+
+**Solution:**
+
+```python
+from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk import configure_logging
+
+# Enable debug logging first
+configure_logging(level="DEBUG")
+
+client = get_api_client()
+
+# Make request with dry_run to see details without sending
+from britecore_sdk.api.api_calls.v2 import policies
+policy = policies.retrieve_policy(policy_number="POL-123", dry_run=True)
+# This logs request details without sending
+```
+
+---
+
+## Multi-Environment and Multi-Site Issues
+
+### "Using multiple sites/environments"
+
+**Solution:**
+
+```python
+from britecore_sdk.api.api_calls import init_api_client, use_api_client
+
+# Initialize clients for each site
+prod_client = init_api_client("production").init_client()
+sandbox_client = init_api_client("sandbox").init_client()
+
+# Use in context managers
+with use_api_client(prod_client):
+    from britecore_sdk.api.api_calls.v2 import policies
+    prod_policy = policies.retrieve_policy(policy_number="POL-123")
+
+with use_api_client(sandbox_client):
+    sandbox_policy = policies.retrieve_policy(policy_number="TEST-POL-123")
+```
+
+---
+
+## SSL/TLS Certificate Issues
+
+### "SSL: CERTIFICATE_VERIFY_FAILED"
+
+**Cause:** SSL certificate verification failed (usually self-signed certs)
+
+**Solution:**
+
+```python
+import urllib3
+
+# ONLY for development/testing with self-signed certificates
+# DO NOT USE IN PRODUCTION
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Then initialize client
+from britecore_sdk.api.api_calls import init_api_client
+client = init_api_client("production").init_client()
+```
+
+**Better Solution (Production):**
+- Get valid SSL certificate
+- Update CA bundle: `pip install --upgrade certifi`
+- Or export cert: `export SSL_CERT_FILE=/path/to/cert.pem`
+
+---
+
 ## Troubleshooting Summary
 
 - **API client initialization failures** usually indicate missing `target_site` or site config. The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.

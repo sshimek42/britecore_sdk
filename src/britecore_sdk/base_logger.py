@@ -1,7 +1,20 @@
 """Library-safe logging helpers built on Python's standard logging module."""
 
 import logging
+from enum import Enum
 from pathlib import Path
+
+
+class LogCategory(str, Enum):
+    """Standard logging categories for observability and filtering."""
+
+    AUTH = "auth"  # OAuth token, credential validation
+    HTTP = "http"  # Raw request/response (redacted)
+    RATE_LIMIT = "rate_limit"  # Rate limit state changes
+    CACHE = "cache"  # Cache hits/misses
+    PERF = "perf"  # Timing measurements
+    CONFIG = "config"  # Configuration resolution
+
 
 _DEFAULT_FORMAT = (
     "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
@@ -66,3 +79,40 @@ def configure_logging(
             logger.addHandler(file_handler)
 
     return logger
+
+
+def log_with_category(
+    logger: logging.Logger,
+    level: int,
+    message: str,
+    category: LogCategory | str,
+    **extra_fields: dict,
+) -> None:
+    """Log a message with a category and optional extra fields.
+
+    This helper adds structured logging support with categories and extra fields
+    that can be used for filtering and monitoring.
+
+    Args:
+        logger: Logger instance to use.
+        level: Log level (e.g., logging.INFO, logging.DEBUG).
+        message: Log message.
+        category: LogCategory enum value or string.
+        **extra_fields: Additional key-value pairs to include in the log extra dict.
+
+    Example::
+
+        from britecore_sdk.base_logger import get_logger, log_with_category, LogCategory
+
+        logger = get_logger()
+        log_with_category(
+            logger,
+            logging.DEBUG,
+            "Token refresh successful",
+            LogCategory.AUTH,
+            token_expires_in=3600
+        )
+    """
+    extra = {"category": str(category)}
+    extra.update(extra_fields)
+    logger.log(level, message, extra=extra)

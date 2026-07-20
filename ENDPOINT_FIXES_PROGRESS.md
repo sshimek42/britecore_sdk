@@ -3,14 +3,14 @@
 **Status Update: July 20, 2026**
 
 ## Completed
-✅ **v2/claim_exposures.py**: 19/19 functions - ALL COMPLETE
+- ✅ **v2/claim_exposures.py**: 19/19 functions - ALL COMPLETE
 - add_recovery, add_recovery_reserve, add_reserve
-- create_exposure, delete_exposure  
+- create_exposure, delete_exposure
 - get_accounting_data, get_accounting_loss_details, get_accounting_overview, get_accounting_recoveries_data
 - get_broken_limits, get_coverage_accounting_data, get_exposure_accounting_data, get_exposure_transactions
 - get_payment, list_exposures, make_multi_exposures_payment, make_payment, update_payment, void_transaction
 
-✅ **Priority 1 & Earlier Sessions** (22 + 16 = 38 async/manual enhancements)
+- ✅ **Priority 1 & Earlier Sessions** (22 + 16 = 38 async/manual enhancements)
 - v2/async_policies.py: 17 functions COMPLETE
 - v2/async_contacts.py: 5 functions COMPLETE
 - v2/authority_limits.py: 4 functions COMPLETE
@@ -37,4 +37,3 @@ Given 189 total endpoint wrapper functions:
 
 ## Recommendation
 Use Python script with batch regex replacements for contacts.py and deliverables.py to complete Priority 1, then continue with remaining files systematically.
-

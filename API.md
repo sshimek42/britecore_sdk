@@ -509,6 +509,7 @@ for _ in range(60):
     if status.get("status") in {"completed", "failed"}:
         break
     time.sleep(5)
+```
 
 ---
 
@@ -518,7 +519,6 @@ For maintained runnable examples, see `examples/README.md` and
 `examples/basic_api_usage.py`.
 
 ---
-
 
 ### About API Client Initialization
 

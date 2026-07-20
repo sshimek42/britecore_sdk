@@ -6,11 +6,13 @@ Endpoint wrappers for individual contact calls live in
 """
 
 import asyncio
-from typing import Any
+from typing import Any, cast
 
 from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
 from britecore_sdk.api.workflows.batch_contacts import BatchContactCreateResult
+
+ContactTaskResult = tuple[int, Any, str | None]
 
 
 async def acreate_contacts_batch(
@@ -60,7 +62,7 @@ async def acreate_contacts_batch(
 
     async def _create_one_semaphored(
         index: int, payload: dict[str, Any]
-    ) -> tuple[int, Any, str | None]:
+    ) -> ContactTaskResult:
         async with semaphore:
             contact_data, contact_id = await anew_contact(
                 name=payload["name"],
@@ -79,39 +81,45 @@ async def acreate_contacts_batch(
 
     if fail_fast:
         try:
-            task_results = await asyncio.gather(*tasks)
+            task_results: list[ContactTaskResult] = await asyncio.gather(*tasks)
             for result_idx, contact_data, contact_id in task_results:
-                results[result_idx] = {
+                success_result: BatchContactCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "contact_data": contact_data,
                     "contact_id": contact_id,
                     "error": None,
                 }
+                results[result_idx] = success_result
         except Exception:
             for task in tasks:
                 task.cancel()
             raise
     else:
-        task_results = await asyncio.gather(*tasks, return_exceptions=True)  # type: ignore[assignment]
+        task_results = cast(
+            list[ContactTaskResult | Exception],
+            await asyncio.gather(*tasks, return_exceptions=True),
+        )
         for idx, result in enumerate(task_results):
             if isinstance(result, Exception):
-                results[idx] = {
+                failed_result: BatchContactCreateResult = {
                     "index": idx,
                     "success": False,
                     "contact_data": None,
                     "contact_id": None,
                     "error": str(result),
                 }
+                results[idx] = failed_result
             else:
-                result_idx, contact_data, contact_id = result
-                results[result_idx] = {
+                result_idx, contact_data, contact_id = cast(ContactTaskResult, result)
+                success_result: BatchContactCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "contact_data": contact_data,
                     "contact_id": contact_id,
                     "error": None,
                 }
+                results[result_idx] = success_result
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])

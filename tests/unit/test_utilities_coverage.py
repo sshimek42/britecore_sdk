@@ -33,19 +33,23 @@ class TestUtilityModuleStructure:
 
     @pytest.mark.unit
     def test_interactive_menu_module_can_be_imported(self):
-        """Test that interactive_menu module can be imported and has expected attrs."""
-        try:
-            from britecore_sdk.utils.interactive_menu import (
-                API_CLIENT,
-                LOGGER,
-                line_menu,
-            )
+        """Test that interactive_menu module can be imported and has expected attrs.
 
-            assert callable(line_menu)
-            assert LOGGER is not None
-            assert API_CLIENT is not None
-        except Exception as e:
-            pytest.skip(f"Interactive menu requires API configuration: {e}")
+        The module uses a lazy API client proxy, so no real configuration is
+        needed at import time.  The autouse ``mock_api_client`` fixture in
+        conftest.py ensures ``get_api_client()`` returns a mock when called.
+        """
+        from britecore_sdk.utils.interactive_menu import (
+            API_CLIENT,
+            LOGGER,
+            line_menu,
+        )
+
+        assert callable(line_menu)
+        assert LOGGER is not None
+        # API_CLIENT is the lazy _LazyAPIClient proxy; the object itself is
+        # always non-None even before the real client is initialized.
+        assert API_CLIENT is not None
 
 
 class TestInteractiveMenu:

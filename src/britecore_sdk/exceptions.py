@@ -39,6 +39,7 @@ class BritecoreError:
         - request_id: Request correlation ID
         - detail: Human-readable error message
         - raw_payload: Full server response
+        - hint: Optional troubleshooting suggestion
         """
 
         def __init__(
@@ -50,6 +51,7 @@ class BritecoreError:
             request_id: str | None = None,
             raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
+            hint: str | None = None,
         ) -> None:
             self.message = message
             self.detail = message  # Alias for clarity
@@ -58,6 +60,7 @@ class BritecoreError:
             self.request_id = request_id
             self.raw_payload = raw_payload or {}
             self.sanitized_body = sanitized_body
+            self.hint = hint
             super().__init__(self.message)
 
         def __str__(self) -> str:
@@ -66,6 +69,8 @@ class BritecoreError:
                 parts.append(f"[Request-ID: {self.request_id}]")
             if self.error_code:
                 parts.append(f"[Error Code: {self.error_code}]")
+            if self.hint:
+                parts.append(f"\n💡 Hint: {self.hint}")
             return " ".join(parts)
 
     class NoDataReturned(Base):
@@ -203,9 +208,15 @@ class BritecoreError:
             request_id: str | None = None,
             raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
+            hint: str | None = None,
         ) -> None:
             self.http_status = http_status
             self.endpoint = endpoint
+
+            # Auto-generate hints
+            if not hint:
+                hint = self._generate_hint(http_status, message)
+
             resolved_status = http_status or 401
             super().__init__(
                 message,
@@ -214,7 +225,34 @@ class BritecoreError:
                 request_id=request_id,
                 raw_payload=raw_payload,
                 sanitized_body=sanitized_body,
+                hint=hint,
             )
+
+        @staticmethod
+        def _generate_hint(status_code: int | None, message: str) -> str | None:
+            """Generate helpful hints for authentication errors."""
+            if status_code == 401:
+                return (
+                    "Credentials are invalid or expired. "
+                    "Verify api_key is correct or OAuth token is fresh. "
+                    "Run: britecore-check-config"
+                )
+            elif status_code == 403:
+                return (
+                    "Credentials are valid but lack permission for this resource. "
+                    "Check your user role and access level in BriteCore admin."
+                )
+            elif "token" in message.lower():
+                return (
+                    "OAuth token issue. Ensure client_id and client_secret are correct and "
+                    "that the OAuth token endpoint is accessible."
+                )
+            elif "expired" in message.lower():
+                return (
+                    "Your authentication credentials or token have expired. "
+                    "Update credentials in ~/.britecore/.secrets.toml and retry."
+                )
+            return None
 
         def __str__(self) -> str:
             parts = ["BriteCore authentication failed"]
@@ -227,6 +265,8 @@ class BritecoreError:
                 parts.append(f"Request-ID: {self.request_id}")
             if self.endpoint:
                 parts.append(f"Endpoint: {self.endpoint}")
+            if self.hint:
+                parts.append(f"💡 Hint: {self.hint}")
             return "\n".join(parts)
 
     class RateLimitError(Base):
@@ -364,7 +404,12 @@ class BritecoreError:
             request_id: str | None = None,
             raw_payload: dict[str, Any] | None = None,
             sanitized_body: Any | None = None,
+            hint: str | None = None,
         ) -> None:
+            # Auto-generate hints for common issues
+            if not hint:
+                hint = self._generate_hint(message)
+
             super().__init__(
                 message,
                 status_code=400,
@@ -372,10 +417,49 @@ class BritecoreError:
                 request_id=request_id,
                 raw_payload=raw_payload,
                 sanitized_body=sanitized_body,
+                hint=hint,
             )
 
+        @staticmethod
+        def _generate_hint(message: str) -> str | None:
+            """Generate helpful hints for common configuration errors."""
+            msg_lower = message.lower()
+
+            if "base_url" in msg_lower:
+                return (
+                    "Set base_url via: ~/.britecore/.secrets.toml[site_name] or "
+                    "$env:BRITECORE_SDK_BASE_URL (Windows) / "
+                    "$BRITECORE_SDK_BASE_URL (Linux)"
+                )
+            elif "api_key" in msg_lower:
+                return (
+                    "Set api_key via: ~/.britecore/.secrets.toml[site_name] or "
+                    "$env:BRITECORE_SDK_API_KEY (Windows) / "
+                    "$BRITECORE_SDK_API_KEY (Linux)"
+                )
+            elif "client_id" in msg_lower or "client_secret" in msg_lower:
+                return (
+                    "For OAuth, set client_id and client_secret via: "
+                    "~/.britecore/.secrets.toml[site_name] or env vars "
+                    "BRITECORE_SDK_CLIENT_ID / BRITECORE_SDK_CLIENT_SECRET"
+                )
+            elif "target_site" in msg_lower:
+                return (
+                    "Set target_site via: ~/.britecore/settings.toml [default] section or "
+                    "$env:target_site (Windows) / $target_site (Linux)"
+                )
+            elif "credentials" in msg_lower:
+                return (
+                    "Provide either: (1) api_key OR (2) client_id + client_secret. "
+                    "See ~/.britecore/.secrets.toml template."
+                )
+            return None
+
         def __str__(self) -> str:
-            return f"BriteCore configuration error - {self.message}"
+            msg = f"BriteCore configuration error - {self.message}"
+            if self.hint:
+                msg += f"\n💡 Hint: {self.hint}"
+            return msg
 
     class RequestTimeoutError(Base):
         """Raised when an API request exceeds its configured timeout."""

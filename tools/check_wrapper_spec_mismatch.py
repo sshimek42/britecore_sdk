@@ -8,6 +8,7 @@ don't match the spec-declared JSON request schema properties. It attempts to
 handle common wrapper patterns: inline `request_json` dict literals and
 `build_payload(...)` helper calls.
 """
+
 from __future__ import annotations
 
 import json
@@ -19,10 +20,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]  # this repository's britecore_s
 SRC_ROOT = REPO_ROOT / "src"
 SPEC_PATH = REPO_ROOT / "api_specs" / "current" / "britecore.json"
 
-VERSION_MAP = {"v1": "britecore_sdk.api.api_calls.v1", "v2": "britecore_sdk.api.api_calls.v2"}
+VERSION_MAP = {
+    "v1": "britecore_sdk.api.api_calls.v1",
+    "v2": "britecore_sdk.api.api_calls.v2",
+}
 
 
-def _resolve_local_schema_ref(schema: dict[str, Any], components: dict[str, Any]) -> dict[str, Any]:
+def _resolve_local_schema_ref(
+    schema: dict[str, Any], components: dict[str, Any]
+) -> dict[str, Any]:
     ref = schema.get("$ref")
     if not isinstance(ref, str) or not ref.startswith("#/components/schemas/"):
         return schema
@@ -34,7 +40,9 @@ def _resolve_local_schema_ref(schema: dict[str, Any], components: dict[str, Any]
     return resolved if isinstance(resolved, dict) else schema
 
 
-def _operation_schema(operation: dict[str, Any], components: dict[str, Any]) -> dict[str, Any]:
+def _operation_schema(
+    operation: dict[str, Any], components: dict[str, Any]
+) -> dict[str, Any]:
     request_body = operation.get("requestBody", {})
     if not isinstance(request_body, dict):
         return {}
@@ -96,7 +104,7 @@ def extract_wrapper_keys(src_path: Path, func_name: str) -> dict[str, Any]:
                 if depth == 0:
                     break
             i += 1
-        literal = func_body[start:i+1]
+        literal = func_body[start : i + 1]
         # extract quoted keys
         for key in re.findall(r"['\"]([A-Za-z0-9_ \-]+)['\"]\s*:\s*", literal):
             keys.add(key)
@@ -182,17 +190,31 @@ def main() -> int:
             wrapper_keys = info["keys"]
 
         if wrapper_keys != props:
-            mismatches.append((path, f"{module_dotpath}.{func_name}", props, wrapper_keys, info["kind"]))
+            mismatches.append(
+                (
+                    path,
+                    f"{module_dotpath}.{func_name}",
+                    props,
+                    wrapper_keys,
+                    info["kind"],
+                )
+            )
 
     if not mismatches:
-        print("No mismatches detected between spec request properties and wrapper keys (limited check).")
+        print(
+            "No mismatches detected between spec request properties and wrapper keys (limited check)."
+        )
         return 0
 
-    print("Detected mismatches (path, function, spec_props, wrapper_keys, wrapper_kind):\n")
+    print(
+        "Detected mismatches (path, function, spec_props, wrapper_keys, wrapper_kind):\n"
+    )
     for path, func, spec_keys, wrapper_keys, kind in sorted(mismatches):
         print(f"- {path} -> {func}")
         print(f"    spec properties ({len(spec_keys)}): {sorted(spec_keys)}")
-        print(f"    wrapper keys  ({len(wrapper_keys)}): {sorted(wrapper_keys)}  [kind={kind}]")
+        print(
+            f"    wrapper keys  ({len(wrapper_keys)}): {sorted(wrapper_keys)}  [kind={kind}]"
+        )
         print()
 
     return 0
@@ -200,4 +222,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -1,7 +1,7 @@
 # Endpoint Wrapper Docstring Verification Report
 
-**Report Date:** July 20, 2026  
-**Scope:** All 189 endpoint wrapper functions across v1 and v2 APIs  
+**Report Date:** July 20, 2026
+**Scope:** All 189 endpoint wrapper functions across v1 and v2 APIs
 **Current Completion Rate:** 22% (42/189 functions with complete Google-style docstrings)
 
 ---
@@ -89,18 +89,18 @@ def create_contact(contact: Any | None = None, **kwargs) -> Any:
 # SHOULD BE:
 def create_contact(contact: Any | None = None, **kwargs) -> Any:
     """Create a new contact record.
-    
+
     Submit a contact payload to register a new contact via
     ``POST /api/v2/contacts/create_contact``. Returns processed
     result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-    
+
     Args:
         contact: Contact payload with name, addresses, phones, emails fields.
         **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-    
+
     Returns:
         Any: The processed response containing the newly created contact data.
-    
+
     Raises:
         BritecoreError: Various exceptions from process_result if the API returns an error.
     """
@@ -164,19 +164,19 @@ def create_claim_vehicle(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a claim vehicle record.
-    
+
     Submit a claim_vehicle payload to register a new vehicle in a claim
     via ``POST /api/v2/claim_vehicles/create_claim_vehicle``. Returns
     processed result from ``process_result(...)`` and accepts
     ``RequestParameters`` overrides.
-    
+
     Args:
         claim_vehicle: The claim vehicle payload with vehicle identification.
         **kwargs: Additional request parameters (timeout, retry, headers, etc.).
-    
+
     Returns:
         Any: The processed response with newly created vehicle data.
-    
+
     Raises:
         BritecoreError: API errors from process_result.
     """
@@ -307,6 +307,5 @@ def create_claim_vehicle(
 
 ---
 
-**Status: AUDIT COMPLETE** ✓  
+**Status: AUDIT COMPLETE** ✓
 **Recommendation: PROCEED WITH PRIORITY 1 BATCH FIXES**
-

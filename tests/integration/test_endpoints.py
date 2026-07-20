@@ -835,7 +835,38 @@ class TestLiveSandboxQuotes:
 
     @pytest.mark.sandbox
     def test_live_create_quote_round_trip(self):
-        """Create a minimal quote and retrieve it back (requires sandbox data)."""
-        pytest.skip(
-            "Requires known sandbox policy type ID — configure before enabling."
-        )
+        """Create a minimal quote and retrieve it back against the live sandbox.
+
+        Requires ``BRITECORE_SANDBOX_POLICY_TYPE_ID`` in the environment in
+        addition to the standard sandbox credentials.  The test is skipped
+        (with a precise message) when that variable is absent so CI pipelines
+        without full sandbox data do not fail.
+        """
+        import os
+
+        policy_type_id = os.environ.get("BRITECORE_SANDBOX_POLICY_TYPE_ID")
+        if not policy_type_id:
+            pytest.skip(
+                "Set BRITECORE_SANDBOX_POLICY_TYPE_ID to enable the quote round-trip test."
+            )
+
+        from britecore_sdk.api.api_calls import init_api_client
+        from britecore_sdk.api.api_calls.v2.quotes import create_full_quote, get_quote
+
+        client = init_api_client(os.environ["BRITECORE_SANDBOX_URL"]).init_client()
+
+        unique_suffix = os.urandom(4).hex().upper()
+        quote_payload = {
+            "policy_type_id": policy_type_id,
+            "number": f"SDK-TEST-{unique_suffix}",
+            "number_origin": "manual",
+        }
+
+        data, quote_id = create_full_quote(quote_payload, client=client)
+        assert data is not None, "create_full_quote returned no data"
+        assert quote_id is not None, "create_full_quote returned no quote_id"
+
+        retrieved = get_quote(quote_id=quote_id, client=client)
+        assert retrieved is not None, "get_quote returned no data for the created quote"
+        got_id = retrieved.get("id")
+        assert got_id == quote_id, f"quote id mismatch: {got_id!r} != {quote_id!r}"

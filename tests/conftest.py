@@ -6,6 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+pytest_plugins = ["tests.fixtures.api_fixtures"]
+
 # Add src to path at module load time
 src_path = str(Path(__file__).parent.parent / "src")
 if src_path not in sys.path:

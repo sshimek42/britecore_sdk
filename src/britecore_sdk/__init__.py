@@ -14,7 +14,12 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from britecore_sdk.base_logger import configure_logging, get_logger
+from britecore_sdk.base_logger import (
+    LogCategory,
+    configure_logging,
+    get_logger,
+    log_with_category,
+)
 
 logger = get_logger(__package__)
 
@@ -162,8 +167,11 @@ __all__ = [
     "get_api_client",
     "get_async_api_client",
     "use_api_client",
-    # Version
-    "__version__",
+    # Logging
     "logger",
     "configure_logging",
+    "LogCategory",
+    "log_with_category",
+    # Version
+    "__version__",
 ]

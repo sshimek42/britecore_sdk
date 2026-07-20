@@ -28,6 +28,10 @@ def main() -> None:
     # Lint
     run(["ruff", "check", "src", "tests"], "Lint (ruff)")
     run(["black", "--check", "src", "tests"], "Format check (black)")
+    run(
+        ["python", "src/britecore_sdk/utils/check_markdown_structure.py"],
+        "Markdown structure check",
+    )
 
     # Type check
     run(

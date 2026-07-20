@@ -10,7 +10,7 @@ Example override in settings.toml:
     web_retry = 3              # Override default 5 retries
 """
 
-from typing import TypedDict
+from typing import Any, TypedDict
 
 
 class ConfigDefaults(TypedDict, total=False):
@@ -38,7 +38,7 @@ DEFAULTS: ConfigDefaults = {
 }
 
 
-def get_default(key: str, default: int | str | None = None) -> int | str | None:
+def get_default(key: str, default: Any = None) -> Any:
     """
     Retrieve a default value for a given setting key.
 
@@ -49,7 +49,7 @@ def get_default(key: str, default: int | str | None = None) -> int | str | None:
     Returns:
         The default value, or the provided fallback, or None.
     """
-    return DEFAULTS.get(key, default)  # type: ignore
+    return DEFAULTS.get(key, default)
 
 
 def calculate_long_timeout(web_timeout: int) -> int:

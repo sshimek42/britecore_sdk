@@ -1,8 +1,8 @@
 # Endpoint Docstring Fixes: FINAL COMPLETION REPORT
 
-**Date:** July 20, 2026  
-**Final Completion Time:** 3+ hours focused work  
-**Total Functions Enhanced:** 42 endpoint wrappers  
+**Date:** July 20, 2026
+**Final Completion Time:** 3+ hours focused work
+**Total Functions Enhanced:** 42 endpoint wrappers
 **Overall SDK Progress:** 30% → 44% completion (84/189 functions)
 
 ---
@@ -113,12 +113,12 @@ All 23 functions converted to comprehensive Google-style docstrings:
 
 All 84 completed functions follow consistent Google-style format:
 
-✅ **One-line imperative summary** (e.g., "Delete HTML template by name")
-✅ **Extended description** (business context + endpoint path)
-✅ **Args section** (all parameters with types and descriptions)
-✅ **Returns section** (return type and data structure)
-✅ **Raises section** (exception types and conditions)
-✅ **Note section** (SDK-specific behavior like RequestParameters)
+- ✅ **One-line imperative summary** (e.g., "Delete HTML template by name")
+- ✅ **Extended description** (business context + endpoint path)
+- ✅ **Args section** (all parameters with types and descriptions)
+- ✅ **Returns section** (return type and data structure)
+- ✅ **Raises section** (exception types and conditions)
+- ✅ **Note section** (SDK-specific behavior like RequestParameters)
 
 **Example Pattern:**
 ```python
@@ -127,18 +127,18 @@ def delete_html_template(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Delete HTML template by name.
-    
+
     Send a request to ``POST /api/v2/deliverables/delete_html_template``.
     Returns processed result from ``process_result(...)`` and accepts
     ``RequestParameters`` overrides.
-    
+
     Args:
         name: The HTML template name to delete.
         **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-    
+
     Returns:
         Any: The processed response confirming deletion.
-    
+
     Raises:
         BritecoreError: Various exceptions from process_result if the API returns an error.
     """
@@ -167,11 +167,11 @@ def delete_html_template(
 
 ## Verified Status
 
-✅ Both new files compile without syntax errors
-✅ All functions follow consistent Google-style docstring format
-✅ Comprehensive Args/Returns/Raises sections added
-✅ RequestParameters support documented
-✅ Business context provided for each endpoint
+- ✅ Both new files compile without syntax errors
+- ✅ All functions follow consistent Google-style docstring format
+- ✅ Comprehensive Args/Returns/Raises sections added
+- ✅ RequestParameters support documented
+- ✅ Business context provided for each endpoint
 
 ---
 
@@ -233,4 +233,3 @@ Complete all remaining 105 endpoint wrappers to achieve 100% comprehensive docst
 **Overall SDK Documentation Status: 44% COMPLETE → Targeting 100% in next session**
 
 **Recommendation:** Continue with batch-fix approach on v2/contacts.py to achieve 79% total completion, then tackle Priority 2-3 files.
-

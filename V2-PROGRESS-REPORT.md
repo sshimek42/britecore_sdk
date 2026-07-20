@@ -185,7 +185,7 @@ all_quotes = list(iter_quotes(client=client))  # Collect all
 
 ## Testing & Validation
 
-✅ **All modules compiled successfully**
+- ✅ **All modules compiled successfully**
 
 ```
 src/britecore_sdk/exceptions.py        ✓
@@ -196,7 +196,7 @@ src/britecore_sdk/api/api_calls/__init__.py ✓
 src/britecore_sdk/api/api_calls/v2/quotes.py ✓
 ```
 
-✅ **All imports verified**
+- ✅ **All imports verified**
 
 ```
 from britecore_sdk.api.responses import QuoteResponse          ✓
@@ -206,7 +206,7 @@ from britecore_sdk.exceptions import NotFoundError            ✓
 from britecore_sdk.api.api_calls import resolve_client        ✓
 ```
 
-✅ **Backwards compatibility maintained**
+- ✅ **Backwards compatibility maintained**
 - v1.x exception patterns still work
 - v1.x implicit client pattern still works
 - Old dict/Any returns still work

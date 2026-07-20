@@ -50,11 +50,11 @@ def test_run_script_exits_with_return_code_on_failure(monkeypatch):
 def test_main_runs_all_scripts_in_order(monkeypatch):
     """main executes each configured script in order."""
     seen = []
-    monkeypatch.setattr(run_all_checks, "SCRIPTS", ["a.py", "b.py"])
+    monkeypatch.setattr(run_all_checks, "SCRIPTS", ["a.py", "b.py", "c.py"])
     monkeypatch.setattr(
         run_all_checks, "run_script", lambda script: seen.append(script)
     )
 
     run_all_checks.main()
 
-    assert seen == ["a.py", "b.py"]
+    assert seen == ["a.py", "b.py", "c.py"]

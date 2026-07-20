@@ -57,7 +57,7 @@ In a major release, deprecated features are removed:
 
 ## What Can Be Deprecated
 
-✅ **Functions & methods** — Replaced with better alternatives
+- ✅ **Functions & methods** — Replaced with better alternatives
 
 ```python
 # v1.x: Available
@@ -73,7 +73,7 @@ def get_policy_by_id_v1(policy_id):
 # get_policy_by_id_v1 no longer exists
 ```
 
-✅ **Parameters** — Moved, renamed, or replaced
+- ✅ **Parameters** — Moved, renamed, or replaced
 
 ```python
 # v1.x
@@ -92,7 +92,7 @@ def retrieve_policy(policy_number, request_timeout=5):
     pass
 ```
 
-✅ **Exception types** — Unified or replaced
+- ✅ **Exception types** — Unified or replaced
 
 ```python
 # v1.x: Multiple exception types
@@ -111,7 +111,7 @@ class OAuthTokenError(AuthenticationError):
 # All auth errors throw AuthenticationError
 ```
 
-✅ **Module locations** — Code moved to a new namespace when a true replacement exists
+- ✅ **Module locations** — Code moved to a new namespace when a true replacement exists
 
 ```python
 # Old location
@@ -223,7 +223,7 @@ Create migration guides for major deprecations. Store in `docs/migrations/`:
 
 **File: `docs/migrations/<release>-migration.md`**
 
-```markdown
+````markdown
 # Migration Guide for <release>
 
 ## Breaking Changes
@@ -245,6 +245,8 @@ from britecore_sdk.api.api_calls.v2.contacts import get_contact
 ```python
 from britecore_sdk.api.api_calls.v2.insured import get_contact
 ```
+
+````
 
 ### 2. Exception types unified
 
@@ -288,9 +290,9 @@ def retrieve_policy_v1(policy_number: str):
     pass
 ```
 
-❌ **Bad:** "This is deprecated" (no guidance)
+- ❌ **Bad:** "This is deprecated" (no guidance)
 
-✅ **Good:** "Use `retrieve_policy_v2()` with `new_param=True` instead" (clear migration)
+- ✅ **Good:** "Use `retrieve_policy_v2()` with `new_param=True` instead" (clear migration)
 
 ### 2. Version the Deprecation Notice
 

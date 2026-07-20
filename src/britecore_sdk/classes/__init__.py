@@ -32,13 +32,18 @@ This module will be removed entirely in v3.0.0.
 
 # Provide helpful error message
 import sys
-from typing import Any
+import types
+from typing import Any, cast
 
 
 class _DeprecatedModuleError:
     """Raise helpful error when trying to import from removed module."""
 
     def __getattr__(self, name: str) -> Any:
+        # Tooling may probe dunder metadata (e.g. __file__, __spec__); mimic
+        # normal module behavior by signaling missing attribute.
+        if name.startswith("__"):
+            raise AttributeError(name)
         raise ImportError(
             f"britecore_sdk.classes.{name} has been removed.\n\n"
             f"Migration paths:\n"
@@ -50,4 +55,4 @@ class _DeprecatedModuleError:
 
 
 # Replace this module with error raiser
-sys.modules[__name__] = _DeprecatedModuleError()  # type: ignore[assignment]
+sys.modules[__name__] = cast(types.ModuleType, _DeprecatedModuleError())

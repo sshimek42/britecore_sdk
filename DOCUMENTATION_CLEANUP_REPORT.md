@@ -166,22 +166,22 @@
    ```python
    def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
        """One-line summary.
-       
+
        Extended description with context.
-       
+
        Args:
            param1: Description
            param2: Description
-       
+
        Returns:
            dict: Description of shape
-       
+
        Raises:
            ValueError: When condition occurs
-       
+
        Examples:
            .. code-block:: python
-           
+
                client = BritecoreAPIClient("prod").init_client()
                result = endpoint_wrapper(...)
        """
@@ -266,4 +266,3 @@
 - ✅ Audit-ready for future improvements
 
 **All changes are local and ready for review/commit.**
-

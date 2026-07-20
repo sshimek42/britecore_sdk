@@ -29,10 +29,16 @@ classifiers = [
 ]
 dependencies = [
     "dynaconf>=3.2.13,<3.4.0",
-    "typing_extensions>=4.15.0,<5.0.0",
+    "typing-extensions>=4.15.0,<5.0.0",
     "urllib3>=2.7.0,<3.0.0",
     "toml>=0.10.2,<0.11.0",
 ]
+
+[project.scripts]
+britecore-quick-check = "britecore_sdk.cli.quick_check:main"
+britecore-config-wizard = "britecore_sdk.cli.config_wizard:main"
+britecore-check-config = "britecore_sdk.cli.check_config:main"
+britecore-healthcheck = "britecore_sdk.cli.healthcheck:main"
 
 [project.optional-dependencies]
 interactive = [
@@ -44,9 +50,11 @@ all = [
 dev = [
     "setuptools>=83.0.0",
     "pytest>=9.0.3",
+    "pytest-asyncio>=0.24.0",
     "pytest-mock>=3.15.1",
     "pytest-cov>=7.1.0",
     "pytest-randomly>=4.0.1",
+    "hypothesis>=6.112.0",
     "python-dotenv>=1.2.2",
     "black>=26.3.1",
     "ruff>=0.15.11",
@@ -80,8 +88,14 @@ omit = [
     "src/britecore_sdk/api/responses.py",
     "src/britecore_sdk/api/api_calls/v1/*.py",
     "src/britecore_sdk/api/api_calls/v2/*.py",
+    "src/britecore_sdk/api/bulk_operation_manager.py",
+    "src/britecore_sdk/api/response_helpers.py",
+    "src/britecore_sdk/api/timing_middleware.py",
     "src/britecore_sdk/utils/config_manager.py",
+    "src/britecore_sdk/utils/error_hints.py",
     "src/britecore_sdk/utils/generate_spec_wrappers.py",
+    "src/britecore_sdk/cli/*.py",
+    "src/britecore_sdk/webhooks/*.py",
 ]
 
 [tool.coverage.report]

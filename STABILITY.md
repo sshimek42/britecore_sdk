@@ -43,7 +43,7 @@ older                   ← No support
 
 ### Within a major version
 
-✅ **Guaranteed compatible:**
+- ✅ **Guaranteed compatible:**
 
 - Bug fixes
 - New optional parameters (with sensible defaults)
@@ -51,7 +51,7 @@ older                   ← No support
 - Performance improvements
 - Internal implementation changes
 
-❌ **Not guaranteed compatible:**
+- ❌ **Not guaranteed compatible:**
 
 - Removing public functions or classes
 - Changing function signatures (parameters, return types)
