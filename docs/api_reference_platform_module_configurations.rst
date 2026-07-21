@@ -1,7 +1,7 @@
 Configurations Module API
 =========================
 
-Documentation for the configurations API wrappers.
+API reference for configuration and administration endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.configurations
    :members:

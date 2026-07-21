@@ -3,6 +3,7 @@
 import logging
 from enum import StrEnum
 from pathlib import Path
+from typing import Any
 
 
 class LogCategory(StrEnum):
@@ -86,7 +87,7 @@ def log_with_category(
     level: int,
     message: str,
     category: LogCategory | str,
-    **extra_fields: dict,
+    **extra_fields: Any,
 ) -> None:
     """Log a message with a category and optional extra fields.
 

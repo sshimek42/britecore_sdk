@@ -1,7 +1,7 @@
 Term Credit Scores Module API
 =============================
 
-Documentation for the term credit scores API wrappers.
+API reference for term credit score helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.term_credit_scores
    :members:

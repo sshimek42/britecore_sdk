@@ -171,7 +171,7 @@ class WebhookManager:
             secret: Webhook secret.
         """
         self.secret = secret
-        self.listeners = {}
+        self.listeners: dict[str, WebhookListener] = {}
 
     def create_listener(self, name: str) -> WebhookListener:
         """Create a named webhook listener.

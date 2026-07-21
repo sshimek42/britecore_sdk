@@ -1,7 +1,7 @@
 Claim Contacts Module API
 =========================
 
-Documentation for the claim contacts API wrappers.
+API reference for contacts linked to claims.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claim_contacts
    :members:

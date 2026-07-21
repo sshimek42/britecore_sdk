@@ -1,7 +1,7 @@
 Claim Estimations Module API
 ============================
 
-Documentation for the claim estimations API wrappers.
+API reference for claim estimation helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claim_estimations
    :members:

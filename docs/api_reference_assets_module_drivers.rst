@@ -1,7 +1,7 @@
 Drivers Module API
 ==================
 
-Documentation for the drivers API wrappers.
+API reference for driver administration endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.drivers
    :members:

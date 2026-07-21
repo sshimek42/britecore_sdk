@@ -1,7 +1,7 @@
 Authority Limits Module API
 ===========================
 
-Documentation for the authority limits API wrappers.
+API reference for authority limit lookup and validation helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.authority_limits
    :members:

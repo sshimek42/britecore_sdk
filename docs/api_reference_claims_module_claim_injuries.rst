@@ -1,7 +1,7 @@
 Claim Injuries Module API
 =========================
 
-Documentation for the claim injuries API wrappers.
+API reference for claim injury helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claim_injuries
    :members:

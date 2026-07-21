@@ -1,7 +1,7 @@
 Coverages Module API
 ====================
 
-Documentation for the coverages API wrappers.
+API reference for policy coverage endpoints and coverage workflows.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.coverages
    :members:

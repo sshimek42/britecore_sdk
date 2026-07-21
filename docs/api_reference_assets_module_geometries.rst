@@ -1,7 +1,7 @@
 Geometries Module API
 =====================
 
-Documentation for the geometries API wrappers.
+API reference for geometry lookup helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.geometries
    :members:

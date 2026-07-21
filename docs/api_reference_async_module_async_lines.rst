@@ -1,7 +1,7 @@
 Async Lines Module API
 ======================
 
-Documentation for the async lines API wrappers.
+API reference for asynchronous line workflows.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.async_lines
    :members:

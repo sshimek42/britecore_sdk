@@ -6,7 +6,7 @@ creation. Endpoint wrappers for individual calls live in
 """
 
 import asyncio
-from typing import Any, cast
+from typing import Any
 
 from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls.v2.async_policies import acreate_policy, acreate_risk
@@ -93,11 +93,10 @@ async def acreate_policies_batch(
                 task.cancel()
             raise
     else:
-        task_results = cast(
-            list[PolicyTaskResult | Exception],
-            await asyncio.gather(*tasks, return_exceptions=True),
+        gathered: list[PolicyTaskResult | BaseException] = await asyncio.gather(
+            *tasks, return_exceptions=True
         )
-        for idx, result in enumerate(task_results):
+        for idx, result in enumerate(gathered):
             if isinstance(result, Exception):
                 failed_result: BatchPolicyCreateResult = {
                     "index": idx,
@@ -107,16 +106,16 @@ async def acreate_policies_batch(
                     "error": str(result),
                 }
                 results[idx] = failed_result
-            else:
-                result_idx, policy_data, revision_id = cast(PolicyTaskResult, result)
-                success_result: BatchPolicyCreateResult = {
+            elif not isinstance(result, BaseException):
+                result_idx, policy_data, revision_id = result
+                ok_result: BatchPolicyCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "policy_data": policy_data,
                     "revision_id": revision_id,
                     "error": None,
                 }
-                results[result_idx] = success_result
+                results[result_idx] = ok_result
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])
@@ -191,45 +190,44 @@ async def acreate_risks_batch(
 
     if fail_fast:
         try:
-            task_results: list[RiskTaskResult] = await asyncio.gather(*tasks)
-            for result_idx, risk_data, risk_id in task_results:
-                success_result: BatchRiskCreateResult = {
+            task_results_risk: list[RiskTaskResult] = await asyncio.gather(*tasks)
+            for result_idx, risk_data, risk_id in task_results_risk:
+                success_result_risk: BatchRiskCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "risk_data": risk_data,
                     "risk_id": risk_id,
                     "error": None,
                 }
-                results[result_idx] = success_result
+                results[result_idx] = success_result_risk
         except Exception:
             for task in tasks:
                 task.cancel()
             raise
     else:
-        task_results = cast(
-            list[RiskTaskResult | Exception],
-            await asyncio.gather(*tasks, return_exceptions=True),
+        gathered_risk: list[RiskTaskResult | BaseException] = await asyncio.gather(
+            *tasks, return_exceptions=True
         )
-        for idx, result in enumerate(task_results):
+        for idx, result in enumerate(gathered_risk):
             if isinstance(result, Exception):
-                failed_result: BatchRiskCreateResult = {
+                failed_result_risk: BatchRiskCreateResult = {
                     "index": idx,
                     "success": False,
                     "risk_data": None,
                     "risk_id": None,
                     "error": str(result),
                 }
-                results[idx] = failed_result
-            else:
-                result_idx, risk_data, risk_id = cast(RiskTaskResult, result)
-                success_result: BatchRiskCreateResult = {
+                results[idx] = failed_result_risk
+            elif not isinstance(result, BaseException):
+                result_idx, risk_data, risk_id = result
+                ok_result_risk: BatchRiskCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "risk_data": risk_data,
                     "risk_id": risk_id,
                     "error": None,
                 }
-                results[result_idx] = success_result
+                results[result_idx] = ok_result_risk
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])

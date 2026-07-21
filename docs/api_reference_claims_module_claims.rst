@@ -1,7 +1,7 @@
 Claims Module API
 =================
 
-Documentation for the claims API wrappers.
+API reference for claim administration endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claims
    :members:

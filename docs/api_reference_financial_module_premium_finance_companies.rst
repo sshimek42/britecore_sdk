@@ -1,7 +1,7 @@
 Premium Finance Companies Module API
 ====================================
 
-Documentation for the premium finance companies API wrappers.
+API reference for premium finance company lookup helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.premium_finance_companies
    :members:

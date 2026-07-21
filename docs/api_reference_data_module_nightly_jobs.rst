@@ -1,7 +1,7 @@
 Nightly Jobs Module API
 =======================
 
-Documentation for the nightly jobs API wrappers.
+API reference for nightly job endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.nightly_jobs
    :members:

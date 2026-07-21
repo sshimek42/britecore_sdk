@@ -1,7 +1,7 @@
 Permissions Module API
 ======================
 
-Documentation for the permissions API wrappers.
+API reference for permission management endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.permissions
    :members:

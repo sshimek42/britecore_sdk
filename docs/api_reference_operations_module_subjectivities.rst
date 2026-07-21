@@ -1,7 +1,7 @@
 Subjectivities Module API
 =========================
 
-Documentation for the subjectivities API wrappers.
+API reference for subjectivity workflow endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.subjectivities
    :members:

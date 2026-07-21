@@ -265,9 +265,9 @@ class AsyncBulkOperationManager:
         for result in all_results:
             if isinstance(result, Exception):
                 errors.append({"error": str(result)})
-            elif result.get("success"):
+            elif isinstance(result, dict) and result.get("success"):
                 results.append(result)
-            else:
+            elif isinstance(result, dict):
                 errors.append(result)
 
         return {

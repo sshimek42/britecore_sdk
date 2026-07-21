@@ -1,7 +1,7 @@
 Prior Policies Module API
 =========================
 
-Documentation for the prior policies API wrappers.
+API reference for prior policy lookup and import helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.prior_policies
    :members:

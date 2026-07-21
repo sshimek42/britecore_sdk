@@ -740,3 +740,29 @@ __all__.extend(
         "update_e_delivery_enabled",
     ]
 )
+
+
+def list_quotes(
+    page: int = 1,
+    limit: int = 100,
+    client: BritecoreAPIClient | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Return a paginated list of quotes.
+
+    This function is a pagination helper used by ``iter_quotes``.
+    The BriteCore v2 API does not currently expose a generic quote-list endpoint,
+    so this implementation returns an empty result signalling no pages to iterate.
+    Use ``get_quote`` to retrieve individual quotes by ID, or the search endpoints
+    for filtered retrieval.
+
+    Args:
+        page: Page number (1-based).
+        limit: Maximum results per page.
+        client: Optional explicit client; defaults to the module-level client.
+        **kwargs: Additional request parameters.
+
+    Returns:
+        Empty result dict (``{"data": []}``) — no list endpoint available.
+    """
+    return {"data": []}

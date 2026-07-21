@@ -9,6 +9,10 @@ from typing import Any
 
 from britecore_sdk import logger
 
+SENSITIVE_CONFIG_KEYS = frozenset(
+    {"api_key", "client_id", "client_secret", "password", "secret", "token"}
+)
+
 
 def _try_import_questionary():
     """Try to import questionary, with helpful error message if missing."""
@@ -39,17 +43,24 @@ def _write_config_file(
         True if successful, False otherwise.
     """
     try:
+        persisted_config = {
+            key: value
+            for key, value in config.items()
+            if key not in SENSITIVE_CONFIG_KEYS
+        }
+
         # Simple TOML generation (not using library to avoid extra deps)
         content = ""
         if is_secrets:
             content += "# WARNING: This file contains secrets. Do not commit to version control.\n"
-            content += "# Add .britecore_secrets.toml to .gitignore\n\n"
+            content += "# Add .britecore_secrets.toml to .gitignore\n"
+            content += "# Sensitive credentials are not written by this wizard; set them via BRITECORE_SDK_* environment variables.\n\n"
         else:
             content += "# BriteCore SDK Configuration\n"
             content += "# Multiple environments can be configured by creating sections like [production], [sandbox]\n\n"
 
         # Write sections
-        for key, value in config.items():
+        for key, value in persisted_config.items():
             if isinstance(value, str):
                 # Escape quotes in string values
                 escaped = value.replace('"', '\\"')
@@ -61,7 +72,7 @@ def _write_config_file(
 
         path = Path(filepath)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content)
+        path.write_text(content, encoding="utf-8")
 
         if is_secrets:
             # Set restrictive permissions on secrets file
@@ -71,6 +82,19 @@ def _write_config_file(
     except Exception as e:
         logger.error(f"Failed to write config file {filepath}: {e}")
         return False
+
+
+def _build_secret_env_guidance(auth_method: str) -> list[str]:
+    """Return environment-variable guidance for sensitive credentials."""
+    if "API Key" in auth_method:
+        return [
+            '$env:BRITECORE_SDK_API_KEY = "<your_api_key>"',
+        ]
+
+    return [
+        '$env:BRITECORE_SDK_CLIENT_ID = "<your_client_id>"',
+        '$env:BRITECORE_SDK_CLIENT_SECRET = "<your_client_secret>"',
+    ]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -124,10 +148,6 @@ def main(argv: list[str] | None = None) -> int:
         if not api_key:
             print("API Key is required.")
             return 1
-        credentials = {
-            "base_url": base_url,
-            "api_key": api_key,
-        }
         auth_display = "API Key"
     else:
         client_id = questionary.text(
@@ -144,11 +164,6 @@ def main(argv: list[str] | None = None) -> int:
             print("Client Secret is required.")
             return 1
 
-        credentials = {
-            "base_url": base_url,
-            "client_id": client_id,
-            "client_secret": client_secret,
-        }
         auth_display = "OAuth"
 
     # Ask where to save
@@ -194,13 +209,14 @@ def main(argv: list[str] | None = None) -> int:
         # Append or update section (simple append for now)
         section_header = f"\n[{target_site}]\n"
         section_content = ""
-        for key, value in credentials.items():
+        persisted_settings = {"base_url": base_url}
+        for key, value in persisted_settings.items():
             if isinstance(value, str):
                 escaped = value.replace('"', '\\"')
                 section_content += f'{key} = "{escaped}"\n'
 
         new_content = existing_content + section_header + section_content
-        config_file.write_text(new_content)
+        config_file.write_text(new_content, encoding="utf-8")
 
         if is_secrets:
             config_file.chmod(0o600)
@@ -211,6 +227,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  Auth Method: {auth_display}")
         print(f"  Base URL: {base_url}")
         print(f"  Config File: {config_file}\n")
+        print("Sensitive credentials were not written to disk.")
+        print("Set them via environment variables before using the SDK:\n")
+        for line in _build_secret_env_guidance(auth_display):
+            print(f"  {line}")
+        print()
         print("You can now use the SDK with this configuration:")
         print("  from britecore_sdk.api.api_calls import get_api_client")
         print(f"  client = get_api_client('{target_site}').init_client()\n")

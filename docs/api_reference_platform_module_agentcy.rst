@@ -1,7 +1,7 @@
 Agentcy Module API
 ==================
 
-Documentation for the agentcy API wrappers.
+API reference for agency administration endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.agentcy
    :members:

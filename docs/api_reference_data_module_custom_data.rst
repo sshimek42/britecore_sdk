@@ -1,7 +1,7 @@
 Custom Data Module API
 ======================
 
-Documentation for the custom data API wrappers.
+API reference for custom data endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.custom_data
    :members:

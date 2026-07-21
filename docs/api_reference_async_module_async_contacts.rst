@@ -1,7 +1,7 @@
 Async Contacts Module API
 =========================
 
-Documentation for the async contacts API wrappers.
+API reference for asynchronous contact workflows.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.async_contacts
    :members:

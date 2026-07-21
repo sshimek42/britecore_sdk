@@ -1,7 +1,7 @@
 Vendors Module API
 ==================
 
-Documentation for the vendors API wrappers.
+API reference for vendor workflow endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.vendors
    :members:

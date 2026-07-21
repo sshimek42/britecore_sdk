@@ -190,10 +190,50 @@ async def afind_contact_by_params(
     return await API_CLIENT.aprocess_result(request_result)
 
 
+async def alist_contacts(
+    page: int = 1,
+    limit: int = 100,
+    client: AsyncBritecoreAPIClient | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Return a paginated list of contacts (async).
+
+    Pagination helper for ``aiter_contacts``.  Calls
+    ``/api/v2/contacts/list_all_contacts`` and normalises the result to
+    ``{"data": [...]}``.
+
+    Args:
+        page: Page number (1-based).
+        limit: Results per page.
+        client: Optional explicit async client; defaults to module-level client.
+        **kwargs: Additional request parameters.
+
+    Returns:
+        Normalized response dict ``{"data": [...]}``.
+    """
+    _client = client if client is not None else API_CLIENT
+    request_json: dict[str, Any] = {"page": page, "limit": limit}
+    request_result = await _client.ado_request(
+        path="/api/v2/contacts/list_all_contacts",
+        json=request_json,
+        method="POST",
+        **kwargs,
+    )
+    if request_result is None:
+        return {"data": []}
+    raw = await _client.aprocess_result(request_result)
+    if isinstance(raw, list):
+        return {"data": raw}
+    if isinstance(raw, dict) and "data" not in raw:
+        return {"data": []}
+    return raw
+
+
 __all__ = [
     "aadd_contact_to_role",
     "afind_contact_by_params",
     "aget_contact",
+    "alist_contacts",
     "anew_contact",
     "aupdate_contact",
 ]

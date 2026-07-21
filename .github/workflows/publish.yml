@@ -7,6 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   id-token: write
 
@@ -18,27 +19,29 @@ jobs:
   build:
     if: >-
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      (
+        github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'push' &&
+        github.event.workflow_run.head_repository.full_name == github.repository
+      )
     runs-on: ubuntu-latest
     outputs:
-      source_ref: ${{ steps.source.outputs.ref }}
+      package_name: ${{ steps.package.outputs.name }}
+      package_version: ${{ steps.package.outputs.version }}
     steps:
-      - name: Resolve source ref
-        id: source
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "release" ]; then
-            echo "ref=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=${{ github.ref }}" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Checkout repository
+        if: github.event_name != 'workflow_run'
         uses: actions/checkout@v4
+
+      - name: Download release build artifacts
+        if: github.event_name == 'workflow_run'
+        uses: actions/download-artifact@v4
         with:
-          ref: ${{ steps.source.outputs.ref }}
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: dist
+          path: dist/
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -46,10 +49,48 @@ jobs:
           python-version: "3.11"
 
       - name: Build sdist and wheel
+        if: github.event_name != 'workflow_run'
         run: |
           python -m pip install --upgrade pip build twine
           pyproject-build
           python -m twine check dist/*
+
+      - name: Read package metadata from distributions
+        id: package
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          dist_dir = Path("dist")
+          if not dist_dir.exists():
+              raise SystemExit("dist/ directory was not found.")
+
+          wheel_candidates = sorted(dist_dir.glob("*.whl"))
+          sdist_candidates = sorted(dist_dir.glob("*.tar.gz"))
+          artifact = wheel_candidates[0] if wheel_candidates else sdist_candidates[0] if sdist_candidates else None
+          if artifact is None:
+              raise SystemExit("No distribution artifacts were found in dist/.")
+
+          name = ""
+          version = ""
+          if artifact.name.endswith(".whl"):
+              parts = artifact.name[:-4].split("-")
+              if len(parts) < 2:
+                  raise SystemExit(f"Could not parse wheel filename: {artifact.name}")
+              name, version = parts[0], parts[1]
+          else:
+              stem = artifact.name[:-7]
+              if "-" not in stem:
+                  raise SystemExit(f"Could not parse sdist filename: {artifact.name}")
+              name, version = stem.rsplit("-", 1)
+
+          github_output = Path(os.environ["GITHUB_OUTPUT"])
+          with github_output.open("a", encoding="utf-8") as out:
+              out.write(f"name={name}\n")
+              out.write(f"version={version}\n")
+          PY
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v7
@@ -82,52 +123,17 @@ jobs:
     needs: [build, publish]
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve source ref
-        id: source
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_run" ]; then
-            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "release" ]; then
-            echo "ref=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=${{ needs.build.outputs.source_ref }}" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.source.outputs.ref }}
-
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
-      - name: Read package metadata
-        id: package
-        shell: bash
-        run: |
-          python - <<'PY'
-          import os
-          import tomllib
-
-          with open("pyproject.toml", "rb") as f:
-              data = tomllib.load(f)
-
-          project = data["project"]
-          github_output = os.environ["GITHUB_OUTPUT"]
-          with open(github_output, "a", encoding="utf-8") as out:
-              out.write(f"name={project['name']}\n")
-              out.write(f"version={project['version']}\n")
-          PY
-
       - name: Smoke test install from PyPI
         shell: bash
         run: |
           python -m pip install --upgrade pip
-          PACKAGE_NAME="${{ steps.package.outputs.name }}"
-          PACKAGE_VERSION="${{ steps.package.outputs.version }}"
+          PACKAGE_NAME="${{ needs.build.outputs.package_name }}"
+          PACKAGE_VERSION="${{ needs.build.outputs.package_version }}"
 
           if [ -z "$PACKAGE_NAME" ] || [ -z "$PACKAGE_VERSION" ]; then
             echo "Package metadata outputs were empty. name='$PACKAGE_NAME' version='$PACKAGE_VERSION'"

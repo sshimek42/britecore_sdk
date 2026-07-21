@@ -894,6 +894,45 @@ def list_all_contacts(
     )
 
 
+def list_contacts(
+    page: int = 1,
+    limit: int = 100,
+    client: BritecoreAPIClient | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Return a paginated list of contacts.
+
+    Pagination helper used by ``iter_contacts``.  Delegates to
+    ``/api/v2/contacts/list_all_contacts`` and normalises the response
+    to ``{"data": [...]}``.
+
+    Args:
+        page: Page number (1-based, passed in request payload).
+        limit: Results per page, passed in request payload.
+        client: Optional explicit client; defaults to module-level client.
+        **kwargs: Additional request parameters.
+
+    Returns:
+        Normalized response dict ``{"data": [...]}``.
+    """
+    _client = client if client is not None else API_CLIENT
+    request_json: dict[str, Any] = {"page": page, "limit": limit}
+    request_result = _client.do_request(
+        path="/api/v2/contacts/list_all_contacts",
+        json=request_json,
+        method="POST",
+        **kwargs,
+    )
+    raw = _client.process_result(
+        request_result, endpoint="/api/v2/contacts/list_all_contacts"
+    )
+    if isinstance(raw, list):
+        return {"data": raw}
+    if isinstance(raw, dict) and "data" not in raw:
+        return {"data": []}
+    return raw
+
+
 def list_credit_reports_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],

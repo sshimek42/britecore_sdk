@@ -1,7 +1,7 @@
 Data Module API
 ===============
 
-Documentation for the data API wrappers.
+API reference for data management endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.data
    :members:

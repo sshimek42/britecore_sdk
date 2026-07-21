@@ -1,7 +1,7 @@
 Tasks Module API
 ================
 
-Documentation for the tasks API wrappers.
+API reference for task workflow endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.tasks
    :members:

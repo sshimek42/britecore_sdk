@@ -4,7 +4,7 @@ Provides common patterns for data extraction, pagination, and batch operations.
 """
 
 from collections.abc import Callable, Generator
-from typing import Any, TypeVar, overload
+from typing import Any, TypeVar
 
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 from britecore_sdk.exceptions import BritecoreError
@@ -166,7 +166,7 @@ def paginate(
         # Extract data
         try:
             data = extract_data(response)
-        except BritecoreError:
+        except BritecoreError.Base:
             # No more data available
             break
 
@@ -213,13 +213,6 @@ def batch_items(
     """
     for i in range(0, len(items), batch_size):
         yield items[i : i + batch_size]
-
-
-@overload
-def transform_response(
-    response: Any,
-    transform: Callable[[Any], T],
-) -> T: ...
 
 
 def transform_response(response: Any, transform: Callable[[Any], T]) -> T:

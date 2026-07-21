@@ -72,7 +72,25 @@ class ProbeResult:
 class _SupportsDoRequest(Protocol):
     """Minimal protocol for probe execution clients."""
 
-    def do_request(self, **kwargs: Any) -> Any: ...
+    def do_request(
+        self,
+        path: str,
+        json: dict[str, Any] | None = None,
+        request_timeout: Any = None,
+        request_retries: Any = None,
+        request_headers: dict[str, Any] | None = None,
+        method: str = "POST",
+        cache_enabled: bool = False,
+        cache_ttl_seconds: int | None = None,
+        cache_namespace: str | None = None,
+        cache_key_parts: list[str] | tuple[str, ...] | None = None,
+        cache_bypass: bool = False,
+        cache_invalidate_on_success: list[str] | tuple[str, ...] | None = None,
+        dedupe_in_flight: bool = False,
+        dry_run: bool | None = None,
+        dry_run_include_sensitive_headers: bool = False,
+        rate_limiter_bypass: bool = False,
+    ) -> Any: ...
 
 
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:

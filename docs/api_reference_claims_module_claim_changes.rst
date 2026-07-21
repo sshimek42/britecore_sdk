@@ -1,7 +1,7 @@
 Claim Changes Module API
 ========================
 
-Documentation for the claim changes API wrappers.
+API reference for claim change tracking helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claim_changes
    :members:

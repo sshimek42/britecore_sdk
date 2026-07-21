@@ -56,7 +56,7 @@ def _check_connectivity() -> tuple[bool, list[str]]:
         messages.append("✓ API endpoint responds")
 
         return True, messages
-    except BritecoreError as e:
+    except BritecoreError.Base as e:
         messages.append(f"✗ Connectivity error: {e}")
         return False, messages
     except Exception as e:
@@ -158,7 +158,7 @@ Examples:
         args.full = True
 
     success = True
-    messages = []
+    messages: list[str] = []
 
     try:
         if args.syntax:

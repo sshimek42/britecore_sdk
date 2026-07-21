@@ -88,4 +88,28 @@ async def aget_quote(quote_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     return await API_CLIENT.aprocess_result(request_result)
 
 
-__all__ = ["acreate_full_quote", "aget_quote"]
+async def alist_quotes(
+    page: int = 1,
+    limit: int = 100,
+    client: AsyncBritecoreAPIClient | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Return a paginated list of quotes (async).
+
+    Pagination helper for ``aiter_quotes``.  The BriteCore v2 API does not
+    expose a generic quote-list endpoint, so this returns an empty result,
+    signalling no pages to iterate.
+
+    Args:
+        page: Page number (1-based).
+        limit: Results per page.
+        client: Optional explicit async client; defaults to module-level client.
+        **kwargs: Additional request parameters.
+
+    Returns:
+        Empty result dict (``{"data": []}``) — no list endpoint available.
+    """
+    return {"data": []}
+
+
+__all__ = ["acreate_full_quote", "aget_quote", "alist_quotes"]

@@ -1,7 +1,7 @@
 Claim Dates Module API
 ======================
 
-Documentation for the claim dates API wrappers.
+API reference for claim date management helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claim_dates
    :members:

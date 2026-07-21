@@ -1,7 +1,7 @@
 Settings Module API
 ===================
 
-Documentation for the settings API wrappers.
+API reference for application settings endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.settings
    :members:

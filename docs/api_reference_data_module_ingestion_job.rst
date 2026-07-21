@@ -1,7 +1,7 @@
 Ingestion Job Module API
 ========================
 
-Documentation for the ingestion job API wrappers.
+API reference for ingestion job endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.ingestion_job
    :members:

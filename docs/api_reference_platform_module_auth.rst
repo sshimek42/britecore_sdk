@@ -1,7 +1,7 @@
 Auth Module API
 ===============
 
-Documentation for the auth API wrappers.
+API reference for authentication endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.auth
    :members:

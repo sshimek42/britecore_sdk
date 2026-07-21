@@ -1,7 +1,7 @@
 Inspections Module API
 ======================
 
-Documentation for the inspections API wrappers.
+API reference for inspection workflow endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.inspections
    :members:

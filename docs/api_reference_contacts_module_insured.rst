@@ -1,7 +1,7 @@
 Insured Module API
 ==================
 
-Documentation for the insured API wrappers.
+API reference for insured-party management helpers.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.insured
    :members:

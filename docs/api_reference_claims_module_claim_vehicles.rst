@@ -1,7 +1,7 @@
 Claim Vehicles Module API
 =========================
 
-Documentation for the claim vehicles API wrappers.
+API reference for vehicles linked to claims.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.claim_vehicles
    :members:

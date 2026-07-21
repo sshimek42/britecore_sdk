@@ -6,7 +6,7 @@ Endpoint wrappers for individual quote calls live in
 """
 
 import asyncio
-from typing import Any, cast
+from typing import Any
 
 from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quote
@@ -87,11 +87,10 @@ async def acreate_full_quotes_batch(
                 task.cancel()
             raise
     else:
-        task_results = cast(
-            list[QuoteTaskResult | Exception],
-            await asyncio.gather(*tasks, return_exceptions=True),
+        gathered: list[QuoteTaskResult | BaseException] = await asyncio.gather(
+            *tasks, return_exceptions=True
         )
-        for idx, result in enumerate(task_results):
+        for idx, result in enumerate(gathered):
             if isinstance(result, Exception):
                 failed_result: BatchQuoteCreateResult = {
                     "index": idx,
@@ -101,16 +100,16 @@ async def acreate_full_quotes_batch(
                     "error": str(result),
                 }
                 results[idx] = failed_result
-            else:
-                result_idx, quote_data, quote_id = cast(QuoteTaskResult, result)
-                success_result: BatchQuoteCreateResult = {
+            elif not isinstance(result, BaseException):
+                result_idx, quote_data, quote_id = result
+                ok_result: BatchQuoteCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "quote_data": quote_data,
                     "quote_id": quote_id,
                     "error": None,
                 }
-                results[result_idx] = success_result
+                results[result_idx] = ok_result
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])

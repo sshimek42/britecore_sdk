@@ -6,7 +6,7 @@ Endpoint wrappers for individual contact calls live in
 """
 
 import asyncio
-from typing import Any, cast
+from typing import Any
 
 from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
@@ -96,11 +96,10 @@ async def acreate_contacts_batch(
                 task.cancel()
             raise
     else:
-        task_results = cast(
-            list[ContactTaskResult | Exception],
-            await asyncio.gather(*tasks, return_exceptions=True),
+        gathered: list[ContactTaskResult | BaseException] = await asyncio.gather(
+            *tasks, return_exceptions=True
         )
-        for idx, result in enumerate(task_results):
+        for idx, result in enumerate(gathered):
             if isinstance(result, Exception):
                 failed_result: BatchContactCreateResult = {
                     "index": idx,
@@ -110,16 +109,16 @@ async def acreate_contacts_batch(
                     "error": str(result),
                 }
                 results[idx] = failed_result
-            else:
-                result_idx, contact_data, contact_id = cast(ContactTaskResult, result)
-                success_result: BatchContactCreateResult = {
+            elif not isinstance(result, BaseException):
+                result_idx, contact_data, contact_id = result
+                ok_result: BatchContactCreateResult = {
                     "index": result_idx,
                     "success": True,
                     "contact_data": contact_data,
                     "contact_id": contact_id,
                     "error": None,
                 }
-                results[result_idx] = success_result
+                results[result_idx] = ok_result
 
     finalized_results = [item for item in results if item is not None]
     succeeded = sum(1 for item in finalized_results if item["success"])

@@ -679,3 +679,45 @@ __all__ = [
     "aupdate_property_location",
     "aupdate_rating_information",
 ]
+
+
+async def alist_policies(
+    page: int = 1,
+    limit: int = 100,
+    client: AsyncBritecoreAPIClient | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Return a paginated list of policies (async).
+
+    Pagination helper for ``aiter_policies``.  Calls
+    ``/api/v2/policies/search`` and normalises the result to
+    ``{"data": [...]}``.
+
+    Args:
+        page: Page number (1-based).
+        limit: Results per page.
+        client: Optional explicit async client; defaults to module-level client.
+        **kwargs: Additional request parameters.
+
+    Returns:
+        Normalized response dict ``{"data": [...]}``.
+    """
+    _client = client if client is not None else API_CLIENT
+    request_json: dict[str, Any] = {
+        "sort_obj": {"field": "policy_number", "order": "asc"},
+        "current_page": page,
+        "page_size": limit,
+    }
+    request_result = await _client.ado_request(
+        path="/api/v2/policies/search",
+        json=request_json,
+        **kwargs,
+    )
+    if request_result is None:
+        return {"data": []}
+    raw = await _client.aprocess_result(request_result)
+    if isinstance(raw, dict) and "records" in raw:
+        return {"data": raw["records"]}
+    if isinstance(raw, list):
+        return {"data": raw}
+    return {"data": []}

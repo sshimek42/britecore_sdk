@@ -1,7 +1,7 @@
 Quick Code Values Module API
 ============================
 
-Documentation for the quick code values API wrappers.
+API reference for quick code value lookups used by quoting workflows.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.quick_code_values
    :members:

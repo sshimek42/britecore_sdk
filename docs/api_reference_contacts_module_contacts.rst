@@ -1,7 +1,7 @@
 Contacts Module API
 ===================
 
-Documentation for the contacts API wrappers.
+API reference for contact management endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.contacts
    :members:

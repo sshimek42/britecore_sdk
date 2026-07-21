@@ -1,7 +1,7 @@
 Dashboards Module API
 =====================
 
-Documentation for the dashboards API wrappers.
+API reference for dashboard endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.dashboards
    :members:

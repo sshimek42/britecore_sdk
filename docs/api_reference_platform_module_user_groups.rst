@@ -1,7 +1,7 @@
 User Groups Module API
 ======================
 
-Documentation for the user groups API wrappers.
+API reference for user group management endpoints.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.user_groups
    :members:

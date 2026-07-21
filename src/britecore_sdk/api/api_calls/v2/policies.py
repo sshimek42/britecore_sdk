@@ -3190,3 +3190,45 @@ __all__ = [
     "update_underwriting_options",
     "update_underwriting_questions",
 ]
+
+
+def list_policies(
+    page: int = 1,
+    limit: int = 100,
+    client: BritecoreAPIClient | None = None,
+    **kwargs: Any,
+) -> Any:
+    """Return a paginated slice of policies via the search endpoint.
+
+    This function is a pagination helper used by ``iter_policies``.
+    It calls ``/api/v2/policies/search`` with ``current_page`` and
+    ``page_size`` set from ``page`` / ``limit`` and returns the raw
+    normalized response so the iterator can extract ``data``.
+
+    Args:
+        page: Page number (1-based).
+        limit: Results per page.
+        client: Optional explicit client; defaults to the module-level client.
+        **kwargs: Additional request parameters.
+
+    Returns:
+        Normalized API response dict, typically ``{"data": [...], ...}``.
+    """
+    _client = client if client is not None else API_CLIENT
+    request_json: dict[str, Any] = {
+        "sort_obj": {"field": "policy_number", "order": "asc"},
+        "current_page": page,
+        "page_size": limit,
+    }
+    request_result = _client.do_request(
+        path="/api/v2/policies/search",
+        json=request_json,
+        **kwargs,
+    )
+    raw = _client.process_result(request_result)
+    # Normalise to {"data": [...]} so iter_policies works uniformly
+    if isinstance(raw, dict) and "records" in raw:
+        return {"data": raw["records"]}
+    if isinstance(raw, list):
+        return {"data": raw}
+    return {"data": []}

@@ -1,7 +1,7 @@
 Async Policies Module API
 =========================
 
-Documentation for the async policies API wrappers.
+API reference for asynchronous policy workflows.
 
 .. automodule:: britecore_sdk.api.api_calls.v2.async_policies
    :members:
