@@ -40,6 +40,13 @@ britecore-config-wizard = "britecore_sdk.cli.config_wizard:main"
 britecore-check-config = "britecore_sdk.cli.check_config:main"
 britecore-healthcheck = "britecore_sdk.cli.healthcheck:main"
 
+[project.urls]
+Homepage = "https://github.com/sshimek42/britecore_sdk"
+Documentation = "https://britecore-sdk.readthedocs.io/en/latest/"
+Repository = "https://github.com/sshimek42/britecore_sdk"
+Issues = "https://github.com/sshimek42/britecore_sdk/issues"
+Changelog = "https://github.com/sshimek42/britecore_sdk/blob/master/CHANGELOG.md"
+
 [project.optional-dependencies]
 interactive = [
     "questionary~=2.1.1",
