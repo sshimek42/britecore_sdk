@@ -13,6 +13,19 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.4] - 2026-07-21
+
+### Fixed
+
+- **CI formatting parity**: normalized `tests/unit/test_config_wizard.py` formatting and line endings so local pre-commit and GitHub Actions `black --check` agree across platforms.
+- **Release documentation drift**: aligned package version references and metadata dates in actively maintained root docs.
+
+### Changed
+
+- Bumped package version to **2.0.4** in `pyproject.toml`.
+
+---
+
 ## [2.0.3] - 2026-07-20
 
 ### Added

@@ -1,6 +1,6 @@
 # Code of Conduct
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Project community policy*
 
 ## Our Pledge

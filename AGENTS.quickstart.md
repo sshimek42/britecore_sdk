@@ -1,6 +1,6 @@
 # AGENTS Quickstart
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Development workflow guide*
 
 Quick reference for SDK contributors: essential repository patterns and conventions.

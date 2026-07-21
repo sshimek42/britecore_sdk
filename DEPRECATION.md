@@ -1,6 +1,6 @@
 # Deprecation Policy
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Governance policy*
 
 For SDK users and maintainers: understand deprecation timelines, version support, and breaking change policies.

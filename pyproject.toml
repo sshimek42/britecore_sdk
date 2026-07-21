@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_sdk"
-version = "2.0.3"
+version = "2.0.4"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = "Apache-2.0"

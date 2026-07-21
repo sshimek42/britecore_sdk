@@ -11,7 +11,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
-**Status:** Stable (v2.0.1+) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v2.0.4+) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 

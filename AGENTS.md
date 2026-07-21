@@ -1,6 +1,6 @@
 # AGENTS.md
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Development workflow guide*
 
 For developers working on the SDK: understand repository structure, coding patterns, and architectural decisions.
