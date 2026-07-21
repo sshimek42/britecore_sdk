@@ -8,4 +8,13 @@ Documents and Deliverables APIs
    Deliverables module <api_reference_documents_module_deliverables>
    Files module <api_reference_documents_module_files>
 
-Related content modules: ``attachments``, ``signatures``, and ``uploads``.
+Related modules
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+
+   Attachments module <api_reference_documents_module_attachments>
+   Signatures module <api_reference_documents_module_signatures>
+   Uploads module <api_reference_documents_module_uploads>

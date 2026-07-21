@@ -10,5 +10,13 @@ Quote creation, retrieval, and quote-specific helper endpoints.
    Quotes module <api_reference_quotes_module_quotes>
    Quote module <api_reference_quotes_module_quote>
 
-Related quote modules: ``quick_quote_templates``, ``quick_codes``, and
-``quick_code_values``.
+Related modules
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+
+   Quick quote templates module <api_reference_quotes_module_quick_quote_templates>
+   Quick codes module <api_reference_quotes_module_quick_codes>
+   Quick code values module <api_reference_quotes_module_quick_code_values>

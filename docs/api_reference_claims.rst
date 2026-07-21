@@ -12,6 +12,17 @@ Claims administration and claim sub-resource endpoints.
    Claim properties module <api_reference_claims_module_claim_properties>
    Claim vehicles module <api_reference_claims_module_claim_vehicles>
 
-Related claim modules: ``claim_adjuster_assignment_configs``, ``claim_catastrophes``,
-``claim_changes``, ``claim_dates``, ``claim_estimations``, ``claim_exposures``, and
-``claim_injuries``.
+Related modules
+---------------
+
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
+
+   Claim adjuster assignment configs module <api_reference_claims_module_claim_adjuster_assignment_configs>
+   Claim catastrophes module <api_reference_claims_module_claim_catastrophes>
+   Claim changes module <api_reference_claims_module_claim_changes>
+   Claim dates module <api_reference_claims_module_claim_dates>
+   Claim estimations module <api_reference_claims_module_claim_estimations>
+   Claim exposures module <api_reference_claims_module_claim_exposures>
+   Claim injuries module <api_reference_claims_module_claim_injuries>

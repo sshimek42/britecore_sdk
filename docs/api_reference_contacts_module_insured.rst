@@ -5,4 +5,3 @@ Insured Module API
    :members:
    :undoc-members:
    :show-inheritance:
-
