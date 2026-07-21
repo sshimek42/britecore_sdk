@@ -21,7 +21,10 @@ def create_claim_vehicle(
     claim_vehicle: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new vehicle record for a claim. (POST /api/v2/claim_vehicles/create_claim_vehicle)."""
+    """Create a new vehicle record for a claim.
+
+    POST /api/v2/claim_vehicles/create_claim_vehicle
+    """
     request_json: dict[str, Any] = {"claim_vehicle": claim_vehicle}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -39,7 +42,10 @@ def delete_claim_vehicle(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim vehicle record. (POST /api/v2/claim_vehicles/delete_claim_vehicle)."""
+    """Delete a claim vehicle record.
+
+    POST /api/v2/claim_vehicles/delete_claim_vehicle
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -57,7 +63,10 @@ def get_claim_vehicle(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a specific claim vehicle by identifier. (POST /api/v2/claim_vehicles/get_claim_vehicle)."""
+    """Retrieve a specific claim vehicle by identifier.
+
+    POST /api/v2/claim_vehicles/get_claim_vehicle
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -75,7 +84,10 @@ def get_claim_vehicles(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all vehicles associated with a claim. (POST /api/v2/claim_vehicles/get_claim_vehicles)."""
+    """Retrieve all vehicles associated with a claim.
+
+    POST /api/v2/claim_vehicles/get_claim_vehicles
+    """
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -93,7 +105,10 @@ def run_claim_vehicle_valuation(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run a valuation calculation for a claim vehicle. (POST /api/v2/claim_vehicles/run_claim_vehicle_valuation)."""
+    """Run a valuation calculation for a claim vehicle.
+
+    POST /api/v2/claim_vehicles/run_claim_vehicle_valuation
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -111,7 +126,10 @@ def update_claim_vehicle(
     claim_vehicle: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing claim vehicle record. (POST /api/v2/claim_vehicles/update_claim_vehicle)."""
+    """Update an existing claim vehicle record.
+
+    POST /api/v2/claim_vehicles/update_claim_vehicle
+    """
     request_json: dict[str, Any] = {"claim_vehicle": claim_vehicle}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

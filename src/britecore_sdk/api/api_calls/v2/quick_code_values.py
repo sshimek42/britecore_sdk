@@ -17,7 +17,10 @@ def list_quick_code_values(
     quick_codes: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Quick Code Values (POST /api/v2/quick_code_values/list_quick_code_values)."""
+    """List Quick Code Values.
+
+    POST /api/v2/quick_code_values/list_quick_code_values
+    """
     request_json: dict[str, Any] = {"quick_codes": quick_codes}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def update_quick_code_value(
     quick_code_value: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Code Value (POST /api/v2/quick_code_values/update_quick_code_value)."""
+    """Update Quick Code Value.
+
+    POST /api/v2/quick_code_values/update_quick_code_value
+    """
     request_json: dict[str, Any] = {"quick_code_value": quick_code_value}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

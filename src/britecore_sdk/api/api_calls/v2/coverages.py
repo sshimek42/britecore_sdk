@@ -17,7 +17,10 @@ def add_coverage(
     coverage: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Coverage (POST /api/v2/coverages/add_coverage)."""
+    """Add Coverage.
+
+    POST /api/v2/coverages/add_coverage
+    """
     request_json: dict[str, Any] = {"coverage": coverage}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def add_coverages(
     coverages: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Coverages (POST /api/v2/coverages/add_coverages)."""
+    """Add Coverages.
+
+    POST /api/v2/coverages/add_coverages
+    """
     request_json: dict[str, Any] = {"coverages": coverages}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def add_sub_lines(
     sublines: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Sub Lines (POST /api/v2/coverages/add_sub_lines)."""
+    """Add Sub Lines.
+
+    POST /api/v2/coverages/add_sub_lines
+    """
     request_json: dict[str, Any] = {"sublines": sublines}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -70,7 +79,10 @@ def add_sub_lines(
 def delete_coverage(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Coverage (POST /api/v2/coverages/delete_coverage)."""
+    """Delete Coverage.
+
+    POST /api/v2/coverages/delete_coverage
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -87,7 +99,10 @@ def delete_coverage(
 def delete_sub_line(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Sub Line (POST /api/v2/coverages/delete_sub_line)."""
+    """Delete Sub Line.
+
+    POST /api/v2/coverages/delete_sub_line
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -104,7 +119,10 @@ def delete_sub_line(
 def list_all_coverages(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List All Coverages (POST /api/v2/coverages/list_all_coverages)."""
+    """List All Coverages.
+
+    POST /api/v2/coverages/list_all_coverages
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -123,7 +141,10 @@ def list_coverages(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Coverages (POST /api/v2/coverages/list_coverages)."""
+    """List Coverages.
+
+    POST /api/v2/coverages/list_coverages
+    """
     request_json: dict[str, Any] = {
         "property_id": property_id,
         "quote_id": quote_id,
@@ -145,7 +166,10 @@ def list_sub_lines(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Sub Lines (POST /api/v2/coverages/list_sub_lines)."""
+    """List Sub Lines.
+
+    POST /api/v2/coverages/list_sub_lines
+    """
     request_json: dict[str, Any] = {
         "property_id": property_id,
         "quote_id": quote_id,
@@ -166,7 +190,10 @@ def update_coverage(
     coverage: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Coverage (POST /api/v2/coverages/update_coverage)."""
+    """Update Coverage.
+
+    POST /api/v2/coverages/update_coverage
+    """
     request_json: dict[str, Any] = {"coverage": coverage}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -184,7 +211,10 @@ def update_coverages(
     coverages: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Coverages (POST /api/v2/coverages/update_coverages)."""
+    """Update Coverages.
+
+    POST /api/v2/coverages/update_coverages
+    """
     request_json: dict[str, Any] = {"coverages": coverages}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -202,7 +232,10 @@ def update_revision_billing_schedule(
     policy_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Revision Billing Schedule (POST /api/v2/coverages/update_revision_billing_schedule)."""
+    """Update Revision Billing Schedule.
+
+    POST /api/v2/coverages/update_revision_billing_schedule
+    """
     request_json: dict[str, Any] = {"policy_id": policy_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -16,10 +16,7 @@ def get_internal_error(
 ) -> Any:
     """Retrieve an internal error record by identifier.
 
-    This wrapper sends ``internal_error_id`` to
-    ``/api/v2/errors/get_internal_error`` and returns the normalized
-    ``process_result(...)`` payload for the matching error record.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/errors/get_internal_error
     """
     return post(
         "/api/v2/errors/get_internal_error",

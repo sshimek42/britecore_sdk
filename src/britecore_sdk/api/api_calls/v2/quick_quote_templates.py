@@ -18,7 +18,10 @@ def add_template_to_policy_type(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Template To Policy Type (POST /api/v2/quick_quote_templates/add_template_to_policy_type)."""
+    """Add Template To Policy Type.
+
+    POST /api/v2/quick_quote_templates/add_template_to_policy_type
+    """
     request_json: dict[str, Any] = {
         "quick_quote_template_id": quick_quote_template_id,
         "policy_type_id": policy_type_id,
@@ -42,7 +45,10 @@ def create_quick_quote_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Quick Quote Template (POST /api/v2/quick_quote_templates/create_quick_quote_template)."""
+    """Create Quick Quote Template.
+
+    POST /api/v2/quick_quote_templates/create_quick_quote_template
+    """
     request_json: dict[str, Any] = {
         "policy_type_ids": policy_type_ids,
         "quote_template": quote_template,
@@ -68,7 +74,10 @@ def create_template_risk_default_value(
     risk_defaults: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Template Risk Default Value (POST /api/v2/quick_quote_templates/create_template_risk_default_value)."""
+    """Create Template Risk Default Value.
+
+    POST /api/v2/quick_quote_templates/create_template_risk_default_value
+    """
     request_json: dict[str, Any] = {
         "quick_quote_template_id": quick_quote_template_id,
         "version": version,
@@ -92,7 +101,10 @@ def delete_quick_quote_template(
     template_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Quick Quote Template (POST /api/v2/quick_quote_templates/delete_quick_quote_template)."""
+    """Delete Quick Quote Template.
+
+    POST /api/v2/quick_quote_templates/delete_quick_quote_template
+    """
     request_json: dict[str, Any] = {
         "template_id": template_id,
     }
@@ -113,7 +125,10 @@ def delete_template_risk_default_value(
     value_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Template Risk Default Value (POST /api/v2/quick_quote_templates/delete_template_risk_default_value)."""
+    """Delete Template Risk Default Value.
+
+    POST /api/v2/quick_quote_templates/delete_template_risk_default_value
+    """
     request_json: dict[str, Any] = {
         "value_id": value_id,
     }
@@ -134,7 +149,10 @@ def get_quick_quote_template(
     template_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quick Quote Template (POST /api/v2/quick_quote_templates/get_quick_quote_template)."""
+    """Get Quick Quote Template.
+
+    POST /api/v2/quick_quote_templates/get_quick_quote_template
+    """
     request_json: dict[str, Any] = {
         "template_id": template_id,
     }
@@ -154,7 +172,10 @@ def get_quick_quote_template(
 def list_quick_quote_templates(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Quick Quote Templates (POST /api/v2/quick_quote_templates/list_quick_quote_templates)."""
+    """List Quick Quote Templates.
+
+    POST /api/v2/quick_quote_templates/list_quick_quote_templates
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -177,7 +198,10 @@ def update_quick_quote_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Quote Template (POST /api/v2/quick_quote_templates/update_quick_quote_template)."""
+    """Update Quick Quote Template.
+
+    POST /api/v2/quick_quote_templates/update_quick_quote_template
+    """
     request_json: dict[str, Any] = {
         "policy_type_ids": policy_type_ids,
         "quote_template": quote_template,
@@ -202,7 +226,10 @@ def update_template_risk_default_value(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Template Risk Default Value (POST /api/v2/quick_quote_templates/update_template_risk_default_value)."""
+    """Update Template Risk Default Value.
+
+    POST /api/v2/quick_quote_templates/update_template_risk_default_value
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -29,7 +29,10 @@ async def aget_export_line_file(
     include_custom_sequences: bool = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve export-line file data for a single line asynchronously. (POST /api/v2/lines/get_export_line_file)."""
+    """Retrieve export-line file data for a single line asynchronously.
+
+    POST /api/v2/lines/get_export_line_file
+    """
     LOGGER.info("Retrieving line export for IDs: %s", line)
 
     web_request_json: dict[str, Any] = {

@@ -19,7 +19,10 @@ def add_flow_placeholder(
     flow_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Flow Placeholder (POST /api/v2/quote/add_flow_placeholder)."""
+    """Add Flow Placeholder.
+
+    POST /api/v2/quote/add_flow_placeholder
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "Returns": Returns,
@@ -42,7 +45,10 @@ def add_quote_wizard_flow(
     is_endorsement: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Quote Wizard Flow (POST /api/v2/quote/add_quote_wizard_flow)."""
+    """Add Quote Wizard Flow.
+
+    POST /api/v2/quote/add_quote_wizard_flow
+    """
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "is_endorsement": is_endorsement,
@@ -64,7 +70,10 @@ def add_wizard_flow_section(
     flow_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Wizard Flow Section (POST /api/v2/quote/add_wizard_flow_section)."""
+    """Add Wizard Flow Section.
+
+    POST /api/v2/quote/add_wizard_flow_section
+    """
     request_json: dict[str, Any] = {
         "section_name": section_name,
         "flow_id": flow_id,
@@ -86,7 +95,10 @@ def batch_update_flow_sections(
     flow_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Batch Update Flow Sections (POST /api/v2/quote/batch_update_flow_sections)."""
+    """Batch Update Flow Sections.
+
+    POST /api/v2/quote/batch_update_flow_sections
+    """
     request_json: dict[str, Any] = {
         "section_list": section_list,
         "flow_id": flow_id,
@@ -109,7 +121,10 @@ def create_flow_from_quote_flow(
     endorsement: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Flow From Quote Flow (POST /api/v2/quote/create_flow_from_quote_flow)."""
+    """Create Flow From Quote Flow.
+
+    POST /api/v2/quote/create_flow_from_quote_flow
+    """
     request_json: dict[str, Any] = {
         "quote_flow_id": quote_flow_id,
         "admin": admin,
@@ -131,7 +146,10 @@ def delete_quote_wizard_flow(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Quote Wizard Flow (POST /api/v2/quote/delete_quote_wizard_flow)."""
+    """Delete Quote Wizard Flow.
+
+    POST /api/v2/quote/delete_quote_wizard_flow
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -153,7 +171,10 @@ def get_flow_features(
     flow_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Flow Features (POST /api/v2/quote/get_flow_features)."""
+    """Get Flow Features.
+
+    POST /api/v2/quote/get_flow_features
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "Returns": Returns,
@@ -177,7 +198,10 @@ def get_flow_placeholders(
     flow_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Flow Placeholders (POST /api/v2/quote/get_flow_placeholders)."""
+    """Get Flow Placeholders.
+
+    POST /api/v2/quote/get_flow_placeholders
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "Returns": Returns,
@@ -200,7 +224,10 @@ def get_property_quote_integration_dependencies(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Property Quote Integration Dependencies (POST /api/v2/quote/get_property_quote_integration_dependencies)."""
+    """Get Property Quote Integration Dependencies.
+
+    POST /api/v2/quote/get_property_quote_integration_dependencies
+    """
     request_json: dict[str, Any] = {
         "integration_id": integration_id,
         "property_id": property_id,
@@ -224,7 +251,10 @@ def get_quote_wizard_flow(
     Returns: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Wizard Flow (POST /api/v2/quote/get_quote_wizard_flow)."""
+    """Get Quote Wizard Flow.
+
+    POST /api/v2/quote/get_quote_wizard_flow
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "policy_type_id": policy_type_id,
@@ -246,7 +276,10 @@ def get_quote_wizard_flows(
     include: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Wizard Flows (POST /api/v2/quote/get_quote_wizard_flows)."""
+    """Get Quote Wizard Flows.
+
+    POST /api/v2/quote/get_quote_wizard_flows
+    """
     request_json: dict[str, Any] = {
         "include": include,
     }
@@ -266,7 +299,10 @@ def get_wizard_flow_sections(
     flow_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Wizard Flow Sections (POST /api/v2/quote/get_wizard_flow_sections)."""
+    """Get Wizard Flow Sections.
+
+    POST /api/v2/quote/get_wizard_flow_sections
+    """
     request_json: dict[str, Any] = {
         "flow_id": flow_id,
     }
@@ -288,7 +324,10 @@ def patch_flow_definition(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Patch Flow Definition (POST /api/v2/quote/patch_flow_definition)."""
+    """Patch Flow Definition.
+
+    POST /api/v2/quote/patch_flow_definition
+    """
     request_json: dict[str, Any] = {
         "definition": definition,
         "is_endorsement": is_endorsement,
@@ -310,7 +349,10 @@ def patch_flow_feature_attribute(
     attr_dict: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Patch Flow Feature Attribute (POST /api/v2/quote/patch_flow_feature_attribute)."""
+    """Patch Flow Feature Attribute.
+
+    POST /api/v2/quote/patch_flow_feature_attribute
+    """
     request_json: dict[str, Any] = {
         "attr_dict": attr_dict,
     }
@@ -330,7 +372,10 @@ def patch_flow_features(
     feature_dict: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Patch Flow Features (POST /api/v2/quote/patch_flow_features)."""
+    """Patch Flow Features.
+
+    POST /api/v2/quote/patch_flow_features
+    """
     request_json: dict[str, Any] = {
         "feature_dict": feature_dict,
     }
@@ -352,7 +397,10 @@ def patch_placeholder(
     placeholder_dict: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Patch Placeholder (POST /api/v2/quote/patch_placeholder)."""
+    """Patch Placeholder.
+
+    POST /api/v2/quote/patch_placeholder
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "Returns": Returns,
@@ -375,7 +423,10 @@ def remove_wizard_flow_section(
     flow_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Wizard Flow Section (POST /api/v2/quote/remove_wizard_flow_section)."""
+    """Remove Wizard Flow Section.
+
+    POST /api/v2/quote/remove_wizard_flow_section
+    """
     request_json: dict[str, Any] = {
         "section_name": section_name,
         "flow_id": flow_id,

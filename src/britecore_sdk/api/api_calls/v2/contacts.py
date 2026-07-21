@@ -39,15 +39,7 @@ def new_contact(
 ) -> tuple[Any, str | None]:
     """Create a contact record.
 
-    This wrapper sends the contact name, addresses, optional phone and email
-    lists, and ``contact_type`` to ``/api/v2/contacts/new_contact``. It returns
-    the normalized ``process_result(...)`` payload together with the extracted
-    ``contact_id`` as an SDK-specific convenience tuple of
-    ``(contact_data, contact_id)``. ``**kwargs`` accepts ``RequestParameters``
-    overrides.
-
-    Raises:
-        BritecoreError.MissingParameter: If name or address is missing.
+    POST /api/v2/contacts/new_contact
     """
     # Validate required parameters
     if not name or not name.strip():
@@ -139,13 +131,7 @@ def add_contact_to_role(
 ) -> Any:
     """Assign an existing contact to a role.
 
-    This wrapper sends ``contact_id`` and ``role`` to
-    ``/api/v2/contacts/add_contact_to_role`` and returns the normalized
-    ``process_result(...)`` payload for the role-assignment request.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
-
-    Raises:
-        BritecoreError.MissingParameter: If contact_id is missing.
+    POST /api/v2/contacts/add_contact_to_role
     """
     # Validate required parameters
     if not contact_id or not contact_id.strip():
@@ -172,10 +158,7 @@ def update_contact(
 ) -> Any:
     """Update an existing contact record.
 
-    This wrapper sends ``contact`` inside the request body to
-    ``/api/v2/contacts/update_contact`` and returns the normalized
-    ``process_result(...)`` payload for the update request. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/contacts/update_contact
     """
     LOGGER.debug("Updating contact information\n%s", contact)
     update_request_json: dict[str, dict] = {"contact": contact}
@@ -193,12 +176,7 @@ def update_contact(
 def get_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve a contact by identifier.
 
-    This wrapper sends ``contact_id`` to ``/api/v2/contacts/get_contact`` and
-    returns the normalized ``process_result(...)`` payload for the matching
-    contact record. ``**kwargs`` accepts ``RequestParameters`` overrides.
-
-    Raises:
-        BritecoreError.MissingParameter: If contact_id is missing.
+    POST /api/v2/contacts/get_contact
     """
     # Validate required parameters
     if not contact_id or not contact_id.strip():
@@ -225,10 +203,7 @@ def find_contact_by_params(
 ) -> Any:
     """Search for contacts by name and optional filters.
 
-    This wrapper sends ``name`` together with the optional ``role_name`` and
-    ``dob`` filters to ``/api/v2/contacts/find_contact_by_params`` and returns
-    the normalized ``process_result(...)`` payload for the contact search.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/contacts/find_contact_by_params
     """
     LOGGER.debug("Finding contact '%s'", name)
     contact_retrieve_json: dict[str, str | ROLETYPES | None] = {
@@ -250,24 +225,9 @@ def find_contact_by_params(
 def get_contacts_by_ids(
     contact_id_list: list[str], **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Retrieve contacts by id.
+    """Retrieve contacts by a list of IDs.
 
-    This wrapper sends a list of contact IDs to `/api/v2/contacts/get_contacts_by_ids` and returns the normalized
-    `process_result(...)` payload for the matching contacts. `**kwargs` accepts `RequestParameters` overrides.
-
-    Parameters
-    ----------
-    contact_id_list : list of str
-        Required. List of Contact ids to retrieve.
-
-    Returns
-    -------
-    success : bool
-        True if successful, false if not
-    messages : list of str
-        List of human-readable error messages
-    data : dict
-        Contains contacts keyed by id.
+    POST /api/v2/contacts/get_contacts_by_ids
     """
     if (
         not contact_id_list
@@ -307,7 +267,10 @@ def add_member_to_agency(
     member_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Member To Agency (POST /api/v2/contacts/add_member_to_agency)."""
+    """Add Member To Agency.
+
+    POST /api/v2/contacts/add_member_to_agency
+    """
     request_json: dict[str, Any] = {
         "set_member_company": set_member_company,
         "agency_id": agency_id,
@@ -331,7 +294,10 @@ def assign_policy_contact(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Assign Policy Contact (POST /api/v2/contacts/assign_policy_contact)."""
+    """Assign Policy Contact.
+
+    POST /api/v2/contacts/assign_policy_contact
+    """
     request_json: dict[str, Any] = {
         "role": role,
         "contact_id": contact_id,
@@ -355,7 +321,10 @@ def assign_quote_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Assign Quote Contact (POST /api/v2/contacts/assign_quote_contact)."""
+    """Assign Quote Contact.
+
+    POST /api/v2/contacts/assign_quote_contact
+    """
     request_json: dict[str, Any] = {
         "role": role,
         "quote_id": quote_id,
@@ -379,7 +348,10 @@ def assign_risk_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Assign Risk Contact (POST /api/v2/contacts/assign_risk_contact)."""
+    """Assign Risk Contact.
+
+    POST /api/v2/contacts/assign_risk_contact
+    """
     request_json: dict[str, Any] = {
         "role": role,
         "risk_id": risk_id,
@@ -401,7 +373,10 @@ def check_username_availability(
     username: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check Username Availability (POST /api/v2/contacts/check_username_availability)."""
+    """Check Username Availability.
+
+    POST /api/v2/contacts/check_username_availability
+    """
     request_json: dict[str, Any] = {
         "username": username,
     }
@@ -459,7 +434,10 @@ def create_contact(
     position: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Contact (POST /api/v2/contacts/create_contact)."""
+    """Create Contact.
+
+    POST /api/v2/contacts/create_contact
+    """
     request_json: dict[str, Any] = {
         "username": username,
         "source_update_date": source_update_date,
@@ -518,7 +496,10 @@ def create_credit_report_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Credit Report For Contact (POST /api/v2/contacts/create_credit_report_for_contact)."""
+    """Create Credit Report For Contact.
+
+    POST /api/v2/contacts/create_credit_report_for_contact
+    """
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "contact_id": contact_id,
@@ -540,7 +521,10 @@ def credit_score_threshold_details(
     contact_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Credit Score Threshold Details (POST /api/v2/contacts/credit_score_threshold_details)."""
+    """Credit Score Threshold Details.
+
+    POST /api/v2/contacts/credit_score_threshold_details
+    """
     request_json: dict[str, Any] = {
         "ref_contact_id": ref_contact_id,
         "contact_ids": contact_ids,
@@ -562,7 +546,10 @@ def enable_or_disable_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Enable Or Disable Contact (POST /api/v2/contacts/enable_or_disable_contact)."""
+    """Enable Or Disable Contact.
+
+    POST /api/v2/contacts/enable_or_disable_contact
+    """
     request_json: dict[str, Any] = {
         "active": active,
         "contact_id": contact_id,
@@ -583,7 +570,10 @@ def generate_contact_number(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Contact Number (POST /api/v2/contacts/generate_contact_number)."""
+    """Generate Contact Number.
+
+    POST /api/v2/contacts/generate_contact_number
+    """
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -604,7 +594,10 @@ def get_aspect_data(
     role_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Aspect Data (POST /api/v2/contacts/get_aspect_data)."""
+    """Get Aspect Data.
+
+    POST /api/v2/contacts/get_aspect_data
+    """
     request_json: dict[str, Any] = {
         "all": all,
         "id": id,
@@ -626,7 +619,10 @@ def get_aspect_data(
 def get_aspect_data_settings(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Aspect Data Settings (POST /api/v2/contacts/get_aspect_data_settings)."""
+    """Get Aspect Data Settings.
+
+    POST /api/v2/contacts/get_aspect_data_settings
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -645,7 +641,10 @@ def get_contact_associations(
     contact_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact Associations (POST /api/v2/contacts/get_contact_associations)."""
+    """Get Contact Associations.
+
+    POST /api/v2/contacts/get_contact_associations
+    """
     request_json: dict[str, Any] = {
         "policy_type_ids": policy_type_ids,
         "contact_ids": contact_ids,
@@ -666,7 +665,10 @@ def get_contact_by_agency(
     agency_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Agency (POST /api/v2/contacts/get_contact_by_agency)."""
+    """Get Contact By Agency.
+
+    POST /api/v2/contacts/get_contact_by_agency
+    """
     request_json: dict[str, Any] = {
         "agency_number": agency_number,
     }
@@ -686,7 +688,10 @@ def get_contact_by_agency_group(
     agency_group_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Agency Group (POST /api/v2/contacts/get_contact_by_agency_group)."""
+    """Get Contact By Agency Group.
+
+    POST /api/v2/contacts/get_contact_by_agency_group
+    """
     request_json: dict[str, Any] = {
         "agency_group_number": agency_group_number,
     }
@@ -706,7 +711,10 @@ def get_contact_by_agent(
     producer_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Agent (POST /api/v2/contacts/get_contact_by_agent)."""
+    """Get Contact By Agent.
+
+    POST /api/v2/contacts/get_contact_by_agent
+    """
     request_json: dict[str, Any] = {
         "producer_number": producer_number,
     }
@@ -726,7 +734,10 @@ def get_contact_by_cognito_username(
     cognito_username: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Cognito Username (POST /api/v2/contacts/get_contact_by_cognito_username)."""
+    """Get Contact By Cognito Username.
+
+    POST /api/v2/contacts/get_contact_by_cognito_username
+    """
     request_json: dict[str, Any] = {
         "cognito_username": cognito_username,
     }
@@ -747,7 +758,10 @@ def get_contact_by_credentials(
     password: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact By Credentials (POST /api/v2/contacts/get_contact_by_credentials)."""
+    """Get Contact By Credentials.
+
+    POST /api/v2/contacts/get_contact_by_credentials
+    """
     request_json: dict[str, Any] = {
         "username": username,
         "password": password,
@@ -768,7 +782,10 @@ def get_contact_for_migration(
     search_str: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contact For Migration (POST /api/v2/contacts/get_contact_for_migration)."""
+    """Get Contact For Migration.
+
+    POST /api/v2/contacts/get_contact_for_migration
+    """
     request_json: dict[str, Any] = {
         "search_str": search_str,
     }
@@ -788,7 +805,10 @@ def get_payment_methods(
     payment_method_ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Payment Methods (POST /api/v2/contacts/get_payment_methods)."""
+    """Get Payment Methods.
+
+    POST /api/v2/contacts/get_payment_methods
+    """
     request_json: dict[str, Any] = {
         "payment_method_ids": payment_method_ids,
     }
@@ -809,7 +829,10 @@ def get_resource_producer_id(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Resource Producer Id (POST /api/v2/contacts/get_resource_producer_id)."""
+    """Get Resource Producer Id.
+
+    POST /api/v2/contacts/get_resource_producer_id
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "policy_id": policy_id,
@@ -831,7 +854,10 @@ def link_contact_to_cognito_user(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Link Contact To Cognito User (POST /api/v2/contacts/link_contact_to_cognito_user)."""
+    """Link Contact To Cognito User.
+
+    POST /api/v2/contacts/link_contact_to_cognito_user
+    """
     request_json: dict[str, Any] = {
         "cognito_username": cognito_username,
         "contact_id": contact_id,
@@ -851,7 +877,10 @@ def link_contact_to_cognito_user(
 def list_all_contacts(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List All Contacts (POST /api/v2/contacts/list_all_contacts)."""
+    """List All Contacts.
+
+    POST /api/v2/contacts/list_all_contacts
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -869,7 +898,10 @@ def list_credit_reports_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Credit Reports For Contact (POST /api/v2/contacts/list_credit_reports_for_contact)."""
+    """List Credit Reports For Contact.
+
+    POST /api/v2/contacts/list_credit_reports_for_contact
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -889,7 +921,10 @@ def list_emails_for_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Emails For Contact (POST /api/v2/contacts/list_emails_for_contact)."""
+    """List Emails For Contact.
+
+    POST /api/v2/contacts/list_emails_for_contact
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -945,7 +980,10 @@ def modify_contact(
     position: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Contact (POST /api/v2/contacts/modify_contact)."""
+    """Modify Contact.
+
+    POST /api/v2/contacts/modify_contact
+    """
     request_json: dict[str, Any] = {
         "username": username,
         "drivers_license": drivers_license,
@@ -1002,7 +1040,10 @@ def remove_contact_from_role(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Contact From Role (POST /api/v2/contacts/remove_contact_from_role)."""
+    """Remove Contact From Role.
+
+    POST /api/v2/contacts/remove_contact_from_role
+    """
     request_json: dict[str, Any] = {
         "role_name": role_name,
         "contact_id": contact_id,
@@ -1026,7 +1067,10 @@ def remove_contact_information(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Contact Information (POST /api/v2/contacts/remove_contact_information)."""
+    """Remove Contact Information.
+
+    POST /api/v2/contacts/remove_contact_information
+    """
     request_json: dict[str, Any] = {
         "contact_emails": contact_emails,
         "contact_addresses": contact_addresses,
@@ -1050,7 +1094,10 @@ def remove_contact_system_tags(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Contact System Tags (POST /api/v2/contacts/remove_contact_system_tags)."""
+    """Remove Contact System Tags.
+
+    POST /api/v2/contacts/remove_contact_system_tags
+    """
     request_json: dict[str, Any] = {
         "system_tags": system_tags,
         "contact_id": contact_id,
@@ -1073,7 +1120,10 @@ def remove_policy_contact(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Policy Contact (POST /api/v2/contacts/remove_policy_contact)."""
+    """Remove Policy Contact.
+
+    POST /api/v2/contacts/remove_policy_contact
+    """
     request_json: dict[str, Any] = {
         "role": role,
         "contact_id": contact_id,
@@ -1097,7 +1147,10 @@ def remove_quote_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Quote Contact (POST /api/v2/contacts/remove_quote_contact)."""
+    """Remove Quote Contact.
+
+    POST /api/v2/contacts/remove_quote_contact
+    """
     request_json: dict[str, Any] = {
         "role": role,
         "quote_id": quote_id,
@@ -1121,7 +1174,10 @@ def remove_risk_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Risk Contact (POST /api/v2/contacts/remove_risk_contact)."""
+    """Remove Risk Contact.
+
+    POST /api/v2/contacts/remove_risk_contact
+    """
     request_json: dict[str, Any] = {
         "role": role,
         "risk_id": risk_id,
@@ -1145,7 +1201,10 @@ def retrieveaddressinfo(
     addressLine1: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieveaddressinfo (POST /api/v2/contacts/retrieveAddressInfo)."""
+    """Retrieveaddressinfo.
+
+    POST /api/v2/contacts/retrieveAddressInfo
+    """
     request_json: dict[str, Any] = {
         "stateAbbr": stateAbbr,
         "zip": zip,
@@ -1173,7 +1232,10 @@ def retrieve_address_suggestions(
     address_zip: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Address Suggestions (POST /api/v2/contacts/retrieve_address_suggestions)."""
+    """Retrieve Address Suggestions.
+
+    POST /api/v2/contacts/retrieve_address_suggestions
+    """
     request_json: dict[str, Any] = {
         "address_line2": address_line2,
         "address_city": address_city,
@@ -1199,7 +1261,10 @@ def retrieve_addresses(
     address_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Addresses (POST /api/v2/contacts/retrieve_addresses)."""
+    """Retrieve Addresses.
+
+    POST /api/v2/contacts/retrieve_addresses
+    """
     request_json: dict[str, Any] = {
         "address_ids": address_ids,
     }
@@ -1221,7 +1286,10 @@ def retrieve_agencies_near_zip(
     results: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Agencies Near Zip (POST /api/v2/contacts/retrieve_agencies_near_zip)."""
+    """Retrieve Agencies Near Zip.
+
+    POST /api/v2/contacts/retrieve_agencies_near_zip
+    """
     request_json: dict[str, Any] = {
         "max_distance": max_distance,
         "zipcode": zipcode,
@@ -1243,7 +1311,10 @@ def retrieve_all_roles(
     login_only: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve All Roles (POST /api/v2/contacts/retrieve_all_roles)."""
+    """Retrieve All Roles.
+
+    POST /api/v2/contacts/retrieve_all_roles
+    """
     request_json: dict[str, Any] = {
         "login_only": login_only,
     }
@@ -1264,7 +1335,10 @@ def retrieve_contact(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact (POST /api/v2/contacts/retrieve_contact)."""
+    """Retrieve Contact.
+
+    POST /api/v2/contacts/retrieve_contact
+    """
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -1285,7 +1359,10 @@ def retrieve_contact_info(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact Info (POST /api/v2/contacts/retrieve_contact_info)."""
+    """Retrieve Contact Info.
+
+    POST /api/v2/contacts/retrieve_contact_info
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1306,7 +1383,10 @@ def retrieve_contact_motor_vehicle_reports(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact Motor Vehicle Reports (POST /api/v2/contacts/retrieve_contact_motor_vehicle_reports)."""
+    """Retrieve Contact Motor Vehicle Reports.
+
+    POST /api/v2/contacts/retrieve_contact_motor_vehicle_reports
+    """
     request_json: dict[str, Any] = {
         "store_no_hit": store_no_hit,
         "contact_id": contact_id,
@@ -1328,7 +1408,10 @@ def retrieve_contact_system_tags(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Contact System Tags (POST /api/v2/contacts/retrieve_contact_system_tags)."""
+    """Retrieve Contact System Tags.
+
+    POST /api/v2/contacts/retrieve_contact_system_tags
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1349,7 +1432,10 @@ def retrieve_credit_score_tier(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Credit Score Tier (POST /api/v2/contacts/retrieve_credit_score_tier)."""
+    """Retrieve Credit Score Tier.
+
+    POST /api/v2/contacts/retrieve_credit_score_tier
+    """
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "contact_id": contact_id,
@@ -1370,7 +1456,10 @@ def retrieve_dob_and_ssn(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Dob And Ssn (POST /api/v2/contacts/retrieve_dob_and_ssn)."""
+    """Retrieve Dob And Ssn.
+
+    POST /api/v2/contacts/retrieve_dob_and_ssn
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1390,7 +1479,10 @@ def retrieve_quoting_permissions(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Quoting Permissions (POST /api/v2/contacts/retrieve_quoting_permissions)."""
+    """Retrieve Quoting Permissions.
+
+    POST /api/v2/contacts/retrieve_quoting_permissions
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -1414,7 +1506,10 @@ def retrieve_related_contacts(
     relations_required: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Related Contacts (POST /api/v2/contacts/retrieve_related_contacts)."""
+    """Retrieve Related Contacts.
+
+    POST /api/v2/contacts/retrieve_related_contacts
+    """
     request_json: dict[str, Any] = {
         "result_structure": result_structure,
         "attributes_required": attributes_required,
@@ -1439,7 +1534,10 @@ def search_names_emails(
     limit: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Search Names Emails (POST /api/v2/contacts/search_names_emails)."""
+    """Search Names Emails.
+
+    POST /api/v2/contacts/search_names_emails
+    """
     request_json: dict[str, Any] = {
         "query": query,
         "limit": limit,
@@ -1485,7 +1583,10 @@ def set_aspect_data(
     termination: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Aspect Data (POST /api/v2/contacts/set_aspect_data)."""
+    """Set Aspect Data.
+
+    POST /api/v2/contacts/set_aspect_data
+    """
     request_json: dict[str, Any] = {
         "payments_issued": payments_issued,
         "agency_number": agency_number,
@@ -1531,7 +1632,10 @@ def set_contact_system_tags(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Contact System Tags (POST /api/v2/contacts/set_contact_system_tags)."""
+    """Set Contact System Tags.
+
+    POST /api/v2/contacts/set_contact_system_tags
+    """
     request_json: dict[str, Any] = {
         "system_tags": system_tags,
         "contact_id": contact_id,
@@ -1555,7 +1659,10 @@ def set_quoting_permissions(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Quoting Permissions (POST /api/v2/contacts/set_quoting_permissions)."""
+    """Set Quoting Permissions.
+
+    POST /api/v2/contacts/set_quoting_permissions
+    """
     request_json: dict[str, Any] = {
         "states": states,
         "policy_types": policy_types,
@@ -1579,7 +1686,10 @@ def store_contact_gender(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Contact Gender (POST /api/v2/contacts/store_contact_gender)."""
+    """Store Contact Gender.
+
+    POST /api/v2/contacts/store_contact_gender
+    """
     request_json: dict[str, Any] = {
         "gender": gender,
         "contact_id": contact_id,
@@ -1600,7 +1710,10 @@ def update_contact_number(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Contact Number (POST /api/v2/contacts/update_contact_number)."""
+    """Update Contact Number.
+
+    POST /api/v2/contacts/update_contact_number
+    """
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1618,7 +1731,10 @@ def update_contacts(
     contacts: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Contacts (POST /api/v2/contacts/update_contacts)."""
+    """Update Contacts.
+
+    POST /api/v2/contacts/update_contacts
+    """
     request_json: dict[str, Any] = {
         "contacts": contacts,
     }
@@ -1639,7 +1755,10 @@ def validate_last_4_ssn_digits(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Validate Last 4 Ssn Digits (POST /api/v2/contacts/validate_last_4_ssn_digits)."""
+    """Validate Last 4 Ssn Digits.
+
+    POST /api/v2/contacts/validate_last_4_ssn_digits
+    """
     request_json: dict[str, Any] = {
         "last_4_ssn_digits": last_4_ssn_digits,
         "contact_id": contact_id,

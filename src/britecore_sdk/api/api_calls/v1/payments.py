@@ -41,10 +41,7 @@ def makemanualpolicypayment(
 ) -> Any:
     """Post a payment that has already been collected to a single policy.
 
-    This wrapper calls ``/api/v1/payments/makeManualPolicyPayment`` for
-    payments that do not need to be processed through an external vendor.
-    Returns the normalized ``process_result(...)`` payload and accepts
-    ``RequestParameters`` overrides via ``**kwargs``.
+    POST /api/v1/payments/makeManualPolicyPayment
     """
     return _post(
         "/api/v1/payments/makeManualPolicyPayment",

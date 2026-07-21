@@ -28,9 +28,7 @@ def _post(
 def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """List files associated with a report.
 
-    This wrapper sends ``report_id`` to ``/api/v2/reports/list_files`` and
-    returns the normalized ``process_result(...)`` payload for the matching
-    report files. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/reports/list_files
     """
     return _post(
         "/api/v2/reports/list_files",
@@ -42,9 +40,7 @@ def list_files(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
 def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve the available reports.
 
-    This wrapper calls ``/api/v2/reports/retrieve_reports`` and returns the
-    normalized ``process_result(...)`` payload for the report list.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/reports/retrieve_reports
     """
     return _post("/api/v2/reports/retrieve_reports", **kwargs)
 
@@ -52,9 +48,7 @@ def retrieve_reports(**kwargs: Unpack[RequestParameters]) -> Any:
 def retrieve_report(report_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve a report by identifier.
 
-    This wrapper sends ``report_id`` to ``/api/v2/reports/retrieve_report`` and
-    returns the normalized ``process_result(...)`` payload for the matching
-    report. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/reports/retrieve_report
     """
     return _post(
         "/api/v2/reports/retrieve_report",
@@ -203,7 +197,10 @@ def check_report_process_status(
     report_process_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check Report Process Status (POST /api/v2/reports/check_report_process_status)."""
+    """Check Report Process Status.
+
+    POST /api/v2/reports/check_report_process_status
+    """
     request_json: dict[str, Any] = {
         "report_process_id": report_process_id,
     }
@@ -223,7 +220,10 @@ def download_report_file(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Download Report File (POST /api/v2/reports/download_report_file)."""
+    """Download Report File.
+
+    POST /api/v2/reports/download_report_file
+    """
     request_json: dict[str, Any] = {
         "file_id": file_id,
     }
@@ -243,7 +243,10 @@ def generate_consolidated_declaration(
     policy_group: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Consolidated Declaration (POST /api/v2/reports/generate_consolidated_declaration)."""
+    """Generate Consolidated Declaration.
+
+    POST /api/v2/reports/generate_consolidated_declaration
+    """
     request_json: dict[str, Any] = {
         "policy_group": policy_group,
     }
@@ -262,7 +265,10 @@ def generate_consolidated_declaration(
 def retrieve_report_categories(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Report Categories (POST /api/v2/reports/retrieve_report_categories)."""
+    """Retrieve Report Categories.
+
+    POST /api/v2/reports/retrieve_report_categories
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -279,7 +285,10 @@ def retrieve_report_categories(
 def retrieve_sql_reports(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Sql Reports (POST /api/v2/reports/retrieve_sql_reports)."""
+    """Retrieve Sql Reports.
+
+    POST /api/v2/reports/retrieve_sql_reports
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -300,7 +309,10 @@ def run_report(
     report_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Report (POST /api/v2/reports/run_report)."""
+    """Run Report.
+
+    POST /api/v2/reports/run_report
+    """
     request_json: dict[str, Any] = {
         "additional_report_configuration": additional_report_configuration,
         "start_date": start_date,
@@ -323,7 +335,10 @@ def save_report(
     report_data: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save Report (POST /api/v2/reports/save_report)."""
+    """Save Report.
+
+    POST /api/v2/reports/save_report
+    """
     request_json: dict[str, Any] = {
         "report_data": report_data,
     }

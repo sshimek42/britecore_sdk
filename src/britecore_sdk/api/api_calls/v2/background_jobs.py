@@ -16,7 +16,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 def search(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Search (POST /api/v2/background_jobs/search)."""
+    """Search.
+
+    POST /api/v2/background_jobs/search
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

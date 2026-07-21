@@ -17,7 +17,10 @@ def create(
     premium_finance_company: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create (POST /api/v2/premium_finance_companies/create)."""
+    """Create.
+
+    POST /api/v2/premium_finance_companies/create
+    """
     request_json: dict[str, Any] = {"premium_finance_company": premium_finance_company}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def create(
 def delete(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete (POST /api/v2/premium_finance_companies/delete)."""
+    """Delete.
+
+    POST /api/v2/premium_finance_companies/delete
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -52,7 +58,10 @@ def get(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get (POST /api/v2/premium_finance_companies/get)."""
+    """Get.
+
+    POST /api/v2/premium_finance_companies/get
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -70,7 +79,10 @@ def list_for_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List For Quote (POST /api/v2/premium_finance_companies/list_for_quote)."""
+    """List For Quote.
+
+    POST /api/v2/premium_finance_companies/list_for_quote
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -88,7 +100,10 @@ def update(
     premium_finance_company: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update (POST /api/v2/premium_finance_companies/update)."""
+    """Update.
+
+    POST /api/v2/premium_finance_companies/update
+    """
     request_json: dict[str, Any] = {"premium_finance_company": premium_finance_company}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

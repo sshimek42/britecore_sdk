@@ -24,7 +24,10 @@ def create_subjectivity(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Subjectivity (POST /api/v2/subjectivities/create_subjectivity)."""
+    """Create Subjectivity.
+
+    POST /api/v2/subjectivities/create_subjectivity
+    """
     request_json: dict[str, Any] = {
         "status": status,
         "due_date": due_date,
@@ -58,7 +61,10 @@ def create_subjectivity_definition(
     description: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Subjectivity Definition (POST /api/v2/subjectivities/create_subjectivity_definition)."""
+    """Create Subjectivity Definition.
+
+    POST /api/v2/subjectivities/create_subjectivity_definition
+    """
     request_json: dict[str, Any] = {
         "due_date_type": due_date_type,
         "mandatory": mandatory,
@@ -85,7 +91,10 @@ def delete_subjectivity(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Subjectivity (POST /api/v2/subjectivities/delete_subjectivity)."""
+    """Delete Subjectivity.
+
+    POST /api/v2/subjectivities/delete_subjectivity
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -111,7 +120,10 @@ def filter_subjectivities(
     external_system_references: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Filter Subjectivities (POST /api/v2/subjectivities/filter_subjectivities)."""
+    """Filter Subjectivities.
+
+    POST /api/v2/subjectivities/filter_subjectivities
+    """
     request_json: dict[str, Any] = {
         "end_date": end_date,
         "revision_ids": revision_ids,
@@ -138,7 +150,10 @@ def list_subjectivities(
     external_system_reference: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Subjectivities (POST /api/v2/subjectivities/list_subjectivities)."""
+    """List Subjectivities.
+
+    POST /api/v2/subjectivities/list_subjectivities
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "external_system_reference": external_system_reference,
@@ -158,7 +173,10 @@ def list_subjectivities(
 def list_subjectivity_definitions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Subjectivity Definitions (POST /api/v2/subjectivities/list_subjectivity_definitions)."""
+    """List Subjectivity Definitions.
+
+    POST /api/v2/subjectivities/list_subjectivity_definitions
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -181,7 +199,10 @@ def modify_subjectivity(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Subjectivity (POST /api/v2/subjectivities/modify_subjectivity)."""
+    """Modify Subjectivity.
+
+    POST /api/v2/subjectivities/modify_subjectivity
+    """
     request_json: dict[str, Any] = {
         "status": status,
         "due_date": due_date,
@@ -214,7 +235,10 @@ def modify_subjectivity_definition(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Subjectivity Definition (POST /api/v2/subjectivities/modify_subjectivity_definition)."""
+    """Modify Subjectivity Definition.
+
+    POST /api/v2/subjectivities/modify_subjectivity_definition
+    """
     request_json: dict[str, Any] = {
         "due_date_type": due_date_type,
         "mandatory": mandatory,
@@ -242,7 +266,10 @@ def retrieve_subjectivity(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Subjectivity (POST /api/v2/subjectivities/retrieve_subjectivity)."""
+    """Retrieve Subjectivity.
+
+    POST /api/v2/subjectivities/retrieve_subjectivity
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -262,7 +289,10 @@ def retrieve_subjectivity_definition(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Subjectivity Definition (POST /api/v2/subjectivities/retrieve_subjectivity_definition)."""
+    """Retrieve Subjectivity Definition.
+
+    POST /api/v2/subjectivities/retrieve_subjectivity_definition
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }

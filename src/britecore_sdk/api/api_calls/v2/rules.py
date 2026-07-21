@@ -16,7 +16,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 def get_event_types(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Event Types (POST /api/v2/rules/get_event_types)."""
+    """Get Event Types.
+
+    POST /api/v2/rules/get_event_types
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def get_rules_config(
     policy_type_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Rules Config (POST /api/v2/rules/get_rules_config)."""
+    """Get Rules Config.
+
+    POST /api/v2/rules/get_rules_config
+    """
     request_json: dict[str, Any] = {"policy_type_id": policy_type_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -52,7 +58,10 @@ def list_rules_stp_results(
     params: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Rules Stp Results (POST /api/v2/rules/list_rules_stp_results)."""
+    """List Rules Stp Results.
+
+    POST /api/v2/rules/list_rules_stp_results
+    """
     request_json: dict[str, Any] = {
         "params": params,
     }
@@ -72,7 +81,10 @@ def run(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run (POST /api/v2/rules/run)."""
+    """Run.
+
+    POST /api/v2/rules/run
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

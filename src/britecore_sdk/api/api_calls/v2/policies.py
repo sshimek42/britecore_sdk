@@ -40,11 +40,7 @@ def retrieve_policy(
 ) -> Any:
     """Retrieve policy information by policy ID or policy number.
 
-    This wrapper calls ``/api/v2/policies/retrieve_policy`` with identifier
-    priority of ``policy_id`` then ``policy_number``. It optionally includes
-    ``revision_state`` and returns the normalized ``process_result(...)``
-    payload. ``**kwargs`` accepts ``RequestParameters`` overrides and a long
-    timeout is applied when not provided.
+    POST /api/v2/policies/retrieve_policy
     """
     LOGGER.debug("Retrieving policy")
 
@@ -88,10 +84,7 @@ def add_line_item(
 ) -> bool:
     """Add a line item to a revision or property context.
 
-    This wrapper sends line item fields to ``/api/v2/policies/add_line_item``.
-    It returns ``True`` when the normalized ``process_result(...)`` payload
-    contains non-empty ``added_items`` and ``False`` otherwise.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/add_line_item
     """
     local_env: dict[str, Any] = locals()
     LOGGER.debug("Adding line")
@@ -227,11 +220,7 @@ def create_policy(
 ) -> tuple[Any, str]:
     """Create a policy.
 
-    This wrapper sends policy creation fields to
-    ``/api/v2/policies/create_policy`` and returns a tuple of
-    ``(policy_data, revision_id)`` from the normalized ``process_result(...)``
-    payload. For ``term_type='Custom'``, ``expiration_date`` is required.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/create_policy
     """
     if term_type == "Custom" and not expiration_date:
         BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
@@ -257,10 +246,7 @@ def retrieve_policy_terms(
 ) -> Any:
     """Retrieve policy terms by policy identifier.
 
-    This wrapper calls ``/api/v2/policies/retrieve_policy_terms`` using either
-    ``policy_id`` or ``policy_number`` and returns the normalized
-    ``process_result(...)`` payload for terms and revision context.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/retrieve_policy_terms
     """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
@@ -289,9 +275,7 @@ def retrieve_policy_terms(
 def rate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Rate a revision.
 
-    This wrapper sends ``revision_id`` to ``/api/v2/policies/rate_revision``
-    and returns the normalized ``process_result(...)`` payload for the rating
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/rate_revision
     """
     LOGGER.debug("Re-rating revision '%s'", revision_id)
     policy_retrieve_json = {"revision_id": revision_id}
@@ -313,11 +297,7 @@ def retrieve_revision_details(
 ) -> Any:
     """Retrieve detailed revision information.
 
-    This wrapper sends ``revision_id`` and ``include_contact_details`` to
-    ``/api/v2/policies/retrieve_revision_details`` and returns the normalized
-    ``process_result(...)`` payload for revision details. ``**kwargs`` accepts
-    ``RequestParameters`` overrides and a long timeout is applied when not
-    provided.
+    POST /api/v2/policies/retrieve_revision_details
     """
     if not kwargs.get("request_timeout"):
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
@@ -349,10 +329,7 @@ def retrieve_risks(
 ) -> Any:
     """Retrieve risks for a revision with paging and filter controls.
 
-    This wrapper sends ``revision_id`` plus pagination, ordering, and optional
-    ``risk_types`` filters to ``/api/v2/policies/retrieve_risks`` and returns
-    the normalized ``process_result(...)`` payload for risk data.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/retrieve_risks
     """
     local_env = locals()
     LOGGER.debug("Getting risks")
@@ -371,9 +348,7 @@ def retrieve_risks(
 def retrieve_risk_details(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve detailed risk information by risk identifier.
 
-    This wrapper sends ``risk_id`` to
-    ``/api/v2/policies/retrieve_risk_details`` and returns the normalized
-    ``process_result(...)`` payload for the matching risk.
+    POST /api/v2/policies/retrieve_risk_details
     """
     LOGGER.debug("Getting risk details")
     revision_retrieve_json = {"risk_id": risk_id}
@@ -397,10 +372,7 @@ def update_rating_information(
 ) -> Any:
     """Update rating information for a property or revision.
 
-    This wrapper sends rating fields to
-    ``/api/v2/policies/update_rating_information`` and returns the normalized
-    ``process_result(...)`` payload for the update request.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/update_rating_information
     """
     local_env = locals()
     LOGGER.debug("Updating line item")
@@ -419,9 +391,7 @@ def update_rating_information(
 def rate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Rate a risk.
 
-    This wrapper sends ``risk_id`` to ``/api/v2/policies/rate_risk`` and
-    returns the normalized ``process_result(...)`` payload for the risk rating
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/rate_risk
     """
     LOGGER.debug("Re-rating policy")
     revision_retrieve_json = {"risk_id": risk_id}
@@ -444,11 +414,7 @@ def retrieve_billing_schedule_options(
 ) -> dict:
     """Retrieve billing schedule options for a policy context.
 
-    This wrapper sends ``policy_number`` or ``policy_term_id`` and
-    ``ignore_billing_schedule_roles`` to
-    ``/api/v2/policies/retrieve_billing_schedule_options`` and returns the
-    normalized ``process_result(...)`` payload for available schedules.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/retrieve_billing_schedule_options
     """
     if not policy_number and not policy_term_id:
         BritecoreError.MissingParameter(
@@ -483,11 +449,7 @@ def new_revision_contact(
 ) -> Any:
     """Add or update a revision contact assignment.
 
-    This wrapper creates a revision contact through
-    ``/api/v2/policies/new_revision_contact`` when ``x_id`` is not provided,
-    then links the contact via ``/api/v2/policies/update_revision_contact``.
-    It returns the normalized ``process_result(...)`` payload for the final
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/new_revision_contact
     """
     contact_add_result: Any
 
@@ -536,10 +498,7 @@ def create_risk(
 ) -> Any:
     """Create a risk for a revision.
 
-    This wrapper sends ``revision_id`` plus optional property-group,
-    building-number, and ``force_categories`` fields to
-    ``/api/v2/policies/create_risk`` and returns the normalized
-    ``process_result(...)`` payload for the created risk.
+    POST /api/v2/policies/create_risk
     """
     local_env: dict[str, Any] = locals()
 
@@ -563,10 +522,7 @@ def update_property_location(
 ) -> Any:
     """Update property location details.
 
-    This wrapper sends ``location`` and optional geo-service bypass flags to
-    ``/api/v2/policies/update_property_location`` and returns the normalized
-    ``process_result(...)`` payload for the updated location.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/policies/update_property_location
     """
     local_env: dict[str, Any] = locals()
 
@@ -586,9 +542,7 @@ def update_property_location(
 def new_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Create a mortgagee entry for a property.
 
-    This wrapper sends ``property_id`` to ``/api/v2/policies/new_mortgagee``
-    and returns the normalized ``process_result(...)`` payload for the
-    mortgagee creation request.
+    POST /api/v2/policies/new_mortgagee
     """
     new_mort_json: dict[str, str] = {"property_id": property_id}
     result_request: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -605,9 +559,7 @@ def store_mortgagee(
 ) -> Any:
     """Store a mortgagee contact mapping for a property contact.
 
-    This wrapper sends ``property_contact_id`` and ``mortgagee_contact_id`` to
-    ``/api/v2/policies/store_mortgagee`` and returns the normalized
-    ``process_result(...)`` payload for the mapping request.
+    POST /api/v2/policies/store_mortgagee
     """
     store_mort_json: dict[str, str] = {
         "x_properties_contact_id": property_contact_id,
@@ -625,9 +577,7 @@ def retrieve_policy_snapshot(
 ) -> Any:
     """Retrieve a policy snapshot for a snapshot date.
 
-    This wrapper sends ``policy_number`` and ``snapshot_date`` to
-    ``/api/v2/policies/retrieve_policy_snapshot`` and returns the normalized
-    ``process_result(...)`` payload for the snapshot query.
+    POST /api/v2/policies/retrieve_policy_snapshot
     """
     retrieve_json: dict[str, str] = {
         "policy_number": policy_number,
@@ -696,7 +646,10 @@ def add_external_policies_to_existing_groups(
     external_policies: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add External Policies To Existing Groups (POST /api/v2/policies/add_external_policies_to_existing_groups)."""
+    """Add External Policies To Existing Groups.
+
+    POST /api/v2/policies/add_external_policies_to_existing_groups
+    """
     request_json: dict[str, Any] = {
         "external_policies": external_policies,
     }
@@ -721,7 +674,10 @@ def add_policies_to_existing_groups(
     policies: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Policies To Existing Groups (POST /api/v2/policies/add_policies_to_existing_groups)."""
+    """Add Policies To Existing Groups.
+
+    POST /api/v2/policies/add_policies_to_existing_groups
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "Returns": Returns,
@@ -745,7 +701,10 @@ def add_policies_to_new_group(
     policies: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Policies To New Group (POST /api/v2/policies/add_policies_to_new_group)."""
+    """Add Policies To New Group.
+
+    POST /api/v2/policies/add_policies_to_new_group
+    """
     request_json: dict[str, Any] = {
         "policies": policies,
     }
@@ -768,7 +727,10 @@ def add_sub_line(
     link_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Sub Line (POST /api/v2/policies/add_sub_line)."""
+    """Add Sub Line.
+
+    POST /api/v2/policies/add_sub_line
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "sub_line_id": sub_line_id,
@@ -795,7 +757,10 @@ def application_signature_event_callback(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Application Signature Event Callback (POST /api/v2/policies/application_signature_event_callback)."""
+    """Application Signature Event Callback.
+
+    POST /api/v2/policies/application_signature_event_callback
+    """
     request_json: dict[str, Any] = {
         "event_type": event_type,
         "file_id": file_id,
@@ -819,7 +784,10 @@ def apply_pnc_lockbox_payment_transactions(
     transactions: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Apply Pnc Lockbox Payment Transactions (POST /api/v2/policies/apply_pnc_lockbox_payment_transactions)."""
+    """Apply Pnc Lockbox Payment Transactions.
+
+    POST /api/v2/policies/apply_pnc_lockbox_payment_transactions
+    """
     request_json: dict[str, Any] = {
         "transactions": transactions,
     }
@@ -845,7 +813,10 @@ def async_create_policy_from_britequote(
     term_type: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Async Create Policy From Britequote (POST /api/v2/policies/async_create_policy_from_britequote)."""
+    """Async Create Policy From Britequote.
+
+    POST /api/v2/policies/async_create_policy_from_britequote
+    """
     request_json: dict[str, Any] = {
         "quote": quote,
         "postback": postback,
@@ -875,7 +846,10 @@ def async_create_revision_from_britequote(
     policy_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Async Create Revision From Britequote (POST /api/v2/policies/async_create_revision_from_britequote)."""
+    """Async Create Revision From Britequote.
+
+    POST /api/v2/policies/async_create_revision_from_britequote
+    """
     request_json: dict[str, Any] = {
         "quote": quote,
         "postback": postback,
@@ -901,7 +875,10 @@ def async_request_loss_analysis(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Async Request Loss Analysis (POST /api/v2/policies/async_request_loss_analysis)."""
+    """Async Request Loss Analysis.
+
+    POST /api/v2/policies/async_request_loss_analysis
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -921,7 +898,10 @@ def bind(
     bind_info: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bind (POST /api/v2/policies/bind)."""
+    """Bind.
+
+    POST /api/v2/policies/bind
+    """
     request_json: dict[str, Any] = {
         "bind_info": bind_info,
     }
@@ -944,7 +924,10 @@ def cancel_policy(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Cancel Policy (POST /api/v2/policies/cancel_policy)."""
+    """Cancel Policy.
+
+    POST /api/v2/policies/cancel_policy
+    """
     request_json: dict[str, Any] = {
         "cancel_reason": cancel_reason,
         "cancel_pending_date": cancel_pending_date,
@@ -977,7 +960,10 @@ def cancel_policy_v2(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Cancel Policy V2 (POST /api/v2/policies/cancel_policy_v2)."""
+    """Cancel Policy V2.
+
+    POST /api/v2/policies/cancel_policy_v2
+    """
     request_json: dict[str, Any] = {
         "policy_term_external_system_reference": policy_term_external_system_reference,
         "cancellation_reason_id": cancellation_reason_id,
@@ -1010,7 +996,10 @@ def copy_risk(
     to_risk_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy Risk (POST /api/v2/policies/copy_risk)."""
+    """Copy Risk.
+
+    POST /api/v2/policies/copy_risk
+    """
     request_json: dict[str, Any] = {
         "copy_address": copy_address,
         "copy_rating": copy_rating,
@@ -1039,7 +1028,10 @@ def copy_sub_line(
     link_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy Sub Line (POST /api/v2/policies/copy_sub_line)."""
+    """Copy Sub Line.
+
+    POST /api/v2/policies/copy_sub_line
+    """
     request_json: dict[str, Any] = {
         "sub_line_instance_id": sub_line_instance_id,
         "revision_id": revision_id,
@@ -1063,7 +1055,10 @@ def create_from_stateless_quote(
     stateless_quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create From Stateless Quote (POST /api/v2/policies/create_from_stateless_quote)."""
+    """Create From Stateless Quote.
+
+    POST /api/v2/policies/create_from_stateless_quote
+    """
     request_json: dict[str, Any] = {"stateless_quote_id": stateless_quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1083,7 +1078,10 @@ def create_loss_dispute(
     case_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Loss Dispute (POST /api/v2/policies/create_loss_dispute)."""
+    """Create Loss Dispute.
+
+    POST /api/v2/policies/create_loss_dispute
+    """
     request_json: dict[str, Any] = {
         "reason": reason,
         "property_id": property_id,
@@ -1105,7 +1103,10 @@ def create_new_policy(
     quote_info: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create New Policy (POST /api/v2/policies/create_new_policy)."""
+    """Create New Policy.
+
+    POST /api/v2/policies/create_new_policy
+    """
     request_json: dict[str, Any] = {"quote_info": quote_info}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1123,7 +1124,10 @@ def create_new_policy_extended(
     quote_info: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create New Policy Extended (POST /api/v2/policies/create_new_policy_extended)."""
+    """Create New Policy Extended.
+
+    POST /api/v2/policies/create_new_policy_extended
+    """
     request_json: dict[str, Any] = {"quote_info": quote_info}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1145,7 +1149,10 @@ def create_policy_from_britequote(
     transaction_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Policy From Britequote (POST /api/v2/policies/create_policy_from_britequote)."""
+    """Create Policy From Britequote.
+
+    POST /api/v2/policies/create_policy_from_britequote
+    """
     request_json: dict[str, Any] = {
         "quote": quote,
         "postback": postback,
@@ -1169,7 +1176,10 @@ def create_quote(
     quote_info: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Quote (POST /api/v2/policies/create_quote)."""
+    """Create Quote.
+
+    POST /api/v2/policies/create_quote
+    """
     request_json: dict[str, Any] = {
         "quote_info": quote_info,
     }
@@ -1194,7 +1204,10 @@ def create_quote_async(
     data: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Quote Async (POST /api/v2/policies/create_quote_async)."""
+    """Create Quote Async.
+
+    POST /api/v2/policies/create_quote_async
+    """
     request_json: dict[str, Any] = {
         "success": success,
         "-------": field,
@@ -1222,7 +1235,10 @@ def create_quote_extended(
     run_stateless: bool | str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Quote Extended (POST /api/v2/policies/create_quote_extended)."""
+    """Create Quote Extended.
+
+    POST /api/v2/policies/create_quote_extended
+    """
     request_json: dict[str, Any] = {
         "quote_info": quote_info,
         "requote": requote,
@@ -1251,7 +1267,10 @@ def create_quote_extended_async(
     data: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Quote Extended Async (POST /api/v2/policies/create_quote_extended_async)."""
+    """Create Quote Extended Async.
+
+    POST /api/v2/policies/create_quote_extended_async
+    """
     request_json: dict[str, Any] = {
         "success": success,
         "-------": field,
@@ -1281,7 +1300,10 @@ def create_revision_from_britequote(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Revision From Britequote (POST /api/v2/policies/create_revision_from_britequote)."""
+    """Create Revision From Britequote.
+
+    POST /api/v2/policies/create_revision_from_britequote
+    """
     request_json: dict[str, Any] = {
         "transaction_type": transaction_type,
         "quote": quote,
@@ -1305,7 +1327,10 @@ def delete_external_policies(
     policies: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete External Policies (POST /api/v2/policies/delete_external_policies)."""
+    """Delete External Policies.
+
+    POST /api/v2/policies/delete_external_policies
+    """
     request_json: dict[str, Any] = {
         "policies": policies,
     }
@@ -1325,7 +1350,10 @@ def delete_loss_dispute(
     dispute_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Loss Dispute (POST /api/v2/policies/delete_loss_dispute)."""
+    """Delete Loss Dispute.
+
+    POST /api/v2/policies/delete_loss_dispute
+    """
     request_json: dict[str, Any] = {
         "dispute_id": dispute_id,
     }
@@ -1345,7 +1373,10 @@ def evaluate_cancellation(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Evaluate Cancellation (POST /api/v2/policies/evaluate_cancellation)."""
+    """Evaluate Cancellation.
+
+    POST /api/v2/policies/evaluate_cancellation
+    """
     request_json: dict[str, Any] = {
         "policy_id": policy_id,
     }
@@ -1366,7 +1397,10 @@ def export_auto_policies(
     revision_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Auto Policies (POST /api/v2/policies/export_auto_policies)."""
+    """Export Auto Policies.
+
+    POST /api/v2/policies/export_auto_policies
+    """
     request_json: dict[str, Any] = {
         "property_ids": property_ids,
         "revision_ids": revision_ids,
@@ -1388,7 +1422,10 @@ def export_policies(
     revision_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Policies (POST /api/v2/policies/export_policies)."""
+    """Export Policies.
+
+    POST /api/v2/policies/export_policies
+    """
     request_json: dict[str, Any] = {
         "property_ids": property_ids,
         "revision_ids": revision_ids,
@@ -1409,7 +1446,10 @@ def get_loss_disputes(
     property_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Loss Disputes (POST /api/v2/policies/get_loss_disputes)."""
+    """Get Loss Disputes.
+
+    POST /api/v2/policies/get_loss_disputes
+    """
     request_json: dict[str, Any] = {
         "property_id": property_id,
     }
@@ -1428,7 +1468,10 @@ def get_loss_disputes(
 def get_policy_groups(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policy Groups (POST /api/v2/policies/get_policy_groups)."""
+    """Get Policy Groups.
+
+    POST /api/v2/policies/get_policy_groups
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1446,7 +1489,10 @@ def get_revision_data_for_stp(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Revision Data For Stp (POST /api/v2/policies/get_revision_data_for_stp)."""
+    """Get Revision Data For Stp.
+
+    POST /api/v2/policies/get_revision_data_for_stp
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -1466,7 +1512,10 @@ def get_underlying_policy_changes(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Underlying Policy Changes (POST /api/v2/policies/get_underlying_policy_changes)."""
+    """Get Underlying Policy Changes.
+
+    POST /api/v2/policies/get_underlying_policy_changes
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -1485,7 +1534,10 @@ def get_underlying_policy_changes(
 def get_underwriting_review_workflow(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Underwriting Review Workflow (POST /api/v2/policies/get_underwriting_review_workflow)."""
+    """Get Underwriting Review Workflow.
+
+    POST /api/v2/policies/get_underwriting_review_workflow
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1517,7 +1569,10 @@ def import_iso_protection_classes(
     distance_to_coast_ocean_gulf_name: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Iso Protection Classes (POST /api/v2/policies/import_iso_protection_classes)."""
+    """Import Iso Protection Classes.
+
+    POST /api/v2/policies/import_iso_protection_classes
+    """
     request_json: dict[str, Any] = {
         "county_fips": county_fips,
         "retrieval_date": retrieval_date,
@@ -1554,7 +1609,10 @@ def import_munichre_eligibility(
     property_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Munichre Eligibility (POST /api/v2/policies/import_munichre_eligibility)."""
+    """Import Munichre Eligibility.
+
+    POST /api/v2/policies/import_munichre_eligibility
+    """
     request_json: dict[str, Any] = {
         "retrieval_date": retrieval_date,
         "is_eligible": is_eligible,
@@ -1576,7 +1634,10 @@ def import_munichre_eligibility(
 def initialize_application_questions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Initialize Application Questions (POST /api/v2/policies/initialize_application_questions)."""
+    """Initialize Application Questions.
+
+    POST /api/v2/policies/initialize_application_questions
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1595,7 +1656,10 @@ def initiate_property_valuation(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Initiate Property Valuation (POST /api/v2/policies/initiate_property_valuation)."""
+    """Initiate Property Valuation.
+
+    POST /api/v2/policies/initiate_property_valuation
+    """
     request_json: dict[str, Any] = {
         "integration_instance_id": integration_instance_id,
         "property_id": property_id,
@@ -1616,7 +1680,10 @@ def issue(
     issue_info: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Issue (POST /api/v2/policies/issue)."""
+    """Issue.
+
+    POST /api/v2/policies/issue
+    """
     request_json: dict[str, Any] = {
         "issue_info": issue_info,
     }
@@ -1635,7 +1702,10 @@ def ivr_lookup(
     property_address_zip: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Ivr Lookup (POST /api/v2/policies/ivr_lookup)."""
+    """Ivr Lookup.
+
+    POST /api/v2/policies/ivr_lookup
+    """
     request_json: dict[str, Any] = {
         "digits": digits,
         "property_address_zip": property_address_zip,
@@ -1657,7 +1727,10 @@ def link_underlying_policy(
     underlying_policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Link Underlying Policy (POST /api/v2/policies/link_underlying_policy)."""
+    """Link Underlying Policy.
+
+    POST /api/v2/policies/link_underlying_policy
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "underlying_policy_id": underlying_policy_id,
@@ -1677,7 +1750,10 @@ def link_underlying_policy(
 def new_policy_information(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """New Policy Information (POST /api/v2/policies/new_policy_information)."""
+    """New Policy Information.
+
+    POST /api/v2/policies/new_policy_information
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1700,7 +1776,10 @@ def new_revision(
     force_persistent_builder: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """New Revision (POST /api/v2/policies/new_revision)."""
+    """New Revision.
+
+    POST /api/v2/policies/new_revision
+    """
     request_json: dict[str, Any] = {
         "policy_id": policy_id,
         "renewal_status": renewal_status,
@@ -1725,7 +1804,10 @@ def post_external_policies(
     policies: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Post External Policies (POST /api/v2/policies/post_external_policies)."""
+    """Post External Policies.
+
+    POST /api/v2/policies/post_external_policies
+    """
     request_json: dict[str, Any] = {
         "policies": policies,
     }
@@ -1744,7 +1826,10 @@ def post_external_policies(
 def rate_quote_revision(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Rate Quote Revision (POST /api/v2/policies/rate_quote_revision)."""
+    """Rate Quote Revision.
+
+    POST /api/v2/policies/rate_quote_revision
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1762,7 +1847,10 @@ def remove_line_item(
     item_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Line Item (POST /api/v2/policies/remove_line_item)."""
+    """Remove Line Item.
+
+    POST /api/v2/policies/remove_line_item
+    """
     request_json: dict[str, Any] = {
         "item_id": item_id,
     }
@@ -1783,7 +1871,10 @@ def requote_extended(
     run_uw_rules: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Requote Extended (POST /api/v2/policies/requote_extended)."""
+    """Requote Extended.
+
+    POST /api/v2/policies/requote_extended
+    """
     request_json: dict[str, Any] = {
         "quote_info": quote_info,
         "run_uw_rules": run_uw_rules,
@@ -1804,7 +1895,10 @@ def reset_revision_premium(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Reset Revision Premium (POST /api/v2/policies/reset_revision_premium)."""
+    """Reset Revision Premium.
+
+    POST /api/v2/policies/reset_revision_premium
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -1824,7 +1918,10 @@ def reset_risk_premium(
     risk_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Reset Risk Premium (POST /api/v2/policies/reset_risk_premium)."""
+    """Reset Risk Premium.
+
+    POST /api/v2/policies/reset_risk_premium
+    """
     request_json: dict[str, Any] = {
         "risk_id": risk_id,
     }
@@ -1848,7 +1945,10 @@ def retrieve_account_history(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Account History (POST /api/v2/policies/retrieve_account_history)."""
+    """Retrieve Account History.
+
+    POST /api/v2/policies/retrieve_account_history
+    """
     request_json: dict[str, Any] = {
         "current_page": current_page,
         "policy_term_id": policy_term_id,
@@ -1872,7 +1972,10 @@ def retrieve_cancellation_info(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Cancellation Info (POST /api/v2/policies/retrieve_cancellation_info)."""
+    """Retrieve Cancellation Info.
+
+    POST /api/v2/policies/retrieve_cancellation_info
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -1892,7 +1995,10 @@ def retrieve_current_and_future_policies_terms_with_recurring_payment_method_id(
     payment_method_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Current And Future Policies Terms With Recurring Payment Method Id (POST /api/v2/policies/retrieve_current_and_future_policies_terms_with_recurring_payment_method_id)."""
+    """Retrieve Current And Future Policies Terms With Recurring Payment Method Id.
+
+    POST /api/v2/policies/retrieve_current_and_future_policies_terms_with_recurring_payment_method_id
+    """
     request_json: dict[str, Any] = {
         "payment_method_id": payment_method_id,
     }
@@ -1913,7 +2019,10 @@ def retrieve_files_pending_signature(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Files Pending Signature (POST /api/v2/policies/retrieve_files_pending_signature)."""
+    """Retrieve Files Pending Signature.
+
+    POST /api/v2/policies/retrieve_files_pending_signature
+    """
     request_json: dict[str, Any] = {
         "policy_id": policy_id,
     }
@@ -1933,7 +2042,10 @@ def retrieve_ivans_billing_data(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Ivans Billing Data (POST /api/v2/policies/retrieve_ivans_billing_data)."""
+    """Retrieve Ivans Billing Data.
+
+    POST /api/v2/policies/retrieve_ivans_billing_data
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -1952,7 +2064,10 @@ def retrieve_ivans_billing_data(
 def retrieve_pnc_lockbox_matchfile_info(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Pnc Lockbox Matchfile Info (POST /api/v2/policies/retrieve_pnc_lockbox_matchfile_info)."""
+    """Retrieve Pnc Lockbox Matchfile Info.
+
+    POST /api/v2/policies/retrieve_pnc_lockbox_matchfile_info
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1976,7 +2091,10 @@ def retrieve_policy_change_logs(
     policy_type_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Policy Change Logs (POST /api/v2/policies/retrieve_policy_change_logs)."""
+    """Retrieve Policy Change Logs.
+
+    POST /api/v2/policies/retrieve_policy_change_logs
+    """
     request_json: dict[str, Any] = {
         "transactions": transactions,
         "revision_ids": revision_ids,
@@ -2002,7 +2120,10 @@ def retrieve_potential_policies_payors(
     policy_numbers: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Potential Policies Payors (POST /api/v2/policies/retrieve_potential_policies_payors)."""
+    """Retrieve Potential Policies Payors.
+
+    POST /api/v2/policies/retrieve_potential_policies_payors
+    """
     request_json: dict[str, Any] = {
         "policy_numbers": policy_numbers,
     }
@@ -2024,7 +2145,10 @@ def retrieve_properties_by_coverage_name(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Properties By Coverage Name (POST /api/v2/policies/retrieve_properties_by_coverage_name)."""
+    """Retrieve Properties By Coverage Name.
+
+    POST /api/v2/policies/retrieve_properties_by_coverage_name
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "name": name,
@@ -2046,7 +2170,10 @@ def retrieve_properties_by_group(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Properties By Group (POST /api/v2/policies/retrieve_properties_by_group)."""
+    """Retrieve Properties By Group.
+
+    POST /api/v2/policies/retrieve_properties_by_group
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2067,7 +2194,10 @@ def retrieve_rates_for_quote(
     rating_specs: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Rates For Quote (POST /api/v2/policies/retrieve_rates_for_quote)."""
+    """Retrieve Rates For Quote.
+
+    POST /api/v2/policies/retrieve_rates_for_quote
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "rating_specs": rating_specs,
@@ -2088,7 +2218,10 @@ def retrieve_revision_analysis(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Revision Analysis (POST /api/v2/policies/retrieve_revision_analysis)."""
+    """Retrieve Revision Analysis.
+
+    POST /api/v2/policies/retrieve_revision_analysis
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2108,7 +2241,10 @@ def retrieve_revision_invoice_numbers(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Revision Invoice Numbers (POST /api/v2/policies/retrieve_revision_invoice_numbers)."""
+    """Retrieve Revision Invoice Numbers.
+
+    POST /api/v2/policies/retrieve_revision_invoice_numbers
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2128,7 +2264,10 @@ def retrieve_revision_property_group_numbers(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Revision Property Group Numbers (POST /api/v2/policies/retrieve_revision_property_group_numbers)."""
+    """Retrieve Revision Property Group Numbers.
+
+    POST /api/v2/policies/retrieve_revision_property_group_numbers
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2149,7 +2288,10 @@ def retrieve_revision_status(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Revision Status (POST /api/v2/policies/retrieve_revision_status)."""
+    """Retrieve Revision Status.
+
+    POST /api/v2/policies/retrieve_revision_status
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2169,7 +2311,10 @@ def retrieve_underlying_policy(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Underlying Policy (POST /api/v2/policies/retrieve_underlying_policy)."""
+    """Retrieve Underlying Policy.
+
+    POST /api/v2/policies/retrieve_underlying_policy
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2200,7 +2345,10 @@ def rewrite_policy(
     at_renewal_set_policy_term_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Rewrite Policy (POST /api/v2/policies/rewrite_policy)."""
+    """Rewrite Policy.
+
+    POST /api/v2/policies/rewrite_policy
+    """
     request_json: dict[str, Any] = {
         "term": term,
         "policy_number": policy_number,
@@ -2234,7 +2382,10 @@ def run_property_lookup(
     headless: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Property Lookup (POST /api/v2/policies/run_property_lookup)."""
+    """Run Property Lookup.
+
+    POST /api/v2/policies/run_property_lookup
+    """
     request_json: dict[str, Any] = {
         "dependencies": dependencies,
         "integration_instance_id": integration_instance_id,
@@ -2264,7 +2415,10 @@ def run_underwriting_rules(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Underwriting Rules (POST /api/v2/policies/run_underwriting_rules)."""
+    """Run Underwriting Rules.
+
+    POST /api/v2/policies/run_underwriting_rules
+    """
     request_json: dict[str, Any] = {
         "success": success,
         "-------": field,
@@ -2292,7 +2446,10 @@ def set_binder_to_active(
     external_system_reference: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Binder To Active (POST /api/v2/policies/set_binder_to_active)."""
+    """Set Binder To Active.
+
+    POST /api/v2/policies/set_binder_to_active
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "external_system_reference": external_system_reference,
@@ -2314,7 +2471,10 @@ def set_exclude_from_combined_billing(
     policy_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Exclude From Combined Billing (POST /api/v2/policies/set_exclude_from_combined_billing)."""
+    """Set Exclude From Combined Billing.
+
+    POST /api/v2/policies/set_exclude_from_combined_billing
+    """
     request_json: dict[str, Any] = {
         "exclude": exclude,
         "policy_id": policy_id,
@@ -2336,7 +2496,10 @@ def store_policy_information(
     policy_data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Policy Information (POST /api/v2/policies/store_policy_information)."""
+    """Store Policy Information.
+
+    POST /api/v2/policies/store_policy_information
+    """
     request_json: dict[str, Any] = {
         "quote_info": quote_info,
         "policy_data": policy_data,
@@ -2359,7 +2522,10 @@ def store_policy_information_extended(
     policy_data: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Policy Information Extended (POST /api/v2/policies/store_policy_information_extended)."""
+    """Store Policy Information Extended.
+
+    POST /api/v2/policies/store_policy_information_extended
+    """
     request_json: dict[str, Any] = {
         "quote_info": quote_info,
         "run_uw_rules": run_uw_rules,
@@ -2384,7 +2550,10 @@ def store_renewal_status(
     renewal_status_description: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Renewal Status (POST /api/v2/policies/store_renewal_status)."""
+    """Store Renewal Status.
+
+    POST /api/v2/policies/store_renewal_status
+    """
     request_json: dict[str, Any] = {
         "renewal_status_reason": renewal_status_reason,
         "revision_id": revision_id,
@@ -2409,7 +2578,10 @@ def store_revision_description(
     description: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Revision Description (POST /api/v2/policies/store_revision_description)."""
+    """Store Revision Description.
+
+    POST /api/v2/policies/store_revision_description
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "type": type,
@@ -2432,7 +2604,10 @@ def submit_quote(
     json_dict: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Quote (POST /api/v2/policies/submit_quote)."""
+    """Submit Quote.
+
+    POST /api/v2/policies/submit_quote
+    """
     request_json: dict[str, Any] = {
         "date_cursor": date_cursor,
         "json_dict": json_dict,
@@ -2455,7 +2630,10 @@ def sync_item_within_a_property_group(
     builder_obj: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Sync Item Within A Property Group (POST /api/v2/policies/sync_item_within_a_property_group)."""
+    """Sync Item Within A Property Group.
+
+    POST /api/v2/policies/sync_item_within_a_property_group
+    """
     request_json: dict[str, Any] = {
         "property_group_id": property_group_id,
         "item_id": item_id,
@@ -2477,7 +2655,10 @@ def sync_underlying_policy_changes(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Sync Underlying Policy Changes (POST /api/v2/policies/sync_underlying_policy_changes)."""
+    """Sync Underlying Policy Changes.
+
+    POST /api/v2/policies/sync_underlying_policy_changes
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -2499,7 +2680,10 @@ def update_billing_schedule(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Billing Schedule (POST /api/v2/policies/update_billing_schedule)."""
+    """Update Billing Schedule.
+
+    POST /api/v2/policies/update_billing_schedule
+    """
     request_json: dict[str, Any] = {
         "billing_schedule": billing_schedule,
         "policy_term_id": policy_term_id,
@@ -2524,7 +2708,10 @@ def update_builder_ready_to_rate(
     is_completed: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Builder Ready To Rate (POST /api/v2/policies/update_builder_ready_to_rate)."""
+    """Update Builder Ready To Rate.
+
+    POST /api/v2/policies/update_builder_ready_to_rate
+    """
     request_json: dict[str, Any] = {
         "property/revision": property_revision,
         "'property_id'": property_id,
@@ -2549,7 +2736,10 @@ def update_contact_interest(
     interest: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Contact Interest (POST /api/v2/policies/update_contact_interest)."""
+    """Update Contact Interest.
+
+    POST /api/v2/policies/update_contact_interest
+    """
     request_json: dict[str, Any] = {
         "x_revisions_contact_id": x_revisions_contact_id,
         "revision_id": revision_id,
@@ -2575,7 +2765,10 @@ def update_effective_and_expiration_date(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Effective And Expiration Date (POST /api/v2/policies/update_effective_and_expiration_date)."""
+    """Update Effective And Expiration Date.
+
+    POST /api/v2/policies/update_effective_and_expiration_date
+    """
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "expiration_date": expiration_date,
@@ -2600,7 +2793,10 @@ def update_inactive_policy_groups(
     group_ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Inactive Policy Groups (POST /api/v2/policies/update_inactive_policy_groups)."""
+    """Update Inactive Policy Groups.
+
+    POST /api/v2/policies/update_inactive_policy_groups
+    """
     request_json: dict[str, Any] = {
         "force_removal": force_removal,
         "group_ids": group_ids,
@@ -2622,7 +2818,10 @@ def update_loss_dispute(
     reason: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Loss Dispute (POST /api/v2/policies/update_loss_dispute)."""
+    """Update Loss Dispute.
+
+    POST /api/v2/policies/update_loss_dispute
+    """
     request_json: dict[str, Any] = {
         "dispute_id": dispute_id,
         "reason": reason,
@@ -2644,7 +2843,10 @@ def update_mortgagee_information(
     mortgagee_info: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Mortgagee Information (POST /api/v2/policies/update_mortgagee_information)."""
+    """Update Mortgagee Information.
+
+    POST /api/v2/policies/update_mortgagee_information
+    """
     request_json: dict[str, Any] = {
         "x_contact_reference": x_contact_reference,
         "mortgagee_info": mortgagee_info,
@@ -2666,7 +2868,10 @@ def update_policies_terms_payment_method_batch(
     payment_method_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Policies Terms Payment Method Batch (POST /api/v2/policies/update_policies_terms_payment_method_batch)."""
+    """Update Policies Terms Payment Method Batch.
+
+    POST /api/v2/policies/update_policies_terms_payment_method_batch
+    """
     request_json: dict[str, Any] = {
         "policy_term_ids": policy_term_ids,
         "payment_method_id": payment_method_id,
@@ -2690,7 +2895,10 @@ def update_policy_contact(
     x_policy_contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Policy Contact (POST /api/v2/policies/update_policy_contact)."""
+    """Update Policy Contact.
+
+    POST /api/v2/policies/update_policy_contact
+    """
     request_json: dict[str, Any] = {
         "contact_role": contact_role,
         "contact_id": contact_id,
@@ -2714,7 +2922,10 @@ def update_policy_last_visited(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Policy Last Visited (POST /api/v2/policies/update_policy_last_visited)."""
+    """Update Policy Last Visited.
+
+    POST /api/v2/policies/update_policy_last_visited
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "params": params,
@@ -2736,7 +2947,10 @@ def update_primary_property(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Primary Property (POST /api/v2/policies/update_primary_property)."""
+    """Update Primary Property.
+
+    POST /api/v2/policies/update_primary_property
+    """
     request_json: dict[str, Any] = {
         "property_id": property_id,
     }
@@ -2756,7 +2970,10 @@ def update_property_sub_line_name(
     property_sub_line_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Property Sub Line Name (POST /api/v2/policies/update_property_sub_line_name)."""
+    """Update Property Sub Line Name.
+
+    POST /api/v2/policies/update_property_sub_line_name
+    """
     request_json: dict[str, Any] = {
         "property_sub_line_id": property_sub_line_id,
     }
@@ -2779,7 +2996,10 @@ def update_property_valuation(
     property_val: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Property Valuation (POST /api/v2/policies/update_property_valuation)."""
+    """Update Property Valuation.
+
+    POST /api/v2/policies/update_property_valuation
+    """
     request_json: dict[str, Any] = {
         "integration_instance_external_id": integration_instance_external_id,
         "replacement_cost_value": replacement_cost_value,
@@ -2804,7 +3024,10 @@ def update_review_workflow(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Review Workflow (POST /api/v2/policies/update_review_workflow)."""
+    """Update Review Workflow.
+
+    POST /api/v2/policies/update_review_workflow
+    """
     request_json: dict[str, Any] = {
         "workflow_event": workflow_event,
         "event_context": event_context,
@@ -2827,7 +3050,10 @@ def update_underwriting_options(
     underwriting_options: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Underwriting Options (POST /api/v2/policies/update_underwriting_options)."""
+    """Update Underwriting Options.
+
+    POST /api/v2/policies/update_underwriting_options
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "underwriting_options": underwriting_options,
@@ -2849,7 +3075,10 @@ def update_underwriting_questions(
     underwriting_questions: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Underwriting Questions (POST /api/v2/policies/update_underwriting_questions)."""
+    """Update Underwriting Questions.
+
+    POST /api/v2/policies/update_underwriting_questions
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "underwriting_questions": underwriting_questions,

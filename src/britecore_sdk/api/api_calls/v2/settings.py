@@ -25,10 +25,7 @@ def add_city_to_zip_override(
 ) -> Any:
     """Add a city override for a ZIP code.
 
-    This wrapper sends the ZIP override fields to
-    ``/api/v2/settings/add_city_to_zip_override`` and returns the normalized
-    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/settings/add_city_to_zip_override
     """
     return post(
         "/api/v2/settings/add_city_to_zip_override",
@@ -50,10 +47,7 @@ def add_counties_to_state(
 ) -> Any:
     """Add county records to a state.
 
-    This wrapper sends ``counties``, ``country``, and ``state`` to
-    ``/api/v2/settings/add_counties_to_state`` and returns the normalized
-    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/settings/add_counties_to_state
     """
     return post(
         "/api/v2/settings/add_counties_to_state",
@@ -70,10 +64,7 @@ def add_county_to_zip_override(
 ) -> Any:
     """Add a county override for a ZIP code.
 
-    This wrapper sends the county override fields to
-    ``/api/v2/settings/add_county_to_zip_override`` and returns the normalized
-    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/settings/add_county_to_zip_override
     """
     return post(
         "/api/v2/settings/add_county_to_zip_override",
@@ -89,9 +80,7 @@ def add_county_to_zip_override(
 def get_pdf_engine(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve the active PDF engine setting.
 
-    This wrapper calls ``/api/v2/settings/get_pdf_engine`` and returns the
-    normalized ``process_result(...)`` payload for the configured PDF engine.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/settings/get_pdf_engine
     """
     return post("/api/v2/settings/get_pdf_engine", {}, **kwargs)
 
@@ -103,10 +92,7 @@ def get_setting_value(
 ) -> Any:
     """Retrieve a specific system setting value.
 
-    This wrapper sends ``option`` and ``section`` to
-    ``/api/v2/settings/get_setting_value`` and returns the normalized
-    ``process_result(...)`` payload for the requested setting. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/settings/get_setting_value
     """
     return post(
         "/api/v2/settings/get_setting_value",
@@ -118,9 +104,7 @@ def get_setting_value(
 def get_system_tags_list(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve the complete system tag list.
 
-    This wrapper calls ``/api/v2/settings/get_system_tags_list`` and returns
-    the normalized ``process_result(...)`` payload for the available system
-    tags. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/settings/get_system_tags_list
     """
     return post("/api/v2/settings/get_system_tags_list", {}, **kwargs)
 
@@ -128,9 +112,7 @@ def get_system_tags_list(**kwargs: Unpack[RequestParameters]) -> Any:
 def retrieve_credit_permission_prompt(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve the configured credit permission prompt.
 
-    This wrapper calls ``/api/v2/settings/retrieve_credit_permission_prompt``
-    and returns the normalized ``process_result(...)`` payload for the prompt
-    text shown to users. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/settings/retrieve_credit_permission_prompt
     """
     return post("/api/v2/settings/retrieve_credit_permission_prompt", {}, **kwargs)
 
@@ -143,10 +125,7 @@ def retrieve_property_valuation_availability(
 ) -> Any:
     """Check property valuation availability for a revision.
 
-    This wrapper sends ``chosen_role``, ``is_app``, and ``revision_id`` to
-    ``/api/v2/settings/retrieve_property_valuation_availability`` and returns
-    the normalized ``process_result(...)`` payload describing valuation
-    availability. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/settings/retrieve_property_valuation_availability
     """
     return post(
         "/api/v2/settings/retrieve_property_valuation_availability",
@@ -165,10 +144,7 @@ def retrieve_system_tags(
 ) -> Any:
     """Retrieve system tags, optionally filtered by level.
 
-    This wrapper sends the optional ``level`` filter to
-    ``/api/v2/settings/retrieve_system_tags`` and returns the normalized
-    ``process_result(...)`` payload for the matching tags. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/settings/retrieve_system_tags
     """
     return post(
         "/api/v2/settings/retrieve_system_tags",
@@ -183,9 +159,7 @@ def set_pdf_engine(
 ) -> Any:
     """Set the PDF engine used for document generation.
 
-    This wrapper sends ``engine`` to ``/api/v2/settings/set_pdf_engine`` and
-    returns the normalized ``process_result(...)`` payload for the update
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/settings/set_pdf_engine
     """
     return post(
         "/api/v2/settings/set_pdf_engine",
@@ -202,10 +176,7 @@ def set_setting_value(
 ) -> Any:
     """Set the value of a specific system setting.
 
-    This wrapper sends ``option``, ``section``, and ``value`` to
-    ``/api/v2/settings/set_setting_value`` and returns the normalized
-    ``process_result(...)`` payload for the update request. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/settings/set_setting_value
     """
     return post(
         "/api/v2/settings/set_setting_value",
@@ -237,7 +208,10 @@ def create_carbone_custom_deliverable(
     generated_per: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Carbone Custom Deliverable (POST /api/v2/settings/create_carbone_custom_deliverable)."""
+    """Create Carbone Custom Deliverable.
+
+    POST /api/v2/settings/create_carbone_custom_deliverable
+    """
     request_json: dict[str, Any] = {
         "custom_name": custom_name,
         "module": module,
@@ -259,7 +233,10 @@ def create_system_tags(
     system_tags: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create System Tags (POST /api/v2/settings/create_system_tags)."""
+    """Create System Tags.
+
+    POST /api/v2/settings/create_system_tags
+    """
     request_json: dict[str, Any] = {
         "system_tags": system_tags,
     }
@@ -279,7 +256,10 @@ def delete_carbone_custom_deliverable(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Carbone Custom Deliverable (POST /api/v2/settings/delete_carbone_custom_deliverable)."""
+    """Delete Carbone Custom Deliverable.
+
+    POST /api/v2/settings/delete_carbone_custom_deliverable
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -304,7 +284,10 @@ def get_deliverable_preview_json(
     location_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Deliverable Preview Json (POST /api/v2/settings/get_deliverable_preview_json)."""
+    """Get Deliverable Preview Json.
+
+    POST /api/v2/settings/get_deliverable_preview_json
+    """
     request_json: dict[str, Any] = {
         "entity_id": entity_id,
         "deliverable_id": deliverable_id,
@@ -330,7 +313,10 @@ def list_cancellation_reasons(
     policy_life_cycle_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Cancellation Reasons (POST /api/v2/settings/list_cancellation_reasons)."""
+    """List Cancellation Reasons.
+
+    POST /api/v2/settings/list_cancellation_reasons
+    """
     request_json: dict[str, Any] = {
         "ids": ids,
         "policy_life_cycle_ids": policy_life_cycle_ids,
@@ -351,7 +337,10 @@ def list_system_tags(
     additionalProperties: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List System Tags (POST /api/v2/settings/list_system_tags)."""
+    """List System Tags.
+
+    POST /api/v2/settings/list_system_tags
+    """
     request_json: dict[str, Any] = {
         "additionalProperties": additionalProperties,
     }
@@ -372,7 +361,10 @@ def new_permission_level_rule_dashboard(
     is_primary: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """New Permission Level Rule Dashboard (POST /api/v2/settings/new_permission_level_rule_dashboard)."""
+    """New Permission Level Rule Dashboard.
+
+    POST /api/v2/settings/new_permission_level_rule_dashboard
+    """
     request_json: dict[str, Any] = {
         "permission_level_id": permission_level_id,
         "is_primary": is_primary,
@@ -396,7 +388,10 @@ def persist_carbone_draft(
     prior_draft_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Persist Carbone Draft (POST /api/v2/settings/persist_carbone_draft)."""
+    """Persist Carbone Draft.
+
+    POST /api/v2/settings/persist_carbone_draft
+    """
     request_json: dict[str, Any] = {
         "new_draft_filename": new_draft_filename,
         "deliverable_id": deliverable_id,
@@ -419,7 +414,10 @@ def remove_permission_level_rule_dashboard(
     permission_level_rule_dashboard_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Permission Level Rule Dashboard (POST /api/v2/settings/remove_permission_level_rule_dashboard)."""
+    """Remove Permission Level Rule Dashboard.
+
+    POST /api/v2/settings/remove_permission_level_rule_dashboard
+    """
     request_json: dict[str, Any] = {
         "permission_level_rule_dashboard_id": permission_level_rule_dashboard_id,
     }
@@ -440,7 +438,10 @@ def retrieve_permissions(
     prefixes: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Permissions (POST /api/v2/settings/retrieve_permissions)."""
+    """Retrieve Permissions.
+
+    POST /api/v2/settings/retrieve_permissions
+    """
     request_json: dict[str, Any] = {
         "prefixes": prefixes,
     }
@@ -460,7 +461,10 @@ def retrieve_quick_code_value_tags(
     quick_code: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Quick Code Value Tags (POST /api/v2/settings/retrieve_quick_code_value_tags)."""
+    """Retrieve Quick Code Value Tags.
+
+    POST /api/v2/settings/retrieve_quick_code_value_tags
+    """
     request_json: dict[str, Any] = {
         "quick_code": quick_code,
     }
@@ -479,7 +483,10 @@ def retrieve_quick_code_value_tags(
 def retrieve_template_setup(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Template Setup (POST /api/v2/settings/retrieve_template_setup)."""
+    """Retrieve Template Setup.
+
+    POST /api/v2/settings/retrieve_template_setup
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -497,7 +504,10 @@ def update_carbone_custom_deliverable(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Carbone Custom Deliverable (POST /api/v2/settings/update_carbone_custom_deliverable)."""
+    """Update Carbone Custom Deliverable.
+
+    POST /api/v2/settings/update_carbone_custom_deliverable
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -517,7 +527,10 @@ def update_permission_level_rule_dashboard(
     is_primary: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Permission Level Rule Dashboard (POST /api/v2/settings/update_permission_level_rule_dashboard)."""
+    """Update Permission Level Rule Dashboard.
+
+    POST /api/v2/settings/update_permission_level_rule_dashboard
+    """
     request_json: dict[str, Any] = {
         "permission_level_rule_dashboard_id": permission_level_rule_dashboard_id,
         "dashboard_id": dashboard_id,

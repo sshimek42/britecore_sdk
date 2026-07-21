@@ -17,7 +17,10 @@ def create_driver_mvr_report_file(
     driver_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Driver Mvr Report File (POST /api/v2/violations/create_driver_mvr_report_file)."""
+    """Create Driver Mvr Report File.
+
+    POST /api/v2/violations/create_driver_mvr_report_file
+    """
     request_json: dict[str, Any] = {"driver_id": driver_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def create_violation(
     violation: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Violation (POST /api/v2/violations/create_violation)."""
+    """Create Violation.
+
+    POST /api/v2/violations/create_violation
+    """
     request_json: dict[str, Any] = {"violation": violation}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def create_violations(
     violations: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Violations (POST /api/v2/violations/create_violations)."""
+    """Create Violations.
+
+    POST /api/v2/violations/create_violations
+    """
     request_json: dict[str, Any] = {"violations": violations}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def delete_violation(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Violation (POST /api/v2/violations/delete_violation)."""
+    """Delete Violation.
+
+    POST /api/v2/violations/delete_violation
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -89,7 +101,10 @@ def dispute_violation(
     violation_dispute: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Dispute Violation (POST /api/v2/violations/dispute_violation)."""
+    """Dispute Violation.
+
+    POST /api/v2/violations/dispute_violation
+    """
     request_json: dict[str, Any] = {"violation_dispute": violation_dispute}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -107,7 +122,10 @@ def get_violation(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Violation (POST /api/v2/violations/get_violation)."""
+    """Get Violation.
+
+    POST /api/v2/violations/get_violation
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -125,7 +143,10 @@ def list_violation_for_driver(
     driver_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Violation For Driver (POST /api/v2/violations/list_violation_for_driver)."""
+    """List Violation For Driver.
+
+    POST /api/v2/violations/list_violation_for_driver
+    """
     request_json: dict[str, Any] = {"driver_id": driver_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -143,7 +164,10 @@ def remove_violation_dispute(
     violation_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Violation Dispute (POST /api/v2/violations/remove_violation_dispute)."""
+    """Remove Violation Dispute.
+
+    POST /api/v2/violations/remove_violation_dispute
+    """
     request_json: dict[str, Any] = {"violation_id": violation_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -161,7 +185,10 @@ def update_violation(
     violation: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Violation (POST /api/v2/violations/update_violation)."""
+    """Update Violation.
+
+    POST /api/v2/violations/update_violation
+    """
     request_json: dict[str, Any] = {"violation": violation}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

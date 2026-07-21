@@ -17,7 +17,10 @@ def list_claim_changes(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Claim Changes (POST /api/v2/claim_changes/list_claim_changes)."""
+    """List Claim Changes.
+
+    POST /api/v2/claim_changes/list_claim_changes
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }

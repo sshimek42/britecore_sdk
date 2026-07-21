@@ -17,10 +17,7 @@ def get_agency_experience_data(
 ) -> Any:
     """Retrieve agency experience dashboard data.
 
-    This wrapper sends ``contact_id`` and ``to_date`` to
-    ``/api/v2/dashboards/get_agency_experience_data`` and returns the
-    normalized ``process_result(...)`` payload for the requested dashboard
-    metrics. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_agency_experience_data
     """
     return post(
         "/api/v2/dashboards/get_agency_experience_data",
@@ -35,10 +32,7 @@ def get_csr_data(
 ) -> Any:
     """Retrieve CSR dashboard data.
 
-    This wrapper sends the optional ``contact_id`` filter to
-    ``/api/v2/dashboards/get_csr_data`` and returns the normalized
-    ``process_result(...)`` payload for the CSR dashboard metrics.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_csr_data
     """
     return post(
         "/api/v2/dashboards/get_csr_data",
@@ -54,10 +48,7 @@ def get_loss_ratio_chart(
 ) -> Any:
     """Retrieve loss ratio chart data.
 
-    This wrapper sends ``contact_id`` and ``to_date`` to
-    ``/api/v2/dashboards/get_loss_ratio_chart`` and returns the normalized
-    ``process_result(...)`` payload for the loss ratio visualization.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_loss_ratio_chart
     """
     return post(
         "/api/v2/dashboards/get_loss_ratio_chart",
@@ -73,10 +64,7 @@ def get_policy_count_data(
 ) -> Any:
     """Retrieve policy count dashboard data.
 
-    This wrapper sends ``contact_id`` and ``to_date`` to
-    ``/api/v2/dashboards/get_policy_count_data`` and returns the normalized
-    ``process_result(...)`` payload for the requested policy-count metrics.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_policy_count_data
     """
     return post(
         "/api/v2/dashboards/get_policy_count_data",
@@ -92,10 +80,7 @@ def get_premium_data(
 ) -> Any:
     """Retrieve premium dashboard data.
 
-    This wrapper sends ``contact_id`` and ``to_date`` to
-    ``/api/v2/dashboards/get_premium_data`` and returns the normalized
-    ``process_result(...)`` payload for the requested premium metrics.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_premium_data
     """
     return post(
         "/api/v2/dashboards/get_premium_data",
@@ -113,10 +98,7 @@ def get_report_url(
 ) -> Any:
     """Retrieve a dashboard report URL.
 
-    This wrapper sends the dashboard report filters to
-    ``/api/v2/dashboards/get_report_url`` and returns the normalized
-    ``process_result(...)`` payload containing the generated report URL or
-    related metadata. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_report_url
     """
     return post(
         "/api/v2/dashboards/get_report_url",
@@ -142,10 +124,7 @@ def get_transaction_report(
 ) -> Any:
     """Retrieve a paginated dashboard transaction report.
 
-    This wrapper sends the report filters, pagination fields, and sort options
-    to ``/api/v2/dashboards/get_transaction_report`` and returns the normalized
-    ``process_result(...)`` payload for the transaction report. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/get_transaction_report
     """
     return post(
         "/api/v2/dashboards/get_transaction_report",
@@ -169,10 +148,7 @@ def validate_loss_run(
 ) -> Any:
     """Validate whether a loss run is available for a policy or contact.
 
-    This wrapper sends ``contact_id`` and ``policy_number`` to
-    ``/api/v2/dashboards/validate_loss_run`` and returns the normalized
-    ``process_result(...)`` payload for the validation request. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/dashboards/validate_loss_run
     """
     return post(
         "/api/v2/dashboards/validate_loss_run",

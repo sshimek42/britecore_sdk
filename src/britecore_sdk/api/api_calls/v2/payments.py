@@ -673,7 +673,10 @@ def approve_pending_payment(
     vendor_processing_fee_in_cents: int | Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Approve Pending Payment (POST /api/v2/payments/approve_pending_payment)."""
+    """Approve Pending Payment.
+
+    POST /api/v2/payments/approve_pending_payment
+    """
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
         "settlement_date_time": settlement_date_time,
@@ -698,7 +701,10 @@ def create_recurring_payment_consent(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Recurring Payment Consent (POST /api/v2/payments/create_recurring_payment_consent)."""
+    """Create Recurring Payment Consent.
+
+    POST /api/v2/payments/create_recurring_payment_consent
+    """
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -719,7 +725,10 @@ def decline_pending_payment(
     reference_id: str | Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Decline Pending Payment (POST /api/v2/payments/decline_pending_payment)."""
+    """Decline Pending Payment.
+
+    POST /api/v2/payments/decline_pending_payment
+    """
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
         "vendor_message": vendor_message,
@@ -748,7 +757,10 @@ def import_payment_method(
     vendor_customer_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Payment Method (POST /api/v2/payments/import_payment_method)."""
+    """Import Payment Method.
+
+    POST /api/v2/payments/import_payment_method
+    """
     request_json: dict[str, Any] = {
         "policy_term_external_system_reference": policy_term_external_system_reference,
         "vendor_payment_method_id": vendor_payment_method_id,
@@ -773,7 +785,10 @@ def import_payment_method(
 def retrieve_active_payment_processor(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Active Payment Processor (POST /api/v2/payments/retrieve_active_payment_processor)."""
+    """Retrieve Active Payment Processor.
+
+    POST /api/v2/payments/retrieve_active_payment_processor
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -791,7 +806,10 @@ def retrieve_payment_method_consent(
     payment_method_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Payment Method Consent (POST /api/v2/payments/retrieve_payment_method_consent)."""
+    """Retrieve Payment Method Consent.
+
+    POST /api/v2/payments/retrieve_payment_method_consent
+    """
     request_json: dict[str, Any] = {"payment_method_id": payment_method_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -814,7 +832,10 @@ def retrieve_payment_method_creation_details(
     types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Payment Method Creation Details (POST /api/v2/payments/retrieve_payment_method_creation_details)."""
+    """Retrieve Payment Method Creation Details.
+
+    POST /api/v2/payments/retrieve_payment_method_creation_details
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
         "requester_contact_id": requester_contact_id,
@@ -840,7 +861,10 @@ def retrieve_pending_payments_for_settlement(
     integration_instance_external_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Pending Payments For Settlement (POST /api/v2/payments/retrieve_pending_payments_for_settlement)."""
+    """Retrieve Pending Payments For Settlement.
+
+    POST /api/v2/payments/retrieve_pending_payments_for_settlement
+    """
     request_json: dict[str, Any] = {
         "integration_instance_external_id": integration_instance_external_id,
     }
@@ -861,7 +885,10 @@ def settle_payments(
     payments: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Settle Payments (POST /api/v2/payments/settle_payments)."""
+    """Settle Payments.
+
+    POST /api/v2/payments/settle_payments
+    """
     request_json: dict[str, Any] = {
         "payments": payments,
     }
@@ -884,7 +911,10 @@ def store_external_payment(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store External Payment (POST /api/v2/payments/store_external_payment)."""
+    """Store External Payment.
+
+    POST /api/v2/payments/store_external_payment
+    """
     request_json: dict[str, Any] = {
         "transaction_date_time": transaction_date_time,
         "external_account_name": external_account_name,
@@ -918,7 +948,10 @@ def store_payment(
     vendor_processing_fee_in_cents: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Payment (POST /api/v2/payments/store_payment)."""
+    """Store Payment.
+
+    POST /api/v2/payments/store_payment
+    """
     request_json: dict[str, Any] = {
         "policy_numbers": policy_numbers,
         "transaction_amount_in_cents": transaction_amount_in_cents,
@@ -955,7 +988,10 @@ def store_payment_nsf(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store Payment Nsf (POST /api/v2/payments/store_payment_nsf)."""
+    """Store Payment Nsf.
+
+    POST /api/v2/payments/store_payment_nsf
+    """
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
         "policy_term_external_system_reference": policy_term_external_system_reference,

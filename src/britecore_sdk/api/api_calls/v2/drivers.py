@@ -17,7 +17,10 @@ def create_driver(
     driver: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Driver (POST /api/v2/drivers/create_driver)."""
+    """Create Driver.
+
+    POST /api/v2/drivers/create_driver
+    """
     request_json: dict[str, Any] = {"driver": driver}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def delete_driver(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Driver (POST /api/v2/drivers/delete_driver)."""
+    """Delete Driver.
+
+    POST /api/v2/drivers/delete_driver
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def get_driver(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Driver (POST /api/v2/drivers/get_driver)."""
+    """Get Driver.
+
+    POST /api/v2/drivers/get_driver
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def list_custom_fields_types(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Custom Fields Types (POST /api/v2/drivers/list_custom_fields_types)."""
+    """List Custom Fields Types.
+
+    POST /api/v2/drivers/list_custom_fields_types
+    """
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -91,7 +103,10 @@ def list_driver_integration_reports(
     driver_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Driver Integration Reports (POST /api/v2/drivers/list_driver_integration_reports)."""
+    """List Driver Integration Reports.
+
+    POST /api/v2/drivers/list_driver_integration_reports
+    """
     request_json: dict[str, Any] = {"driver_id": driver_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -109,7 +124,10 @@ def list_drivers_for_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Drivers For Quote (POST /api/v2/drivers/list_drivers_for_quote)."""
+    """List Drivers For Quote.
+
+    POST /api/v2/drivers/list_drivers_for_quote
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -127,7 +145,10 @@ def update_driver(
     driver: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Driver (POST /api/v2/drivers/update_driver)."""
+    """Update Driver.
+
+    POST /api/v2/drivers/update_driver
+    """
     request_json: dict[str, Any] = {"driver": driver}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -101,7 +101,10 @@ async def aadd_line_item(
     check_for_subline: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
-    """Add a line item to a revision or property asynchronously. (POST /api/v2/policies/add_line_item)."""
+    """Add a line item to a revision or property asynchronously.
+
+    POST /api/v2/policies/add_line_item
+    """
     LOGGER.debug("Adding line")
     line_add_json = {
         key: value
@@ -132,7 +135,10 @@ async def aadd_line_item(
 async def aretrieve_policy_ids(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> tuple[str, str]:
-    """Retrieve the active revision ID and primary property ID for a policy. (POST /api/v2/policies/retrieve_policy)."""
+    """Retrieve the active revision ID and primary property ID for a policy.
+
+    POST /api/v2/policies/retrieve_policy
+    """
     LOGGER.debug("Getting policy info")
     policy_json = await aretrieve_policy(policy_number=policy_number, **kwargs)
     active_revision = policy_json["active_revision"]
@@ -142,7 +148,10 @@ async def aretrieve_policy_ids(
 async def aretrieve_policy_contact_info(
     policy_number: str, **kwargs: Unpack[RequestParameters]
 ) -> list[Any]:
-    """Retrieve named insured contact information for a policy. (POST /api/v2/policies/retrieve_policy)."""
+    """Retrieve named insured contact information for a policy.
+
+    POST /api/v2/policies/retrieve_policy
+    """
     LOGGER.debug("Getting contact info")
     contact_json = await aretrieve_policy(policy_number=policy_number, **kwargs)
     return contact_json["active_revision"]["named_insureds"]
@@ -255,7 +264,10 @@ async def aretrieve_policy_terms(
     policy_number: str | None = "",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve policy terms and revisions asynchronously. (POST /api/v2/policies/retrieve_policy_terms)."""
+    """Retrieve policy terms and revisions asynchronously.
+
+    POST /api/v2/policies/retrieve_policy_terms
+    """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
         raise BritecoreError.MissingParameter(
@@ -289,7 +301,10 @@ async def aretrieve_policy_terms(
 
 
 async def arate_revision(revision_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Calculate a rate for a revision asynchronously. (POST /api/v2/policies/rate_revision)."""
+    """Calculate a rate for a revision asynchronously.
+
+    POST /api/v2/policies/rate_revision
+    """
     LOGGER.debug("Re-rating revision '%s'", revision_id)
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/rate_revision",
@@ -306,7 +321,10 @@ async def aretrieve_revision_details(
     include_contact_details: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve detailed revision information asynchronously. (POST /api/v2/policies/retrieve_revision_details)."""
+    """Retrieve detailed revision information asynchronously.
+
+    POST /api/v2/policies/retrieve_revision_details
+    """
     request_kwargs = await _ensure_long_timeout(dict(kwargs))
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_revision_details",
@@ -336,7 +354,10 @@ async def aretrieve_risks(
     risk_types: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve paginated or filtered risks for a revision asynchronously. (POST /api/v2/policies/retrieve_risks)."""
+    """Retrieve paginated or filtered risks for a revision asynchronously.
+
+    POST /api/v2/policies/retrieve_risks
+    """
     LOGGER.debug("Getting risks")
     revision_retrieve_json = {
         key: value
@@ -372,7 +393,10 @@ async def aretrieve_risks(
 async def aretrieve_risk_details(
     risk_id: str, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Retrieve risk details asynchronously. (POST /api/v2/policies/retrieve_risk_details)."""
+    """Retrieve risk details asynchronously.
+
+    POST /api/v2/policies/retrieve_risk_details
+    """
     LOGGER.debug("Getting risk details")
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/retrieve_risk_details",
@@ -393,7 +417,10 @@ async def aupdate_rating_information(
     reset_premium: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update rating information for a revision or property asynchronously. (POST /api/v2/policies/update_rating_information)."""
+    """Update rating information for a revision or property asynchronously.
+
+    POST /api/v2/policies/update_rating_information
+    """
     LOGGER.debug("Updating line item")
     revision_retrieve_json = {
         key: value
@@ -416,7 +443,10 @@ async def aupdate_rating_information(
 
 
 async def arate_risk(risk_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Calculate a rate for a risk asynchronously. (POST /api/v2/policies/rate_risk)."""
+    """Calculate a rate for a risk asynchronously.
+
+    POST /api/v2/policies/rate_risk
+    """
     LOGGER.debug("Re-rating policy")
     request_result = await API_CLIENT.ado_request(
         path="/api/v2/policies/rate_risk",
@@ -511,7 +541,10 @@ async def acreate_risk(
     force_categories: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a risk for a revision asynchronously. (POST /api/v2/policies/create_risk)."""
+    """Create a risk for a revision asynchronously.
+
+    POST /api/v2/policies/create_risk
+    """
     risk_json = {
         key: value
         for key, value in {
@@ -539,7 +572,10 @@ async def aupdate_property_location(
     reset_premiums: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update property location details asynchronously. (POST /api/v2/policies/update_property_location)."""
+    """Update property location details asynchronously.
+
+    POST /api/v2/policies/update_property_location
+    """
     prop_json = {
         "location": {
             key: value
@@ -563,7 +599,10 @@ async def aupdate_property_location(
 
 
 async def anew_mortgagee(property_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Create a new mortgagee for a property asynchronously. (POST /api/v2/policies/new_mortgagee)."""
+    """Create a new mortgagee for a property asynchronously.
+
+    POST /api/v2/policies/new_mortgagee
+    """
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/new_mortgagee",
         json={"property_id": property_id},
@@ -579,7 +618,10 @@ async def astore_mortgagee(
     mortgagee_contact_id: str,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Store mortgagee information for a property contact asynchronously. (POST /api/v2/policies/store_mortgagee)."""
+    """Store mortgagee information for a property contact asynchronously.
+
+    POST /api/v2/policies/store_mortgagee
+    """
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/store_mortgagee",
         json={
@@ -596,7 +638,10 @@ async def astore_mortgagee(
 async def aretrieve_policy_snapshot(
     policy_number: str, snapshot_date: str, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Retrieve a policy snapshot asynchronously. (POST /api/v2/policies/retrieve_policy_snapshot)."""
+    """Retrieve a policy snapshot asynchronously.
+
+    POST /api/v2/policies/retrieve_policy_snapshot
+    """
     request_result = await API_CLIENT.ado_request(
         "/api/v2/policies/retrieve_policy_snapshot",
         json={"policy_number": policy_number, "snapshot_date": snapshot_date},

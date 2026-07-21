@@ -30,7 +30,10 @@ def create_full_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[dict[str, Any] | None, str | None]:
-    """Create a quote from the supplied quote payload (POST /api/v2/quotes/create_full_quote)."""
+    """Create a quote from the supplied quote payload.
+
+    POST /api/v2/quotes/create_full_quote
+    """
     # Validate required parameters
     if not quote_json or not isinstance(quote_json, dict):
         raise BritecoreError.MissingParameter(
@@ -68,7 +71,10 @@ def get_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote (POST /api/v2/quotes/get_quote)."""
+    """Get Quote.
+
+    POST /api/v2/quotes/get_quote
+    """
     # Validate required parameters
     if not quote_id or not quote_id.strip():
         raise BritecoreError.MissingParameter("quote id is required")
@@ -99,7 +105,10 @@ def associate_agentcy_to_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Associate Agentcy To Quote (POST /api/v2/quotes/associate_agentcy_to_quote)."""
+    """Associate Agentcy To Quote.
+
+    POST /api/v2/quotes/associate_agentcy_to_quote
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -119,7 +128,10 @@ def bind_full_quote(
     submit_bound: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bind Full Quote (POST /api/v2/quotes/bind_full_quote)."""
+    """Bind Full Quote.
+
+    POST /api/v2/quotes/bind_full_quote
+    """
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -141,7 +153,10 @@ def copy_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy Quote (POST /api/v2/quotes/copy_quote)."""
+    """Copy Quote.
+
+    POST /api/v2/quotes/copy_quote
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -161,7 +176,10 @@ def create_and_rate_full_quote(
     rate_quote: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create And Rate Full Quote (POST /api/v2/quotes/create_and_rate_full_quote)."""
+    """Create And Rate Full Quote.
+
+    POST /api/v2/quotes/create_and_rate_full_quote
+    """
     request_json: dict[str, Any] = {
         "quote": quote,
         "stateless": stateless,
@@ -185,7 +203,10 @@ def create_endorsement_quote(
     endorsement_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Endorsement Quote (POST /api/v2/quotes/create_endorsement_quote)."""
+    """Create Endorsement Quote.
+
+    POST /api/v2/quotes/create_endorsement_quote
+    """
     request_json: dict[str, Any] = {
         "quote_external_system_reference": quote_external_system_reference,
         "quote_id": quote_id,
@@ -209,7 +230,10 @@ def create_renewal_quote(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Renewal Quote (POST /api/v2/quotes/create_renewal_quote)."""
+    """Create Renewal Quote.
+
+    POST /api/v2/quotes/create_renewal_quote
+    """
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "quote_id": quote_id,
@@ -232,7 +256,10 @@ def delete_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Full Quote (POST /api/v2/quotes/delete_full_quote)."""
+    """Delete Full Quote.
+
+    POST /api/v2/quotes/delete_full_quote
+    """
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -252,7 +279,10 @@ def delete_full_quote(
 def delete_quote(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Quote (POST /api/v2/quotes/delete_quote)."""
+    """Delete Quote.
+
+    POST /api/v2/quotes/delete_quote
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -272,7 +302,10 @@ def get_estimated_quote(
     stateless: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Estimated Quote (POST /api/v2/quotes/get_estimated_quote)."""
+    """Get Estimated Quote.
+
+    POST /api/v2/quotes/get_estimated_quote
+    """
     request_json: dict[str, Any] = {
         "rate_quote": rate_quote,
         "quote_id": quote_id,
@@ -294,7 +327,10 @@ def get_quote_properties_summary(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Properties Summary (POST /api/v2/quotes/get_quote_properties_summary)."""
+    """Get Quote Properties Summary.
+
+    POST /api/v2/quotes/get_quote_properties_summary
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -315,7 +351,10 @@ def get_quote_wizard_plugin(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Wizard Plugin (POST /api/v2/quotes/get_quote_wizard_plugin)."""
+    """Get Quote Wizard Plugin.
+
+    POST /api/v2/quotes/get_quote_wizard_plugin
+    """
     request_json: dict[str, Any] = {
         "integration_point_code": integration_point_code,
         "revision_id": revision_id,
@@ -338,7 +377,10 @@ def get_risks(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Risks (POST /api/v2/quotes/get_risks)."""
+    """Get Risks.
+
+    POST /api/v2/quotes/get_risks
+    """
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -359,7 +401,10 @@ def issue_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Issue Full Quote (POST /api/v2/quotes/issue_full_quote)."""
+    """Issue Full Quote.
+
+    POST /api/v2/quotes/issue_full_quote
+    """
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -380,7 +425,10 @@ def list_available_offers(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Available Offers (POST /api/v2/quotes/list_available_offers)."""
+    """List Available Offers.
+
+    POST /api/v2/quotes/list_available_offers
+    """
     request_json: dict[str, Any] = {"contact_id": contact_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -400,7 +448,10 @@ def modify_full_quote(
     success: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Full Quote (POST /api/v2/quotes/modify_full_quote)."""
+    """Modify Full Quote.
+
+    POST /api/v2/quotes/modify_full_quote
+    """
     request_json: dict[str, Any] = {
         "messages": messages,
         "data": data,
@@ -422,7 +473,10 @@ def prefill_loss_history(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Loss History (POST /api/v2/quotes/prefill_loss_history)."""
+    """Prefill Loss History.
+
+    POST /api/v2/quotes/prefill_loss_history
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -441,7 +495,10 @@ def prefill_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Quote (POST /api/v2/quotes/prefill_quote)."""
+    """Prefill Quote.
+
+    POST /api/v2/quotes/prefill_quote
+    """
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "id": id,
@@ -462,7 +519,10 @@ def prefill_violations(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Violations (POST /api/v2/quotes/prefill_violations)."""
+    """Prefill Violations.
+
+    POST /api/v2/quotes/prefill_violations
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -482,7 +542,10 @@ def rate_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Rate Full Quote (POST /api/v2/quotes/rate_full_quote)."""
+    """Rate Full Quote.
+
+    POST /api/v2/quotes/rate_full_quote
+    """
     request_json: dict[str, Any] = {
         "debug": debug,
         "external_system_reference": external_system_reference,
@@ -504,7 +567,10 @@ def rate_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Rate Quote (POST /api/v2/quotes/rate_quote)."""
+    """Rate Quote.
+
+    POST /api/v2/quotes/rate_quote
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -523,7 +589,10 @@ def retrieve_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Full Quote (POST /api/v2/quotes/retrieve_full_quote)."""
+    """Retrieve Full Quote.
+
+    POST /api/v2/quotes/retrieve_full_quote
+    """
     request_json: dict[str, Any] = {
         "external_system_reference": external_system_reference,
         "id": id,
@@ -543,7 +612,10 @@ def retrieve_full_quote(
 def submit_application(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Application (POST /api/v2/quotes/submit_application)."""
+    """Submit Application.
+
+    POST /api/v2/quotes/submit_application
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -560,7 +632,10 @@ def submit_application(
 def submit_change(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Change (POST /api/v2/quotes/submit_change)."""
+    """Submit Change.
+
+    POST /api/v2/quotes/submit_change
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -578,7 +653,10 @@ def summary(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Summary (POST /api/v2/quotes/summary)."""
+    """Summary.
+
+    POST /api/v2/quotes/summary
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -594,7 +672,10 @@ def turn_quote_into_application(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Turn Quote Into Application (POST /api/v2/quotes/turn_quote_into_application)."""
+    """Turn Quote Into Application.
+
+    POST /api/v2/quotes/turn_quote_into_application
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -612,7 +693,10 @@ def update_e_delivery_enabled(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update E Delivery Enabled (POST /api/v2/quotes/update_e_delivery_enabled)."""
+    """Update E Delivery Enabled.
+
+    POST /api/v2/quotes/update_e_delivery_enabled
+    """
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

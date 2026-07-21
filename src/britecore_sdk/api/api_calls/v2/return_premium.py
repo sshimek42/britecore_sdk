@@ -47,10 +47,7 @@ def exportreturnpremium(
 ) -> Any:
     """Export a return premium record by identifier.
 
-    This wrapper sends ``return_premium_id`` as ``returnPremiumId`` to
-    ``/api/v2/return_premium/exportReturnPremium`` and returns the normalized
-    ``process_result(...)`` payload for the export operation. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/return_premium/exportReturnPremium
     """
     payload: dict[str, Any] = {}
     if return_premium_id is not None:
@@ -81,7 +78,10 @@ def retrieve_return_premiums(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Return Premiums (POST /api/v2/return_premium/retrieve_return_premiums)."""
+    """Retrieve Return Premiums.
+
+    POST /api/v2/return_premium/retrieve_return_premiums
+    """
     request_json: dict[str, Any] = {
         "authorized": authorized,
         "transferred": transferred,

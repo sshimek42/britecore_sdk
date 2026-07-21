@@ -17,7 +17,10 @@ def create_named_insured(
     named_insured: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new named insured record. (POST /api/v2/named_insureds/create_named_insured)."""
+    """Create a new named insured record.
+
+    POST /api/v2/named_insureds/create_named_insured
+    """
     request_json: dict[str, Any] = {"named_insured": named_insured}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def delete_named_insured(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a named insured record by identifier. (POST /api/v2/named_insureds/delete_named_insured)."""
+    """Delete a named insured record by identifier.
+
+    POST /api/v2/named_insureds/delete_named_insured
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def get_named_insured(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insured (POST /api/v2/named_insureds/get_named_insured)."""
+    """Get Named Insured.
+
+    POST /api/v2/named_insureds/get_named_insured
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def get_named_insured_by_id(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insured By Id (POST /api/v2/named_insureds/get_named_insured_by_id)."""
+    """Get Named Insured By Id.
+
+    POST /api/v2/named_insureds/get_named_insured_by_id
+    """
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -89,7 +101,10 @@ def get_named_insureds(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insureds (POST /api/v2/named_insureds/get_named_insureds)."""
+    """Get Named Insureds.
+
+    POST /api/v2/named_insureds/get_named_insureds
+    """
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -107,7 +122,10 @@ def run_score(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Score (POST /api/v2/named_insureds/run_score)."""
+    """Run Score.
+
+    POST /api/v2/named_insureds/run_score
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -125,7 +143,10 @@ def set_primary_insured(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Primary Insured (POST /api/v2/named_insureds/set_primary_insured)."""
+    """Set Primary Insured.
+
+    POST /api/v2/named_insureds/set_primary_insured
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -143,7 +164,10 @@ def update_named_insured(
     named_insured: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing named insured record. (POST /api/v2/named_insureds/update_named_insured)."""
+    """Update an existing named insured record.
+
+    POST /api/v2/named_insureds/update_named_insured
+    """
     request_json: dict[str, Any] = {"named_insured": named_insured}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

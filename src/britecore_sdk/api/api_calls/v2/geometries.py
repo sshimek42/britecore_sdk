@@ -17,7 +17,10 @@ def create_geometry(
     geolocation: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Geometry (POST /api/v2/geometries/create_geometry)."""
+    """Create Geometry.
+
+    POST /api/v2/geometries/create_geometry
+    """
     request_json: dict[str, Any] = {"geolocation": geolocation}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def delete_geometry(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Geometry (POST /api/v2/geometries/delete_geometry)."""
+    """Delete Geometry.
+
+    POST /api/v2/geometries/delete_geometry
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def get_geometries(
     page: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Geometries (POST /api/v2/geometries/get_geometries)."""
+    """Get Geometries.
+
+    POST /api/v2/geometries/get_geometries
+    """
     request_json: dict[str, Any] = {"page": page}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def get_geometry(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Geometry (POST /api/v2/geometries/get_geometry)."""
+    """Get Geometry.
+
+    POST /api/v2/geometries/get_geometry
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -89,7 +101,10 @@ def update_geometry(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Geometry (POST /api/v2/geometries/update_geometry)."""
+    """Update Geometry.
+
+    POST /api/v2/geometries/update_geometry
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

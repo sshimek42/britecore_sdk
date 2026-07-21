@@ -20,7 +20,10 @@ def create_catastrophe(
     catastrophe: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new catastrophe record. (POST /api/v2/claim_catastrophes/create_catastrophe)."""
+    """Create a new catastrophe record.
+
+    POST /api/v2/claim_catastrophes/create_catastrophe
+    """
     request_json: dict[str, Any] = {"catastrophe": catastrophe}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -38,7 +41,10 @@ def delete_catastrophe(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a catastrophe record. (POST /api/v2/claim_catastrophes/delete_catastrophe)."""
+    """Delete a catastrophe record.
+
+    POST /api/v2/claim_catastrophes/delete_catastrophe
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -56,7 +62,10 @@ def get_applicable_catastrophes(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve catastrophes applicable to a claim. (POST /api/v2/claim_catastrophes/get_applicable_catastrophes)."""
+    """Retrieve catastrophes applicable to a claim.
+
+    POST /api/v2/claim_catastrophes/get_applicable_catastrophes
+    """
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -75,7 +84,10 @@ def get_catastrophe(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a specific catastrophe record. (POST /api/v2/claim_catastrophes/get_catastrophe)."""
+    """Retrieve a specific catastrophe record.
+
+    POST /api/v2/claim_catastrophes/get_catastrophe
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -92,7 +104,10 @@ def get_catastrophe(
 def list_catastrophes(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all catastrophe records. (POST /api/v2/claim_catastrophes/list_catastrophes)."""
+    """Retrieve all catastrophe records.
+
+    POST /api/v2/claim_catastrophes/list_catastrophes
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -110,7 +125,10 @@ def update_catastrophe(
     catastrophe: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing catastrophe record. (POST /api/v2/claim_catastrophes/update_catastrophe)."""
+    """Update an existing catastrophe record.
+
+    POST /api/v2/claim_catastrophes/update_catastrophe
+    """
     request_json: dict[str, Any] = {"catastrophe": catastrophe}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

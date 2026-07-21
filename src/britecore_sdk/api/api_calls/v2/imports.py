@@ -19,7 +19,10 @@ def import_note(
     force_create: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Note (POST /api/v2/imports/import_note)."""
+    """Import Note.
+
+    POST /api/v2/imports/import_note
+    """
     request_json: dict[str, Any] = {
         "note": note,
         "create_only": create_only,
@@ -42,7 +45,10 @@ def import_policy_number(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Policy Number (POST /api/v2/imports/import_policy_number)."""
+    """Import Policy Number.
+
+    POST /api/v2/imports/import_policy_number
+    """
     request_json: dict[str, Any] = {
         "policy_number": policy_number,
         "policy_id": policy_id,

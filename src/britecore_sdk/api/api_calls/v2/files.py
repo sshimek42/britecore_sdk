@@ -18,7 +18,10 @@ def generate_download_url(
     file_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Download Url (POST /api/v2/files/generate_download_url)."""
+    """Generate Download Url.
+
+    POST /api/v2/files/generate_download_url
+    """
     request_json: dict[str, Any] = {
         "expires_in": expires_in,
         "file_id": file_id,
@@ -43,7 +46,10 @@ def retrieve_active_file_objects(
     print_date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Active File Objects (POST /api/v2/files/retrieve_active_file_objects)."""
+    """Retrieve Active File Objects.
+
+    POST /api/v2/files/retrieve_active_file_objects
+    """
     request_json: dict[str, Any] = {
         "date_added_to": date_added_to,
         "label": label,

@@ -17,7 +17,10 @@ def add_custom_data(
     data: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Custom Data (POST /api/v2/custom_data/add_custom_data)."""
+    """Add Custom Data.
+
+    POST /api/v2/custom_data/add_custom_data
+    """
     request_json: dict[str, Any] = {
         "data": data,
     }
@@ -37,7 +40,10 @@ def delete_custom_data(
     ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Custom Data (POST /api/v2/custom_data/delete_custom_data)."""
+    """Delete Custom Data.
+
+    POST /api/v2/custom_data/delete_custom_data
+    """
     request_json: dict[str, Any] = {
         "ids": ids,
     }
@@ -60,7 +66,10 @@ def get_custom_data(
     ids: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Custom Data (POST /api/v2/custom_data/get_custom_data)."""
+    """Get Custom Data.
+
+    POST /api/v2/custom_data/get_custom_data
+    """
     request_json: dict[str, Any] = {
         "reference_id": reference_id,
         "id": id,
@@ -82,7 +91,10 @@ def get_custom_data(
 def summarize_custom_data(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Summarize Custom Data (POST /api/v2/custom_data/summarize_custom_data)."""
+    """Summarize Custom Data.
+
+    POST /api/v2/custom_data/summarize_custom_data
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -100,7 +112,10 @@ def update_custom_data(
     data: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Custom Data (POST /api/v2/custom_data/update_custom_data)."""
+    """Update Custom Data.
+
+    POST /api/v2/custom_data/update_custom_data
+    """
     request_json: dict[str, Any] = {
         "data": data,
     }

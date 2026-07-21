@@ -38,10 +38,7 @@ def get_property_information_and_photos(
 ) -> Any:
     """Retrieve property information and associated photos.
 
-    This wrapper sends ``property_id`` to
-    ``/api/v2/insured/get_property_information_and_photos`` and returns the
-    normalized ``process_result(...)`` payload for the matching property.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/insured/get_property_information_and_photos
     """
     return _post(
         "/api/v2/insured/get_property_information_and_photos",
@@ -279,7 +276,10 @@ def find_similar_contact(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Find Similar Contact (POST /api/v2/insured/find_similar_contact)."""
+    """Find Similar Contact.
+
+    POST /api/v2/insured/find_similar_contact
+    """
     request_json: dict[str, Any] = {
         "contact_ids_to_check": contact_ids_to_check,
         "ssn_only_check": ssn_only_check,
@@ -300,7 +300,10 @@ def find_similar_contact(
 def get_contacts_with_insured_portal_user_role(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contacts With Insured Portal User Role (POST /api/v2/insured/get_contacts_with_insured_portal_user_role)."""
+    """Get Contacts With Insured Portal User Role.
+
+    POST /api/v2/insured/get_contacts_with_insured_portal_user_role
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

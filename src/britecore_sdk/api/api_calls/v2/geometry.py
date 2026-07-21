@@ -17,7 +17,10 @@ def get_zip_geometry(
     zip_code: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Zip Geometry (POST /api/v2/geometry/get_zip_geometry)."""
+    """Get Zip Geometry.
+
+    POST /api/v2/geometry/get_zip_geometry
+    """
     request_json: dict[str, Any] = {
         "zip_code": zip_code,
     }

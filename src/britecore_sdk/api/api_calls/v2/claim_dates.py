@@ -21,7 +21,10 @@ def create_claim_date(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new date entry for a claim. (POST /api/v2/claim_dates/create_claim_date)."""
+    """Create a new date entry for a claim.
+
+    POST /api/v2/claim_dates/create_claim_date
+    """
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -38,7 +41,10 @@ def create_claim_date(
 def delete_claim_date(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim date entry. (POST /api/v2/claim_dates/delete_claim_date)."""
+    """Delete a claim date entry.
+
+    POST /api/v2/claim_dates/delete_claim_date
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -56,7 +62,10 @@ def list_claim_dates(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all date entries for a claim. (POST /api/v2/claim_dates/list_claim_dates)."""
+    """Retrieve all date entries for a claim.
+
+    POST /api/v2/claim_dates/list_claim_dates
+    """
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -74,7 +83,10 @@ def update_claim_date(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing claim date entry. (POST /api/v2/claim_dates/update_claim_date)."""
+    """Update an existing claim date entry.
+
+    POST /api/v2/claim_dates/update_claim_date
+    """
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

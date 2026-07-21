@@ -20,7 +20,10 @@ def create_policy_type_relation(
     related_line_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Policy Type Relation (POST /api/v2/policy_types/create_policy_type_relation)."""
+    """Create Policy Type Relation.
+
+    POST /api/v2/policy_types/create_policy_type_relation
+    """
     request_json: dict[str, Any] = {
         "relationship_type": relationship_type,
         "policy_type_id": policy_type_id,
@@ -43,7 +46,10 @@ def get_coverage_type(
     coverage_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Coverage Type (POST /api/v2/policy_types/get_coverage_type)."""
+    """Get Coverage Type.
+
+    POST /api/v2/policy_types/get_coverage_type
+    """
     request_json: dict[str, Any] = {"coverage_id": coverage_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -62,7 +68,10 @@ def list_available_coverages(
     risk_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Available Coverages (POST /api/v2/policy_types/list_available_coverages)."""
+    """List Available Coverages.
+
+    POST /api/v2/policy_types/list_available_coverages
+    """
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
         "risk_id": risk_id,
@@ -82,7 +91,10 @@ def list_available_coverages(
 def list_available_sub_lines(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Available Sub Lines (POST /api/v2/policy_types/list_available_sub_lines)."""
+    """List Available Sub Lines.
+
+    POST /api/v2/policy_types/list_available_sub_lines
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -100,7 +112,10 @@ def list_coverage_types(
     policy_type_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Coverage Types (POST /api/v2/policy_types/list_coverage_types)."""
+    """List Coverage Types.
+
+    POST /api/v2/policy_types/list_coverage_types
+    """
     request_json: dict[str, Any] = {"policy_type_id": policy_type_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -119,7 +134,10 @@ def list_filtered_policy_types(
     location_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Filtered Policy Types (POST /api/v2/policy_types/list_filtered_policy_types)."""
+    """List Filtered Policy Types.
+
+    POST /api/v2/policy_types/list_filtered_policy_types
+    """
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "location_id": location_id,
@@ -141,7 +159,10 @@ def remove_policy_type_relations(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Policy Type Relations (POST /api/v2/policy_types/remove_policy_type_relations)."""
+    """Remove Policy Type Relations.
+
+    POST /api/v2/policy_types/remove_policy_type_relations
+    """
     request_json: dict[str, Any] = {
         "relationship_type": relationship_type,
         "policy_type_id": policy_type_id,
@@ -161,7 +182,10 @@ def remove_policy_type_relations(
 def retrieve_policy_types(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Policy Types (POST /api/v2/policy_types/retrieve_policy_types)."""
+    """Retrieve Policy Types.
+
+    POST /api/v2/policy_types/retrieve_policy_types
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -179,7 +203,10 @@ def update_quick_codes(
     policy_type_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Codes (POST /api/v2/policy_types/update_quick_codes)."""
+    """Update Quick Codes.
+
+    POST /api/v2/policy_types/update_quick_codes
+    """
     request_json: dict[str, Any] = {"policy_type_id": policy_type_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

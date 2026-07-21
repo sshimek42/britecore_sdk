@@ -32,7 +32,10 @@ def list_attachments(
     order_by: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List deliverable attachments for a policy, contact, or revision. (POST /api/v2/deliverables/list_attachments)."""
+    """List deliverable attachments for a policy, contact, or revision.
+
+    POST /api/v2/deliverables/list_attachments
+    """
     local_env: dict[str, str | None] = {**locals()}
     if not policy_id and not contact_id and not revision_id:
         BritecoreError.MissingParameter("policy_id, contact_id or revision_id required")
@@ -66,7 +69,10 @@ def list_attachments(
 
 
 def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve a deliverable attachment by file identifier. (POST /api/v2/deliverables/get_attachment)."""
+    """Retrieve a deliverable attachment by file identifier.
+
+    POST /api/v2/deliverables/get_attachment
+    """
     LOGGER.debug("Getting attachment '%s'", file_id)
     file_search: dict[str, str] = {"file_id": file_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -84,7 +90,10 @@ def get_edeliverables(
     unprocessed_only: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve e-deliverables for a date range. (POST /api/v2/deliverables/get_edeliverables)."""
+    """Retrieve e-deliverables for a date range.
+
+    POST /api/v2/deliverables/get_edeliverables
+    """
     required_json: dict[str, str | bool | None] = {
         "date_from": date_from,
         "date_to": date_to,
@@ -109,7 +118,10 @@ def delete_html_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete HTML template by name. (POST /api/v2/deliverables/delete_html_template)."""
+    """Delete HTML template by name.
+
+    POST /api/v2/deliverables/delete_html_template
+    """
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -129,7 +141,10 @@ def delete_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete static resource by name. (POST /api/v2/deliverables/delete_static_resource)."""
+    """Delete static resource by name.
+
+    POST /api/v2/deliverables/delete_static_resource
+    """
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -148,7 +163,10 @@ def delete_static_resource(
 def expire_all_static_resources(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Expire all static resources. (POST /api/v2/deliverables/expire_all_static_resources)."""
+    """Expire all static resources.
+
+    POST /api/v2/deliverables/expire_all_static_resources
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -166,7 +184,10 @@ def expire_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Expire static resource by name. (POST /api/v2/deliverables/expire_static_resource)."""
+    """Expire static resource by name.
+
+    POST /api/v2/deliverables/expire_static_resource
+    """
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -193,7 +214,10 @@ def getdeliverabledata(
     deliverable_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get deliverable data. (POST /api/v2/deliverables/getDeliverableData)."""
+    """Get deliverable data.
+
+    POST /api/v2/deliverables/getDeliverableData
+    """
     request_json: dict[str, Any] = {
         "coverage_forms": coverage_forms,
         "invoice_id": invoice_id,
@@ -219,7 +243,10 @@ def getdeliverabledata(
 def get_all_html_templates(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get all HTML templates. (POST /api/v2/deliverables/get_all_html_templates)."""
+    """Get all HTML templates.
+
+    POST /api/v2/deliverables/get_all_html_templates
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -236,7 +263,10 @@ def get_all_html_templates(
 def get_all_static_resources(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get all static resources. (POST /api/v2/deliverables/get_all_static_resources)."""
+    """Get all static resources.
+
+    POST /api/v2/deliverables/get_all_static_resources
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -256,7 +286,10 @@ def get_dec(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get DEC document. (POST /api/v2/deliverables/get_dec)."""
+    """Get DEC document.
+
+    POST /api/v2/deliverables/get_dec
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "reason": reason,
@@ -278,7 +311,10 @@ def get_dynamic_fields(
     deliverable_template_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get dynamic fields for deliverable template. (POST /api/v2/deliverables/get_dynamic_fields)."""
+    """Get dynamic fields for deliverable template.
+
+    POST /api/v2/deliverables/get_dynamic_fields
+    """
     request_json: dict[str, Any] = {
         "deliverable_template_id": deliverable_template_id,
     }
@@ -298,7 +334,10 @@ def get_edeliverables_by_id(
     ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get e-deliverables by identifiers. (POST /api/v2/deliverables/get_edeliverables_by_id)."""
+    """Get e-deliverables by identifiers.
+
+    POST /api/v2/deliverables/get_edeliverables_by_id
+    """
     request_json: dict[str, Any] = {
         "ids": ids,
     }
@@ -318,7 +357,10 @@ def get_html_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get HTML template by name. (POST /api/v2/deliverables/get_html_template)."""
+    """Get HTML template by name.
+
+    POST /api/v2/deliverables/get_html_template
+    """
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -339,7 +381,10 @@ def get_pending_email_count(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get pending email count for date range. (POST /api/v2/deliverables/get_pending_email_count)."""
+    """Get pending email count for date range.
+
+    POST /api/v2/deliverables/get_pending_email_count
+    """
     request_json: dict[str, Any] = {
         "from_date": from_date,
         "to_date": to_date,
@@ -360,7 +405,10 @@ def get_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get static resource by name. (POST /api/v2/deliverables/get_static_resource)."""
+    """Get static resource by name.
+
+    POST /api/v2/deliverables/get_static_resource
+    """
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -381,7 +429,10 @@ def index_edelivery_records(
     date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Index e-delivery records for date range. (POST /api/v2/deliverables/index_edelivery_records)."""
+    """Index e-delivery records for date range.
+
+    POST /api/v2/deliverables/index_edelivery_records
+    """
     request_json: dict[str, Any] = {
         "date_from": date_from,
         "date_to": date_to,
@@ -405,7 +456,10 @@ def regenerate_combined_billing_statements(
     group_billing_number: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Regenerate combined billing statements. (POST /api/v2/deliverables/regenerate_combined_billing_statements)."""
+    """Regenerate combined billing statements.
+
+    POST /api/v2/deliverables/regenerate_combined_billing_statements
+    """
     request_json: dict[str, Any] = {
         "force_generation": force_generation,
         "start_date": start_date,
@@ -430,7 +484,10 @@ def remove_edelivery_records(
     date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove e-delivery records for date range. (POST /api/v2/deliverables/remove_edelivery_records)."""
+    """Remove e-delivery records for date range.
+
+    POST /api/v2/deliverables/remove_edelivery_records
+    """
     request_json: dict[str, Any] = {
         "date_from": date_from,
         "date_to": date_to,
@@ -454,7 +511,10 @@ def retrieve_available_document_options(
     module: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve available document options. (POST /api/v2/deliverables/retrieve_available_document_options)."""
+    """Retrieve available document options.
+
+    POST /api/v2/deliverables/retrieve_available_document_options
+    """
     request_json: dict[str, Any] = {
         "location_abbr": location_abbr,
         "location_name": location_name,
@@ -488,7 +548,10 @@ def retrieve_files_for_entity(
     data: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve files for entity. (POST /api/v2/deliverables/retrieve_files_for_entity)."""
+    """Retrieve files for entity.
+
+    POST /api/v2/deliverables/retrieve_files_for_entity
+    """
     request_json: dict[str, Any] = {
         "-------": field,
         "advanced_filters": advanced_filters,
@@ -519,7 +582,10 @@ def retrieve_invoice_document(
     primary_insured: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve invoice document. (POST /api/v2/deliverables/retrieve_invoice_document)."""
+    """Retrieve invoice document.
+
+    POST /api/v2/deliverables/retrieve_invoice_document
+    """
     request_json: dict[str, Any] = {
         "invoice_number": invoice_number,
         "primary_insured": primary_insured,
@@ -545,7 +611,10 @@ def save_html_template(
     html: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save HTML template. (POST /api/v2/deliverables/save_html_template)."""
+    """Save HTML template.
+
+    POST /api/v2/deliverables/save_html_template
+    """
     request_json: dict[str, Any] = {
         "show_as_custom_deliverable": show_as_custom_deliverable,
         "name": name,
@@ -572,7 +641,10 @@ def save_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save static resource. (POST /api/v2/deliverables/save_static_resource)."""
+    """Save static resource.
+
+    POST /api/v2/deliverables/save_static_resource
+    """
     request_json: dict[str, Any] = {
         "url": url,
         "expire_in": expire_in,
@@ -596,7 +668,10 @@ def set_html_templates_locations(
     success: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set HTML templates locations. (POST /api/v2/deliverables/set_html_templates_locations)."""
+    """Set HTML templates locations.
+
+    POST /api/v2/deliverables/set_html_templates_locations
+    """
     request_json: dict[str, Any] = {
         "messages": messages,
         "data": data,
@@ -618,7 +693,10 @@ def update_edelivery_records(
     records: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update e-delivery records. (POST /api/v2/deliverables/update_edelivery_records)."""
+    """Update e-delivery records.
+
+    POST /api/v2/deliverables/update_edelivery_records
+    """
     request_json: dict[str, Any] = {
         "records": records,
     }

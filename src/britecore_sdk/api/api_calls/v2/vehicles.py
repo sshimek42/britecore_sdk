@@ -17,7 +17,10 @@ def add_additional_interest(
     additional_interest: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Additional Interest (POST /api/v2/vehicles/add_additional_interest)."""
+    """Add Additional Interest.
+
+    POST /api/v2/vehicles/add_additional_interest
+    """
     request_json: dict[str, Any] = {"additional_interest": additional_interest}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def add_additional_interest(
 def check_vehicle_prefill_fallback_configured(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Check Vehicle Prefill Fallback Configured (POST /api/v2/vehicles/check_vehicle_prefill_fallback_configured)."""
+    """Check Vehicle Prefill Fallback Configured.
+
+    POST /api/v2/vehicles/check_vehicle_prefill_fallback_configured
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def create_vehicle(
     vehicle: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Vehicle (POST /api/v2/vehicles/create_vehicle)."""
+    """Create Vehicle.
+
+    POST /api/v2/vehicles/create_vehicle
+    """
     request_json: dict[str, Any] = {"vehicle": vehicle}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def delete_additional_interest(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Additional Interest (POST /api/v2/vehicles/delete_additional_interest)."""
+    """Delete Additional Interest.
+
+    POST /api/v2/vehicles/delete_additional_interest
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -89,7 +101,10 @@ def delete_vehicle(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Vehicle (POST /api/v2/vehicles/delete_vehicle)."""
+    """Delete Vehicle.
+
+    POST /api/v2/vehicles/delete_vehicle
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -107,7 +122,10 @@ def get_additional_interest(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Additional Interest (POST /api/v2/vehicles/get_additional_interest)."""
+    """Get Additional Interest.
+
+    POST /api/v2/vehicles/get_additional_interest
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -125,7 +143,10 @@ def get_vehicle(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Vehicle (POST /api/v2/vehicles/get_vehicle)."""
+    """Get Vehicle.
+
+    POST /api/v2/vehicles/get_vehicle
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -143,7 +164,10 @@ def list_additional_interests_for_vehicle(
     vehicle_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Additional Interests For Vehicle (POST /api/v2/vehicles/list_additional_interests_for_vehicle)."""
+    """List Additional Interests For Vehicle.
+
+    POST /api/v2/vehicles/list_additional_interests_for_vehicle
+    """
     request_json: dict[str, Any] = {"vehicle_id": vehicle_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -162,7 +186,10 @@ def list_custom_fields_types(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Custom Fields Types (POST /api/v2/vehicles/list_custom_fields_types)."""
+    """List Custom Fields Types.
+
+    POST /api/v2/vehicles/list_custom_fields_types
+    """
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -182,7 +209,10 @@ def list_vehicles_for_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Vehicles For Quote (POST /api/v2/vehicles/list_vehicles_for_quote)."""
+    """List Vehicles For Quote.
+
+    POST /api/v2/vehicles/list_vehicles_for_quote
+    """
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -200,7 +230,10 @@ def update_additional_interest(
     additional_interest: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Additional Interest (POST /api/v2/vehicles/update_additional_interest)."""
+    """Update Additional Interest.
+
+    POST /api/v2/vehicles/update_additional_interest
+    """
     request_json: dict[str, Any] = {"additional_interest": additional_interest}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -218,7 +251,10 @@ def update_vehicle(
     vehicle: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Vehicle (POST /api/v2/vehicles/update_vehicle)."""
+    """Update Vehicle.
+
+    POST /api/v2/vehicles/update_vehicle
+    """
     request_json: dict[str, Any] = {"vehicle": vehicle}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -239,7 +275,10 @@ def vehicle_prefill_fallback(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Vehicle Prefill Fallback (POST /api/v2/vehicles/vehicle_prefill_fallback)."""
+    """Vehicle Prefill Fallback.
+
+    POST /api/v2/vehicles/vehicle_prefill_fallback
+    """
     request_json: dict[str, Any] = {
         "vehicle_year": vehicle_year,
         "cost_new": cost_new,

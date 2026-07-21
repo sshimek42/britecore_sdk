@@ -171,7 +171,10 @@ def batch_export_payments(
     commission_payment_ids: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Batch Export Payments (POST /api/v2/commissions/batch_export_payments)."""
+    """Batch Export Payments.
+
+    POST /api/v2/commissions/batch_export_payments
+    """
     request_json: dict[str, Any] = {"commission_payment_ids": commission_payment_ids}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -189,7 +192,10 @@ def batch_review_payments(
     commission_payment_ids: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Batch Review Payments (POST /api/v2/commissions/batch_review_payments)."""
+    """Batch Review Payments.
+
+    POST /api/v2/commissions/batch_review_payments
+    """
     request_json: dict[str, Any] = {"commission_payment_ids": commission_payment_ids}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -207,7 +213,10 @@ def batch_update_payment_methods(
     operations: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Batch Update Payment Methods (POST /api/v2/commissions/batch_update_payment_methods)."""
+    """Batch Update Payment Methods.
+
+    POST /api/v2/commissions/batch_update_payment_methods
+    """
     request_json: dict[str, Any] = {"operations": operations}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -226,7 +235,10 @@ def create_adjustment(
     adjustment_amount: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Adjustment (POST /api/v2/commissions/create_adjustment)."""
+    """Create Adjustment.
+
+    POST /api/v2/commissions/create_adjustment
+    """
     request_json: dict[str, Any] = {
         "source_accounting_id": source_accounting_id,
         "adjustment_amount": adjustment_amount,
@@ -250,7 +262,10 @@ def download_commission_report(
     contacts: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Download Commission Report (POST /api/v2/commissions/download_commission_report)."""
+    """Download Commission Report.
+
+    POST /api/v2/commissions/download_commission_report
+    """
     request_json: dict[str, Any] = {
         "report": report,
         "year": year,
@@ -274,7 +289,10 @@ def email_commission_report(
     report: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Email Commission Report (POST /api/v2/commissions/email_commission_report)."""
+    """Email Commission Report.
+
+    POST /api/v2/commissions/email_commission_report
+    """
     request_json: dict[str, Any] = {
         "contacts": contacts,
         "report": report,
@@ -294,7 +312,10 @@ def email_commission_report(
 def get_commission_accounting_entries(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Commission Accounting Entries (POST /api/v2/commissions/get_commission_accounting_entries)."""
+    """Get Commission Accounting Entries.
+
+    POST /api/v2/commissions/get_commission_accounting_entries
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -312,7 +333,10 @@ def get_commission_payment_composition(
     commission_payment_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Commission Payment Composition (POST /api/v2/commissions/get_commission_payment_composition)."""
+    """Get Commission Payment Composition.
+
+    POST /api/v2/commissions/get_commission_payment_composition
+    """
     request_json: dict[str, Any] = {"commission_payment_id": commission_payment_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -330,7 +354,10 @@ def get_commission_payment_composition(
 def get_commission_payments(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Commission Payments (POST /api/v2/commissions/get_commission_payments)."""
+    """Get Commission Payments.
+
+    POST /api/v2/commissions/get_commission_payments
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -347,7 +374,10 @@ def get_commission_payments(
 def get_delayed_commission_accounting_entries(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Delayed Commission Accounting Entries (POST /api/v2/commissions/get_delayed_commission_accounting_entries)."""
+    """Get Delayed Commission Accounting Entries.
+
+    POST /api/v2/commissions/get_delayed_commission_accounting_entries
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -365,7 +395,10 @@ def get_delayed_commission_accounting_entries(
 def get_delayed_commission_entries_summary(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Delayed Commission Entries Summary (POST /api/v2/commissions/get_delayed_commission_entries_summary)."""
+    """Get Delayed Commission Entries Summary.
+
+    POST /api/v2/commissions/get_delayed_commission_entries_summary
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -383,7 +416,10 @@ def get_delayed_commission_entries_summary(
 def write_off_negative_amount(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Write Off Negative Amount (POST /api/v2/commissions/write_off_negative_amount)."""
+    """Write Off Negative Amount.
+
+    POST /api/v2/commissions/write_off_negative_amount
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -31,11 +31,7 @@ def update_inspection_dates(
 ) -> Any:
     """Update inspection dates for a policy or property.
 
-    This wrapper uses either ``property_id`` or ``policy_number`` together with
-    the requested inspection dates to call
-    ``/api/v2/inspections/update_inspection_dates``. It returns the normalized
-    ``process_result(...)`` payload for the update request and accepts
-    ``RequestParameters`` overrides via ``**kwargs``.
+    POST /api/v2/inspections/update_inspection_dates
     """
     local_env: dict[str, str | None] = {**locals()}
 
@@ -77,7 +73,10 @@ def initiate_property_inspection(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Initiate Property Inspection (POST /api/v2/inspections/initiate_property_inspection)."""
+    """Initiate Property Inspection.
+
+    POST /api/v2/inspections/initiate_property_inspection
+    """
     request_json: dict[str, Any] = {
         "integration_instance_id": integration_instance_id,
         "property_id": property_id,
@@ -101,7 +100,10 @@ def update_property_inspection_data(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Property Inspection Data (POST /api/v2/inspections/update_property_inspection_data)."""
+    """Update Property Inspection Data.
+
+    POST /api/v2/inspections/update_property_inspection_data
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "integration_instance_id": integration_instance_id,

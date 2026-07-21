@@ -18,7 +18,10 @@ def create_watercraft(
     skip_rules: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Watercraft (POST /api/v2/watercrafts/create_watercraft)."""
+    """Create Watercraft.
+
+    POST /api/v2/watercrafts/create_watercraft
+    """
     request_json: dict[str, Any] = {
         "watercraft": watercraft,
         "skip_rules": skip_rules,
@@ -39,7 +42,10 @@ def delete_watercraft(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Watercraft (POST /api/v2/watercrafts/delete_watercraft)."""
+    """Delete Watercraft.
+
+    POST /api/v2/watercrafts/delete_watercraft
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -59,7 +65,10 @@ def get_watercraft(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Watercraft (POST /api/v2/watercrafts/get_watercraft)."""
+    """Get Watercraft.
+
+    POST /api/v2/watercrafts/get_watercraft
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -79,7 +88,10 @@ def list_custom_fields_types(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Custom Fields Types (POST /api/v2/watercrafts/list_custom_fields_types)."""
+    """List Custom Fields Types.
+
+    POST /api/v2/watercrafts/list_custom_fields_types
+    """
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -99,7 +111,10 @@ def list_watercrafts_for_quote(
     quote_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Watercrafts For Quote (POST /api/v2/watercrafts/list_watercrafts_for_quote)."""
+    """List Watercrafts For Quote.
+
+    POST /api/v2/watercrafts/list_watercrafts_for_quote
+    """
     request_json: dict[str, Any] = {
         "quote_id": quote_id,
     }
@@ -120,7 +135,10 @@ def update_watercraft(
     skip_rules: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Watercraft (POST /api/v2/watercrafts/update_watercraft)."""
+    """Update Watercraft.
+
+    POST /api/v2/watercrafts/update_watercraft
+    """
     request_json: dict[str, Any] = {
         "watercraft": watercraft,
         "skip_rules": skip_rules,

@@ -17,7 +17,10 @@ def create_injury(
     injury: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Injury (POST /api/v2/claim_injuries/create_injury)."""
+    """Create Injury.
+
+    POST /api/v2/claim_injuries/create_injury
+    """
     request_json: dict[str, Any] = {"injury": injury}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def delete_injury(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Injury (POST /api/v2/claim_injuries/delete_injury)."""
+    """Delete Injury.
+
+    POST /api/v2/claim_injuries/delete_injury
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def get_injuries(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Injuries (POST /api/v2/claim_injuries/get_injuries)."""
+    """Get Injuries.
+
+    POST /api/v2/claim_injuries/get_injuries
+    """
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def get_injury(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Injury (POST /api/v2/claim_injuries/get_injury)."""
+    """Get Injury.
+
+    POST /api/v2/claim_injuries/get_injury
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -89,7 +101,10 @@ def update_injury(
     injury: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Injury (POST /api/v2/claim_injuries/update_injury)."""
+    """Update Injury.
+
+    POST /api/v2/claim_injuries/update_injury
+    """
     request_json: dict[str, Any] = {"injury": injury}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -17,7 +17,10 @@ def create_ingestion_job(
     ingestion_job: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Ingestion Job (POST /api/v2/ingestion_job/create_ingestion_job)."""
+    """Create Ingestion Job.
+
+    POST /api/v2/ingestion_job/create_ingestion_job
+    """
     request_json: dict[str, Any] = {"ingestion_job": ingestion_job}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def delete_ingestion_job(
     ingestion_job_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Ingestion Job (POST /api/v2/ingestion_job/delete_ingestion_job)."""
+    """Delete Ingestion Job.
+
+    POST /api/v2/ingestion_job/delete_ingestion_job
+    """
     request_json: dict[str, Any] = {"ingestion_job_id": ingestion_job_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def execute_import(
     ingestion_job_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Execute Import (POST /api/v2/ingestion_job/execute_import)."""
+    """Execute Import.
+
+    POST /api/v2/ingestion_job/execute_import
+    """
     request_json: dict[str, Any] = {"ingestion_job_id": ingestion_job_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -71,7 +80,10 @@ def get_ingestion_job(
     ingestion_job_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Ingestion Job (POST /api/v2/ingestion_job/get_ingestion_job)."""
+    """Get Ingestion Job.
+
+    POST /api/v2/ingestion_job/get_ingestion_job
+    """
     request_json: dict[str, Any] = {"ingestion_job_id": ingestion_job_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -88,7 +100,10 @@ def get_ingestion_job(
 def list_ingestion_jobs(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Ingestion Jobs (POST /api/v2/ingestion_job/list_ingestion_jobs)."""
+    """List Ingestion Jobs.
+
+    POST /api/v2/ingestion_job/list_ingestion_jobs
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

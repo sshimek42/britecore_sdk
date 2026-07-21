@@ -32,10 +32,7 @@ def get_claim(
 ) -> Any:
     """Retrieve claim details by claim identifier.
 
-    This wrapper sends either ``claim_id`` or ``claim_number`` to
-    ``/api/v2/claims/get_claim`` and returns the normalized
-    ``process_result(...)`` payload for the matching claim record.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/claims/get_claim
     """
     verification_list: list[dict[str, str | None]] = [
         {"claim_id": claim_id},
@@ -129,7 +126,10 @@ def auto_assign_claim(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Auto Assign Claim (POST /api/v2/claims/auto_assign_claim)."""
+    """Auto Assign Claim.
+
+    POST /api/v2/claims/auto_assign_claim
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -149,7 +149,10 @@ def bifurcate_claim(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bifurcate Claim (POST /api/v2/claims/bifurcate_claim)."""
+    """Bifurcate Claim.
+
+    POST /api/v2/claims/bifurcate_claim
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -168,7 +171,10 @@ def bifurcate_claim(
 def bulk_assign(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bulk Assign (POST /api/v2/claims/bulk_assign)."""
+    """Bulk Assign.
+
+    POST /api/v2/claims/bulk_assign
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -185,7 +191,10 @@ def bulk_assign(
 def bulk_reassign(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bulk Reassign (POST /api/v2/claims/bulk_reassign)."""
+    """Bulk Reassign.
+
+    POST /api/v2/claims/bulk_reassign
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -202,7 +211,10 @@ def bulk_reassign(
 def bulk_unassign(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bulk Unassign (POST /api/v2/claims/bulk_unassign)."""
+    """Bulk Unassign.
+
+    POST /api/v2/claims/bulk_unassign
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -222,7 +234,10 @@ def create_claim_date(
     claim_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Claim Date (POST /api/v2/claims/create_claim_date)."""
+    """Create Claim Date.
+
+    POST /api/v2/claims/create_claim_date
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "claim_date_type": claim_date_type,
@@ -244,7 +259,10 @@ def export_batch_claims(
     claim_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Batch Claims (POST /api/v2/claims/export_batch_claims)."""
+    """Export Batch Claims.
+
+    POST /api/v2/claims/export_batch_claims
+    """
     request_json: dict[str, Any] = {
         "claim_ids": claim_ids,
     }
@@ -264,7 +282,10 @@ def get_all_associated_claims_parties(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get All Associated Claims Parties (POST /api/v2/claims/get_all_associated_claims_parties)."""
+    """Get All Associated Claims Parties.
+
+    POST /api/v2/claims/get_all_associated_claims_parties
+    """
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -284,7 +305,10 @@ def get_all_claim_transactions(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get All Claim Transactions (POST /api/v2/claims/get_all_claim_transactions)."""
+    """Get All Claim Transactions.
+
+    POST /api/v2/claims/get_all_claim_transactions
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -311,7 +335,10 @@ def get_claim_change_logs(
     field: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Change Logs (POST /api/v2/claims/get_claim_change_logs)."""
+    """Get Claim Change Logs.
+
+    POST /api/v2/claims/get_claim_change_logs
+    """
     request_json: dict[str, Any] = {
         "transaction": transaction,
         "standard_error": standard_error,
@@ -336,7 +363,10 @@ def get_claim_date_types(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Date Types (POST /api/v2/claims/get_claim_date_types)."""
+    """Get Claim Date Types.
+
+    POST /api/v2/claims/get_claim_date_types
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -356,7 +386,10 @@ def get_claim_dates(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Dates (POST /api/v2/claims/get_claim_dates)."""
+    """Get Claim Dates.
+
+    POST /api/v2/claims/get_claim_dates
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -376,7 +409,10 @@ def get_claims_tabs_visibility(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claims Tabs Visibility (POST /api/v2/claims/get_claims_tabs_visibility)."""
+    """Get Claims Tabs Visibility.
+
+    POST /api/v2/claims/get_claims_tabs_visibility
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -400,7 +436,10 @@ def get_contacts_claims(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contacts Claims (POST /api/v2/claims/get_contacts_claims)."""
+    """Get Contacts Claims.
+
+    POST /api/v2/claims/get_contacts_claims
+    """
     request_json: dict[str, Any] = {
         "active": active,
         "contact_external_refs": contact_external_refs,
@@ -426,7 +465,10 @@ def get_contacts_claims_count(
     contact_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Contacts Claims Count (POST /api/v2/claims/get_contacts_claims_count)."""
+    """Get Contacts Claims Count.
+
+    POST /api/v2/claims/get_contacts_claims_count
+    """
     request_json: dict[str, Any] = {
         "active": active,
         "contact_external_refs": contact_external_refs,
@@ -450,7 +492,10 @@ def new_claim(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """New Claim (POST /api/v2/claims/new_claim)."""
+    """New Claim.
+
+    POST /api/v2/claims/new_claim
+    """
     request_json: dict[str, Any] = {
         "claim_number": claim_number,
         "claim_number_origin": claim_number_origin,
@@ -473,7 +518,10 @@ def remove_claim(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove Claim (POST /api/v2/claims/remove_claim)."""
+    """Remove Claim.
+
+    POST /api/v2/claims/remove_claim
+    """
     request_json: dict[str, Any] = {
         "hard_delete": hard_delete,
         "claim_id": claim_id,
@@ -500,7 +548,10 @@ def retrieve_claim_change_logs(
     policy_type_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Claim Change Logs (POST /api/v2/claims/retrieve_claim_change_logs)."""
+    """Retrieve Claim Change Logs.
+
+    POST /api/v2/claims/retrieve_claim_change_logs
+    """
     request_json: dict[str, Any] = {
         "claim_ids": claim_ids,
         "transactions": transactions,
@@ -531,7 +582,10 @@ def retrieve_claim_payments(
     transaction_date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Claim Payments (POST /api/v2/claims/retrieve_claim_payments)."""
+    """Retrieve Claim Payments.
+
+    POST /api/v2/claims/retrieve_claim_payments
+    """
     request_json: dict[str, Any] = {
         "transaction_date_from": transaction_date_from,
         "voided": voided,
@@ -561,7 +615,10 @@ def set_claim_loss_address(
     property_address_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Claim Loss Address (POST /api/v2/claims/set_claim_loss_address)."""
+    """Set Claim Loss Address.
+
+    POST /api/v2/claims/set_claim_loss_address
+    """
     request_json: dict[str, Any] = {
         "not found": not_found,
         "Raises": Raises,
@@ -589,7 +646,10 @@ def update_claim_date(
     claim_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Claim Date (POST /api/v2/claims/update_claim_date)."""
+    """Update Claim Date.
+
+    POST /api/v2/claims/update_claim_date
+    """
     request_json: dict[str, Any] = {
         "claim_date_id": claim_date_id,
         "claim_id": claim_id,

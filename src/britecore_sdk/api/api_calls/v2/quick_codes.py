@@ -16,7 +16,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 def list_quick_codes(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Quick Codes (POST /api/v2/quick_codes/list_quick_codes)."""
+    """List Quick Codes.
+
+    POST /api/v2/quick_codes/list_quick_codes
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def update_quick_code(
     quick_code: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Quick Code (POST /api/v2/quick_codes/update_quick_code)."""
+    """Update Quick Code.
+
+    POST /api/v2/quick_codes/update_quick_code
+    """
     request_json: dict[str, Any] = {"quick_code": quick_code}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

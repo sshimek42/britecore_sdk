@@ -17,7 +17,10 @@ def create_suspension(
     suspension: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Suspension (POST /api/v2/suspensions/create_suspension)."""
+    """Create Suspension.
+
+    POST /api/v2/suspensions/create_suspension
+    """
     request_json: dict[str, Any] = {"suspension": suspension}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def create_suspension(
 def delete_suspension(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Suspension (POST /api/v2/suspensions/delete_suspension)."""
+    """Delete Suspension.
+
+    POST /api/v2/suspensions/delete_suspension
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def get_policy_applicable_suspensions(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policy Applicable Suspensions (POST /api/v2/suspensions/get_policy_applicable_suspensions)."""
+    """Get Policy Applicable Suspensions.
+
+    POST /api/v2/suspensions/get_policy_applicable_suspensions
+    """
     request_json: dict[str, Any] = {
         "suspension_actions": suspension_actions,
         "policy_id": policy_id,
@@ -74,7 +83,10 @@ def get_revision_suspensions(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Revision Suspensions (POST /api/v2/suspensions/get_revision_suspensions)."""
+    """Get Revision Suspensions.
+
+    POST /api/v2/suspensions/get_revision_suspensions
+    """
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -93,7 +105,10 @@ def get_user_suspensions_with_geometries(
     state: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get User Suspensions With Geometries (POST /api/v2/suspensions/get_user_suspensions_with_geometries)."""
+    """Get User Suspensions With Geometries.
+
+    POST /api/v2/suspensions/get_user_suspensions_with_geometries
+    """
     request_json: dict[str, Any] = {
         "date": date,
         "state": state,
@@ -114,7 +129,10 @@ def get_user_suspensions_with_geometries(
 def list_suspensions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Suspensions (POST /api/v2/suspensions/list_suspensions)."""
+    """List Suspensions.
+
+    POST /api/v2/suspensions/list_suspensions
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -132,7 +150,10 @@ def update_suspension(
     suspension: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Suspension (POST /api/v2/suspensions/update_suspension)."""
+    """Update Suspension.
+
+    POST /api/v2/suspensions/update_suspension
+    """
     request_json: dict[str, Any] = {"suspension": suspension}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

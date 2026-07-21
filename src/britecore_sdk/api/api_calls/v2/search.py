@@ -18,10 +18,7 @@ def add_to_index(
 ) -> Any:
     """Add a document to a search index.
 
-    This wrapper sends ``document``, ``document_id``, and ``index_name`` to
-    ``/api/v2/search/add_to_index`` and returns the normalized
-    ``process_result(...)`` payload for the indexing request. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/search/add_to_index
     """
     return post(
         "/api/v2/search/add_to_index",
@@ -37,10 +34,7 @@ def remove_from_index(
 ) -> Any:
     """Remove a document from a search index.
 
-    This wrapper sends ``document_id`` and ``index_name`` to
-    ``/api/v2/search/remove_from_index`` and returns the normalized
-    ``process_result(...)`` payload for the removal request. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/search/remove_from_index
     """
     return post(
         "/api/v2/search/remove_from_index",

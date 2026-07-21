@@ -58,12 +58,7 @@ def retrieve_notes(
 ) -> Any:
     """Retrieve notes for an entity with filtering and pagination controls.
 
-    This wrapper sends note query fields to ``/api/v2/notes/retrieveNotes``.
-    SDK-specific behavior: it bypasses ``process_result(...)`` and parses the
-    raw JSON response directly, returning the ``records`` list or ``[]`` when
-    the response is empty or does not contain records. ``**kwargs`` accepts
-    ``RequestParameters`` overrides, and a long request timeout is applied when
-    one is not provided.
+    POST /api/v2/notes/retrieveNotes
     """
     LOGGER.debug("Getting notes")
 

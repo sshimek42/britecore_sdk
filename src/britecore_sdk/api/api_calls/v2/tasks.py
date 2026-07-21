@@ -25,7 +25,10 @@ def create_task(
     task_definition_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Task (POST /api/v2/tasks/create_task)."""
+    """Create Task.
+
+    POST /api/v2/tasks/create_task
+    """
     request_json: dict[str, Any] = {
         "due_date": due_date,
         "mandatory": mandatory,
@@ -54,7 +57,10 @@ def create_task_definition(
     scope: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Task Definition (POST /api/v2/tasks/create_task_definition)."""
+    """Create Task Definition.
+
+    POST /api/v2/tasks/create_task_definition
+    """
     request_json: dict[str, Any] = {
         "name": name,
         "scope": scope,
@@ -81,7 +87,10 @@ def modify_task(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Task (POST /api/v2/tasks/modify_task)."""
+    """Modify Task.
+
+    POST /api/v2/tasks/modify_task
+    """
     request_json: dict[str, Any] = {
         "status": status,
         "due_date": due_date,
@@ -106,7 +115,10 @@ def modify_task(
 def retrieve_filter_options(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Filter Options (POST /api/v2/tasks/retrieve_filter_options)."""
+    """Retrieve Filter Options.
+
+    POST /api/v2/tasks/retrieve_filter_options
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -124,7 +136,10 @@ def retrieve_task(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task (POST /api/v2/tasks/retrieve_task)."""
+    """Retrieve Task.
+
+    POST /api/v2/tasks/retrieve_task
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -144,7 +159,10 @@ def retrieve_task_definition(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task Definition (POST /api/v2/tasks/retrieve_task_definition)."""
+    """Retrieve Task Definition.
+
+    POST /api/v2/tasks/retrieve_task_definition
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -163,7 +181,10 @@ def retrieve_task_definition(
 def retrieve_task_definitions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task Definitions (POST /api/v2/tasks/retrieve_task_definitions)."""
+    """Retrieve Task Definitions.
+
+    POST /api/v2/tasks/retrieve_task_definitions
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -181,7 +202,10 @@ def retrieve_task_history(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Task History (POST /api/v2/tasks/retrieve_task_history)."""
+    """Retrieve Task History.
+
+    POST /api/v2/tasks/retrieve_task_history
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -204,7 +228,10 @@ def retrieve_tasks(
     filters: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Tasks (POST /api/v2/tasks/retrieve_tasks)."""
+    """Retrieve Tasks.
+
+    POST /api/v2/tasks/retrieve_tasks
+    """
     request_json: dict[str, Any] = {
         "query": query,
         "pagination": pagination,

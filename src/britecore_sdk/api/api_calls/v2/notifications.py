@@ -41,9 +41,7 @@ def acknowledge(
 ) -> Any:
     """Acknowledge the caller's current notifications.
 
-    This wrapper calls ``/api/v2/notifications/acknowledge`` and returns the
-    normalized ``process_result(...)`` payload confirming acknowledgement.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/notifications/acknowledge
     """
     return post("/api/v2/notifications/acknowledge", {}, **kwargs)
 
@@ -53,9 +51,7 @@ def current(
 ) -> Any:
     """Retrieve the current unacknowledged notifications.
 
-    This wrapper calls ``/api/v2/notifications/current`` and returns the
-    normalized ``process_result(...)`` payload for the active notification set.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/notifications/current
     """
     return post("/api/v2/notifications/current", {}, **kwargs)
 

@@ -17,7 +17,10 @@ def create_custom_error_code(
     custom_error_code: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Custom Error Code (POST /api/v2/configurations/create_custom_error_code)."""
+    """Create Custom Error Code.
+
+    POST /api/v2/configurations/create_custom_error_code
+    """
     request_json: dict[str, Any] = {
         "custom_error_code": custom_error_code,
     }
@@ -37,7 +40,10 @@ def delete_custom_error_code(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Custom Error Code (POST /api/v2/configurations/delete_custom_error_code)."""
+    """Delete Custom Error Code.
+
+    POST /api/v2/configurations/delete_custom_error_code
+    """
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -57,7 +63,10 @@ def list_custom_error_codes(
     module: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Custom Error Codes (POST /api/v2/configurations/list_custom_error_codes)."""
+    """List Custom Error Codes.
+
+    POST /api/v2/configurations/list_custom_error_codes
+    """
     request_json: dict[str, Any] = {
         "module": module,
     }
@@ -77,7 +86,10 @@ def update_custom_error_code(
     custom_error_code: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Custom Error Code (POST /api/v2/configurations/update_custom_error_code)."""
+    """Update Custom Error Code.
+
+    POST /api/v2/configurations/update_custom_error_code
+    """
     request_json: dict[str, Any] = {
         "custom_error_code": custom_error_code,
     }

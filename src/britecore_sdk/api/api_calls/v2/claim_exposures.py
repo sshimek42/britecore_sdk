@@ -24,7 +24,10 @@ def add_recovery(
     payment_details: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add recovery information to a claim exposure. (POST /api/v2/claim_exposures/add_recovery)."""
+    """Add recovery information to a claim exposure.
+
+    POST /api/v2/claim_exposures/add_recovery
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "recovery_details": recovery_details,
@@ -55,7 +58,10 @@ def add_recovery_reserve(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add recovery reserve to a claim exposure. (POST /api/v2/claim_exposures/add_recovery_reserve)."""
+    """Add recovery reserve to a claim exposure.
+
+    POST /api/v2/claim_exposures/add_recovery_reserve
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "api_key": api_key,
@@ -81,7 +87,10 @@ def add_reserve(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add reserve to a claim exposure. (POST /api/v2/claim_exposures/add_reserve)."""
+    """Add reserve to a claim exposure.
+
+    POST /api/v2/claim_exposures/add_reserve
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -105,7 +114,10 @@ def create_exposure(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new claim exposure. (POST /api/v2/claim_exposures/create_exposure)."""
+    """Create a new claim exposure.
+
+    POST /api/v2/claim_exposures/create_exposure
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -129,7 +141,10 @@ def delete_exposure(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim exposure. (POST /api/v2/claim_exposures/delete_exposure)."""
+    """Delete a claim exposure.
+
+    POST /api/v2/claim_exposures/delete_exposure
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -153,7 +168,10 @@ def get_accounting_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting data for a claim. (POST /api/v2/claim_exposures/get_accounting_data)."""
+    """Retrieve accounting data for a claim.
+
+    POST /api/v2/claim_exposures/get_accounting_data
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -178,7 +196,10 @@ def get_accounting_loss_details(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting loss details for a claim. (POST /api/v2/claim_exposures/get_accounting_loss_details)."""
+    """Retrieve accounting loss details for a claim.
+
+    POST /api/v2/claim_exposures/get_accounting_loss_details
+    """
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "claim_id": claim_id,
@@ -204,7 +225,10 @@ def get_accounting_overview(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting overview for a claim. (POST /api/v2/claim_exposures/get_accounting_overview)."""
+    """Retrieve accounting overview for a claim.
+
+    POST /api/v2/claim_exposures/get_accounting_overview
+    """
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "claim_id": claim_id,
@@ -230,7 +254,10 @@ def get_accounting_recoveries_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting recovery data for a claim. (POST /api/v2/claim_exposures/get_accounting_recoveries_data)."""
+    """Retrieve accounting recovery data for a claim.
+
+    POST /api/v2/claim_exposures/get_accounting_recoveries_data
+    """
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "claim_id": claim_id,
@@ -258,7 +285,10 @@ def get_broken_limits(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve broken coverage limits for a claim. (POST /api/v2/claim_exposures/get_broken_limits)."""
+    """Retrieve broken coverage limits for a claim.
+
+    POST /api/v2/claim_exposures/get_broken_limits
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "instance": instance,
@@ -284,7 +314,10 @@ def get_coverage_accounting_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve coverage accounting data for a claim. (POST /api/v2/claim_exposures/get_coverage_accounting_data)."""
+    """Retrieve coverage accounting data for a claim.
+
+    POST /api/v2/claim_exposures/get_coverage_accounting_data
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -308,7 +341,10 @@ def get_exposure_accounting_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve exposure accounting data for a claim. (POST /api/v2/claim_exposures/get_exposure_accounting_data)."""
+    """Retrieve exposure accounting data for a claim.
+
+    POST /api/v2/claim_exposures/get_exposure_accounting_data
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -332,7 +368,10 @@ def get_exposure_transactions(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve transactions for a claim exposure. (POST /api/v2/claim_exposures/get_exposure_transactions)."""
+    """Retrieve transactions for a claim exposure.
+
+    POST /api/v2/claim_exposures/get_exposure_transactions
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -357,7 +396,10 @@ def get_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve payment details for a claim exposure. (POST /api/v2/claim_exposures/get_payment)."""
+    """Retrieve payment details for a claim exposure.
+
+    POST /api/v2/claim_exposures/get_payment
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "payment_id": payment_id,
@@ -382,7 +424,10 @@ def list_exposures(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List all exposures for a claim. (POST /api/v2/claim_exposures/list_exposures)."""
+    """List all exposures for a claim.
+
+    POST /api/v2/claim_exposures/list_exposures
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -406,7 +451,10 @@ def make_multi_exposures_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make payment across multiple exposures for a claim. (POST /api/v2/claim_exposures/make_multi_exposures_payment)."""
+    """Make payment across multiple exposures for a claim.
+
+    POST /api/v2/claim_exposures/make_multi_exposures_payment
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -430,7 +478,10 @@ def make_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make payment for a claim exposure. (POST /api/v2/claim_exposures/make_payment)."""
+    """Make payment for a claim exposure.
+
+    POST /api/v2/claim_exposures/make_payment
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -455,7 +506,10 @@ def update_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update payment information for a claim exposure. (POST /api/v2/claim_exposures/update_payment)."""
+    """Update payment information for a claim exposure.
+
+    POST /api/v2/claim_exposures/update_payment
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "payment_details": payment_details,
@@ -480,7 +534,10 @@ def void_transaction(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Void a transaction for a claim exposure. (POST /api/v2/claim_exposures/void_transaction)."""
+    """Void a transaction for a claim exposure.
+
+    POST /api/v2/claim_exposures/void_transaction
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,

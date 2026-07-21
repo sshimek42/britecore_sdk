@@ -21,7 +21,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def get_available_function_names(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve available utility function names. (POST /api/v2/utils/get_available_function_names)."""
+    """Retrieve available utility function names.
+
+    POST /api/v2/utils/get_available_function_names
+    """
     LOGGER.debug("Retrieving functions")
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/utils/get_available_function_names",
@@ -37,7 +40,10 @@ def rebuild_search_index(
     only_build: list,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
-    """Rebuild all or part of the search index. (POST /api/v2/utils/rebuild_search_index)."""
+    """Rebuild all or part of the search index.
+
+    POST /api/v2/utils/rebuild_search_index
+    """
     LOGGER.debug("Rebuilding index")
     rebuild_index: dict[str, Any] = {"only_build": only_build}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -51,7 +57,10 @@ def rebuild_search_index(
 
 
 def get_release_info(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve platform release information. (POST /api/v2/utils/get_release_info)."""
+    """Retrieve platform release information.
+
+    POST /api/v2/utils/get_release_info
+    """
     LOGGER.debug("Retrieving release info")
 
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -74,7 +83,10 @@ def add_britedocs_reference(
     x_report_location_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Britedocs Reference. (POST /api/v2/utils/add_britedocs_reference)."""
+    """Add Britedocs Reference.
+
+    POST /api/v2/utils/add_britedocs_reference
+    """
     request_json: dict[str, Any] = {
         "report_type_name": report_type_name,
         "britedocs_id": britedocs_id,
@@ -98,7 +110,10 @@ def generate_receipt(
     payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Receipt. (POST /api/v2/utils/generate_receipt)."""
+    """Generate Receipt.
+
+    POST /api/v2/utils/generate_receipt
+    """
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
     }
@@ -117,7 +132,10 @@ def generate_receipt(
 def get_effective_dates(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Effective Dates. (POST /api/v2/utils/get_effective_dates)."""
+    """Get Effective Dates.
+
+    POST /api/v2/utils/get_effective_dates
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -134,7 +152,10 @@ def get_effective_dates(
 def get_navigation_links(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Navigation Links. (POST /api/v2/utils/get_navigation_links)."""
+    """Get Navigation Links.
+
+    POST /api/v2/utils/get_navigation_links
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -159,7 +180,10 @@ def get_policies(
     include_canceled: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies. (POST /api/v2/utils/get_policies)."""
+    """Get Policies.
+
+    POST /api/v2/utils/get_policies
+    """
     request_json: dict[str, Any] = {
         "include_policy_photo": include_policy_photo,
         "page_size": page_size,
@@ -186,7 +210,10 @@ def get_policies_by_contact_id_db_query(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies By Contact Id Db Query. (POST /api/v2/utils/get_policies_by_contact_id_db_query)."""
+    """Get Policies By Contact Id Db Query.
+
+    POST /api/v2/utils/get_policies_by_contact_id_db_query
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -207,7 +234,10 @@ def get_policies_with_active_current_revision(
     policies: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies With Active Current Revision. (POST /api/v2/utils/get_policies_with_active_current_revision)."""
+    """Get Policies With Active Current Revision.
+
+    POST /api/v2/utils/get_policies_with_active_current_revision
+    """
     request_json: dict[str, Any] = {
         "include_canceled": include_canceled,
         "policies": policies,
@@ -228,7 +258,10 @@ def get_policies_with_active_current_revision(
 def get_signable_deliverable_names(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Signable Deliverable Names. (POST /api/v2/utils/get_signable_deliverable_names)."""
+    """Get Signable Deliverable Names.
+
+    POST /api/v2/utils/get_signable_deliverable_names
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -247,7 +280,10 @@ def is_insured_mentioned_on_current_revision(
     insured_contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Is Insured Mentioned On Current Revision. (POST /api/v2/utils/is_insured_mentioned_on_current_revision)."""
+    """Is Insured Mentioned On Current Revision.
+
+    POST /api/v2/utils/is_insured_mentioned_on_current_revision
+    """
     request_json: dict[str, Any] = {
         "candidate_policy": candidate_policy,
         "insured_contact_id": insured_contact_id,
@@ -269,7 +305,10 @@ def mark_file_as_signed(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark File As Signed. (POST /api/v2/utils/mark_file_as_signed)."""
+    """Mark File As Signed.
+
+    POST /api/v2/utils/mark_file_as_signed
+    """
     request_json: dict[str, Any] = {
         "file_id": file_id,
     }
@@ -290,7 +329,10 @@ def mark_return_premium_or_claim_payment_as_exported_with_check_details(
     table_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark Return Premium Or Claim Payment As Exported With Check Details. (POST /api/v2/utils/mark_return_premium_or_claim_payment_as_exported_with_check_details)."""
+    """Mark Return Premium Or Claim Payment As Exported With Check Details.
+
+    POST /api/v2/utils/mark_return_premium_or_claim_payment_as_exported_with_check_details
+    """
     request_json: dict[str, Any] = {
         "records_to_export = dict, required": records_to_export_dict_required,
         "table_name": table_name,
@@ -311,7 +353,10 @@ def mark_return_premium_or_claim_payment_as_exported_with_check_details(
 def meta(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Meta. (POST /api/v2/utils/meta)."""
+    """Meta.
+
+    POST /api/v2/utils/meta
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -331,7 +376,10 @@ def refund(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Refund. (POST /api/v2/utils/refund)."""
+    """Refund.
+
+    POST /api/v2/utils/refund
+    """
     request_json: dict[str, Any] = {
         "transfer_policy_number": transfer_policy_number,
         "refund_reason": refund_reason,
@@ -353,7 +401,10 @@ def retrieve_background_job(
     job_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Background Job. (POST /api/v2/utils/retrieve_background_job)."""
+    """Retrieve Background Job.
+
+    POST /api/v2/utils/retrieve_background_job
+    """
     request_json: dict[str, Any] = {
         "job_id": job_id,
     }
@@ -374,7 +425,10 @@ def retrieve_payments_on_policy(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Payments On Policy. (POST /api/v2/utils/retrieve_payments_on_policy)."""
+    """Retrieve Payments On Policy.
+
+    POST /api/v2/utils/retrieve_payments_on_policy
+    """
     request_json: dict[str, Any] = {
         "only_missing_receipts": only_missing_receipts,
         "policy_number": policy_number,
@@ -395,7 +449,10 @@ def retrieve_receipts(
     number: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Receipts. (POST /api/v2/utils/retrieve_receipts)."""
+    """Retrieve Receipts.
+
+    POST /api/v2/utils/retrieve_receipts
+    """
     request_json: dict[str, Any] = {
         "number": number,
     }
@@ -415,7 +472,10 @@ def revert_agentcy_transfer(
     archive_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Revert Agentcy Transfer. (POST /api/v2/utils/revert_agentcy_transfer)."""
+    """Revert Agentcy Transfer.
+
+    POST /api/v2/utils/revert_agentcy_transfer
+    """
     request_json: dict[str, Any] = {
         "archive_id": archive_id,
     }
@@ -435,7 +495,10 @@ def revert_mortgagee_transfer(
     archive_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Revert Mortgagee Transfer. (POST /api/v2/utils/revert_mortgagee_transfer)."""
+    """Revert Mortgagee Transfer.
+
+    POST /api/v2/utils/revert_mortgagee_transfer
+    """
     request_json: dict[str, Any] = {
         "archive_id": archive_id,
     }
@@ -458,7 +521,10 @@ def transfer_agentcy_policies(
     from_contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Transfer Agentcy Policies. (POST /api/v2/utils/transfer_agentcy_policies)."""
+    """Transfer Agentcy Policies.
+
+    POST /api/v2/utils/transfer_agentcy_policies
+    """
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "print_decs": print_decs,
@@ -483,7 +549,10 @@ def transfer_mortgagee_policies(
     from_contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Transfer Mortgagee Policies. (POST /api/v2/utils/transfer_mortgagee_policies)."""
+    """Transfer Mortgagee Policies.
+
+    POST /api/v2/utils/transfer_mortgagee_policies
+    """
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "to_contact_id": to_contact_id,
@@ -506,7 +575,10 @@ def unarchive_record(
     unique_value: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Unarchive Record. (POST /api/v2/utils/unarchive_record)."""
+    """Unarchive Record.
+
+    POST /api/v2/utils/unarchive_record
+    """
     request_json: dict[str, Any] = {
         "db_table": db_table,
         "unique_value": unique_value,
@@ -528,7 +600,10 @@ def update_revision(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Revision. (POST /api/v2/utils/update_revision)."""
+    """Update Revision.
+
+    POST /api/v2/utils/update_revision
+    """
     request_json: dict[str, Any] = {
         "action": action,
         "revision_id": revision_id,
@@ -550,7 +625,10 @@ def update_search_index(
     index_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Search Index. (POST /api/v2/utils/update_search_index)."""
+    """Update Search Index.
+
+    POST /api/v2/utils/update_search_index
+    """
     request_json: dict[str, Any] = {
         "identifiers": identifiers,
         "index_name": index_name,
@@ -571,7 +649,10 @@ def validate_and_clean_claim_numbers_list(
     claim_numbers_list: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Validate And Clean Claim Numbers List. (POST /api/v2/utils/validate_and_clean_claim_numbers_list)."""
+    """Validate And Clean Claim Numbers List.
+
+    POST /api/v2/utils/validate_and_clean_claim_numbers_list
+    """
     request_json: dict[str, Any] = {
         "claim_numbers_list": claim_numbers_list,
     }

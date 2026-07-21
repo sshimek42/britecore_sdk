@@ -17,7 +17,10 @@ def create_dispute(
     dispute: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Dispute (POST /api/v2/disputes/create_dispute)."""
+    """Create Dispute.
+
+    POST /api/v2/disputes/create_dispute
+    """
     request_json: dict[str, Any] = {"dispute": dispute}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def create_dispute(
 def delete_dispute(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Dispute (POST /api/v2/disputes/delete_dispute)."""
+    """Delete Dispute.
+
+    POST /api/v2/disputes/delete_dispute
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -52,7 +58,10 @@ def list_disputes(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Disputes (POST /api/v2/disputes/list_disputes)."""
+    """List Disputes.
+
+    POST /api/v2/disputes/list_disputes
+    """
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -70,7 +79,10 @@ def update_dispute(
     dispute: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Dispute (POST /api/v2/disputes/update_dispute)."""
+    """Update Dispute.
+
+    POST /api/v2/disputes/update_dispute
+    """
     request_json: dict[str, Any] = {"dispute": dispute}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

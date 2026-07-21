@@ -26,10 +26,7 @@ def create_folder_in_user_folder(
 ) -> Any:
     """Create a folder inside a user folder.
 
-    This wrapper sends the folder and reference fields to
-    ``/api/v2/attachments/create_folder_in_user_folder`` and returns the
-    normalized ``process_result(...)`` payload for the folder-creation request.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/create_folder_in_user_folder
     """
     return post(
         "/api/v2/attachments/create_folder_in_user_folder",
@@ -49,9 +46,7 @@ def delete_photo(
 ) -> Any:
     """Delete an attachment photo by file identifier.
 
-    This wrapper sends ``file_id`` to ``/api/v2/attachments/delete_photo`` and
-    returns the normalized ``process_result(...)`` payload for the delete
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/delete_photo
     """
     return post(
         "/api/v2/attachments/delete_photo",
@@ -72,10 +67,7 @@ def get_attachments_file_list(
 ) -> Any:
     """Retrieve a paginated attachment file list for a reference.
 
-    This wrapper sends the folder, reference, paging, and sorting filters to
-    ``/api/v2/attachments/get_attachments_file_list`` and returns the
-    normalized ``process_result(...)`` payload for the file-list request.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/get_attachments_file_list
     """
     return post(
         "/api/v2/attachments/get_attachments_file_list",
@@ -98,9 +90,7 @@ def get_file_metadata(
 ) -> Any:
     """Retrieve metadata for a specific file.
 
-    This wrapper sends ``file_id`` to ``/api/v2/attachments/get_file_metadata``
-    and returns the normalized ``process_result(...)`` payload for the file
-    metadata request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/get_file_metadata
     """
     return post(
         "/api/v2/attachments/get_file_metadata",
@@ -115,10 +105,7 @@ def get_resource_photos(
 ) -> Any:
     """Retrieve photos associated with a resource.
 
-    This wrapper sends ``reference_id`` to
-    ``/api/v2/attachments/get_resource_photos`` and returns the normalized
-    ``process_result(...)`` payload for the photo lookup. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/attachments/get_resource_photos
     """
     return post(
         "/api/v2/attachments/get_resource_photos",
@@ -134,10 +121,7 @@ def move_user_file(
 ) -> Any:
     """Move a file to a different folder.
 
-    This wrapper sends ``file_id`` and ``to_folder_id`` to
-    ``/api/v2/attachments/move_user_file`` and returns the normalized
-    ``process_result(...)`` payload for the move request. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/attachments/move_user_file
     """
     return post(
         "/api/v2/attachments/move_user_file",
@@ -152,10 +136,7 @@ def remove_attachments(
 ) -> Any:
     """Remove attachments by identifier list.
 
-    This wrapper sends ``attachment_ids`` to
-    ``/api/v2/attachments/remove_attachments`` and returns the normalized
-    ``process_result(...)`` payload for the removal request. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/remove_attachments
     """
     return post(
         "/api/v2/attachments/remove_attachments",
@@ -171,10 +152,7 @@ def rename_user_file(
 ) -> Any:
     """Rename an existing user file.
 
-    This wrapper sends ``file_id`` and ``file_name`` to
-    ``/api/v2/attachments/rename_user_file`` and returns the normalized
-    ``process_result(...)`` payload for the rename request. ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/rename_user_file
     """
     return post(
         "/api/v2/attachments/rename_user_file",
@@ -197,10 +175,7 @@ def retrieve_attachments(
 ) -> Any:
     """Retrieve attachments for a reference with filtering and pagination.
 
-    This wrapper sends the reference, folder, paging, sorting, and search
-    fields to ``/api/v2/attachments/retrieve_attachments`` and returns the
-    normalized ``process_result(...)`` payload for the attachment query.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/retrieve_attachments
     """
     return post(
         "/api/v2/attachments/retrieve_attachments",
@@ -230,11 +205,7 @@ def upload_attachment_to_user_folder(
 ) -> Any:
     """Upload a file to a user folder.
 
-    This wrapper sends the Base64 file payload, file metadata, folder
-    identifier, and reference fields to
-    ``/api/v2/attachments/upload_attachment_to_user_folder`` and returns the
-    normalized ``process_result(...)`` payload for the upload request.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/upload_attachment_to_user_folder
     """
     return post(
         "/api/v2/attachments/upload_attachment_to_user_folder",
@@ -262,10 +233,7 @@ def upload_attachment_unified(
 ) -> Any:
     """Upload a file with the unified attachment endpoint.
 
-    This wrapper sends the file payload, file metadata, reference fields, and
-    optional ``revision_id`` to ``/api/v2/attachments/upload_attachment_unified``
-    and returns the normalized ``process_result(...)`` payload for the upload
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/attachments/upload_attachment_unified
     """
     return post(
         "/api/v2/attachments/upload_attachment_unified",
@@ -303,7 +271,10 @@ def edit_attachment(
     attachment: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Edit Attachment (POST /api/v2/attachments/edit_attachment)."""
+    """Edit Attachment.
+
+    POST /api/v2/attachments/edit_attachment
+    """
     request_json: dict[str, Any] = {"attachment": attachment}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

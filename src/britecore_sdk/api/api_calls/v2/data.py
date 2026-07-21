@@ -26,10 +26,7 @@ def export_data_as_csv(
 ) -> Any:
     """Export CSV data for the requested date range and data sets.
 
-    This wrapper sends the supplied date filters and prepared/non-prepared data
-    frame selections to ``/api/v2/data/export_data_as_csv`` and returns the
-    normalized ``process_result(...)`` payload for the export request.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/data/export_data_as_csv
     """
     return post(
         "/api/v2/data/export_data_as_csv",
@@ -50,10 +47,7 @@ def get_available_dashboards(
 ) -> Any:
     """Retrieve dashboards available for a module.
 
-    This wrapper sends the optional ``module`` filter to
-    ``/api/v2/data/get_available_dashboards`` and returns the normalized
-    ``process_result(...)`` payload describing the available dashboard
-    definitions. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/data/get_available_dashboards
     """
     return post(
         "/api/v2/data/get_available_dashboards",
@@ -75,7 +69,10 @@ def fetch_json_report_result(
     report_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Fetch Json Report Result (POST /api/v2/data/fetch_json_report_result)."""
+    """Fetch Json Report Result.
+
+    POST /api/v2/data/fetch_json_report_result
+    """
     request_json: dict[str, Any] = {
         "params": params,
         "report_name": report_name,
@@ -95,7 +92,10 @@ def fetch_json_report_result(
 def get_logical_catalog(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Logical Catalog (POST /api/v2/data/get_logical_catalog)."""
+    """Get Logical Catalog.
+
+    POST /api/v2/data/get_logical_catalog
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -114,7 +114,10 @@ def preview_sql_check(
     params: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Preview Sql Check (POST /api/v2/data/preview_sql_check)."""
+    """Preview Sql Check.
+
+    POST /api/v2/data/preview_sql_check
+    """
     request_json: dict[str, Any] = {
         "query": query,
         "params": params,
@@ -136,7 +139,10 @@ def preview_sql_result(
     params: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Preview Sql Result (POST /api/v2/data/preview_sql_result)."""
+    """Preview Sql Result.
+
+    POST /api/v2/data/preview_sql_result
+    """
     request_json: dict[str, Any] = {
         "query": query,
         "params": params,

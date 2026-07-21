@@ -21,7 +21,10 @@ def create_claim_contact(
     claim_contact: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new contact associated with a claim. (POST /api/v2/claim_contacts/create_claim_contact)."""
+    """Create a new contact associated with a claim.
+
+    POST /api/v2/claim_contacts/create_claim_contact
+    """
     request_json: dict[str, Any] = {"claim_contact": claim_contact}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -38,7 +41,10 @@ def create_claim_contact(
 def delete_claim_contact(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim contact record. (POST /api/v2/claim_contacts/delete_claim_contact)."""
+    """Delete a claim contact record.
+
+    POST /api/v2/claim_contacts/delete_claim_contact
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -56,7 +62,10 @@ def list_importable_contacts(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List contacts available for import from a policy revision. (POST /api/v2/claim_contacts/list_importable_contacts)."""
+    """List contacts available for import from a policy revision.
+
+    POST /api/v2/claim_contacts/list_importable_contacts
+    """
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -74,7 +83,10 @@ def update_claim_contact(
     claim_contact: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing claim contact record. (POST /api/v2/claim_contacts/update_claim_contact)."""
+    """Update an existing claim contact record.
+
+    POST /api/v2/claim_contacts/update_claim_contact
+    """
     request_json: dict[str, Any] = {"claim_contact": claim_contact}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

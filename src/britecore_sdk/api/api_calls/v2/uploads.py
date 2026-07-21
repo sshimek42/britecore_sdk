@@ -47,9 +47,7 @@ def attach_file_to_policy(
 ) -> Any:
     """Attach an uploaded file to a policy record.
 
-    This wrapper sends ``payload`` to ``/api/v2/uploads/attach_file_to_policy``
-    and returns the normalized ``process_result(...)`` payload for the
-    attachment request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/uploads/attach_file_to_policy
     """
     return post(
         "/api/v2/uploads/attach_file_to_policy",
@@ -77,7 +75,10 @@ def attach_file(
     folder_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Attach File (POST /api/v2/uploads/attach_file)."""
+    """Attach File.
+
+    POST /api/v2/uploads/attach_file
+    """
     request_json: dict[str, Any] = {
         "entity_id": entity_id,
         "set_folder_private_if_new": set_folder_private_if_new,

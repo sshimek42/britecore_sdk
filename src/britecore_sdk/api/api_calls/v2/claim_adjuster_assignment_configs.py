@@ -17,7 +17,10 @@ def create_adjuster_assignment_config(
     adjuster_assignment_config: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Adjuster Assignment Config (POST /api/v2/claim_adjuster_assignment_configs/create_adjuster_assignment_config)."""
+    """Create Adjuster Assignment Config.
+
+    POST /api/v2/claim_adjuster_assignment_configs/create_adjuster_assignment_config
+    """
     request_json: dict[str, Any] = {
         "adjuster_assignment_config": adjuster_assignment_config,
     }
@@ -38,7 +41,10 @@ def get_adjuster_assignment_config(
     contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Adjuster Assignment Config (POST /api/v2/claim_adjuster_assignment_configs/get_adjuster_assignment_config)."""
+    """Get Adjuster Assignment Config.
+
+    POST /api/v2/claim_adjuster_assignment_configs/get_adjuster_assignment_config
+    """
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -59,7 +65,10 @@ def update_adjuster_assignment_config(
     adjuster_assignment_config: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Adjuster Assignment Config (POST /api/v2/claim_adjuster_assignment_configs/update_adjuster_assignment_config)."""
+    """Update Adjuster Assignment Config.
+
+    POST /api/v2/claim_adjuster_assignment_configs/update_adjuster_assignment_config
+    """
     request_json: dict[str, Any] = {
         "adjuster_assignment_config": adjuster_assignment_config,
     }

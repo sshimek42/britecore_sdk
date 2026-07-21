@@ -16,7 +16,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 def list_latest(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Latest (POST /api/v2/related_policies/list_latest)."""
+    """List Latest.
+
+    POST /api/v2/related_policies/list_latest
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -34,7 +37,10 @@ def update_related_policy(
     related_policy: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Related Policy (POST /api/v2/related_policies/update_related_policy)."""
+    """Update Related Policy.
+
+    POST /api/v2/related_policies/update_related_policy
+    """
     request_json: dict[str, Any] = {"related_policy": related_policy}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

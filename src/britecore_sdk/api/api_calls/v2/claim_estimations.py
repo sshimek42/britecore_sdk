@@ -17,7 +17,10 @@ def cancel_claim_estimation(
     estimation_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Cancel Claim Estimation (POST /api/v2/claim_estimations/cancel_claim_estimation)."""
+    """Cancel Claim Estimation.
+
+    POST /api/v2/claim_estimations/cancel_claim_estimation
+    """
     request_json: dict[str, Any] = {
         "estimation_id": estimation_id,
     }
@@ -37,7 +40,10 @@ def get_claim_estimation(
     estimation_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Estimation (POST /api/v2/claim_estimations/get_claim_estimation)."""
+    """Get Claim Estimation.
+
+    POST /api/v2/claim_estimations/get_claim_estimation
+    """
     request_json: dict[str, Any] = {
         "estimation_id": estimation_id,
     }
@@ -57,7 +63,10 @@ def list_claim_estimations(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Claim Estimations (POST /api/v2/claim_estimations/list_claim_estimations)."""
+    """List Claim Estimations.
+
+    POST /api/v2/claim_estimations/list_claim_estimations
+    """
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
     }
@@ -78,7 +87,10 @@ def request_claim_estimation(
     claim_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Request Claim Estimation (POST /api/v2/claim_estimations/request_claim_estimation)."""
+    """Request Claim Estimation.
+
+    POST /api/v2/claim_estimations/request_claim_estimation
+    """
     request_json: dict[str, Any] = {
         "assignment_type": assignment_type,
         "claim_id": claim_id,
@@ -99,7 +111,10 @@ def update_claim_estimation(
     claim_estimation: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Claim Estimation (POST /api/v2/claim_estimations/update_claim_estimation)."""
+    """Update Claim Estimation.
+
+    POST /api/v2/claim_estimations/update_claim_estimation
+    """
     request_json: dict[str, Any] = {
         "claim_estimation": claim_estimation,
     }

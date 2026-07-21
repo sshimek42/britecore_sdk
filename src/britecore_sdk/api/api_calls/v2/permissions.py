@@ -20,7 +20,10 @@ def user_has_permission(
     permission: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """User Has Permission (POST /api/v2/permissions/user_has_permission)."""
+    """User Has Permission.
+
+    POST /api/v2/permissions/user_has_permission
+    """
     request_json: dict[str, Any] = {
         "username": username,
         "access_level": access_level,

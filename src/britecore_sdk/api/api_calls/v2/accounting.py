@@ -28,10 +28,7 @@ def get_accounting_deliverable(
 ) -> Any:
     """Retrieve accounting deliverable values for an account history entry.
 
-    This wrapper sends ``account_history_id`` and ``deliverable_date`` to
-    ``/api/v2/accounting/get_accounting_deliverable`` and returns the
-    normalized ``process_result(...)`` payload for the requested deliverable
-    data. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/accounting/get_accounting_deliverable
     """
     LOGGER.debug(
         "Getting accounting deliverable for account_history_id=%s", account_history_id
@@ -64,10 +61,7 @@ def get_invoices(
 ) -> Any:
     """Retrieve invoices with optional policy and date filters.
 
-    This wrapper sends the supplied policy, bill-date, due-date, sorting, and
-    pagination fields to ``/api/v2/accounting/get_invoices`` and returns the
-    normalized ``process_result(...)`` payload for the invoice query.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/accounting/get_invoices
     """
     LOGGER.debug("Getting invoices for policy_id=%s", policy_id)
 
@@ -107,11 +101,7 @@ def run_rescind_underwriting_cancellation_pending_logic(
 ) -> Any:
     """Run rescind underwriting cancellation-pending logic for a revision.
 
-    This wrapper sends ``revision_id``, ``old_status``, and the optional
-    ``date_cursor`` to
-    ``/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic``
-    and returns the normalized ``process_result(...)`` payload for the job
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic
     """
     LOGGER.debug(
         "Running rescind underwriting cancellation pending logic for revision_id=%s",
@@ -148,7 +138,10 @@ def export_account_histories(
     policy_term_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Export Account Histories (POST /api/v2/accounting/export_account_histories)."""
+    """Export Account Histories.
+
+    POST /api/v2/accounting/export_account_histories
+    """
     request_json: dict[str, Any] = {
         "policy_term_ids": policy_term_ids,
     }
@@ -168,7 +161,10 @@ def retrieve_outstanding_invoices(
     transaction_date_time_from: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Outstanding Invoices (POST /api/v2/accounting/retrieve_outstanding_invoices)."""
+    """Retrieve Outstanding Invoices.
+
+    POST /api/v2/accounting/retrieve_outstanding_invoices
+    """
     request_json: dict[str, Any] = {
         "transaction_date_time_from": transaction_date_time_from,
     }
@@ -188,7 +184,10 @@ def set_return_premium_to_export(
     return_premium_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Return Premium To Export (POST /api/v2/accounting/set_return_premium_to_export)."""
+    """Set Return Premium To Export.
+
+    POST /api/v2/accounting/set_return_premium_to_export
+    """
     request_json: dict[str, Any] = {"return_premium_id": return_premium_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

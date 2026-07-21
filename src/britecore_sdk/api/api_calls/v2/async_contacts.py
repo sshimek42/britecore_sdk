@@ -55,7 +55,10 @@ async def anew_contact(
     contact_type: Literal["individual", "organization"] | None = "individual",
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str | None]:
-    """Create a new contact record asynchronously. (POST /api/v2/contacts/new_contact)."""
+    """Create a new contact record asynchronously.
+
+    POST /api/v2/contacts/new_contact
+    """
     LOGGER.debug("Creating contact '%s'", name)
     if not phone:
         phone = [{}]
@@ -99,7 +102,10 @@ async def aadd_contact_to_role(
     role: ROLETYPES | None = "Named Insured",
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add a contact to a named role asynchronously. (POST /api/v2/contacts/add_contact_to_role)."""
+    """Add a contact to a named role asynchronously.
+
+    POST /api/v2/contacts/add_contact_to_role
+    """
     LOGGER.debug("Adding role '%s' to '%s'", role, contact_id)
     role_request_json: dict[str, str | ROLETYPES | None] = {
         "contact_id": contact_id,
@@ -118,7 +124,10 @@ async def aadd_contact_to_role(
 async def aupdate_contact(
     contact: dict[str, str | list[dict[str, str]]], **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Update an existing contact asynchronously. (POST /api/v2/contacts/update_contact)."""
+    """Update an existing contact asynchronously.
+
+    POST /api/v2/contacts/update_contact
+    """
     LOGGER.debug("Updating contact information\n%s", contact)
     update_request_json: dict[str, Any] = {"contact": contact}
     request_result: Any = await API_CLIENT.ado_request(
@@ -132,7 +141,10 @@ async def aupdate_contact(
 
 
 async def aget_contact(contact_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve a contact by identifier with short-lived async caching. (POST /api/v2/contacts/get_contact)."""
+    """Retrieve a contact by identifier with short-lived async caching.
+
+    POST /api/v2/contacts/get_contact
+    """
     LOGGER.debug("Retrieving contact id '%s'", contact_id)
     contact_retrieve_json: dict[str, str] = {"contact_id": contact_id}
     request_result: Any = await API_CLIENT.ado_request(
@@ -153,7 +165,10 @@ async def afind_contact_by_params(
     dob: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Find contacts by the supported search parameters with async caching. (POST /api/v2/contacts/find_contact_by_params)."""
+    """Find contacts by the supported search parameters with async caching.
+
+    POST /api/v2/contacts/find_contact_by_params
+    """
     LOGGER.debug("Finding contact '%s'", name)
     contact_retrieve_json: dict[str, str | ROLETYPES | None] = {
         "name": name,

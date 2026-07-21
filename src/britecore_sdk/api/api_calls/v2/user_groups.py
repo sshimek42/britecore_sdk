@@ -17,7 +17,10 @@ def add_group(
     user_group: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Group (POST /api/v2/user_groups/add_group)."""
+    """Add Group.
+
+    POST /api/v2/user_groups/add_group
+    """
     request_json: dict[str, Any] = {"user_group": user_group}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -35,7 +38,10 @@ def delete_group(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Group (POST /api/v2/user_groups/delete_group)."""
+    """Delete Group.
+
+    POST /api/v2/user_groups/delete_group
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,7 +59,10 @@ def get_group(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Group (POST /api/v2/user_groups/get_group)."""
+    """Get Group.
+
+    POST /api/v2/user_groups/get_group
+    """
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -70,7 +79,10 @@ def get_group(
 def list_groups(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Groups (POST /api/v2/user_groups/list_groups)."""
+    """List Groups.
+
+    POST /api/v2/user_groups/list_groups
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -88,7 +100,10 @@ def update_group(
     user_group: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Group (POST /api/v2/user_groups/update_group)."""
+    """Update Group.
+
+    POST /api/v2/user_groups/update_group
+    """
     request_json: dict[str, Any] = {"user_group": user_group}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

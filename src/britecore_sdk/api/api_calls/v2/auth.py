@@ -16,7 +16,10 @@ API_CLIENT: BritecoreAPIClient = api_client
 def retrieve_permission_levels(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Permission Levels (POST /api/v2/auth/retrieve_permission_levels)."""
+    """Retrieve Permission Levels.
+
+    POST /api/v2/auth/retrieve_permission_levels
+    """
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

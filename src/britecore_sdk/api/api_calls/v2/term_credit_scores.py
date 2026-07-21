@@ -17,7 +17,10 @@ def get_options(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Options (POST /api/v2/term_credit_scores/get_options)."""
+    """Get Options.
+
+    POST /api/v2/term_credit_scores/get_options
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
     }
@@ -38,7 +41,10 @@ def update_selection(
     selected_option: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Selection (POST /api/v2/term_credit_scores/update_selection)."""
+    """Update Selection.
+
+    POST /api/v2/term_credit_scores/update_selection
+    """
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "selected_option": selected_option,
