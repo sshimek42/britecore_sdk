@@ -1,5 +1,8 @@
 # britecore_sdk
 
+*Last updated: July 21, 2026*
+*Document type: Living guide*
+
 A professional **Python SDK for the BriteCore API** — complete endpoint coverage, async support, OAuth/API key authentication, and type hints.
 
 > No existing BriteCore client library? Look no further. This SDK provides spec-aligned wrappers, domain models, validators, and clean async helpers.
@@ -23,15 +26,8 @@ pip install britecore_sdk
 ### 2. Configure
 
 Set `target_site` and credentials via config files or environment variables. The SDK discovers
-config files automatically from several locations (later sources override earlier ones):
-
-| Priority | Location | File(s) |
-|---|---|---|
-| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
-| 2 | User-level (all projects on machine) | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
-| 3 | Project-local (current directory) | `./britecore.toml`, `./.britecore_secrets.toml` |
-| 4 | Explicit file override | Path pointed to by `BRITECORE_SDK_SETTINGS_FILE` |
-| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
+config files automatically from several locations. For the canonical precedence table, see
+[`docs/CONFIGURATION.md`](./docs/CONFIGURATION.md#canonical-precedence-table).
 
 **Recommended for most users: user-level config (`~/.britecore/`)**
 
@@ -72,16 +68,11 @@ api_key = "your_api_key_here"
 
 #### Alternative: Environment variables
 
-> **Note:** `target_site` is required for file/environment-driven initialization (the standard mode).
+> **Note:** `target_site` is required in standard file/env initialization.
 > In explicit mode (`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults
-> to `"explicit"`. When credentials are set via
-> `BRITECORE_SDK_*` environment variables, `target_site` is still required but its value
-> does not affect which credentials are loaded when **all** required credentials are supplied as
-> env vars — they take precedence over `.secrets.toml` values regardless of the site name. If any
-> required credential is missing from env vars, the client falls back to the `.secrets.toml`
-> section matching the `target_site` value, so the name must correspond to a real section in that
-> case. You can also pass `target_site` explicitly to `init_api_client()` instead of setting it
-> as an env var.
+> to `"explicit"`. If all required credentials are set via `BRITECORE_SDK_*` environment
+> variables, those values always win; `target_site` only matters if the client needs to fall back
+> to TOML sections.
 
 **Linux/macOS (bash):**
 
@@ -139,7 +130,7 @@ See [examples/basic_api_usage.py](examples/basic_api_usage.py) for more detailed
 
 ### About API Client Initialization
 
-The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
+The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit control over the shared lazy client. Use `init_api_client()` for advanced/manual initialization scenarios (for example explicit credentials or multi-site binding).
 
 If you need to verify selected auth mode during initialization, enable SDK debug logging before client init. The client emits `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth` at debug level.
 
@@ -160,6 +151,14 @@ from britecore_sdk import configure_logging
 
 configure_logging(level="INFO")
 logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+```
+
+You can also log directly through the package logger:
+
+```python
+from britecore_sdk import logger
+
+logger.info("SDK logger is configured")
 ```
 
 ---
@@ -187,17 +186,17 @@ logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 
 | Topic | Link |
 | --- | --- |
-| **Setup & examples** | [GETTING_STARTED.md](GETTING_STARTED.md) |
-| **API reference** | [API.md](API.md) |
-| **Async & caching** | [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) |
-| **Rate limiting** | [docs/RATE_LIMITING.md](docs/RATE_LIMITING.md) |
-| **Batch operations** | [docs/BATCH_QUOTE_CREATION.md](docs/BATCH_QUOTE_CREATION.md) |
+| **Setup & examples** | [GETTING_STARTED.md](./GETTING_STARTED.md) |
+| **API reference** | [API.md](./API.md) |
+| **Async & caching** | [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) |
+| **Rate limiting** | [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) |
+| **Batch operations** | [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) |
 | **Architecture** | [ARCHITECTURE.md](./ARCHITECTURE.md) |
-| **Python compatibility** | [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) |
-| **Contributing** | [CONTRIBUTING.md](CONTRIBUTING.md) |
-| **Code of Conduct** | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) |
-| **Troubleshooting** | [TROUBLESHOOTING.md](TROUBLESHOOTING.md) |
-| **Security policy** | [SECURITY.md](SECURITY.md) |
+| **Python compatibility** | [PYTHON_COMPATIBILITY.md](./PYTHON_COMPATIBILITY.md) |
+| **Contributing** | [CONTRIBUTING.md](./CONTRIBUTING.md) |
+| **Code of Conduct** | [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) |
+| **Troubleshooting** | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) |
+| **Security policy** | [SECURITY.md](./SECURITY.md) |
 
 ## Installation & Configuration
 
@@ -219,15 +218,8 @@ pip install britecore_sdk[dev]         # Development (tests, linting, type check
 ### Configuration
 
 The SDK loads settings from multiple locations in priority order — later sources override earlier ones.
-`BRITECORE_SDK_*` environment variables always win over any file:
-
-| Priority | Location | File(s) |
-|---|---|---|
-| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
-| 2 | User-level (all projects on machine) | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
-| 3 | Project-local (current directory) | `./britecore.toml`, `./.britecore_secrets.toml` |
-| 4 | Explicit file override | Path pointed to by `BRITECORE_SDK_SETTINGS_FILE` |
-| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
+`BRITECORE_SDK_*` environment variables always win over any file. See the canonical precedence
+table in [`docs/CONFIGURATION.md`](./docs/CONFIGURATION.md#canonical-precedence-table).
 
 #### Option A: User-level config (recommended for pip-installed users)
 
@@ -354,7 +346,7 @@ $env:BRITECORE_SDK_CLIENT_SECRET="your_client_secret"
 $env:target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
 ```
 
-See [GETTING_STARTED.md](GETTING_STARTED.md) and [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for detailed setup.
+See [GETTING_STARTED.md](./GETTING_STARTED.md) and [docs/CONFIGURATION.md](./docs/CONFIGURATION.md) for detailed setup.
 
 Validate configured sites before first API calls:
 
@@ -423,7 +415,7 @@ async def main():
 asyncio.run(main())
 ```
 
-See [docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md) for cache configuration and invalidation.
+See [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for cache configuration and invalidation.
 
 ---
 

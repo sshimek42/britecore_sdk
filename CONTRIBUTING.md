@@ -1,6 +1,6 @@
 # Contributing
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Living contributor guide*
 
 For community contributors: workflow, setup, testing requirements, and coding conventions.
@@ -339,8 +339,8 @@ Use blockquote + bold prefix format for emphasis:
 
 Use consistent relative path patterns:
 
-- Links within root: `[File Name](./FILENAME.md)`
-- Links to docs/: `[docs/Feature](./docs/FEATURE.md)`
+- Links within root: `./FILENAME.md`
+- Links to docs/: `./docs/FEATURE.md`
 - Links to code: `` `src/britecore_sdk/module/file.py` `` (inline code)
 - Links to functions: `` `init_api_client()` `` (inline code with parentheses)
 
@@ -386,6 +386,8 @@ def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
 - ✓ Returns section with type and structure
 - ✓ Raises section with exception types
 - ✓ Examples section with v2.0.0 pattern
+- ✓ Source endpoint summary/parameters/responses from `api_specs/current/britecore.json`
+- ✓ Treat `api_specs/legacy/` as archival reference only
 
 ### Prose Style Guidelines
 

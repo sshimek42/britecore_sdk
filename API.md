@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: July 10, 2026*
+*Last updated: July 21, 2026*
 *Document type: Living reference guide*
 
 **BriteCore SDK** - API endpoint reference
@@ -15,6 +15,8 @@ This document provides a reference for implemented SDK endpoint wrappers.
 
 External API docs are available at [https://api.britecore.com/](https://api.britecore.com/), but
 `api_specs/current/britecore.json` in this repository remains the canonical contract for this SDK.
+Endpoint wrapper docstrings should use that `current` spec as the primary source for
+summary, parameters, and response semantics.
 
 Files under `api_specs/legacy/` are archival reference material for historical
 research and backlog planning, not the default support contract for the current SDK.
@@ -81,7 +83,8 @@ with use_api_client(staging_client):
 ```
 
 Domain modules are importable from `britecore_sdk.api.api_calls.v2`.
-The API client initializes lazily on first request; use `get_api_client()` for explicit control when needed. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
+The API client initializes lazily on first request; use `get_api_client()` for explicit control
+of the shared client. Use `init_api_client()` for advanced/manual initialization scenarios.
 
 ---
 
@@ -213,6 +216,9 @@ endpoint(
     request_retries=Retry(total=3),        # Custom retries
 )
 ```
+
+`RequestParameters` also includes debug controls such as `dry_run=True` to log request details
+without sending network traffic.
 
 Retry and timeout defaults come from config keys loaded by
 `BritecoreAPIClient.init_client()`:
@@ -397,7 +403,6 @@ Many wrappers support optional filters and ordering fields:
 ```python
 from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
-from britecore_sdk import logger
 
 client = get_api_client()
 risks = policies.retrieve_risks(
@@ -522,7 +527,7 @@ For maintained runnable examples, see `examples/README.md` and
 
 ### About API Client Initialization
 
-The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
+The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit control over the shared lazy client. Use `init_api_client()` for advanced/manual initialization scenarios.
 
 See [README.md](./README.md) for more examples and [CONTRIBUTING.md](./CONTRIBUTING.md) for adding new endpoints.
 

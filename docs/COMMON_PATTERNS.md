@@ -1,5 +1,8 @@
 # Common BriteCore API Patterns
 
+*Last updated: July 21, 2026*
+*Document type: Implementation guide*
+
 This guide demonstrates common patterns and recipes for using the BriteCore SDK effectively.
 
 ## Pattern 1: Policy Lookup with Fallback
@@ -67,7 +70,7 @@ def import_contacts_bulk(contact_list):
                 "data": contact_data,
                 "error": f"Validation error: {e}",
             })
-        except BritecoreError as e:
+        except BritecoreError.Base as e:
             results["failed"] += 1
             results["errors"].append({
                 "index": idx,
@@ -121,6 +124,24 @@ def process_policies_with_rate_limiting(policy_numbers, delay_ms=100):
     return results
 ```
 
+## Pattern 3b: Dry-Run Request Preview
+
+Preview request payloads and headers without sending traffic:
+
+```python
+from britecore_sdk.api.api_calls.v2 import policies
+
+def preview_policy_lookup(policy_number):
+    """Preview a request with RequestParameters dry_run=True."""
+    preview = policies.retrieve_policy(policy_number=policy_number, dry_run=True)
+    return {
+        "request_id": preview.get("request_id"),
+        "url": preview.get("url"),
+        "method": preview.get("method"),
+        "dry_run": preview.get("dry_run"),
+    }
+```
+
 ## Pattern 4: Pagination Through Large Result Sets
 
 Efficiently iterate through paginated results:
@@ -168,7 +189,7 @@ def create_policies_with_tracking(policy_list, show_progress=True):
                 percentage = (idx / total) * 100
                 print(f"Progress: {idx}/{total} ({percentage:.1f}%)")
 
-        except BritecoreError as e:
+        except BritecoreError.Base as e:
             print(f"Error creating policy {idx}: {e}")
             results.append({"error": str(e)})
 
@@ -199,7 +220,7 @@ def update_expired_policies(policy_list, new_expiration_date):
                     expiration_date=new_expiration_date,
                 )
                 updated.append(result)
-            except BritecoreError as e:
+            except BritecoreError.Base as e:
                 print(f"Failed to update policy {policy['policy_id']}: {e}")
         else:
             skipped.append(policy["policy_id"])
@@ -233,7 +254,7 @@ def create_quote_with_retry(quote_data, max_retries=3, backoff_factor=2):
             print(f"Timeout on attempt {attempt + 1}, waiting {wait_time}s before retry...")
             time.sleep(wait_time)
 
-        except BritecoreError as e:
+        except BritecoreError.Base as e:
             # Don't retry on validation or auth errors
             if "Validation" in str(type(e)) or "Authentication" in str(type(e)):
                 raise
@@ -242,7 +263,9 @@ def create_quote_with_retry(quote_data, max_retries=3, backoff_factor=2):
             print(f"Error on attempt {attempt + 1}, waiting {wait_time}s before retry...")
             time.sleep(wait_time)
 
-    raise last_error or BritecoreError("Failed after retries")
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("Failed after retries")
 ```
 
 ## Pattern 8: Extract and Transform Responses
@@ -341,11 +364,12 @@ with api_context("production"):
 - **Use context managers**: The `use_api_client()` context manager safely manages client switching
 - **Validate input**: Use `BritecoreContact` and `BritecorePolicy` validators before creating/updating
 - **Log operations**: Enable SDK logging to debug issues: `from britecore_sdk import configure_logging; configure_logging()`
+- **Use dry-run for validation**: Pass `dry_run=True` to wrappers to inspect outbound requests without network calls
 - **Test error paths**: Most patterns above include error handling; test these paths in your application
 - **Use async for I/O**: For high-volume operations, consider using async functions to maximize throughput
 
 ## See Also
 
-- [API Reference](../api_reference.rst)
+- [API Reference](./api_reference.rst)
 - [Configuration Guide](./CONFIGURATION.md)
 - [Error Handling](../TROUBLESHOOTING.md)

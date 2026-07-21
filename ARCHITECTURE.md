@@ -1,6 +1,6 @@
 # System Architecture
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Living design reference*
 
 **BriteCore SDK** - Technical design and component overview
@@ -98,7 +98,7 @@ validated = contact.process_contact()
 
 > **Note:** Map files (`britecore_agency_map.py`, `britecore_field_map.py`,
 > `britecore_policy_map.py`) contain site-specific regex data and are gitignored.
-> See [docs/MAP_FILES.md](https://github.com/sshimek42/britecore_sdk/blob/master/docs/MAP_FILES.md) for map module layout and expected format.
+> See [docs/MAP_FILES.md](./docs/MAP_FILES.md) for map module layout and expected format.
 
 ---
 
@@ -285,8 +285,8 @@ from britecore_sdk.api.workflows import (
 )
 ```
 
-See [docs/STAGED_WORKFLOWS.md](https://github.com/sshimek42/britecore_sdk/blob/master/docs/STAGED_WORKFLOWS.md) and
-[BATCH_QUOTE_CREATION.md](BATCH_QUOTE_CREATION.md) for detailed tuning
+See [docs/STAGED_WORKFLOWS.md](./docs/STAGED_WORKFLOWS.md) and
+[BATCH_QUOTE_CREATION.md](./BATCH_QUOTE_CREATION.md) for detailed tuning
 guidance and examples.
 
 ---
@@ -324,11 +324,12 @@ src/britecore_sdk/
 
 ```python
 
-# Dynaconf loads from multiple sources (highest to lowest priority)
+# Dynaconf resolves layered sources (highest to lowest priority)
 # 1. Environment variables (BRITECORE_SDK_*)
-# 2. .secrets.toml (base_url, api_key, client_id, client_secret)
-# 3. settings.toml (default runtime keys like web_timeout/web_retry/web_timeout_long)
-# 4. Built-in defaults
+# 2. Explicit settings file path from BRITECORE_SDK_SETTINGS_FILE
+# 3. Project-local files (./britecore.toml, ./.britecore_secrets.toml)
+# 4. User-level files (~/.britecore/settings.toml, ~/.britecore/.secrets.toml)
+# 5. SDK package defaults (src/britecore_sdk/settings/settings.toml, .secrets.toml)
 
 from britecore_sdk.api.britecore_api_client import LoadClientSettings
 
@@ -586,6 +587,17 @@ def retrieve_policy(
     return API_CLIENT.process_result(response)
 
 ```
+
+---
+
+## Endpoint Docstring Source Policy
+
+For endpoint wrapper documentation, treat `api_specs/current/britecore.json` as the primary
+source for summaries, parameter intent, and response semantics. Treat files under
+`api_specs/legacy/` as archival reference only.
+
+When needed, add short SDK-specific notes for behavior such as snake_case aliases,
+`RequestParameters` overrides, and `process_result(...)` normalization.
 
 ---
 

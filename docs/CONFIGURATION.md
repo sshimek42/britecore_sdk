@@ -1,6 +1,11 @@
 ﻿# Configuration Guide
 
+*Last updated: July 21, 2026*
+*Document type: Living guide*
+
 This guide explains how to configure `britecore_sdk` for your environment.
+
+Minimum supported Python version: `3.11`.
 
 ## Overview
 
@@ -13,7 +18,21 @@ Configuration uses **Dynaconf**, a hierarchical settings manager that supports:
 
 ## Config Files
 
-### Location
+### Canonical precedence table
+
+Configuration is layered (lowest to highest priority):
+
+| Priority | Location | File(s) |
+|---|---|---|
+| 1 (lowest) | SDK package defaults | `src/britecore_sdk/settings/settings.toml`, `src/britecore_sdk/settings/.secrets.toml` |
+| 2 | User-level config | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
+| 3 | Project-local config | `./britecore.toml`, `./.britecore_secrets.toml` |
+| 4 | Explicit file override | Path from `BRITECORE_SDK_SETTINGS_FILE` |
+| 5 (highest) | Environment variables | `BRITECORE_SDK_*` |
+
+Environment variables override all file-based values.
+
+### SDK package default files (mainly for source clones)
 
 ```text
 src/britecore_sdk/settings/
@@ -25,8 +44,9 @@ src/britecore_sdk/settings/
 `-- config.py          # Dynaconf loader
 ```
 
-> **Tip:** Copy the files from `settings/sample/` to `settings/` as a starting point,
-> then fill in your real values.
+> **Tip:** For pip-installed usage, prefer user-level files (`~/.britecore/...`) or
+> project-local files (`./britecore.toml`, `./.britecore_secrets.toml`) instead of
+> editing files under `src/`.
 
 ### `settings.toml` (Public)
 
@@ -83,7 +103,7 @@ base_url = "https://api-test.example.com"
 api_key = "your_real_api_key"
 ```
 
-**How to create:**
+**How to create (source clone workflow):**
 
 1. Copy `src/britecore_sdk/settings/sample/.secrets.toml` to `src/britecore_sdk/settings/.secrets.toml`
 2. Replace placeholder values with your real base_url and credentials for each site
@@ -108,9 +128,9 @@ client = get_api_client()
 
 **What happens:**
 
-1. `target_site` argument specifies which config section to load (e.g., `[example_site]`)
-2. Dynaconf merges `settings.toml` + `.secrets.toml` + environment variables
-3. Secrets override public settings
+1. `target_site` selects the site section (for example `[example_site]`)
+2. Dynaconf resolves layered files (SDK defaults, user-level, project-local, explicit file)
+3. `BRITECORE_SDK_*` environment variables override file values
 
 ### Via `get_api_client()` (Lazy, Recommended)
 
@@ -155,10 +175,11 @@ matching the `target_site` value, so the name must correspond to a real section 
 
 **Priority order for other config values (highest to lowest):**
 
-1. Environment variables (e.g., `BRITECORE_SDK_*`)
-2. `.secrets.toml` values (all base_url and credentials)
-3. `settings.toml` values (urllib3 defaults and site definitions)
-4. Built-in defaults
+1. Environment variables (for example `BRITECORE_SDK_*`)
+2. Explicit file path from `BRITECORE_SDK_SETTINGS_FILE`
+3. Project-local files (`./britecore.toml`, `./.britecore_secrets.toml`)
+4. User-level files (`~/.britecore/settings.toml`, `~/.britecore/.secrets.toml`)
+5. SDK package defaults (`src/britecore_sdk/settings/settings.toml`, `src/britecore_sdk/settings/.secrets.toml`)
 
 ## Required Keys by Auth Mode
 
@@ -434,4 +455,5 @@ Some features in britecore_sdk rely on map files (such as policy, field, or agen
 
 - [GETTING_STARTED.md](../GETTING_STARTED.md) -- Quick setup guide
 - [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) -- Common errors
+- [AGENTS.md](../AGENTS.md) -- Maintainer source-of-truth policies
 - [src/britecore_sdk/settings/config.py](../src/britecore_sdk/settings/config.py) -- Config loader implementation

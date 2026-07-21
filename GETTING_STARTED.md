@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: July 10, 2026*
+*Last updated: July 21, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -17,9 +17,9 @@ Related docs:
 - [README.md](./README.md) for a high-level overview
 - [API.md](./API.md) for endpoint reference
 - [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for async wrapper cache behavior
-- [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
+- [PYTHON_COMPATIBILITY.md](./PYTHON_COMPATIBILITY.md) for supported Python versions and stability commitments
 - [ARCHITECTURE.md](./ARCHITECTURE.md) for design details
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common errors
+- [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for common errors
 
 ## Prerequisites
 
@@ -65,13 +65,8 @@ python -m pip install -e ".[dev]"
 The SDK automatically loads settings from several locations in priority order. Choose the approach
 that best fits how you installed the SDK:
 
-| Priority | Location | File(s) |
-|---|---|---|
-| 1 (lowest) | SDK package defaults | `<sdk>/settings/settings.toml`, `<sdk>/settings/.secrets.toml` |
-| 2 | User-level | `~/.britecore/settings.toml`, `~/.britecore/.secrets.toml` |
-| 3 | Project-local | `./britecore.toml`, `./.britecore_secrets.toml` |
-| 4 | Explicit file override | `BRITECORE_SDK_SETTINGS_FILE` env var |
-| 5 (highest) | Environment variables | `BRITECORE_SDK_BASE_URL`, `BRITECORE_SDK_API_KEY`, … |
+Use the canonical precedence table in
+[`docs/CONFIGURATION.md`](./docs/CONFIGURATION.md#canonical-precedence-table).
 
 ### For pip-installed users (recommended): user-level config
 
@@ -103,13 +98,13 @@ Then skip to [Step 3](#step-3-customize-settingstoml-optional) below.
 Example files are provided to show you the correct format:
 
 ```powershell
-Copy-Item src\britecore_sdk\settings\.secrets.toml.example src\britecore_sdk\settings\.secrets.toml
-Copy-Item src\britecore_sdk\settings\settings.toml.example src\britecore_sdk\settings\settings.toml
+Copy-Item src\britecore_sdk\settings\sample\.secrets.toml src\britecore_sdk\settings\.secrets.toml
+Copy-Item src\britecore_sdk\settings\sample\settings.toml src\britecore_sdk\settings\settings.toml
 ```
 
 ```bash
-cp src/britecore_sdk/settings/.secrets.toml.example src/britecore_sdk/settings/.secrets.toml
-cp src/britecore_sdk/settings/settings.toml.example src/britecore_sdk/settings/settings.toml
+cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.secrets.toml
+cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
 ```
 
 ### Step 2: Edit `.secrets.toml` with Your Credentials
@@ -133,7 +128,7 @@ web_timeout = 10
 target_site = 'production'
 ```
 
-See [CONFIG_MANAGEMENT.md](CONFIG_MANAGEMENT.md) for complete setup instructions.
+See [CONFIG_MANAGEMENT.md](./CONFIG_MANAGEMENT.md) for complete setup instructions.
 
 ### Step 4: Set Environment Variables (Optional)
 
@@ -234,6 +229,14 @@ configure_logging(level="INFO")
 logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
 ```
 
+Direct logger access is also available:
+
+```python
+from britecore_sdk import logger
+
+logger.info("SDK logging is active")
+```
+
 When debug logging is enabled, init emits either `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth`.
 
 ## Smoke checks
@@ -324,7 +327,7 @@ print(result["headers"])        # Redacted by default
 Use async wrappers from `britecore_sdk.api.api_calls.v2` for non-blocking API calls.
 Read wrappers are cache-aware by default and mutation wrappers invalidate related namespaces.
 For exact behavior, supported cache kwargs, and invalidation examples, use
-[docs/ASYNC_CACHING.md](docs/ASYNC_CACHING.md).
+[docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md).
 
 ```python
 import asyncio
@@ -444,7 +447,7 @@ python -m pytest tests/integration -m integration -v
 
 ## API Client Initialization Notes
 
-- The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
+- The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit control over the shared lazy client. Use `init_api_client()` for advanced/manual initialization scenarios.
 - `init_client()` now returns `Self`, so `BritecoreAPIClient("site").init_client()` is a valid one-liner.
 - Use the context manager (`with BritecoreAPIClient("site").init_client() as client:`) to ensure the connection pool is closed on exit.
 - For multi-site scripts, bind wrappers to a specific client with `use_api_client(client)` instead of repeatedly mutating global client state.
