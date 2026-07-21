@@ -21,22 +21,7 @@ def create_claim_date(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new date entry for a claim.
-
-    Submit claim date data to register a critical date record via
-    ``POST /api/v2/claim_dates/create_claim_date``. Returns processed result
-    from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        data: The claim date payload containing date type, value, and claim identification.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the newly created claim date data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new date entry for a claim. (POST /api/v2/claim_dates/create_claim_date)."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,21 +38,7 @@ def create_claim_date(
 def delete_claim_date(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim date entry.
-
-    Remove a claim date record via ``POST /api/v2/claim_dates/delete_claim_date``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-            The claim date id should be provided in the request context.
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete a claim date entry. (POST /api/v2/claim_dates/delete_claim_date)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -85,21 +56,7 @@ def list_claim_dates(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all date entries for a claim.
-
-    Query claim dates via ``POST /api/v2/claim_dates/list_claim_dates``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        data: Optional filter data containing claim identification or date type filters.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of claim dates.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve all date entries for a claim. (POST /api/v2/claim_dates/list_claim_dates)."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -117,21 +74,7 @@ def update_claim_date(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing claim date entry.
-
-    Submit updated claim date data via ``POST /api/v2/claim_dates/update_claim_date``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        data: The claim date payload containing the date id and updated fields.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the updated claim date data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update an existing claim date entry. (POST /api/v2/claim_dates/update_claim_date)."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

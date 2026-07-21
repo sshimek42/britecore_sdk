@@ -32,13 +32,7 @@ def list_attachments(
     order_by: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List deliverable attachments for a policy, contact, or revision.
-
-    This wrapper uses the supplied identifiers and optional print-state/date
-    filters to call ``/api/v2/deliverables/list_attachments``. It returns the
-    normalized ``process_result(...)`` payload for the attachment query and
-    accepts ``RequestParameters`` overrides via ``**kwargs``.
-    """
+    """List deliverable attachments for a policy, contact, or revision. (POST /api/v2/deliverables/list_attachments)."""
     local_env: dict[str, str | None] = {**locals()}
     if not policy_id and not contact_id and not revision_id:
         BritecoreError.MissingParameter("policy_id, contact_id or revision_id required")
@@ -72,12 +66,7 @@ def list_attachments(
 
 
 def get_attachment(file_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve a deliverable attachment by file identifier.
-
-    This wrapper sends ``file_id`` to ``/api/v2/deliverables/get_attachment``
-    and returns the normalized ``process_result(...)`` payload for the matching
-    attachment record. ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """Retrieve a deliverable attachment by file identifier. (POST /api/v2/deliverables/get_attachment)."""
     LOGGER.debug("Getting attachment '%s'", file_id)
     file_search: dict[str, str] = {"file_id": file_id}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -95,13 +84,7 @@ def get_edeliverables(
     unprocessed_only: bool | None = True,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve e-deliverables for a date range.
-
-    This wrapper sends ``date_from``, ``date_to``, and ``unprocessed_only`` to
-    ``/api/v2/deliverables/get_edeliverables`` and returns the normalized
-    ``process_result(...)`` payload for the e-deliverable query.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """Retrieve e-deliverables for a date range. (POST /api/v2/deliverables/get_edeliverables)."""
     required_json: dict[str, str | bool | None] = {
         "date_from": date_from,
         "date_to": date_to,
@@ -126,21 +109,7 @@ def delete_html_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete HTML template by name.
-
-    Send a request to ``POST /api/v2/deliverables/delete_html_template``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        name: The HTML template name to delete.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete HTML template by name. (POST /api/v2/deliverables/delete_html_template)."""
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -160,21 +129,7 @@ def delete_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete static resource by name.
-
-    Send a request to ``POST /api/v2/deliverables/delete_static_resource``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        name: The static resource name to delete.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete static resource by name. (POST /api/v2/deliverables/delete_static_resource)."""
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -193,20 +148,7 @@ def delete_static_resource(
 def expire_all_static_resources(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Expire all static resources.
-
-    Send a request to ``POST /api/v2/deliverables/expire_all_static_resources``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming expiration.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Expire all static resources. (POST /api/v2/deliverables/expire_all_static_resources)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -224,21 +166,7 @@ def expire_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Expire static resource by name.
-
-    Send a request to ``POST /api/v2/deliverables/expire_static_resource``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        name: The static resource name to expire.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming expiration.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Expire static resource by name. (POST /api/v2/deliverables/expire_static_resource)."""
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -265,28 +193,7 @@ def getdeliverabledata(
     deliverable_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get deliverable data.
-
-    Send a request to ``POST /api/v2/deliverables/getDeliverableData``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        coverage_forms: Optional list of coverage forms.
-        invoice_id: Optional invoice identifier.
-        date_cursor: Optional date cursor for pagination.
-        reason: Optional reason filter.
-        state_id: Optional state identifier.
-        revision_id: Optional revision identifier.
-        return_data: Optional flag to return data.
-        deliverable_type: Optional deliverable type filter.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing deliverable data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get deliverable data. (POST /api/v2/deliverables/getDeliverableData)."""
     request_json: dict[str, Any] = {
         "coverage_forms": coverage_forms,
         "invoice_id": invoice_id,
@@ -312,20 +219,7 @@ def getdeliverabledata(
 def get_all_html_templates(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get all HTML templates.
-
-    Send a request to ``POST /api/v2/deliverables/get_all_html_templates``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing all HTML templates.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get all HTML templates. (POST /api/v2/deliverables/get_all_html_templates)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -342,20 +236,7 @@ def get_all_html_templates(
 def get_all_static_resources(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get all static resources.
-
-    Send a request to ``POST /api/v2/deliverables/get_all_static_resources``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing all static resources.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get all static resources. (POST /api/v2/deliverables/get_all_static_resources)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -375,23 +256,7 @@ def get_dec(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get DEC document.
-
-    Send a request to ``POST /api/v2/deliverables/get_dec``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        revision_id: Optional revision identifier.
-        reason: Optional reason for DEC.
-        policy_id: Optional policy identifier.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing DEC document data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get DEC document. (POST /api/v2/deliverables/get_dec)."""
     request_json: dict[str, Any] = {
         "revision_id": revision_id,
         "reason": reason,
@@ -413,21 +278,7 @@ def get_dynamic_fields(
     deliverable_template_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get dynamic fields for deliverable template.
-
-    Send a request to ``POST /api/v2/deliverables/get_dynamic_fields``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        deliverable_template_id: The deliverable template identifier.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing dynamic field definitions.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get dynamic fields for deliverable template. (POST /api/v2/deliverables/get_dynamic_fields)."""
     request_json: dict[str, Any] = {
         "deliverable_template_id": deliverable_template_id,
     }
@@ -447,21 +298,7 @@ def get_edeliverables_by_id(
     ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get e-deliverables by identifiers.
-
-    Send a request to ``POST /api/v2/deliverables/get_edeliverables_by_id``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        ids: List of e-deliverable identifiers.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing e-deliverable data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get e-deliverables by identifiers. (POST /api/v2/deliverables/get_edeliverables_by_id)."""
     request_json: dict[str, Any] = {
         "ids": ids,
     }
@@ -481,21 +318,7 @@ def get_html_template(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get HTML template by name.
-
-    Send a request to ``POST /api/v2/deliverables/get_html_template``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        name: The HTML template name.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing HTML template data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get HTML template by name. (POST /api/v2/deliverables/get_html_template)."""
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -516,22 +339,7 @@ def get_pending_email_count(
     to_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get pending email count for date range.
-
-    Send a request to ``POST /api/v2/deliverables/get_pending_email_count``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        from_date: Start date for email query.
-        to_date: End date for email query.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing pending email count.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get pending email count for date range. (POST /api/v2/deliverables/get_pending_email_count)."""
     request_json: dict[str, Any] = {
         "from_date": from_date,
         "to_date": to_date,
@@ -552,21 +360,7 @@ def get_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get static resource by name.
-
-    Send a request to ``POST /api/v2/deliverables/get_static_resource``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        name: The static resource name.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing static resource data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get static resource by name. (POST /api/v2/deliverables/get_static_resource)."""
     request_json: dict[str, Any] = {
         "name": name,
     }
@@ -587,22 +381,7 @@ def index_edelivery_records(
     date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Index e-delivery records for date range.
-
-    Send a request to ``POST /api/v2/deliverables/index_edelivery_records``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        date_from: Start date for indexing.
-        date_to: End date for indexing.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming indexing.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Index e-delivery records for date range. (POST /api/v2/deliverables/index_edelivery_records)."""
     request_json: dict[str, Any] = {
         "date_from": date_from,
         "date_to": date_to,
@@ -626,24 +405,7 @@ def regenerate_combined_billing_statements(
     group_billing_number: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Regenerate combined billing statements.
-
-    Send a request to ``POST /api/v2/deliverables/regenerate_combined_billing_statements``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        force_generation: Force regeneration flag.
-        start_date: Start date for statements.
-        end_date: End date for statements.
-        group_billing_number: Group billing number filter.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming regeneration.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Regenerate combined billing statements. (POST /api/v2/deliverables/regenerate_combined_billing_statements)."""
     request_json: dict[str, Any] = {
         "force_generation": force_generation,
         "start_date": start_date,
@@ -668,22 +430,7 @@ def remove_edelivery_records(
     date_to: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Remove e-delivery records for date range.
-
-    Send a request to ``POST /api/v2/deliverables/remove_edelivery_records``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        date_from: Start date for removal.
-        date_to: End date for removal.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming removal.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Remove e-delivery records for date range. (POST /api/v2/deliverables/remove_edelivery_records)."""
     request_json: dict[str, Any] = {
         "date_from": date_from,
         "date_to": date_to,
@@ -707,24 +454,7 @@ def retrieve_available_document_options(
     module: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve available document options.
-
-    Send a request to ``POST /api/v2/deliverables/retrieve_available_document_options``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        location_abbr: Location abbreviation filter.
-        location_name: Location name filter.
-        location_id: Location identifier filter.
-        module: Module name filter.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing available document options.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve available document options. (POST /api/v2/deliverables/retrieve_available_document_options)."""
     request_json: dict[str, Any] = {
         "location_abbr": location_abbr,
         "location_name": location_name,
@@ -758,31 +488,7 @@ def retrieve_files_for_entity(
     data: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve files for entity.
-
-    Send a request to ``POST /api/v2/deliverables/retrieve_files_for_entity``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        field: Field filter.
-        advanced_filters: Advanced filter list.
-        success: Success flag filter.
-        allow_null_reference: Allow null reference flag.
-        policy_number: Policy number filter.
-        messages: Message list.
-        ascending: Sort ascending flag.
-        claim_number: Claim number filter.
-        Returns: Returns filter.
-        reference_id: Reference identifier.
-        data: Data list.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing file data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve files for entity. (POST /api/v2/deliverables/retrieve_files_for_entity)."""
     request_json: dict[str, Any] = {
         "-------": field,
         "advanced_filters": advanced_filters,
@@ -813,22 +519,7 @@ def retrieve_invoice_document(
     primary_insured: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve invoice document.
-
-    Send a request to ``POST /api/v2/deliverables/retrieve_invoice_document``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        invoice_number: The invoice number.
-        primary_insured: Primary insured flag.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing invoice document.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve invoice document. (POST /api/v2/deliverables/retrieve_invoice_document)."""
     request_json: dict[str, Any] = {
         "invoice_number": invoice_number,
         "primary_insured": primary_insured,
@@ -854,26 +545,7 @@ def save_html_template(
     html: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save HTML template.
-
-    Send a request to ``POST /api/v2/deliverables/save_html_template``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        show_as_custom_deliverable: Show as custom deliverable flag.
-        name: Template name.
-        enabled: Enabled flag.
-        use_new_pdf_render: Use new PDF rendering flag.
-        use_new_html_render: Use new HTML rendering flag.
-        html: HTML content.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming save.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Save HTML template. (POST /api/v2/deliverables/save_html_template)."""
     request_json: dict[str, Any] = {
         "show_as_custom_deliverable": show_as_custom_deliverable,
         "name": name,
@@ -900,23 +572,7 @@ def save_static_resource(
     name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Save static resource.
-
-    Send a request to ``POST /api/v2/deliverables/save_static_resource``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        url: Resource URL.
-        expire_in: Expiration time in seconds.
-        name: Resource name.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming save.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Save static resource. (POST /api/v2/deliverables/save_static_resource)."""
     request_json: dict[str, Any] = {
         "url": url,
         "expire_in": expire_in,
@@ -940,23 +596,7 @@ def set_html_templates_locations(
     success: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set HTML templates locations.
-
-    Send a request to ``POST /api/v2/deliverables/set_html_templates_locations``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        messages: Message list or dict.
-        data: Data dictionary.
-        success: Success flag.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming locations set.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Set HTML templates locations. (POST /api/v2/deliverables/set_html_templates_locations)."""
     request_json: dict[str, Any] = {
         "messages": messages,
         "data": data,
@@ -978,21 +618,7 @@ def update_edelivery_records(
     records: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update e-delivery records.
-
-    Send a request to ``POST /api/v2/deliverables/update_edelivery_records``. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        records: Records dictionary to update.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming update.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update e-delivery records. (POST /api/v2/deliverables/update_edelivery_records)."""
     request_json: dict[str, Any] = {
         "records": records,
     }

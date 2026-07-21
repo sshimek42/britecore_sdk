@@ -24,29 +24,7 @@ def add_recovery(
     payment_details: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add recovery information to a claim exposure.
-
-    Register recovery details for a claim exposure via ``POST /api/v2/claim_exposures/add_recovery``.
-    Includes optional reserve details and payment information. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        recovery_details: Recovery details payload (required).
-        api_key: Optional API key for authentication override.
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        reserve_details: Optional reserve information.
-        exposure_id: Optional exposure identifier reference.
-        payment_details: Optional payment information.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing recovery information.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add recovery information to a claim exposure. (POST /api/v2/claim_exposures/add_recovery)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "recovery_details": recovery_details,
@@ -77,26 +55,7 @@ def add_recovery_reserve(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add recovery reserve to a claim exposure.
-
-    Register recovery reserve information for a claim via
-    ``POST /api/v2/claim_exposures/add_recovery_reserve``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        api_key: Optional API key for authentication override.
-        recovery_reserve_details: Recovery reserve details payload.
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing recovery reserve information.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add recovery reserve to a claim exposure. (POST /api/v2/claim_exposures/add_recovery_reserve)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "api_key": api_key,
@@ -122,24 +81,7 @@ def add_reserve(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add reserve to a claim exposure.
-
-    Register reserve information for a claim exposure via
-    ``POST /api/v2/claim_exposures/add_reserve``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing reserve information.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add reserve to a claim exposure. (POST /api/v2/claim_exposures/add_reserve)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -163,23 +105,7 @@ def create_exposure(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new claim exposure.
-
-    Register a new exposure for a claim via ``POST /api/v2/claim_exposures/create_exposure``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing newly created exposure data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new claim exposure. (POST /api/v2/claim_exposures/create_exposure)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -203,23 +129,7 @@ def delete_exposure(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim exposure.
-
-    Remove an exposure from a claim via ``POST /api/v2/claim_exposures/delete_exposure``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete a claim exposure. (POST /api/v2/claim_exposures/delete_exposure)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -243,24 +153,7 @@ def get_accounting_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting data for a claim.
-
-    Get accounting information for a claim exposure via
-    ``POST /api/v2/claim_exposures/get_accounting_data``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing accounting data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve accounting data for a claim. (POST /api/v2/claim_exposures/get_accounting_data)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -285,25 +178,7 @@ def get_accounting_loss_details(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting loss details for a claim.
-
-    Get detailed accounting loss information for a claim via
-    ``POST /api/v2/claim_exposures/get_accounting_loss_details``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        api_key: Optional API key for authentication override.
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing accounting loss details.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve accounting loss details for a claim. (POST /api/v2/claim_exposures/get_accounting_loss_details)."""
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "claim_id": claim_id,
@@ -329,25 +204,7 @@ def get_accounting_overview(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting overview for a claim.
-
-    Get an overview of accounting information for a claim via
-    ``POST /api/v2/claim_exposures/get_accounting_overview``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        api_key: Optional API key for authentication override.
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing accounting overview.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve accounting overview for a claim. (POST /api/v2/claim_exposures/get_accounting_overview)."""
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "claim_id": claim_id,
@@ -373,25 +230,7 @@ def get_accounting_recoveries_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve accounting recovery data for a claim.
-
-    Get accounting recovery information for a claim via
-    ``POST /api/v2/claim_exposures/get_accounting_recoveries_data``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        api_key: Optional API key for authentication override.
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing accounting recovery data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve accounting recovery data for a claim. (POST /api/v2/claim_exposures/get_accounting_recoveries_data)."""
     request_json: dict[str, Any] = {
         "api_key": api_key,
         "claim_id": claim_id,
@@ -419,26 +258,7 @@ def get_broken_limits(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve broken coverage limits for a claim.
-
-    Get information about coverage limits that have been exceeded for a claim via
-    ``POST /api/v2/claim_exposures/get_broken_limits``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        instance: Optional instance filter.
-        type: Optional limit type filter.
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing broken limits information.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve broken coverage limits for a claim. (POST /api/v2/claim_exposures/get_broken_limits)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "instance": instance,
@@ -464,24 +284,7 @@ def get_coverage_accounting_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve coverage accounting data for a claim.
-
-    Get accounting information by coverage for a claim via
-    ``POST /api/v2/claim_exposures/get_coverage_accounting_data``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing coverage accounting data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve coverage accounting data for a claim. (POST /api/v2/claim_exposures/get_coverage_accounting_data)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -505,24 +308,7 @@ def get_exposure_accounting_data(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve exposure accounting data for a claim.
-
-    Get accounting information by exposure for a claim via
-    ``POST /api/v2/claim_exposures/get_exposure_accounting_data``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing exposure accounting data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve exposure accounting data for a claim. (POST /api/v2/claim_exposures/get_exposure_accounting_data)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -546,24 +332,7 @@ def get_exposure_transactions(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve transactions for a claim exposure.
-
-    Get transaction history for a claim exposure via
-    ``POST /api/v2/claim_exposures/get_exposure_transactions``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing exposure transaction data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve transactions for a claim exposure. (POST /api/v2/claim_exposures/get_exposure_transactions)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -588,25 +357,7 @@ def get_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve payment details for a claim exposure.
-
-    Get payment information for a specific claim exposure payment via
-    ``POST /api/v2/claim_exposures/get_payment``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        payment_id: The payment identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing payment details.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve payment details for a claim exposure. (POST /api/v2/claim_exposures/get_payment)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "payment_id": payment_id,
@@ -631,24 +382,7 @@ def list_exposures(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List all exposures for a claim.
-
-    Retrieve all exposures associated with a claim via
-    ``POST /api/v2/claim_exposures/list_exposures``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of exposures.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List all exposures for a claim. (POST /api/v2/claim_exposures/list_exposures)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -672,24 +406,7 @@ def make_multi_exposures_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make payment across multiple exposures for a claim.
-
-    Submit a payment that applies to multiple exposures in a claim via
-    ``POST /api/v2/claim_exposures/make_multi_exposures_payment``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming payment.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Make payment across multiple exposures for a claim. (POST /api/v2/claim_exposures/make_multi_exposures_payment)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -713,23 +430,7 @@ def make_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make payment for a claim exposure.
-
-    Submit a payment for a claim exposure via ``POST /api/v2/claim_exposures/make_payment``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming payment.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Make payment for a claim exposure. (POST /api/v2/claim_exposures/make_payment)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,
@@ -754,24 +455,7 @@ def update_payment(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update payment information for a claim exposure.
-
-    Modify payment details for a claim exposure via ``POST /api/v2/claim_exposures/update_payment``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        payment_details: Updated payment details payload.
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response with updated payment information.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update payment information for a claim exposure. (POST /api/v2/claim_exposures/update_payment)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "payment_details": payment_details,
@@ -796,24 +480,7 @@ def void_transaction(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Void a transaction for a claim exposure.
-
-    Cancel/void a transaction for a claim exposure via
-    ``POST /api/v2/claim_exposures/void_transaction``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier (required).
-        page: Optional pagination page number.
-        page_size: Optional pagination page size.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming void.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Void a transaction for a claim exposure. (POST /api/v2/claim_exposures/void_transaction)."""
     request_json: dict[str, Any] = {
         "claim_id": claim_id,
         "page": page,

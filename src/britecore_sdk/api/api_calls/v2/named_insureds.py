@@ -17,22 +17,7 @@ def create_named_insured(
     named_insured: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new named insured record.
-
-    Submit a named_insured payload to register a new named insured on a policy
-    via ``POST /api/v2/named_insureds/create_named_insured``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        named_insured: The named insured payload containing insured name, role, and contact information.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the newly created named insured data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new named insured record. (POST /api/v2/named_insureds/create_named_insured)."""
     request_json: dict[str, Any] = {"named_insured": named_insured}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -50,23 +35,7 @@ def delete_named_insured(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a named insured record by identifier.
-
-    Use the named insured ``id`` to remove it from the system via
-    ``POST /api/v2/named_insureds/delete_named_insured``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The named insured identifier to delete.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error
-            (e.g., NotFoundError if the named insured does not exist).
-    """
+    """Delete a named insured record by identifier. (POST /api/v2/named_insureds/delete_named_insured)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -84,7 +53,7 @@ def get_named_insured(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insured (POST /api/v2/named_insureds/get_named_insured)."""
+    """Get Named Insured (POST /api/v2/named_insureds/get_named_insured). (POST /api/v2/named_insureds/get_named_insured))."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -102,7 +71,7 @@ def get_named_insured_by_id(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insured By Id (POST /api/v2/named_insureds/get_named_insured_by_id)."""
+    """Get Named Insured By Id (POST /api/v2/named_insureds/get_named_insured_by_id). (POST /api/v2/named_insureds/get_named_insured_by_id))."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -120,7 +89,7 @@ def get_named_insureds(
     data: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Named Insureds (POST /api/v2/named_insureds/get_named_insureds)."""
+    """Get Named Insureds (POST /api/v2/named_insureds/get_named_insureds). (POST /api/v2/named_insureds/get_named_insureds))."""
     request_json: dict[str, Any] = {"data": data}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -138,7 +107,7 @@ def run_score(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run Score (POST /api/v2/named_insureds/run_score)."""
+    """Run Score (POST /api/v2/named_insureds/run_score). (POST /api/v2/named_insureds/run_score))."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -156,7 +125,7 @@ def set_primary_insured(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set Primary Insured (POST /api/v2/named_insureds/set_primary_insured)."""
+    """Set Primary Insured (POST /api/v2/named_insureds/set_primary_insured). (POST /api/v2/named_insureds/set_primary_insured))."""
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -174,23 +143,7 @@ def update_named_insured(
     named_insured: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing named insured record.
-
-    Submit a named_insured payload with updated information to modify an
-    existing named insured via ``POST /api/v2/named_insureds/update_named_insured``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        named_insured: The named insured payload containing the insured id and updated fields.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the updated named insured data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error
-            (e.g., NotFoundError if the named insured does not exist).
-    """
+    """Update an existing named insured record. (POST /api/v2/named_insureds/update_named_insured)."""
     request_json: dict[str, Any] = {"named_insured": named_insured}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

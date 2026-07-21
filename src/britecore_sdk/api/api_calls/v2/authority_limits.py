@@ -17,22 +17,7 @@ def create_authority_limit(
     authority_limit: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new authority limit.
-
-    Submit an authority_limit payload to register a new underwriting authority limit
-    via ``POST /api/v2/authority_limits/create_authority_limit``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        authority_limit: The authority limit payload containing limit configuration details.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the newly created authority limit data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new authority limit. (POST /api/v2/authority_limits/create_authority_limit)."""
     request_json: dict[str, Any] = {"authority_limit": authority_limit}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -50,23 +35,7 @@ def delete_authority_limit(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete an authority limit by identifier.
-
-    Use the authority limit ``id`` to remove it from the system via
-    ``POST /api/v2/authority_limits/delete_authority_limit``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The authority limit identifier to delete.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error
-            (e.g., NotFoundError if the authority limit does not exist).
-    """
+    """Delete an authority limit by identifier. (POST /api/v2/authority_limits/delete_authority_limit)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -84,7 +53,7 @@ def get_authority_limit(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Authority Limit (POST /api/v2/authority_limits/get_authority_limit)."""
+    """Get Authority Limit (POST /api/v2/authority_limits/get_authority_limit). (POST /api/v2/authority_limits/get_authority_limit))."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -101,22 +70,7 @@ def get_authority_limit(
 def list_authority_limits(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all authority limits.
-
-    Query all authority limits configured in the system via
-    ``POST /api/v2/authority_limits/list_authority_limits``. Returns processed
-    result from ``process_result(...)`` containing the collection of limits
-    and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of all authority limits.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve all authority limits. (POST /api/v2/authority_limits/list_authority_limits)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -134,7 +88,7 @@ def update_all_authority_limits(
     authority_limits: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update All Authority Limits (POST /api/v2/authority_limits/update_all_authority_limits)."""
+    """Update All Authority Limits (POST /api/v2/authority_limits/update_all_authority_limits). (POST /api/v2/authority_limits/update_all_authority_limits))."""
     request_json: dict[str, Any] = {"authority_limits": authority_limits}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -152,23 +106,7 @@ def update_authority_limit(
     authority_limit: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing authority limit.
-
-    Submit an authority_limit payload with updated configuration to modify an
-    existing limit via ``POST /api/v2/authority_limits/update_authority_limit``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        authority_limit: The authority limit payload containing the limit id and updated configuration.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the updated authority limit data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error
-            (e.g., NotFoundError if the authority limit does not exist).
-    """
+    """Update an existing authority limit. (POST /api/v2/authority_limits/update_authority_limit)."""
     request_json: dict[str, Any] = {"authority_limit": authority_limit}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

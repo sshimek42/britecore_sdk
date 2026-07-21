@@ -29,20 +29,7 @@ async def aget_export_line_file(
     include_custom_sequences: bool = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve export-line file data for a single line asynchronously.
-
-    This wrapper sends line identifiers to
-    ``/api/v2/lines/get_export_line_file`` asynchronously and returns the
-    parsed JSON payload data.
-
-    Args:
-        line: Tuple of ``(effective_date_id, state_id, line_id)``.
-        include_custom_sequences: Whether to include custom sequences in the
-            export.  Defaults to ``False``.
-        **kwargs: ``RequestParameters`` overrides.  Consider passing a long
-            ``request_timeout`` (e.g., ``120``) as these calls can take
-            45–60 seconds.
-    """
+    """Retrieve export-line file data for a single line asynchronously. (POST /api/v2/lines/get_export_line_file)."""
     LOGGER.info("Retrieving line export for IDs: %s", line)
 
     web_request_json: dict[str, Any] = {
@@ -75,44 +62,7 @@ async def aget_export_line_files_stitched(
     include_custom_sequences: bool = False,
     **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
-    """Fetch export data for multiple lines asynchronously and stitch the results.
-
-    Line file export calls are **long-running** (typically 45–60 seconds each).
-    This helper intentionally defaults to low concurrency (``max_concurrent=2``)
-    to avoid overloading the BriteCore backend and to limit timeout failures.
-    Callers should pass a generous ``request_timeout`` (e.g., 120–180 seconds)
-    via ``**kwargs``.
-
-    The stitched result contains all per-line payloads keyed by line index,
-    plus a summary of successes and failures.
-
-    Args:
-        lines: List of ``(effective_date_id, state_id, line_id)`` tuples,
-            one per line to extract.
-        max_concurrent: Maximum concurrent coroutines.  Default is ``2`` (low
-            because each extract call is long-running and heavy).
-        include_custom_sequences: Whether to include custom sequences in each
-            export.  Defaults to ``False``.
-        **kwargs: ``RequestParameters`` overrides.  It is strongly recommended
-            to pass a long ``request_timeout``::
-
-                await aget_export_line_files_stitched(
-                    lines,
-                    request_timeout=120,
-                )
-
-    Returns:
-        dict[str, Any]:
-            - ``total``: total number of lines requested
-            - ``succeeded``: number of successful extracts
-            - ``failed``: number of failed extracts
-            - ``results``: list of per-line outcome dicts with keys
-              ``index``, ``line``, ``success``, ``data``, ``error``
-
-    Raises:
-        BritecoreError.MissingParameter: If ``lines`` is missing/empty.
-        ValueError: If ``max_concurrent`` is less than 1.
-    """
+    """Fetch export data for multiple lines asynchronously and stitch the results.."""
     if not lines or not isinstance(lines, list):
         raise BritecoreError.MissingParameter(
             "lines is required and must be a non-empty list"

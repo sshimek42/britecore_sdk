@@ -32,7 +32,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 def _effective_date_payload(
     *, effective_date_id: str | None = None, effective_date: str | None = None
 ) -> dict[str, str | None]:
-    """Resolve effective-date parameters using existing priority rules."""
+    """Resolve effective-date parameters using existing priority rules.."""
     if effective_date_id:
         return {"effective_date_id": effective_date_id}
     if effective_date:
@@ -45,17 +45,7 @@ def get_export_line_file(
     include_custom_sequences: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve export-line file data for a line.
-
-    This wrapper sends line identifiers to
-    ``/api/v2/lines/get_export_line_file`` and returns the parsed JSON payload data.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
-
-    Args:
-        line: Tuple of (effective_date_id, state_id, line_id)
-        include_custom_sequences: Whether to include custom sequences in the export
-        **kwargs: Additional request parameters for the API client
-    """
+    """Retrieve export-line file data for a line. (POST /api/v2/lines/get_export_line_file)."""
     LOGGER.info("Retrieving line export for IDs: %s", line)
 
     web_request_json: dict[str, str | bool | None] = {
@@ -81,12 +71,7 @@ def get_export_line_file(
 
 
 def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve available effective dates for lines.
-
-    This wrapper calls ``/api/v2/lines/get_all_effective_dates`` and returns
-    the normalized ``process_result(...)`` payload containing effective date
-    options. ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """Retrieve available effective dates for lines. (POST /api/v2/lines/get_all_effective_dates)."""
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/get_all_effective_dates", **kwargs
     )
@@ -99,13 +84,7 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
 def get_all_states(
     effective_date_id: str | None = None, **kwargs: Unpack[RequestParameters]
 ) -> Any:
-    """Retrieve available states, optionally filtered by effective date.
-
-    This wrapper sends the optional ``effective_date_id`` to
-    ``/api/v2/lines/get_all_states`` and returns the normalized
-    ``process_result(...)`` payload for state options. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
-    """
+    """Retrieve available states, optionally filtered by effective date. (POST /api/v2/lines/get_all_states)."""
     effective_date_json: dict[str, str] | None = {}
 
     if effective_date_id:
@@ -125,13 +104,7 @@ def get_all_lines(
     location_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve available lines for an effective date and optional location.
-
-    This wrapper sends ``effective_date_id`` and the optional ``location_id``
-    filter to ``/api/v2/lines/get_all_lines`` and returns the normalized
-    ``process_result(...)`` payload for available lines.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """Retrieve available lines for an effective date and optional location. (POST /api/v2/lines/get_all_lines)."""
     current_lines_json: dict[str, str] = {
         "effective_date_id": effective_date_id,
     }
@@ -154,13 +127,7 @@ def list_policy_types(
     effective_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List policy types for a location and effective-date context.
-
-    This wrapper requires a location and one effective-date identifier,
-    then calls ``/api/v2/lines/list_policy_types`` and returns the normalized
-    ``process_result(...)`` payload for policy-type options.
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """List policy types for a location and effective-date context. (POST /api/v2/lines/list_policy_types)."""
     if not effective_date and effective_date_id:
         BritecoreError.MissingParameter(
             "Either effective_date or effective_date is required"
@@ -198,7 +165,7 @@ def find_effective_date(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Find the matching effective-date identifier for a provided date context."""
+    """Find the matching effective-date identifier for a provided date context.."""
     return post(
         path="/api/v2/lines/find_effective_date",
         payload=payload,
@@ -239,7 +206,7 @@ def create_builderdiff_mapping(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a builderdiff mapping record for line migration workflows."""
+    """Create a builderdiff mapping record for line migration workflows.."""
     return post(
         path="/api/v2/lines/create_builderdiff_mapping",
         payload=payload,
@@ -253,7 +220,7 @@ def copy_underwriting_rules(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy underwriting rules between source and destination contexts."""
+    """Copy underwriting rules between source and destination contexts.."""
     return post(
         path="/api/v2/lines/copy_underwriting_rules",
         payload=payload,
@@ -267,7 +234,7 @@ def delete_builderdiff_mapping(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete an existing builderdiff mapping record."""
+    """Delete an existing builderdiff mapping record.."""
     return post(
         path="/api/v2/lines/delete_builderdiff_mapping",
         payload=payload,
@@ -281,7 +248,7 @@ def copy_line_items(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy line items from one line definition to another."""
+    """Copy line items from one line definition to another.."""
     return post(
         path="/api/v2/lines/copy_line_items",
         payload=payload,
@@ -295,7 +262,7 @@ def get_policies_with_line_item(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Return policies that reference a specific line item."""
+    """Return policies that reference a specific line item.."""
     return post(
         path="/api/v2/lines/get_policies_with_line_item",
         payload=payload,
@@ -309,7 +276,7 @@ def retrieve_policy_type(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve policy-type metadata for a policy type identifier."""
+    """Retrieve policy-type metadata for a policy type identifier.."""
     return post(
         path="/api/v2/lines/retrieve_policy_type",
         payload=payload,
@@ -323,7 +290,7 @@ def delete_line_item(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a line item from a line configuration."""
+    """Delete a line item from a line configuration.."""
     return post(
         path="/api/v2/lines/delete_line_item",
         payload=payload,
@@ -337,7 +304,7 @@ def import_line(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import a line definition payload into the lines module."""
+    """Import a line definition payload into the lines module.."""
     return post(
         path="/api/v2/lines/import_line",
         payload=payload,
@@ -351,7 +318,7 @@ def copy_policy_type(
     payload: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy a policy type definition to a new target context."""
+    """Copy a policy type definition to a new target context.."""
     return post(
         path="/api/v2/lines/copy_policy_type",
         payload=payload,
@@ -367,7 +334,7 @@ def get_all_policy_types(
     effective_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List all policy types for a location and effective-date context."""
+    """List all policy types for a location and effective-date context.."""
     policy_types_json = _effective_date_payload(
         effective_date_id=effective_date_id,
         effective_date=effective_date,
@@ -388,44 +355,7 @@ def get_export_line_files_stitched(
     include_custom_sequences: bool = False,
     **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
-    """Fetch export data for multiple lines and stitch the results together.
-
-    Line file export calls are **long-running** (typically 45–60 seconds each).
-    This helper intentionally defaults to low concurrency (``max_workers=2``)
-    to avoid overloading the BriteCore backend and to limit timeout failures.
-    Callers should pass a generous ``request_timeout`` (e.g., 120–180 seconds)
-    via ``**kwargs``.
-
-    The stitched result contains all per-line payloads keyed by line index,
-    plus a summary of successes and failures.
-
-    Args:
-        lines: List of ``(effective_date_id, state_id, line_id)`` tuples,
-            one per line to extract.
-        max_workers: Maximum concurrent workers.  Default is ``2`` (low because
-            each extract call is long-running and heavy).
-        include_custom_sequences: Whether to include custom sequences in each
-            export.  Defaults to ``False``.
-        **kwargs: ``RequestParameters`` overrides.  It is strongly recommended
-            to pass a long ``request_timeout``::
-
-                get_export_line_files_stitched(
-                    lines,
-                    request_timeout=120,
-                )
-
-    Returns:
-        dict[str, Any]:
-            - ``total``: total number of lines requested
-            - ``succeeded``: number of successful extracts
-            - ``failed``: number of failed extracts
-            - ``results``: list of per-line outcome dicts with keys
-              ``index``, ``line``, ``success``, ``data``, ``error``
-
-    Raises:
-        BritecoreError.MissingParameter: If ``lines`` is missing/empty.
-        ValueError: If ``max_workers`` is less than 1.
-    """
+    """Fetch export data for multiple lines and stitch the results together.."""
     if not lines or not isinstance(lines, list):
         raise BritecoreError.MissingParameter(
             "lines is required and must be a non-empty list"
@@ -494,7 +424,7 @@ def create_effective_date(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Effective Date (POST /api/v2/lines/create_effective_date)."""
+    """Create Effective Date (POST /api/v2/lines/create_effective_date). (POST /api/v2/lines/create_effective_date))."""
     request_json: dict[str, Any] = {
         "force": force,
         "description": description,
@@ -522,7 +452,7 @@ def create_policy_type(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Policy Type (POST /api/v2/lines/create_policy_type)."""
+    """Create Policy Type (POST /api/v2/lines/create_policy_type). (POST /api/v2/lines/create_policy_type))."""
     request_json: dict[str, Any] = {
         "line": line,
         "location_id": location_id,
@@ -547,7 +477,7 @@ def create_rating_grid_definition(
     type: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Rating Grid Definition (POST /api/v2/lines/create_rating_grid_definition)."""
+    """Create Rating Grid Definition (POST /api/v2/lines/create_rating_grid_definition). (POST /api/v2/lines/create_rating_grid_definition))."""
     request_json: dict[str, Any] = {
         "name": name,
         "location_id": location_id,
@@ -569,7 +499,7 @@ def delete_effective_date(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Effective Date (POST /api/v2/lines/delete_effective_date)."""
+    """Delete Effective Date (POST /api/v2/lines/delete_effective_date). (POST /api/v2/lines/delete_effective_date))."""
     request_json: dict[str, Any] = {
         "effective_date_id": effective_date_id,
     }
@@ -589,7 +519,7 @@ def delete_policy_type(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Policy Type (POST /api/v2/lines/delete_policy_type)."""
+    """Delete Policy Type (POST /api/v2/lines/delete_policy_type). (POST /api/v2/lines/delete_policy_type))."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -613,7 +543,7 @@ def delete_rating_table(
     page: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Rating Table (POST /api/v2/lines/delete_rating_table)."""
+    """Delete Rating Table (POST /api/v2/lines/delete_rating_table). (POST /api/v2/lines/delete_rating_table))."""
     request_json: dict[str, Any] = {
         "sort_by": sort_by,
         "sort_order": sort_order,
@@ -636,7 +566,7 @@ def delete_rating_table(
 def delete_rating_table_file(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Rating Table File (POST /api/v2/lines/delete_rating_table_file)."""
+    """Delete Rating Table File (POST /api/v2/lines/delete_rating_table_file). (POST /api/v2/lines/delete_rating_table_file))."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -654,7 +584,7 @@ def get_effective_date(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Effective Date (POST /api/v2/lines/get_effective_date)."""
+    """Get Effective Date (POST /api/v2/lines/get_effective_date). (POST /api/v2/lines/get_effective_date))."""
     request_json: dict[str, Any] = {
         "effective_date_id": effective_date_id,
     }
@@ -674,7 +604,7 @@ def get_policy_type(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policy Type (POST /api/v2/lines/get_policy_type)."""
+    """Get Policy Type (POST /api/v2/lines/get_policy_type). (POST /api/v2/lines/get_policy_type))."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -693,7 +623,7 @@ def get_policy_type(
 def get_rating_table_template(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Rating Table Template (POST /api/v2/lines/get_rating_table_template)."""
+    """Get Rating Table Template (POST /api/v2/lines/get_rating_table_template). (POST /api/v2/lines/get_rating_table_template))."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -711,7 +641,7 @@ def get_underwriting_question_autofill_answers(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Underwriting Question Autofill Answers (POST /api/v2/lines/get_underwriting_question_autofill_answers)."""
+    """Get Underwriting Question Autofill Answers (POST /api/v2/lines/get_underwriting_question_autofill_answers). (POST /api/v2/lines/get_underwriting_question_autofill_answers))."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
     }
@@ -732,7 +662,7 @@ def import_rating_table(
     location_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Rating Table (POST /api/v2/lines/import_rating_table)."""
+    """Import Rating Table (POST /api/v2/lines/import_rating_table). (POST /api/v2/lines/import_rating_table))."""
     request_json: dict[str, Any] = {"location_id": location_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -752,7 +682,7 @@ def list_effective_dates(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Effective Dates (POST /api/v2/lines/list_effective_dates)."""
+    """List Effective Dates (POST /api/v2/lines/list_effective_dates). (POST /api/v2/lines/list_effective_dates))."""
     request_json: dict[str, Any] = {
         "sort_order": sort_order,
         "page": page,
@@ -773,7 +703,7 @@ def list_effective_dates(
 def list_rating_grid_definitions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Rating Grid Definitions (POST /api/v2/lines/list_rating_grid_definitions)."""
+    """List Rating Grid Definitions (POST /api/v2/lines/list_rating_grid_definitions). (POST /api/v2/lines/list_rating_grid_definitions))."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -790,7 +720,7 @@ def list_rating_grid_definitions(
 def list_rating_tables(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Rating Tables (POST /api/v2/lines/list_rating_tables)."""
+    """List Rating Tables (POST /api/v2/lines/list_rating_tables). (POST /api/v2/lines/list_rating_tables))."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -811,7 +741,7 @@ def modify_effective_date(
     description: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Effective Date (POST /api/v2/lines/modify_effective_date)."""
+    """Modify Effective Date (POST /api/v2/lines/modify_effective_date). (POST /api/v2/lines/modify_effective_date))."""
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "force": force,
@@ -836,7 +766,7 @@ def modify_policy_type(
     sub_lines: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Policy Type (POST /api/v2/lines/modify_policy_type)."""
+    """Modify Policy Type (POST /api/v2/lines/modify_policy_type). (POST /api/v2/lines/modify_policy_type))."""
     request_json: dict[str, Any] = {
         "items": items,
         "id": id,
@@ -858,7 +788,7 @@ def retrieve_policy_type_claims_tabs_visibility(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Policy Type Claims Tabs Visibility (POST /api/v2/lines/retrieve_policy_type_claims_tabs_visibility)."""
+    """Retrieve Policy Type Claims Tabs Visibility (POST /api/v2/lines/retrieve_policy_type_claims_tabs_visibility). (POST /api/v2/lines/retrieve_policy_type_claims_tabs_visibility))."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
     }
@@ -883,7 +813,7 @@ def retrieve_rating_table(
     page: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Rating Table (POST /api/v2/lines/retrieve_rating_table)."""
+    """Retrieve Rating Table (POST /api/v2/lines/retrieve_rating_table). (POST /api/v2/lines/retrieve_rating_table))."""
     request_json: dict[str, Any] = {
         "sort_by": sort_by,
         "sort_order": sort_order,
@@ -908,7 +838,7 @@ def retrieve_underwriting_questions(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Underwriting Questions (POST /api/v2/lines/retrieve_underwriting_questions)."""
+    """Retrieve Underwriting Questions (POST /api/v2/lines/retrieve_underwriting_questions). (POST /api/v2/lines/retrieve_underwriting_questions))."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "effective_date_id": effective_date_id,
@@ -931,7 +861,7 @@ def update_policy_type_claims_tab_visibility(
     code_value_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Policy Type Claims Tab Visibility (POST /api/v2/lines/update_policy_type_claims_tab_visibility)."""
+    """Update Policy Type Claims Tab Visibility (POST /api/v2/lines/update_policy_type_claims_tab_visibility). (POST /api/v2/lines/update_policy_type_claims_tab_visibility))."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "flagged": flagged,
@@ -955,7 +885,7 @@ def update_rating_table(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Rating Table (POST /api/v2/lines/update_rating_table)."""
+    """Update Rating Table (POST /api/v2/lines/update_rating_table). (POST /api/v2/lines/update_rating_table))."""
     request_json: dict[str, Any] = {
         "id": id,
         "file_id": file_id,

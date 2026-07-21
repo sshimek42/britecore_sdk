@@ -21,12 +21,7 @@ API_CLIENT: BritecoreAPIClient = api_client
 
 
 def get_available_function_names(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve available utility function names.
-
-    This wrapper calls ``/api/v2/utils/get_available_function_names`` and
-    returns the normalized ``process_result(...)`` payload containing available
-    function names. ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """Retrieve available utility function names. (POST /api/v2/utils/get_available_function_names)."""
     LOGGER.debug("Retrieving functions")
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/utils/get_available_function_names",
@@ -42,12 +37,7 @@ def rebuild_search_index(
     only_build: list,
     **kwargs: Unpack[RequestParameters],
 ) -> bool:
-    """Rebuild all or part of the search index.
-
-    This wrapper sends ``only_build`` to ``/api/v2/utils/rebuild_search_index``
-    and returns the normalized ``process_result(...)`` payload for the rebuild
-    request. ``**kwargs`` accepts ``RequestParameters`` overrides.
-    """
+    """Rebuild all or part of the search index. (POST /api/v2/utils/rebuild_search_index)."""
     LOGGER.debug("Rebuilding index")
     rebuild_index: dict[str, Any] = {"only_build": only_build}
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -61,12 +51,7 @@ def rebuild_search_index(
 
 
 def get_release_info(**kwargs: Unpack[RequestParameters]) -> Any:
-    """Retrieve platform release information.
-
-    This wrapper calls ``/api/v2/utils/get_release_info`` and returns the
-    normalized ``process_result(...)`` payload. ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
-    """
+    """Retrieve platform release information. (POST /api/v2/utils/get_release_info)."""
     LOGGER.debug("Retrieving release info")
 
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
@@ -89,20 +74,7 @@ def add_britedocs_reference(
     x_report_location_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add Britedocs Reference.
-
-    Send a request to POST /api/v2/utils/add_britedocs_reference. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Add Britedocs Reference. (POST /api/v2/utils/add_britedocs_reference)."""
     request_json: dict[str, Any] = {
         "report_type_name": report_type_name,
         "britedocs_id": britedocs_id,
@@ -126,20 +98,7 @@ def generate_receipt(
     payment_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Generate Receipt.
-
-    Send a request to POST /api/v2/utils/generate_receipt. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Generate Receipt. (POST /api/v2/utils/generate_receipt)."""
     request_json: dict[str, Any] = {
         "payment_id": payment_id,
     }
@@ -158,20 +117,7 @@ def generate_receipt(
 def get_effective_dates(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Effective Dates.
-
-    Send a request to POST /api/v2/utils/get_effective_dates. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Effective Dates. (POST /api/v2/utils/get_effective_dates)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -188,20 +134,7 @@ def get_effective_dates(
 def get_navigation_links(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Navigation Links.
-
-    Send a request to POST /api/v2/utils/get_navigation_links. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Navigation Links. (POST /api/v2/utils/get_navigation_links)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -226,20 +159,7 @@ def get_policies(
     include_canceled: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies.
-
-    Send a request to POST /api/v2/utils/get_policies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Policies. (POST /api/v2/utils/get_policies)."""
     request_json: dict[str, Any] = {
         "include_policy_photo": include_policy_photo,
         "page_size": page_size,
@@ -266,20 +186,7 @@ def get_policies_by_contact_id_db_query(
     contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies By Contact Id Db Query.
-
-    Send a request to POST /api/v2/utils/get_policies_by_contact_id_db_query. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Policies By Contact Id Db Query. (POST /api/v2/utils/get_policies_by_contact_id_db_query)."""
     request_json: dict[str, Any] = {
         "contact_id": contact_id,
     }
@@ -300,20 +207,7 @@ def get_policies_with_active_current_revision(
     policies: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policies With Active Current Revision.
-
-    Send a request to POST /api/v2/utils/get_policies_with_active_current_revision. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Policies With Active Current Revision. (POST /api/v2/utils/get_policies_with_active_current_revision)."""
     request_json: dict[str, Any] = {
         "include_canceled": include_canceled,
         "policies": policies,
@@ -334,20 +228,7 @@ def get_policies_with_active_current_revision(
 def get_signable_deliverable_names(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Signable Deliverable Names.
-
-    Send a request to POST /api/v2/utils/get_signable_deliverable_names. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Get Signable Deliverable Names. (POST /api/v2/utils/get_signable_deliverable_names)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -366,20 +247,7 @@ def is_insured_mentioned_on_current_revision(
     insured_contact_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Is Insured Mentioned On Current Revision.
-
-    Send a request to POST /api/v2/utils/is_insured_mentioned_on_current_revision. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Is Insured Mentioned On Current Revision. (POST /api/v2/utils/is_insured_mentioned_on_current_revision)."""
     request_json: dict[str, Any] = {
         "candidate_policy": candidate_policy,
         "insured_contact_id": insured_contact_id,
@@ -401,20 +269,7 @@ def mark_file_as_signed(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark File As Signed.
-
-    Send a request to POST /api/v2/utils/mark_file_as_signed. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Mark File As Signed. (POST /api/v2/utils/mark_file_as_signed)."""
     request_json: dict[str, Any] = {
         "file_id": file_id,
     }
@@ -435,20 +290,7 @@ def mark_return_premium_or_claim_payment_as_exported_with_check_details(
     table_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark Return Premium Or Claim Payment As Exported With Check Details.
-
-    Send a request to POST /api/v2/utils/mark_return_premium_or_claim_payment_as_exported_with_check_details. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Mark Return Premium Or Claim Payment As Exported With Check Details. (POST /api/v2/utils/mark_return_premium_or_claim_payment_as_exported_with_check_details)."""
     request_json: dict[str, Any] = {
         "records_to_export = dict, required": records_to_export_dict_required,
         "table_name": table_name,
@@ -469,20 +311,7 @@ def mark_return_premium_or_claim_payment_as_exported_with_check_details(
 def meta(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Meta.
-
-    Send a request to POST /api/v2/utils/meta. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Meta. (POST /api/v2/utils/meta)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -502,20 +331,7 @@ def refund(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Refund.
-
-    Send a request to POST /api/v2/utils/refund. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Refund. (POST /api/v2/utils/refund)."""
     request_json: dict[str, Any] = {
         "transfer_policy_number": transfer_policy_number,
         "refund_reason": refund_reason,
@@ -537,20 +353,7 @@ def retrieve_background_job(
     job_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Background Job.
-
-    Send a request to POST /api/v2/utils/retrieve_background_job. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Background Job. (POST /api/v2/utils/retrieve_background_job)."""
     request_json: dict[str, Any] = {
         "job_id": job_id,
     }
@@ -571,20 +374,7 @@ def retrieve_payments_on_policy(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Payments On Policy.
-
-    Send a request to POST /api/v2/utils/retrieve_payments_on_policy. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Payments On Policy. (POST /api/v2/utils/retrieve_payments_on_policy)."""
     request_json: dict[str, Any] = {
         "only_missing_receipts": only_missing_receipts,
         "policy_number": policy_number,
@@ -605,20 +395,7 @@ def retrieve_receipts(
     number: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Receipts.
-
-    Send a request to POST /api/v2/utils/retrieve_receipts. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve Receipts. (POST /api/v2/utils/retrieve_receipts)."""
     request_json: dict[str, Any] = {
         "number": number,
     }
@@ -638,20 +415,7 @@ def revert_agentcy_transfer(
     archive_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Revert Agentcy Transfer.
-
-    Send a request to POST /api/v2/utils/revert_agentcy_transfer. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Revert Agentcy Transfer. (POST /api/v2/utils/revert_agentcy_transfer)."""
     request_json: dict[str, Any] = {
         "archive_id": archive_id,
     }
@@ -671,20 +435,7 @@ def revert_mortgagee_transfer(
     archive_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Revert Mortgagee Transfer.
-
-    Send a request to POST /api/v2/utils/revert_mortgagee_transfer. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Revert Mortgagee Transfer. (POST /api/v2/utils/revert_mortgagee_transfer)."""
     request_json: dict[str, Any] = {
         "archive_id": archive_id,
     }
@@ -707,20 +458,7 @@ def transfer_agentcy_policies(
     from_contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Transfer Agentcy Policies.
-
-    Send a request to POST /api/v2/utils/transfer_agentcy_policies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Transfer Agentcy Policies. (POST /api/v2/utils/transfer_agentcy_policies)."""
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "print_decs": print_decs,
@@ -745,20 +483,7 @@ def transfer_mortgagee_policies(
     from_contact_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Transfer Mortgagee Policies.
-
-    Send a request to POST /api/v2/utils/transfer_mortgagee_policies. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Transfer Mortgagee Policies. (POST /api/v2/utils/transfer_mortgagee_policies)."""
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "to_contact_id": to_contact_id,
@@ -781,20 +506,7 @@ def unarchive_record(
     unique_value: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Unarchive Record.
-
-    Send a request to POST /api/v2/utils/unarchive_record. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Unarchive Record. (POST /api/v2/utils/unarchive_record)."""
     request_json: dict[str, Any] = {
         "db_table": db_table,
         "unique_value": unique_value,
@@ -816,20 +528,7 @@ def update_revision(
     revision_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Revision.
-
-    Send a request to POST /api/v2/utils/update_revision. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Revision. (POST /api/v2/utils/update_revision)."""
     request_json: dict[str, Any] = {
         "action": action,
         "revision_id": revision_id,
@@ -851,20 +550,7 @@ def update_search_index(
     index_name: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Search Index.
-
-    Send a request to POST /api/v2/utils/update_search_index. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update Search Index. (POST /api/v2/utils/update_search_index)."""
     request_json: dict[str, Any] = {
         "identifiers": identifiers,
         "index_name": index_name,
@@ -885,20 +571,7 @@ def validate_and_clean_claim_numbers_list(
     claim_numbers_list: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Validate And Clean Claim Numbers List.
-
-    Send a request to POST /api/v2/utils/validate_and_clean_claim_numbers_list. Returns processed result from
-    ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the requested data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Validate And Clean Claim Numbers List. (POST /api/v2/utils/validate_and_clean_claim_numbers_list)."""
     request_json: dict[str, Any] = {
         "claim_numbers_list": claim_numbers_list,
     }

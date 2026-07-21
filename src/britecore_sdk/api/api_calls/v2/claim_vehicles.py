@@ -21,22 +21,7 @@ def create_claim_vehicle(
     claim_vehicle: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new vehicle record for a claim.
-
-    Submit a claim_vehicle payload to register a vehicle via
-    ``POST /api/v2/claim_vehicles/create_claim_vehicle``. Returns processed result
-    from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_vehicle: The claim vehicle payload containing vehicle details and identification.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the newly created claim vehicle data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new vehicle record for a claim. (POST /api/v2/claim_vehicles/create_claim_vehicle)."""
     request_json: dict[str, Any] = {"claim_vehicle": claim_vehicle}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -54,21 +39,7 @@ def delete_claim_vehicle(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim vehicle record.
-
-    Remove a claim vehicle via ``POST /api/v2/claim_vehicles/delete_claim_vehicle``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The claim vehicle identifier to delete.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete a claim vehicle record. (POST /api/v2/claim_vehicles/delete_claim_vehicle)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -86,21 +57,7 @@ def get_claim_vehicle(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a specific claim vehicle by identifier.
-
-    Query a single claim vehicle via ``POST /api/v2/claim_vehicles/get_claim_vehicle``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The claim vehicle identifier to retrieve.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the claim vehicle data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve a specific claim vehicle by identifier. (POST /api/v2/claim_vehicles/get_claim_vehicle)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -118,21 +75,7 @@ def get_claim_vehicles(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all vehicles associated with a claim.
-
-    Query all vehicles for a claim via ``POST /api/v2/claim_vehicles/get_claim_vehicles``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier to retrieve vehicles for.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of claim vehicles.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve all vehicles associated with a claim. (POST /api/v2/claim_vehicles/get_claim_vehicles)."""
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -150,21 +93,7 @@ def run_claim_vehicle_valuation(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Run a valuation calculation for a claim vehicle.
-
-    Execute vehicle valuation via ``POST /api/v2/claim_vehicles/run_claim_vehicle_valuation``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The claim vehicle identifier to run valuation for.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the valuation result.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Run a valuation calculation for a claim vehicle. (POST /api/v2/claim_vehicles/run_claim_vehicle_valuation)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -182,21 +111,7 @@ def update_claim_vehicle(
     claim_vehicle: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing claim vehicle record.
-
-    Submit updated claim_vehicle data via ``POST /api/v2/claim_vehicles/update_claim_vehicle``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_vehicle: The claim vehicle payload containing the vehicle id and updated fields.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the updated claim vehicle data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update an existing claim vehicle record. (POST /api/v2/claim_vehicles/update_claim_vehicle)."""
     request_json: dict[str, Any] = {"claim_vehicle": claim_vehicle}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

@@ -21,22 +21,7 @@ def create_claim_contact(
     claim_contact: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new contact associated with a claim.
-
-    Submit a claim_contact payload to register a contact record for a claim
-    via ``POST /api/v2/claim_contacts/create_claim_contact``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_contact: The claim contact payload containing contact role and identification information.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the newly created claim contact data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new contact associated with a claim. (POST /api/v2/claim_contacts/create_claim_contact)."""
     request_json: dict[str, Any] = {"claim_contact": claim_contact}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,21 +38,7 @@ def create_claim_contact(
 def delete_claim_contact(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a claim contact record.
-
-    Remove a claim contact via ``POST /api/v2/claim_contacts/delete_claim_contact``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-            The claim_contact id should be provided in the request context.
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete a claim contact record. (POST /api/v2/claim_contacts/delete_claim_contact)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -85,22 +56,7 @@ def list_importable_contacts(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List contacts available for import from a policy revision.
-
-    Query contacts from the associated policy revision that can be imported
-    to the claim via ``POST /api/v2/claim_contacts/list_importable_contacts``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        revision_id: The policy revision identifier to import contacts from.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of importable contacts from the revision.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """List contacts available for import from a policy revision. (POST /api/v2/claim_contacts/list_importable_contacts)."""
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -118,22 +74,7 @@ def update_claim_contact(
     claim_contact: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing claim contact record.
-
-    Submit a claim_contact payload with updated information via
-    ``POST /api/v2/claim_contacts/update_claim_contact``. Returns processed
-    result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_contact: The claim contact payload containing the contact id and updated fields.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the updated claim contact data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update an existing claim contact record. (POST /api/v2/claim_contacts/update_claim_contact)."""
     request_json: dict[str, Any] = {"claim_contact": claim_contact}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(

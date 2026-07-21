@@ -20,22 +20,7 @@ def create_catastrophe(
     catastrophe: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a new catastrophe record.
-
-    Submit a catastrophe payload to register a catastrophe event via
-    ``POST /api/v2/claim_catastrophes/create_catastrophe``. Returns processed result
-    from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        catastrophe: The catastrophe payload containing event details and identification.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the newly created catastrophe data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Create a new catastrophe record. (POST /api/v2/claim_catastrophes/create_catastrophe)."""
     request_json: dict[str, Any] = {"catastrophe": catastrophe}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -53,21 +38,7 @@ def delete_catastrophe(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete a catastrophe record.
-
-    Remove a catastrophe via ``POST /api/v2/claim_catastrophes/delete_catastrophe``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The catastrophe identifier to delete.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response confirming deletion.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Delete a catastrophe record. (POST /api/v2/claim_catastrophes/delete_catastrophe)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -85,22 +56,7 @@ def get_applicable_catastrophes(
     claim_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve catastrophes applicable to a claim.
-
-    Query applicable catastrophe events for a claim via
-    ``POST /api/v2/claim_catastrophes/get_applicable_catastrophes``. Returns processed result
-    from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        claim_id: The claim identifier to retrieve applicable catastrophes for.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of applicable catastrophes.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve catastrophes applicable to a claim. (POST /api/v2/claim_catastrophes/get_applicable_catastrophes)."""
     request_json: dict[str, Any] = {"claim_id": claim_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -119,21 +75,7 @@ def get_catastrophe(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a specific catastrophe record.
-
-    Query a single catastrophe via ``POST /api/v2/claim_catastrophes/get_catastrophe``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        id: The catastrophe identifier to retrieve.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the catastrophe data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve a specific catastrophe record. (POST /api/v2/claim_catastrophes/get_catastrophe)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -150,20 +92,7 @@ def get_catastrophe(
 def list_catastrophes(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve all catastrophe records.
-
-    Query all available catastrophes via ``POST /api/v2/claim_catastrophes/list_catastrophes``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing a list of all catastrophes.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Retrieve all catastrophe records. (POST /api/v2/claim_catastrophes/list_catastrophes)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -181,21 +110,7 @@ def update_catastrophe(
     catastrophe: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update an existing catastrophe record.
-
-    Submit updated catastrophe data via ``POST /api/v2/claim_catastrophes/update_catastrophe``.
-    Returns processed result from ``process_result(...)`` and accepts ``RequestParameters`` overrides.
-
-    Args:
-        catastrophe: The catastrophe payload containing the catastrophe id and updated fields.
-        **kwargs: Additional request parameters (timeout, retry, headers, dry_run, etc.).
-
-    Returns:
-        Any: The processed response containing the updated catastrophe data.
-
-    Raises:
-        BritecoreError: Various exceptions from process_result if the API returns an error.
-    """
+    """Update an existing catastrophe record. (POST /api/v2/claim_catastrophes/update_catastrophe)."""
     request_json: dict[str, Any] = {"catastrophe": catastrophe}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
