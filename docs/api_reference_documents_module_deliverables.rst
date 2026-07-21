@@ -1,6 +1,8 @@
 Deliverables Module API
 =======================
 
+Documentation for the deliverables API wrappers.
+
 .. automodule:: britecore_sdk.api.api_calls.v2.deliverables
    :members:
    :undoc-members:

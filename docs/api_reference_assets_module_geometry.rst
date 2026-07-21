@@ -1,6 +1,8 @@
 Geometry Module API
 ===================
 
+Documentation for the geometry API wrappers.
+
 .. automodule:: britecore_sdk.api.api_calls.v2.geometry
    :members:
    :undoc-members:
