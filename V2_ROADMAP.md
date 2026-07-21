@@ -15,7 +15,7 @@ v2.0.0 introduces **breaking changes** focused on moving away from implicit glob
 
 **Goal:** Move away from module-global implicit client state; make explicit client instances the default API.
 
-#### Current State (v1.x)
+#### Current State (legacy)
 
 ```python
 # Implicit global client - hard to test, unclear dependencies
@@ -47,7 +47,7 @@ with BritecoreAPIClient("site").init_client() as client:
 #### Implementation Strategy
 1. **Add optional `client` parameter** to all endpoint wrappers
 2. **Fall back to module-level client** if not provided (for backwards compatibility during transition)
-3. **Deprecate implicit client in v1.6** (after v1.5.2)
+3. **Deprecate implicit client in a minor release** (after initial rollout)
 4. **Remove implicit client fallback in v2.0.0**
 5. **Update all examples** to use explicit client pattern
 6. **Add type hints** for client parameter (remove `Unpack[RequestParameters]` anti-pattern)
@@ -64,7 +64,7 @@ with BritecoreAPIClient("site").init_client() as client:
 
 **Goal:** Reduce `Any` returns; provide typed response models (or typed envelopes) for sync + async parity.
 
-#### Current State (v1.x)
+#### Current State (legacy)
 
 ```python
 # Returns `Any` - no IDE autocomplete, runtime surprises
@@ -132,7 +132,7 @@ class QuoteResponse:
 2. **Use `dataclass` or `pydantic` BaseModel** for runtime validation (opt-in)
 3. **Create factory methods** (`.from_api()`) to hydrate models from API responses
 4. **Update all wrappers** to return typed models instead of raw dicts/Any
-5. **Maintain backwards compatibility shim** (v1.x continues returning dict/Any)
+5. **Maintain backwards compatibility shim** (legacy paths continue returning dict/Any)
 6. **Provide both `ResponseEnvelope` and direct typed models** for flexibility
 
 #### Acceptance Criteria
@@ -149,7 +149,7 @@ class QuoteResponse:
 
 **Goal:** Standardize exceptions with `status_code`, `error_code`, `request_id`, and raw payload attached.
 
-#### Current State (v1.x)
+#### Current State (legacy)
 
 ```python
 # Error details scattered across exception message
@@ -240,7 +240,7 @@ class ValidationError(BritecoreError):
 
 **Goal:** Introduce pluggable transport/middleware hooks for retry, logging, tracing, custom headers.
 
-#### Current State (v1.x)
+#### Current State (legacy)
 
 ```python
 # Limited customization - stuck with built-in retry/rate limit logic
@@ -312,7 +312,7 @@ client.add_middleware(LoggingMiddleware(logger=my_logger))
 
 **Goal:** Add iterator helpers for list endpoints instead of manual page plumbing.
 
-#### Current State (v1.x)
+#### Current State (legacy)
 
 ```python
 # Manual pagination - error-prone
@@ -407,7 +407,7 @@ async def aiter_quotes(
 
 **Goal:** Remove/deprecate v1-only or compatibility shims from core path; keep migration helpers in separate module.
 
-#### Current State (v1.x)
+#### Current State (legacy)
 
 ```
 src/britecore_sdk/
@@ -444,7 +444,7 @@ src/britecore_sdk/
 from britecore_sdk.classes.quote import Quote  # ❌ Use models instead
 
 # REMOVED in v2.0.0:
-from britecore_sdk.api.api_calls.v1.custom_ui import ...  # ❌ Moved to _compat/ with migration guide
+from britecore_sdk.api.api_calls.v1.custom_ui import ...  # ❌ Moved to compat helpers with migration guide
 
 # STILL WORKS in v2.0.0:
 from britecore_sdk.api.api_calls.v2.quotes import retrieve_quote  # ✅
@@ -497,14 +497,14 @@ src/britecore_sdk/api/_compat/
 
 ## Version Strategy
 
-### v1.6.0 (Minor - Deprecations)
+### 1.6.0 (Minor - Deprecations)
 - Add deprecation warnings for implicit client usage
 - Add new explicit client pattern alongside old one
 - Response models available but optional
 - Typed exceptions available but not default
 - New middleware system available for early adopters
 
-### v1.7.0 (Minor - Foundation)
+### 1.7.0 (Minor - Foundation)
 - Pagination iterators available
 - Migration guide published
 - Deprecations become more vocal
@@ -547,7 +547,7 @@ For each phase:
 
 - [ ] All phases completed
 - [ ] 100% type hint coverage (no `Any` in public API)
-- [ ] Zero breaking changes in v1.x releases
+- [ ] Zero breaking changes in 1.x releases
 - [ ] Clear migration path for v1→v2 users
 - [ ] Cleaner, more maintainable codebase
 - [ ] Community feedback positive on v2 design

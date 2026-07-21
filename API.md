@@ -50,7 +50,7 @@ client = get_api_client()
 result = policies.retrieve_policy(policy_number="POL-001")
 ```
 
-### Fluent one-liner + context manager (v1.1+)
+### Fluent one-liner + context manager
 
 ```python
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
@@ -257,7 +257,7 @@ except Exception as e:
     print(f"Unexpected error: {e}")
 ```
 
-### Using flat exception aliases (v1.1+ — shorter imports)
+### Using flat exception aliases (shorter imports)
 
 ```python
 from britecore_sdk import NotFoundError, AuthenticationError, RateLimitError
@@ -302,7 +302,7 @@ except ValidationError as exc:
 
 ---
 
-## Debug / Dry-Run Mode (v1.1+)
+## Debug / Dry-Run Mode
 
 Pass `dry_run=True` to `do_request` (or any endpoint wrapper that forwards `**kwargs`) to
 log the full request details — URL, method, headers, body — **without** sending anything to

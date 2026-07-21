@@ -207,8 +207,8 @@ from britecore_sdk.api.api_calls import resolve_client        ✓
 ```
 
 - ✅ **Backwards compatibility maintained**
-- v1.x exception patterns still work
-- v1.x implicit client pattern still works
+- Legacy exception patterns still work
+- Legacy implicit client pattern still works
 - Old dict/Any returns still work
 - No breaking changes without migration guide
 
@@ -303,7 +303,7 @@ git push origin release/v2.0.0
 
 ## Notes
 
-- **Backwards compatible:** All v1.x code continues to work (no forced migration)
+- **Backwards compatible:** All legacy code continues to work (no forced migration)
 - **Gradual migration:** Teams can adopt v2.0.0 patterns incrementally
 - **Clear migration paths:** Each phase has dedicated migration guide
 - **Production ready:** Foundation is solid for full v2.0.0 rollout

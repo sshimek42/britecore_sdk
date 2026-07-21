@@ -170,7 +170,7 @@ response = API_CLIENT.do_request(
     json=request,
     request_timeout=5,
     request_retries=3,
-    # dry_run=True  ← synthetic success payload, no network call (v1.1+)
+    # dry_run=True  ← synthetic success payload, no network call
 )
 
 # 3. Process response
@@ -190,7 +190,7 @@ data = API_CLIENT.process_result(response)
 - client-level dry-run default available via `init_client(client_dry_run=True)`;
   OAuth dry-run skips token acquisition unless headers are explicitly supplied
 
-### Context Manager (v1.1+)
+### Context Manager
 
 `BritecoreAPIClient` supports the context-manager protocol. The `urllib3.PoolManager`
 is closed automatically on `__exit__`:
@@ -458,7 +458,7 @@ BritecoreError (namespace class)
 
 ```
 
-**Flat aliases (v1.1+):** Every exception class is also importable directly without
+**Flat aliases:** Every exception class is also importable directly without
 the `BritecoreError.` prefix:
 
 ```python
@@ -466,7 +466,7 @@ the `BritecoreError.` prefix:
 from britecore_sdk.exceptions import BritecoreError
 except BritecoreError.NotFoundError: ...
 
-# Flat (v1.1+, shorter):
+# Flat (shorter):
 from britecore_sdk import NotFoundError, AuthenticationError
 from britecore_sdk.exceptions import NotFoundError  # full set available here
 except NotFoundError: ...

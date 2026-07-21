@@ -171,7 +171,7 @@ $env:BRITECORE_SDK_CLIENT_SECRET="..."
 Validate site sections and key combinations quickly:
 
 ```sh
-# Installed CLI (v1.1+) — works in bash and PowerShell:
+# Installed CLI — works in bash and PowerShell:
 britecore-check-config
 
 # Or via python -m:
@@ -296,7 +296,7 @@ except BritecoreError.Base as exc:
     print(f"SDK failure: {exc}")
 ```
 
-Or using the flat aliases introduced in v1.1 (shorter imports):
+Or using the flat aliases (shorter imports):
 
 ```python
 from britecore_sdk import NotFoundError, AuthenticationError, ConfigurationError
@@ -570,7 +570,7 @@ policy = policies.retrieve_policy(policy_number="POL001")
 
 ---
 
-### Inspect a request without sending it (dry-run, v1.1+)
+### Inspect a request without sending it (dry-run)
 
 ```python
 import logging
@@ -594,7 +594,7 @@ print(preview["body"])
 
 ---
 
-### Reset the API client between tests or sites (v1.1+)
+### Reset the API client between tests or sites
 
 ```python
 from britecore_sdk.api.api_calls import init_api_client, reset_api_client

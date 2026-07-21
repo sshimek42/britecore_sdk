@@ -60,11 +60,11 @@ In a major release, deprecated features are removed:
 - ✅ **Functions & methods** — Replaced with better alternatives
 
 ```python
-# v1.x: Available
+# Earlier releases: Available
 def get_policy_by_id_v1(policy_id):
     pass
 
-# v1.2+: Deprecation notice added
+# Deprecation notice added
 @deprecated("Use get_policy_by_id_v2() instead")
 def get_policy_by_id_v1(policy_id):
     pass
@@ -76,11 +76,11 @@ def get_policy_by_id_v1(policy_id):
 - ✅ **Parameters** — Moved, renamed, or replaced
 
 ```python
-# v1.x
+# Earlier releases
 def retrieve_policy(policy_number, timeout=5):
     pass
 
-# v1.2+: Deprecation notice for `timeout` parameter
+# Deprecation notice for `timeout` parameter
 def retrieve_policy(policy_number, timeout=None, **kwargs):
     if timeout is not None:
         # Issue deprecation warning
@@ -95,14 +95,14 @@ def retrieve_policy(policy_number, request_timeout=5):
 - ✅ **Exception types** — Unified or replaced
 
 ```python
-# v1.x: Multiple exception types
+# Earlier releases: Multiple exception types
 class BritecoreAuthError(BritecoreError):
     pass
 
 class OAuthTokenError(BritecoreError):
     pass
 
-# v1.2+: OAuthTokenError marked deprecated
+# OAuthTokenError marked deprecated
 @deprecated("Catch AuthenticationError instead")
 class OAuthTokenError(AuthenticationError):
     pass
@@ -117,7 +117,7 @@ class OAuthTokenError(AuthenticationError):
 # Old location
 from britecore_sdk.api.api_calls.v2.contacts import get_contact
 
-# v1.2+: Still importable but deprecated
+# Still importable but deprecated
 from britecore_sdk.api.api_calls.v2.contacts import get_contact
 # DeprecationWarning: Use britecore_sdk.api.api_calls.v2.insured.get_contact
 
@@ -211,7 +211,7 @@ When removing in a major version:
 ```markdown
 ### Removed
 
-- `old_module.old_function()` — Removed as planned in v1.2.0 deprecation notice. Use `new_module.new_function()`.
+- `old_module.old_function()` — Removed as planned in an earlier deprecation notice. Use `new_module.new_function()`.
 - `RequestParameters.timeout` parameter — Removed. Use `RequestParameters.request_timeout` instead.
 ```
 
@@ -252,7 +252,7 @@ from britecore_sdk.api.api_calls.v2.insured import get_contact
 
 Multiple exception types consolidated into `BritecoreError` hierarchy.
 
-**Before (v1.x):**
+**Before (legacy pattern):**
 
 ```python
 try:
@@ -272,7 +272,7 @@ except (AuthenticationError, ConfigurationError) as e:
 
 ## Deprecation Removals
 
-Features deprecated in v1.2-v1.x that are now removed:
+Features deprecated in prior releases that are now removed:
 
 - `old_function()` — Use `new_function()` instead
 - `RequestParameters.timeout` — Use `request_timeout` instead
@@ -330,10 +330,10 @@ def test_old_function_warns():
 
 **Example timeline:**
 
-- v1.1.0: Feature works
-- v1.2.0: Deprecation announced
-- v1.3.0: Still available (recommended upgrade)
-- v1.4.0: Still available (final notice: "Remove in v2")
+- 1.1.0: Feature works
+- 1.2.0: Deprecation announced
+- 1.3.0: Still available (recommended upgrade)
+- 1.4.0: Still available (final notice: "Remove in v2")
 - v2.0.0: Removed
 
 ---
@@ -343,8 +343,8 @@ def test_old_function_warns():
 | Change | Version Rule | Example |
 |--------|--------------|---------|
 | **Add deprecation notice** | Minor (1.x.**0**) | 1.1.0 → 1.2.0 |
-| **Remove deprecated feature** | Major (**X**.0.0) | 1.x → 2.0.0 |
-| **Fix deprecated feature** | Patch (1.x.**z**) | 1.2.0 → 1.2.1 |
+| **Remove deprecated feature** | Major (**X**.0.0) | 1.0.0 → 2.0.0 |
+| **Fix deprecated feature** | Patch (1.Y.**z**) | 1.2.0 → 1.2.1 |
 
 ---
 

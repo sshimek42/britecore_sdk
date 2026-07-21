@@ -329,7 +329,7 @@ def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
 
 **Pattern Found:**
 - Uses `.. code-block:: python` (reStructuredText) — correct for Sphinx
-- Shows both v2.0.0 and v1.x patterns — good for migration
+- Shows both current and legacy patterns — good for migration
 - Clear labels: "**v2.0.0 Explicit Client Pattern**" — helpful
 
 **Assessment:** ✓ **GOOD** — Examples are clear and well-labeled

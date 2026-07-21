@@ -182,7 +182,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 - Enhanced `britecore_sdk.classes.__init__.py` with comprehensive deprecation guidance
 - New `britecore_sdk.api._compat` module for migration helpers:
-  - `get_v2_path()` — Get v2.0.0 path for v1.x endpoints
+  - `get_v2_path()` — Get v2.0.0 path for legacy endpoints
   - `V1_TO_V2_ROUTING` — v1→v2 endpoint mapping dictionary
   - `import_v1_class_with_warning()` — Load legacy classes with deprecation warnings
   - `use_implicit_client_with_warning()` — Guide implicit client users
@@ -209,10 +209,10 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Deprecated
 
-- Implicit module-level client usage (v1.x pattern) — Use explicit `client=` parameter
+- Implicit module-level client usage (legacy pattern) — Use explicit `client=` parameter
 - Manual pagination loop pattern — Use `iter_*()` iterators instead
 - Raw dict returns — Use typed response models for better type safety
-- v1.x endpoint versions (v1 APIs still work, use v2 for all new code)
+- Legacy endpoint versions (legacy APIs still work, use v2 for all new code)
 - `britecore_sdk.classes` module — Import from `models` and `validators` instead
 
 ### Documentation

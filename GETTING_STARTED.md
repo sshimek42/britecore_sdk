@@ -175,7 +175,7 @@ client = init_api_client(
 )
 ```
 
-#### Using context manager (v1.1+)
+#### Using context manager
 
 ```python
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
@@ -243,7 +243,7 @@ When debug logging is enabled, init emits either `Auth mode selected during init
 
 ```powershell
 python -c "import britecore_sdk; print(britecore_sdk.__version__)"
-# Fluent one-liner init (new in v1.1)
+# Fluent one-liner init
 python -c "from britecore_sdk.api.api_calls import init_api_client; print(repr(init_api_client('your_site')))"
 ```
 
@@ -280,7 +280,7 @@ result = policies.retrieve_policy(policy_number="POL001")
 print(result)
 ```
 
-### Alternative: fluent one-liner + context manager (new in v1.1)
+### Alternative: fluent one-liner + context manager
 
 ```python
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
@@ -292,7 +292,7 @@ with BritecoreAPIClient("your_site").init_client() as client:
 # urllib3 PoolManager closed automatically on exit
 ```
 
-### Flat exception imports (new in v1.1)
+### Flat exception imports
 
 ```python
 from britecore_sdk import NotFoundError, AuthenticationError, RateLimitError
@@ -306,7 +306,7 @@ except AuthenticationError as e:
     print(f"Auth error: {e}")
 ```
 
-### Dry-run flow testing without a live request (new in v1.1)
+### Dry-run flow testing without a live request
 
 ```python
 from britecore_sdk.api.api_calls import init_api_client
@@ -363,7 +363,7 @@ asyncio.run(main())
 
 ---
 
-## Rate limiting (new in v1.3.0)
+## Rate limiting
 
 Enable optional client-side rate limiting to prevent overwhelming the API or account rate limits:
 
@@ -389,7 +389,7 @@ See [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) for complete examples and b
 
 ---
 
-## Batch quote creation (new in v1.3.0)
+## Batch quote creation
 
 For workloads creating many entities, use workflow batch helpers to parallelize
 creates (quotes, contacts, policies, and risks).

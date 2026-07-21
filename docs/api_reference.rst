@@ -6,8 +6,8 @@ API Reference
 This section provides symbol-level API documentation grouped by business domain.
 For narrative usage guidance and broader endpoint notes, see ``API.md``.
 
-Notable v1.1 additions
-----------------------
+Notable SDK additions
+---------------------
 
 - ``BritecoreAPIClient`` - context manager (``__enter__``/``__exit__``), ``__repr__``, ``init_client()`` returns ``Self``
 - ``do_request(..., dry_run=True)`` - synthetic dry-run response with redacted headers by default

@@ -115,46 +115,7 @@ def get_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve a quote by quote identifier.
-
-    This wrapper sends ``quote_id`` to ``/api/v2/quotes/get_quote`` and returns the
-    normalized ``process_result(...)`` payload for the requested quote.
-    ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
-    headers, or retry settings.
-
-    **v2.0.0 Explicit Client Pattern:**
-
-    .. code-block:: python
-
-        from britecore_sdk import BritecoreAPIClient
-        from britecore_sdk.api.api_calls.v2 import quotes
-
-        client = BritecoreAPIClient("site").init_client()
-        quote = quotes.get_quote(quote_id="Q123", client=client)
-
-    **v1.x Implicit Client Pattern (still supported but deprecated):**
-
-    .. code-block:: python
-
-        from britecore_sdk.api.api_calls import init_api_client
-        from britecore_sdk.api.api_calls.v2 import quotes
-
-        init_api_client(target_site="site")
-        quote = quotes.get_quote(quote_id="Q123")
-
-    Args:
-        quote_id: The quote ID to retrieve.
-        client: Optional explicit client instance. If omitted, uses the module-level client.
-        **kwargs: RequestParameters overrides (timeout, headers, retry, etc.)
-
-    Returns:
-        dict: The normalized quote response.
-
-    Raises:
-        BritecoreError.MissingParameter: If quote_id is missing.
-        BritecoreError.ConfigurationError: If no explicit client is provided and the
-            module-level client has not been initialized.
-    """
+    """Get Quote (POST /api/v2/quotes/get_quote)."""
     # Validate required parameters
     if not quote_id or not quote_id.strip():
         raise BritecoreError.MissingParameter("quote id is required")
