@@ -30,54 +30,7 @@ def create_full_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[dict[str, Any] | None, str | None]:
-    """Create a quote from the supplied quote payload.
-
-    This wrapper submits ``quote_json`` to ``/api/v2/quotes/create_full_quote``
-    and normalizes the response through ``process_result(...)``. As an SDK-
-    specific convenience, it returns a tuple of ``(quote_data, quote_id)``,
-    where ``quote_id`` is extracted from the normalized payload when present.
-    ``**kwargs`` accepts ``RequestParameters`` overrides such as timeout,
-    headers, or retry settings.
-
-    **v2.0.0 Explicit Client Pattern:**
-
-    In v2.0.0, the explicit ``client`` parameter is now the recommended approach:
-
-    .. code-block:: python
-
-        from britecore_sdk import BritecoreAPIClient
-        from britecore_sdk.api.api_calls.v2 import quotes
-
-        client = BritecoreAPIClient("site").init_client()
-        quote_data, quote_id = quotes.create_full_quote(
-            quote_json={"...": "..."},
-            client=client,
-        )
-
-    **v1.x Implicit Client Pattern (still supported but deprecated):**
-
-    .. code-block:: python
-
-        from britecore_sdk.api.api_calls import init_api_client
-        from britecore_sdk.api.api_calls.v2 import quotes
-
-        init_api_client(target_site="site")
-        quote_data, quote_id = quotes.create_full_quote(quote_json={"...": "..."})
-
-    Args:
-        quote_json: The quote payload to create.
-        client: Optional explicit client instance. If omitted, uses the module-level client.
-        **kwargs: RequestParameters overrides (timeout, headers, retry, etc.)
-
-    Returns:
-        tuple: ``(quote_data, quote_id)`` where quote_id is extracted from the payload,
-            or ``(None, None)`` if the response could not be processed.
-
-    Raises:
-        BritecoreError.MissingParameter: If quote_json is missing or empty.
-        BritecoreError.ConfigurationError: If no explicit client is provided and the
-            module-level client has not been initialized.
-    """
+    """Create a quote from the supplied quote payload (POST /api/v2/quotes/create_full_quote)."""
     # Validate required parameters
     if not quote_json or not isinstance(quote_json, dict):
         raise BritecoreError.MissingParameter(
@@ -115,7 +68,7 @@ def get_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote (POST /api/v2/quotes/get_quote). (POST /api/v2/quotes/get_quote))."""
+    """Get Quote (POST /api/v2/quotes/get_quote)."""
     # Validate required parameters
     if not quote_id or not quote_id.strip():
         raise BritecoreError.MissingParameter("quote id is required")
