@@ -63,20 +63,12 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "migrations/*"]
 # Primary user guides are included in the docs tree via {include} wrappers.
 suppress_warnings = ["myst.xref_missing"]
 
-html_theme = "alabaster"
+html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    "page_width": "100%",
-    "sidebar_width": "320px",
-    "sidebar_collapse": False,
-    "globaltoc_maxdepth": 3,
+    "navigation_depth": 4,
+    "collapse_navigation": False,
+    "sticky_navigation": True,
+    "includehidden": True,
 }
 html_static_path = ["_static"]
 html_css_files = ["custom.css"]
-html_sidebars = {
-    "**": [
-        "about.html",
-        "navigation.html",
-        "relations.html",
-        "searchbox.html",
-    ]
-}
