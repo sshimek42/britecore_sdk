@@ -3,17 +3,10 @@ Contacts API
 
 Contacts, named insureds, and insured-party maintenance endpoints.
 
-.. automodule:: britecore_sdk.api.api_calls.v2.contacts
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.named_insureds
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: britecore_sdk.api.api_calls.v2.insured
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Contacts module <api_reference_contacts_module_contacts>
+   Named insureds module <api_reference_contacts_module_named_insureds>
+   Insured module <api_reference_contacts_module_insured>

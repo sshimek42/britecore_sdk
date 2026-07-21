@@ -3,15 +3,12 @@ Quotes API
 
 Quote creation, retrieval, and quote-specific helper endpoints.
 
-.. automodule:: britecore_sdk.api.api_calls.v2.quotes
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.quote
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Quotes module <api_reference_quotes_module_quotes>
+   Quote module <api_reference_quotes_module_quote>
 
 Related quote modules: ``quick_quote_templates``, ``quick_codes``, and
 ``quick_code_values``.

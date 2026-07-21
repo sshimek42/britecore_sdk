@@ -1,15 +1,12 @@
 Assets and Spatial APIs
 =======================
 
-.. automodule:: britecore_sdk.api.api_calls.v2.vehicles
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.drivers
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Vehicles module <api_reference_assets_module_vehicles>
+   Drivers module <api_reference_assets_module_drivers>
 
 Related asset/location modules: ``violations``, ``watercrafts``, ``geometries``, and
 ``geometry``.

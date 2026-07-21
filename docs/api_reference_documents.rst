@@ -1,14 +1,11 @@
 Documents and Deliverables APIs
 ===============================
 
-.. automodule:: britecore_sdk.api.api_calls.v2.deliverables
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.files
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Deliverables module <api_reference_documents_module_deliverables>
+   Files module <api_reference_documents_module_files>
 
 Related content modules: ``attachments``, ``signatures``, and ``uploads``.

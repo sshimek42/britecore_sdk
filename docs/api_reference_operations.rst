@@ -1,20 +1,13 @@
 Operations and Workflow APIs
 ============================
 
-.. automodule:: britecore_sdk.api.api_calls.v2.inspections
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.notes
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: britecore_sdk.api.api_calls.v2.tasks
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Inspections module <api_reference_operations_module_inspections>
+   Notes module <api_reference_operations_module_notes>
+   Tasks module <api_reference_operations_module_tasks>
 
 Related workflow modules: ``notifications``, ``subjectivities``, ``suspensions``,
 ``disputes``, and ``vendors``.

@@ -1,20 +1,13 @@
 Billing, Payments, and Commissions APIs
 =======================================
 
-.. automodule:: britecore_sdk.api.api_calls.v2.billing
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.payments
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: britecore_sdk.api.api_calls.v2.commissions
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Billing module <api_reference_financial_module_billing>
+   Payments module <api_reference_financial_module_payments>
+   Commissions module <api_reference_financial_module_commissions>
 
 Supporting finance modules: ``premium_finance_companies``, ``return_premium``,
 ``term_credit_scores``, and ``accounting``.

@@ -1,20 +1,13 @@
 Reporting and Administration APIs
 =================================
 
-.. automodule:: britecore_sdk.api.api_calls.v2.reports
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.configurations
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: britecore_sdk.api.api_calls.v2.permissions
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Reports module <api_reference_platform_module_reports>
+   Configurations module <api_reference_platform_module_configurations>
+   Permissions module <api_reference_platform_module_permissions>
 
 Related administration modules: ``agentcy``, ``auth``, ``dashboards``, ``errors``,
 ``settings``, ``user_groups``, and ``utils``.

@@ -1,34 +1,11 @@
 Async Endpoints
 ===============
 
-Async Quotes API
-----------------
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.async_quotes
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Async Contacts API
-------------------
-
-.. automodule:: britecore_sdk.api.api_calls.v2.async_contacts
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Async Policies API
-------------------
-
-.. automodule:: britecore_sdk.api.api_calls.v2.async_policies
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Async Lines API
----------------
-
-.. automodule:: britecore_sdk.api.api_calls.v2.async_lines
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Async quotes module <api_reference_async_module_async_quotes>
+   Async contacts module <api_reference_async_module_async_contacts>
+   Async policies module <api_reference_async_module_async_policies>
+   Async lines module <api_reference_async_module_async_lines>

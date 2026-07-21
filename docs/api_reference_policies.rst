@@ -3,20 +3,13 @@ Policies API
 
 Policy lifecycle, line-level operations, and coverage structure endpoints.
 
-.. automodule:: britecore_sdk.api.api_calls.v2.policies
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
+   :titlesonly:
 
-.. automodule:: britecore_sdk.api.api_calls.v2.lines
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: britecore_sdk.api.api_calls.v2.coverages
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   Policies module <api_reference_policies_module_policies>
+   Lines module <api_reference_policies_module_lines>
+   Coverages module <api_reference_policies_module_coverages>
 
 Related policy modules: ``policy_types``, ``prior_policies``, ``related_policies``,
 ``authority_limits``, ``rules``, and ``statement_of_value``.
