@@ -13,6 +13,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.0.5] - 2026-07-21
+
+### Added
+
+- Added `[project.urls]` metadata in `pyproject.toml` (Homepage, Documentation, Repository, Issues, Changelog) for richer package index/project link display.
+- Added a "Project Links" section to `docs/index.md` and `docs/project_overview.md`.
+
+### Changed
+
+- Raised runtime minimums for `dynaconf` and `typing-extensions` in `pyproject.toml`.
+- Refreshed dev/docs dependency minimums in `pyproject.toml` while preserving Python 3.11 compatibility (`sphinx>=9.0.4,<9.1`).
+- Updated workflow action pins in release/publish workflows to current majors used in this repo (`softprops/action-gh-release@v3`, `actions/download-artifact@v5`).
+
+---
+
 ## [2.0.4] - 2026-07-21
 
 ### Fixed
