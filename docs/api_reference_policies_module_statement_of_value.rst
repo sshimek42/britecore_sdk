@@ -5,4 +5,3 @@ Statement of Value Module API
    :members:
    :undoc-members:
    :show-inheritance:
-

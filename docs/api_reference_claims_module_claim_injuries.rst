@@ -5,4 +5,3 @@ Claim Injuries Module API
    :members:
    :undoc-members:
    :show-inheritance:
-

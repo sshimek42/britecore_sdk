@@ -5,4 +5,3 @@ Claim Estimations Module API
    :members:
    :undoc-members:
    :show-inheritance:
-

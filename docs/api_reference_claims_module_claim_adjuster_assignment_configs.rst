@@ -5,4 +5,3 @@ Claim Adjuster Assignment Configs Module API
    :members:
    :undoc-members:
    :show-inheritance:
-

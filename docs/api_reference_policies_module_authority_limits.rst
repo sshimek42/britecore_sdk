@@ -5,4 +5,3 @@ Authority Limits Module API
    :members:
    :undoc-members:
    :show-inheritance:
-
