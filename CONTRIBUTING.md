@@ -409,6 +409,7 @@ def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
 - [ ] New exports added to relevant `__all__` lists.
 - [ ] New endpoint wrappers follow existing `v2` request/response pattern.
 - [ ] Config/env assumptions are documented if needed.
+- [ ] Copyright and attribution obligations are reviewed (keep third-party notices and update `LICENSING.md` when needed).
 
 ## Need help?
 

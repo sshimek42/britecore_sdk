@@ -49,11 +49,22 @@ See `LICENSE` file for complete legal text.
 
 - [STABILITY.md](STABILITY.md) — Version compatibility and deprecation policy
 - [SECURITY.md](SECURITY.md) — Vulnerability reporting and patching timeline
+- [ATTRIBUTION.md](ATTRIBUTION.md) — Third-party notice template and release-time attribution checklist
 
 ## Trademark & Attribution
 
 "BriteCore" is a trademark of BriteCore. This SDK is an independent project
 for API integration and is not endorsed by or affiliated with BriteCore.
+
+### Copyright & Attribution Maintenance Checklist
+
+Review notices before each release (and in PRs that add dependencies or bundled content):
+
+- Keep the root `LICENSE` file unchanged unless legal terms actually change.
+- Preserve upstream copyright/license notices for copied code, templates, or embedded assets.
+- Verify new third-party dependencies are compatible with Apache-2.0 distribution.
+- Add or update attribution notes when including non-trivial third-party snippets or data files.
+- Ensure docs and packaging metadata still point to the correct license information.
 
 ## Questions?
 
