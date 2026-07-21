@@ -28,8 +28,8 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "dynaconf>=3.2.13,<3.4.0",
-    "typing-extensions>=4.15.0,<5.0.0",
+    "dynaconf>=3.3.2,<3.4.0",
+    "typing-extensions>=4.16.0,<5.0.0",
     "urllib3>=2.7.0,<3.0.0",
     "toml>=0.10.2,<0.11.0",
 ]
@@ -56,25 +56,25 @@ all = [
 ]
 dev = [
     "setuptools>=83.0.0",
-    "pytest>=9.0.3",
-    "pytest-asyncio>=0.24.0",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
     "pytest-mock>=3.15.1",
     "pytest-cov>=7.1.0",
-    "pytest-randomly>=4.0.1",
-    "hypothesis>=6.112.0",
+    "pytest-randomly>=4.1.0",
+    "hypothesis>=6.158.0",
     "python-dotenv>=1.2.2",
-    "black>=26.3.1",
-    "ruff>=0.15.11",
-    "mypy>=1.20.0",
-    "pre-commit>=4.5.1",
-    "pymarkdownlnt>=0.9.36",
-    "pip-audit>=2.10.0",
+    "black>=26.5.1",
+    "ruff>=0.15.22",
+    "mypy>=2.3.0",
+    "pre-commit>=4.6.0",
+    "pymarkdownlnt>=0.9.39",
+    "pip-audit>=2.10.1",
     "britecore_sdk[all]",
 ]
 docs = [
     "sphinx>=9.0.4,<9.1",
-    "myst-parser>=5.0.0",
-    "sphinx-rtd-theme>=3.0.2",
+    "myst-parser>=5.1.0",
+    "sphinx-rtd-theme>=3.1.0",
 ]
 
 [tool.setuptools.packages.find]

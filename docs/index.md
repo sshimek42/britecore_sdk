@@ -2,6 +2,13 @@
 
 This site hosts generated API docs and key project guides.
 
+## Project Links
+
+- GitHub repository: <https://github.com/sshimek42/britecore_sdk>
+- Issue tracker: <https://github.com/sshimek42/britecore_sdk/issues>
+- Releases: <https://github.com/sshimek42/britecore_sdk/releases>
+- Changelog source: <https://github.com/sshimek42/britecore_sdk/blob/master/CHANGELOG.md>
+
 ```{toctree}
 :maxdepth: 2
 :caption: Getting Started
