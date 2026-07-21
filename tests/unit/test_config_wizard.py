@@ -39,7 +39,9 @@ class TestConfigWizard:
         exit_code = config_wizard.main([])
 
         output = capsys.readouterr().out
-        saved_content = (tmp_path / ".britecore_secrets.toml").read_text(encoding="utf-8")
+        saved_content = (tmp_path / ".britecore_secrets.toml").read_text(
+            encoding="utf-8"
+        )
 
         assert exit_code == 0
         assert 'base_url = "https://example.britecore.test"' in saved_content
@@ -49,7 +51,9 @@ class TestConfigWizard:
         assert "BRITECORE_SDK_API_KEY" in output
 
     @pytest.mark.unit
-    def test_main_does_not_persist_oauth_secret_to_disk(self, monkeypatch, tmp_path, capsys):
+    def test_main_does_not_persist_oauth_secret_to_disk(
+        self, monkeypatch, tmp_path, capsys
+    ):
         """OAuth auth stores non-sensitive settings only and prints env guidance."""
 
         def prompt(value: str) -> SimpleNamespace:
@@ -77,7 +81,9 @@ class TestConfigWizard:
         exit_code = config_wizard.main([])
 
         output = capsys.readouterr().out
-        saved_content = (tmp_path / ".britecore_secrets.toml").read_text(encoding="utf-8")
+        saved_content = (tmp_path / ".britecore_secrets.toml").read_text(
+            encoding="utf-8"
+        )
 
         assert exit_code == 0
         assert 'base_url = "https://example.britecore.test"' in saved_content
@@ -87,4 +93,3 @@ class TestConfigWizard:
         assert "Sensitive credentials were not written to disk." in output
         assert "BRITECORE_SDK_CLIENT_ID" in output
         assert "BRITECORE_SDK_CLIENT_SECRET" in output
-
