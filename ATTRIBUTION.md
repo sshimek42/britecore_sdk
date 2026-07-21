@@ -37,6 +37,8 @@ Copy this block for each item:
 
 _No additional third-party notices are currently recorded._
 
+Last attribution review: **July 21, 2026**.
+
 ## Release Checklist (Attribution)
 
 Before tagging a release:
@@ -56,3 +58,9 @@ python -m piplicenses --format=markdown --with-urls --with-license-file
 ```
 
 Use the command output as input for review, then keep curated final notices in this file.
+
+You can also run the repository compliance helper:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\release_compliance_check.ps1
+```

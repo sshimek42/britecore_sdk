@@ -66,36 +66,32 @@ The SDK automatically loads settings from several locations in priority order. C
 that best fits how you installed the SDK:
 
 Use the canonical precedence table in
-[`docs/CONFIGURATION.md`](./docs/CONFIGURATION.md#canonical-precedence-table).
+[`CONFIG_MANAGEMENT.md`](./CONFIG_MANAGEMENT.md#config-file-search-hierarchy).
 
-### For pip-installed users (recommended): user-level config
+> **Note:** Hostnames under `example.com` in this repository are placeholders. Replace them with
+> your real BriteCore API host values.
 
-Create `~/.britecore/settings.toml` and `~/.britecore/.secrets.toml`. These apply to all your
-projects without touching SDK package files.
+### Recommended setup: user-level config (`~/.britecore/`)
 
-**`~/.britecore/settings.toml`:**
+Create shared config files once for your machine:
 
 ```toml
+# ~/.britecore/settings.toml
 [default]
 target_site = "production"
 ```
 
-**`~/.britecore/.secrets.toml`:**
-
 ```toml
+# ~/.britecore/.secrets.toml
 [production]
 base_url = "https://api.britecore.example.com"
 client_id = "your-actual-client-id"
 client_secret = "your-actual-client-secret"
 ```
 
-Then skip to [Step 3](#step-3-customize-settingstoml-optional) below.
+### Repo-clone setup (optional)
 
-### For repo clones: copy example files from source
-
-### Step 1: Copy Example Configuration Files
-
-Example files are provided to show you the correct format:
+If you work directly in a source clone, copy sample files into `src/britecore_sdk/settings/`:
 
 ```powershell
 Copy-Item src\britecore_sdk\settings\sample\.secrets.toml src\britecore_sdk\settings\.secrets.toml
@@ -107,30 +103,10 @@ cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.s
 cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
 ```
 
-### Step 2: Edit `.secrets.toml` with Your Credentials
+For project-local config files, env-var-only configuration, explicit inline credentials, and full
+API key/OAuth examples, use [`CONFIG_MANAGEMENT.md`](./CONFIG_MANAGEMENT.md).
 
-Replace placeholder values with your actual BriteCore API credentials:
-
-```toml
-[production]
-base_url = "https://api.britecore.example.com"
-client_id = "your-actual-client-id"
-client_secret = "your-actual-client-secret"
-```
-
-### Step 3: Customize `settings.toml` (Optional)
-
-Override default timeouts and select your target site:
-
-```toml
-[default]
-web_timeout = 10
-target_site = 'production'
-```
-
-See [CONFIG_MANAGEMENT.md](./CONFIG_MANAGEMENT.md) for complete setup instructions.
-
-### Step 4: Set Environment Variables (Optional)
+### Optional: set `target_site` and `system` in your shell
 
 Set environment variables for the current shell session:
 

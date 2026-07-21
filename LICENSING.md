@@ -53,8 +53,9 @@ See `LICENSE` file for complete legal text.
 
 ## Trademark & Attribution
 
-"BriteCore" is a trademark of BriteCore. This SDK is an independent project
-for API integration and is not endorsed by or affiliated with BriteCore.
+"BriteCore" is a trademark of BriteCore. This SDK is an independent community-maintained
+integration project and is not an official BriteCore product.
+It is not endorsed by, sponsored by, or affiliated with BriteCore.
 
 ### Copyright & Attribution Maintenance Checklist
 

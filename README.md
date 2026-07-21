@@ -27,88 +27,30 @@ pip install britecore_sdk
 
 Set `target_site` and credentials via config files or environment variables. The SDK discovers
 config files automatically from several locations. For the canonical precedence table, see
-[`docs/CONFIGURATION.md`](./docs/CONFIGURATION.md#canonical-precedence-table).
+[`CONFIG_MANAGEMENT.md`](./CONFIG_MANAGEMENT.md#config-file-search-hierarchy).
+
+> **Note:** Hostnames under `example.com` in this repository are placeholders. Replace with your
+> real BriteCore API host values.
 
 **Recommended for most users: user-level config (`~/.britecore/`)**
 
-Works across all your projects without touching the SDK package files:
-
-`~/.britecore/settings.toml`:
+Works across all your projects without touching SDK package files:
 
 ```toml
-[default]
-target_site = "production"
-```
-
-`~/.britecore/.secrets.toml`:
-
-```toml
-[production]
-base_url = "https://your-britecore-instance.com"
-api_key = "your_api_key_here"
-```
-
-**Alternative: project-local config (current working directory)**
-
-Place `britecore.toml` and `.britecore_secrets.toml` in your project root. Add
-`.britecore_secrets.toml` to `.gitignore` to keep secrets out of version control:
-
-```toml
-# britecore.toml (safe to commit)
+# ~/.britecore/settings.toml
 [default]
 target_site = "production"
 ```
 
 ```toml
-# .britecore_secrets.toml (add to .gitignore!)
+# ~/.britecore/.secrets.toml
 [production]
-base_url = "https://your-britecore-instance.com"
+base_url = "https://api.britecore.example.com"
 api_key = "your_api_key_here"
 ```
 
-#### Alternative: Environment variables
-
-> **Note:** `target_site` is required in standard file/env initialization.
-> In explicit mode (`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults
-> to `"explicit"`. If all required credentials are set via `BRITECORE_SDK_*` environment
-> variables, those values always win; `target_site` only matters if the client needs to fall back
-> to TOML sections.
-
-**Linux/macOS (bash):**
-
-```bash
-export BRITECORE_SDK_BASE_URL="https://your-britecore-instance.com"
-export BRITECORE_SDK_API_KEY="your_api_key_here"
-export target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
-```
-
-**Windows (PowerShell):**
-
-```powershell
-$env:BRITECORE_SDK_BASE_URL="https://your-britecore-instance.com"
-$env:BRITECORE_SDK_API_KEY="your_api_key_here"
-$env:target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
-```
-
-Or for OAuth:
-
-**Linux/macOS (bash):**
-
-```bash
-export BRITECORE_SDK_BASE_URL="https://your-britecore-instance.com"
-export BRITECORE_SDK_CLIENT_ID="your_client_id"
-export BRITECORE_SDK_CLIENT_SECRET="your_client_secret"
-export target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
-```
-
-**Windows (PowerShell):**
-
-```powershell
-$env:BRITECORE_SDK_BASE_URL="https://your-britecore-instance.com"
-$env:BRITECORE_SDK_CLIENT_ID="your_client_id"
-$env:BRITECORE_SDK_CLIENT_SECRET="your_client_secret"
-$env:target_site="production"  # selects .secrets.toml section; any name works when all creds are set via env vars
-```
+For full API key/OAuth examples, project-local files, and env-var-only setup, use
+[`CONFIG_MANAGEMENT.md`](./CONFIG_MANAGEMENT.md) and [`GETTING_STARTED.md`](./GETTING_STARTED.md).
 
 ### 3. Use
 
@@ -219,134 +161,20 @@ pip install britecore_sdk[dev]         # Development (tests, linting, type check
 
 The SDK loads settings from multiple locations in priority order — later sources override earlier ones.
 `BRITECORE_SDK_*` environment variables always win over any file. See the canonical precedence
-table in [`docs/CONFIGURATION.md`](./docs/CONFIGURATION.md#canonical-precedence-table).
+table in [`CONFIG_MANAGEMENT.md`](./CONFIG_MANAGEMENT.md#config-file-search-hierarchy).
 
-#### Option A: User-level config (recommended for pip-installed users)
+Use one of these setup paths:
 
-Create `~/.britecore/settings.toml` and `~/.britecore/.secrets.toml`. Settings here apply to all
-projects on the machine without touching SDK package files:
+- **User-level config (recommended):** `~/.britecore/settings.toml` + `~/.britecore/.secrets.toml`
+- **Project-local config:** `./britecore.toml` + `./.britecore_secrets.toml`
+- **Explicit credentials in code:** `init_api_client(base_url=..., api_key=...)`
+- **Environment variables:** `BRITECORE_SDK_*` values override all file-based settings
 
-**`~/.britecore/settings.toml`** (example):
+> **Note:** Hostnames under `example.com` in this repository are placeholders.
+> In standard file/env mode, `target_site` is required.
+> In explicit mode (`init_api_client(base_url=..., ...)`), `target_site` is optional and defaults to `"explicit"`.
 
-```toml
-[default]
-target_site = "production"
-```
-
-**`~/.britecore/.secrets.toml`** (never commit):
-
-##### API key authentication
-
-```toml
-[production]
-base_url = "https://api.britecore.example.com"
-api_key = "your_real_api_key"
-
-[staging]
-base_url = "https://api-staging.britecore.example.com"
-api_key = "your_staging_api_key"
-```
-
-##### OAuth authentication
-
-```toml
-[production]
-base_url = "https://api.britecore.example.com"
-client_id = "your_real_client_id"
-client_secret = "your_real_client_secret"
-
-[staging]
-base_url = "https://api-staging.britecore.example.com"
-client_id = "your_staging_client_id"
-client_secret = "your_staging_client_secret"
-```
-
-#### Option B: Project-local config
-
-Place `britecore.toml` and `.britecore_secrets.toml` in your project's working directory.
-Add `.britecore_secrets.toml` to `.gitignore` to keep secrets out of version control:
-
-**`britecore.toml`** (safe to commit):
-
-```toml
-[default]
-target_site = "production"
-```
-
-**`.britecore_secrets.toml`** (add to `.gitignore`!):
-
-```toml
-[production]
-base_url = "https://api.britecore.example.com"
-api_key = "your_real_api_key"
-```
-
-#### Option C: SDK package defaults (repo clones only)
-
-If you have cloned the repo and are working directly from source, you can copy the sample files:
-
-**Linux/macOS (bash):**
-
-```bash
-cp src/britecore_sdk/settings/sample/settings.toml src/britecore_sdk/settings/settings.toml
-cp src/britecore_sdk/settings/sample/.secrets.toml src/britecore_sdk/settings/.secrets.toml
-```
-
-**Windows (PowerShell):**
-
-```powershell
-Copy-Item src\britecore_sdk\settings\sample\settings.toml src\britecore_sdk\settings\settings.toml
-Copy-Item src\britecore_sdk\settings\sample\.secrets.toml src\britecore_sdk\settings\.secrets.toml
-```
-
-#### Option D: Environment variables (highest priority, overrides all files)
-
-> **Note on `target_site` with env vars:** In standard init mode, `target_site` selects which section of `.secrets.toml`
-> to use for credentials. When **all** required credentials are supplied via `BRITECORE_SDK_*`
-> environment variables, the specific `target_site` value does not affect which credentials are
-> loaded — env vars take precedence regardless. If any credential is missing from env vars, the
-> client falls back to the `.secrets.toml` section matching `target_site`. Either way, `target_site`
-> is required unless you use explicit mode (`init_api_client(base_url=..., ...)`).
-
-API key authentication:
-
-**Linux/macOS (bash):**
-
-```bash
-export BRITECORE_SDK_BASE_URL="https://api.britecore.example.com"
-export BRITECORE_SDK_API_KEY="your_api_key"
-export target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
-```
-
-**Windows (PowerShell):**
-
-```powershell
-$env:BRITECORE_SDK_BASE_URL="https://api.britecore.example.com"
-$env:BRITECORE_SDK_API_KEY="your_api_key"
-$env:target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
-```
-
-Or OAuth authentication:
-
-**Linux/macOS (bash):**
-
-```bash
-export BRITECORE_SDK_BASE_URL="https://api.britecore.example.com"
-export BRITECORE_SDK_CLIENT_ID="your_client_id"
-export BRITECORE_SDK_CLIENT_SECRET="your_client_secret"
-export target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
-```
-
-**Windows (PowerShell):**
-
-```powershell
-$env:BRITECORE_SDK_BASE_URL="https://api.britecore.example.com"
-$env:BRITECORE_SDK_CLIENT_ID="your_client_id"
-$env:BRITECORE_SDK_CLIENT_SECRET="your_client_secret"
-$env:target_site="production"  # required; selects .secrets.toml section (any name works when all creds are in env vars)
-```
-
-See [GETTING_STARTED.md](./GETTING_STARTED.md) and [docs/CONFIGURATION.md](./docs/CONFIGURATION.md) for detailed setup.
+See [`GETTING_STARTED.md`](./GETTING_STARTED.md) and [`CONFIG_MANAGEMENT.md`](./CONFIG_MANAGEMENT.md) for full configuration examples.
 
 Validate configured sites before first API calls:
 

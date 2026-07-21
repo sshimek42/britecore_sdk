@@ -63,6 +63,16 @@ Project spaces include, but are not limited to:
 If you experience or witness unacceptable behavior, please report it to the repository owner
 through a private GitHub channel. Do not open a public issue for Code of Conduct reports.
 
+Preferred reporting channels for this repository:
+
+1. Private GitHub message to the repository owner.
+2. Private GitHub issue visible only to maintainers (if enabled).
+
+Maintainer response targets for Code of Conduct reports:
+
+- Initial acknowledgment within 72 hours.
+- Status update after triage within 7 calendar days.
+
 When making a report, include:
 
 - A description of the behavior
@@ -72,6 +82,9 @@ When making a report, include:
 
 All reports will be reviewed and investigated promptly and fairly. The maintainers will respect
 the privacy and security of the reporter to the extent reasonably possible.
+
+If the report concerns a maintainer, that maintainer will be recused from review and enforcement
+for the incident.
 
 ## Enforcement Guidelines
 
@@ -114,6 +127,13 @@ sustained inappropriate behavior, harassment of an individual, or aggression tow
 of classes of individuals.
 
 **Consequence:** A permanent ban from any sort of public interaction within the project community.
+
+## Appeals
+
+If you believe an enforcement action was made in error, you may request a review through the same
+private GitHub channel used for reporting. Include the moderation decision, relevant context, and
+any new information. Appeals are reviewed by maintainers not directly involved in the original
+decision when possible.
 
 ## Attribution
 

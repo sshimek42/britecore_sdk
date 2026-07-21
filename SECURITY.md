@@ -1,6 +1,6 @@
 # Security Policy
 
-*Last updated: July 19, 2026*
+*Last updated: July 21, 2026*
 *Document type: Governance policy*
 
 For security researchers and maintainers: report vulnerabilities safely, understand patching timelines, and security best practices.
@@ -126,7 +126,7 @@ Security patches are provided for:
 
 ## Known Vulnerabilities
 
-As of April 6, 2026: **None known**
+As of July 21, 2026: **No known vulnerabilities are currently tracked for supported releases.**
 
 Security fixes and advisories are communicated through repository release notes.
 
@@ -161,5 +161,5 @@ For security concerns or questions about this policy:
 
 ---
 
-**Last reviewed:** April 6, 2026
+**Last reviewed:** July 21, 2026
 **Next review:** October 2026 (after first public release)

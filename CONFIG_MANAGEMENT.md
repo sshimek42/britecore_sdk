@@ -5,6 +5,12 @@
 
 For SDK operators and administrators: manage site configurations, validate credentials, and safely store secrets using the SDK's config utilities.
 
+> **Note:** This file is the canonical configuration reference for the repository.
+> Link to `CONFIG_MANAGEMENT.md` from other docs instead of duplicating large setup blocks.
+
+> **Note:** Hostnames under `example.com` in this document are placeholders.
+> Replace them with your real BriteCore API host values.
+
 ## Overview
 
 The BriteCore SDK provides utilities to safely manage site configurations stored in `.secrets.toml`. This guide covers:
