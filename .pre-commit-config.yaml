@@ -67,3 +67,13 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      - id: release-compliance
+        name: Release compliance check
+        # Verify LICENSE, package metadata, and legal docs before pushing.
+        # Runs at pre-push (not every commit) to keep commit flow fast.
+        # Use -SkipDependencyLicenses to avoid pip-licenses overhead on every push;
+        # run the full audit manually before tagging a release.
+        entry: powershell -ExecutionPolicy Bypass -File scripts/release_compliance_check.ps1 -SkipDependencyLicenses
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
