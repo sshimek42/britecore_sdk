@@ -4,6 +4,8 @@
 :relative-docs: ../
 ```
 
+> **Documentation version:** {{ docs_version }}
+
 ## Project Links
 
 - GitHub repository: <https://github.com/sshimek42/britecore_sdk>

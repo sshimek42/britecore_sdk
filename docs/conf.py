@@ -24,6 +24,11 @@ try:
 except Exception:
     release = "0.0.0"
 
+# Use the same value for short and full version display in docs UI.
+version = release
+html_title = f"{project} {release} documentation"
+html_short_title = f"{project} {release}"
+
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
@@ -32,9 +37,17 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 
+myst_enable_extensions = [
+    "substitution",
+]
+
 source_suffix = {
     ".rst": "restructuredtext",
     ".md": "markdown",
+}
+
+myst_substitutions = {
+    "docs_version": release,
 }
 
 master_doc = "index"

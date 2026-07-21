@@ -11,7 +11,7 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
 
-**Status:** Stable (v2.0.4+) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v2.0.5+) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 
@@ -466,7 +466,7 @@ Both workflows use OIDC trusted publishing and include build + publish + install
    - Workflow: `.github/workflows/publish.yml`
    - Environment: `pypi`
 4. Run `Publish to TestPyPI` from the Actions tab before cutting a production release.
-5. Push a version tag (for example `v2.0.3`) to trigger `.github/workflows/release.yml`, which builds artifacts and creates the GitHub Release automatically.
+5. Push a version tag (for example `v2.0.5`) to trigger `.github/workflows/release.yml`, which builds artifacts and creates the GitHub Release automatically.
 6. After `.github/workflows/release.yml` completes successfully, `.github/workflows/publish.yml` runs automatically and publishes to PyPI. You can also run `Publish to PyPI` manually from the Actions tab when needed.
 
 ### Contributing
