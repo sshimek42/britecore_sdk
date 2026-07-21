@@ -62,10 +62,9 @@ def add_payment_method(
     vendor_payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Add a payment method for a contact.
-    The payload may include card or ACH details, contact linkage, vendor metadata,
-    and billing address fields for the stored method. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    """Add a payment method for a contact..
+
+    POST /api/v2/payments/add_payment_method
     """
     return post(
         "/api/v2/payments/add_payment_method",
@@ -122,12 +121,9 @@ def change_payment_method(
     policy_list: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set a payment method across multiple policies.
+    """Set a payment method across multiple policies..
 
-    The request uses ``auto_payment_method_id``, ``auto_pay_days_before``,
-    ``contact_id``, and ``policy_list`` to update recurring payment settings.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
-    include ``RequestParameters`` overrides.
+    POST /api/v2/payments/change_payment_method
     """
     return post(
         "/api/v2/payments/change_payment_method",
@@ -150,11 +146,9 @@ def change_payment_method_single(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Set a payment method for one policy or one policy term.
+    """Set a payment method for one policy or one policy term..
 
-    Use ``policy_id`` or ``policy_term_id`` with the payment method and timing
-    fields to update a single recurring payment setup. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/change_payment_method_single
     """
     return post(
         "/api/v2/payments/change_payment_method_single",
@@ -174,11 +168,9 @@ def create_payment_batch(
     data: dict[str, Any] | list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create a payment batch record in the database.
+    """Create a payment batch record in the database..
 
-    Pass the serialized batch payload in ``data`` to create the batch container
-    used by later entry workflows. Returns the normalized ``process_result(...)``
-    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/create_payment_batch
     """
     return post(
         "/api/v2/payments/create_payment_batch",
@@ -191,11 +183,9 @@ def create_payment_entries(
     entries: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create payment entries from a serialized dataset.
+    """Create payment entries from a serialized dataset..
 
-    Use ``entries`` for the staged payment rows that should be inserted before
-    import or application. Returns the normalized ``process_result(...)``
-    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/create_payment_entries
     """
     return post(
         "/api/v2/payments/create_payment_entries",
@@ -225,11 +215,9 @@ def delete_payment_entries(
     entry_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete payment entries by entry identifier.
+    """Delete payment entries by entry identifier..
 
-    Use ``entry_ids`` for the entry records that should be removed from the
-    database. Returns the normalized ``process_result(...)`` payload, and
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/delete_payment_entries
     """
     return post(
         "/api/v2/payments/delete_payment_entries",
@@ -242,11 +230,9 @@ def get_payment_method_info(
     payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve information about a stored payment method.
+    """Retrieve information about a stored payment method..
 
-    The endpoint uses ``payment_method_id`` to return policy and term details
-    tied to that method. Returns the normalized ``process_result(...)`` payload,
-    and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/get_payment_method_info
     """
     return post(
         "/api/v2/payments/get_payment_method_info",
@@ -260,11 +246,9 @@ def get_unpaid_invoices_by_date(
     bill_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve unpaid invoices for a bill date and/or due date.
+    """Retrieve unpaid invoices for a bill date and/or due date..
 
-    Use ``bill_date`` and ``due_date`` to filter unpaid invoices and related
-    billing information. Returns the normalized ``process_result(...)`` payload,
-    and ``**kwargs`` may include ``RequestParameters`` overrides.
+    POST /api/v2/payments/get_unpaid_invoices_by_date
     """
     return post(
         "/api/v2/payments/get_unpaid_invoices_by_date",
@@ -278,12 +262,9 @@ def import_payment_entries(
     bypass_duplicates_check: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import staged payment entries into the accounting workflow.
+    """Import staged payment entries into the accounting workflow..
 
-    Provide ``entry_ids`` for the rows to import and use
-    ``bypass_duplicates_check`` when the API should skip duplicate detection.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/payments/import_payment_entries
     """
     return post(
         "/api/v2/payments/import_payment_entries",
@@ -302,11 +283,9 @@ def make_payment_by_contact_and_payment_method(
     payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make a payment for a policy using a stored contact payment method.
+    """Make a payment for a policy using a stored contact payment method..
 
-    The request uses ``policy_id``, ``contact_id``, ``payment_method_id``, and
-    ``payment_amount`` to charge the stored method. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/make_payment_by_contact_and_payment_method
     """
     return post(
         "/api/v2/payments/make_payment_by_contact_and_payment_method",
@@ -330,12 +309,9 @@ def make_payment_by_invoice_or_policy(
     invoice_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Make a payment identified by invoice number or policy number.
+    """Make a payment identified by invoice number or policy number..
 
-    Use the invoice or policy identifiers together with payment details such as
-    ``amount``, ``payment_date``, transaction metadata, and optional source IDs.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/payments/make_payment_by_invoice_or_policy
     """
     return post(
         "/api/v2/payments/make_payment_by_invoice_or_policy",
@@ -361,12 +337,9 @@ def mark_payment_nsf(
     invoice_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark a payment as NSF.
+    """Mark a payment as NSF..
 
-    The API locates the payment using the supplied date, confirmation number,
-    policy or invoice identifiers, and amount, with optional auto-pay disablement.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/payments/mark_payment_nsf
     """
     return post(
         "/api/v2/payments/mark_payment_nsf",
@@ -386,11 +359,9 @@ def remove_payment_method(
     payment_method_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Soft-delete a stored payment method.
+    """Soft-delete a stored payment method..
 
-    Use ``payment_method_id`` for the method to remove when it is no longer
-    referenced by policy billing. Returns the normalized ``process_result(...)``
-    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/remove_payment_method
     """
     return post(
         "/api/v2/payments/remove_payment_method",
@@ -403,11 +374,9 @@ def retrieve_account_payoff_amount(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the payoff amount for an account or policy.
+    """Retrieve the payoff amount for an account or policy..
 
-    The endpoint uses ``policy_number`` to determine the amount needed to pay off
-    the account balance. Returns the normalized ``process_result(...)`` payload,
-    and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_account_payoff_amount
     """
     return post(
         "/api/v2/payments/retrieve_account_payoff_amount",
@@ -421,11 +390,9 @@ def retrieve_convenience_fee(
     account_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the processor convenience fee for a payment.
+    """Retrieve the processor convenience fee for a payment..
 
-    Use ``payment_amount`` and ``account_type`` to calculate the fee that the
-    enabled payment processor would charge. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_convenience_fee
     """
     return post(
         "/api/v2/payments/retrieve_convenience_fee",
@@ -455,11 +422,9 @@ def retrieve_payment_batch_entries(
     batch_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the entries related to a payment batch.
+    """Retrieve the entries related to a payment batch..
 
-    Use ``batch_id`` to load the batch entries documented by the payments API.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` accepts
-    ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_payment_batch_entries
     """
     return post(
         "/api/v2/payments/retrieve_payment_batch_entries",
@@ -472,11 +437,9 @@ def retrieve_payment_batches(
     load_entries: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve payment batch records.
+    """Retrieve payment batch records..
 
-    Set ``load_entries`` when the response should include the batch's related
-    entry data. Returns the normalized ``process_result(...)`` payload, and
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_payment_batches
     """
     return post(
         "/api/v2/payments/retrieve_payment_batches",
@@ -507,11 +470,9 @@ def retrieve_payment_methods(
     exp_less_than: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve payment methods for one or more contacts.
+    """Retrieve payment methods for one or more contacts..
 
-    Use ``contact_ids`` and optional ``exp_less_than`` filtering to return stored
-    payment methods that match the request. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_payment_methods
     """
     return post(
         "/api/v2/payments/retrieve_payment_methods",
@@ -526,11 +487,9 @@ def retrieve_policy_billing_information(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve billing information for a policy.
+    """Retrieve billing information for a policy..
 
-    The request accepts ``policy_id`` or ``policy_term_id`` and can restrict the
-    response to billing-only fields with ``billing_only``. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_policy_billing_information
     """
     return post(
         "/api/v2/payments/retrieve_policy_billing_information",
@@ -547,11 +506,9 @@ def retrieve_sweep_payment_list(
     procdate: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve pending sweep payments.
+    """Retrieve pending sweep payments..
 
-    Use ``procdate`` to filter the sweep payments scheduled for a given processing
-    date. Returns the normalized ``process_result(...)`` payload, and ``**kwargs``
-    accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_sweep_payment_list
     """
     return post(
         "/api/v2/payments/retrieve_sweep_payment_list",
@@ -564,11 +521,9 @@ def retrieve_updated_invoice_balance(
     invoice_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve the current balance for an invoice.
+    """Retrieve the current balance for an invoice..
 
-    The API uses ``invoice_id`` to look up the latest stored invoice balance.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
-    include ``RequestParameters`` overrides.
+    POST /api/v2/payments/retrieve_updated_invoice_balance
     """
     return post(
         "/api/v2/payments/retrieve_updated_invoice_balance",
@@ -582,11 +537,9 @@ def update_payment_batch(
     data: dict[str, Any] | list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update a payment batch record.
+    """Update a payment batch record..
 
-    Provide ``batch_id`` and the serialized ``data`` changes for the batch that
-    should be updated. Returns the normalized ``process_result(...)`` payload,
-    and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/update_payment_batch
     """
     return post(
         "/api/v2/payments/update_payment_batch",
@@ -599,11 +552,9 @@ def update_payment_entries(
     entries: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update payment entries from a serialized dataset.
+    """Update payment entries from a serialized dataset..
 
-    Use ``entries`` for the payment entry objects that should be updated in the
-    database. Returns the normalized ``process_result(...)`` payload, and
-    ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/update_payment_entries
     """
     return post(
         "/api/v2/payments/update_payment_entries",
@@ -617,11 +568,9 @@ def update_sweep_payments_complete(
     payment_ids: list[str] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Mark sweep payments as completed.
+    """Mark sweep payments as completed..
 
-    Use ``procdate`` and ``payment_ids`` to clear the pending sweep payment set
-    for a processing date. Returns the normalized ``process_result(...)``
-    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/payments/update_sweep_payments_complete
     """
     return post(
         "/api/v2/payments/update_sweep_payments_complete",

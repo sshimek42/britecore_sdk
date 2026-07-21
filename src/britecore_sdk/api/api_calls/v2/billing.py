@@ -13,12 +13,9 @@ def get_installments_preview(
     payment_method: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Return upcoming installments for the supplied billing schedules.
+    """Return upcoming installments for the supplied billing schedules..
 
-    Use ``billing_schedule_ids`` together with the effective date, premium, and
-    payment method to preview the installments a billing schedule would generate.
-    Returns the normalized ``process_result(...)`` payload, and ``**kwargs`` may
-    include ``RequestParameters`` overrides such as timeout, retry, or headers.
+    POST /api/v2/billing/get_installments_preview
     """
     return post(
         "/api/v2/billing/get_installments_preview",
@@ -40,12 +37,9 @@ def get_installments_preview_mid_term(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Return upcoming installments for a mid-term billing change.
+    """Return upcoming installments for a mid-term billing change..
 
-    The request uses ``billing_schedule_ids``, ``revision_effective_date``,
-    ``prorated_premium``, ``payment_method``, and optionally ``policy_id`` to
-    preview how a mid-term revision affects installments. Returns the normalized
-    ``process_result(...)`` payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/billing/get_installments_preview_mid_term
     """
     return post(
         "/api/v2/billing/get_installments_preview_mid_term",
@@ -67,12 +61,9 @@ def get_renewal_installments_preview(
     payment_method: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Return upcoming installments for a renewal billing schedule.
+    """Return upcoming installments for a renewal billing schedule..
 
-    Use ``billing_schedule_ids`` with the renewal effective date, premium, and
-    payment method to preview installments for the renewal scenario documented by
-    the API. Returns the normalized ``process_result(...)`` payload, and
-    ``**kwargs`` may supply ``RequestParameters`` overrides.
+    POST /api/v2/billing/get_renewal_installments_preview
     """
     return post(
         "/api/v2/billing/get_renewal_installments_preview",
@@ -90,11 +81,9 @@ def rating_factors(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Return the billing rating factors related to a policy.
+    """Return the billing rating factors related to a policy..
 
-    The API uses ``policy_id`` to identify which policy's billing factors should
-    be calculated or retrieved. Returns the normalized ``process_result(...)``
-    payload, and ``**kwargs`` accepts ``RequestParameters`` overrides.
+    POST /api/v2/billing/rating_factors
     """
     return post(
         "/api/v2/billing/rating_factors",
