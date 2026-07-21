@@ -424,7 +424,7 @@ def create_effective_date(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Effective Date (POST /api/v2/lines/create_effective_date). (POST /api/v2/lines/create_effective_date))."""
+    """Create Effective Date (POST /api/v2/lines/create_effective_date)."""
     request_json: dict[str, Any] = {
         "force": force,
         "description": description,
@@ -452,7 +452,7 @@ def create_policy_type(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Policy Type (POST /api/v2/lines/create_policy_type). (POST /api/v2/lines/create_policy_type))."""
+    """Create Policy Type (POST /api/v2/lines/create_policy_type)."""
     request_json: dict[str, Any] = {
         "line": line,
         "location_id": location_id,
@@ -477,7 +477,7 @@ def create_rating_grid_definition(
     type: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Rating Grid Definition (POST /api/v2/lines/create_rating_grid_definition). (POST /api/v2/lines/create_rating_grid_definition))."""
+    """Create Rating Grid Definition (POST /api/v2/lines/create_rating_grid_definition)."""
     request_json: dict[str, Any] = {
         "name": name,
         "location_id": location_id,
@@ -499,7 +499,7 @@ def delete_effective_date(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Effective Date (POST /api/v2/lines/delete_effective_date). (POST /api/v2/lines/delete_effective_date))."""
+    """Delete Effective Date (POST /api/v2/lines/delete_effective_date)."""
     request_json: dict[str, Any] = {
         "effective_date_id": effective_date_id,
     }
@@ -519,7 +519,7 @@ def delete_policy_type(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Policy Type (POST /api/v2/lines/delete_policy_type). (POST /api/v2/lines/delete_policy_type))."""
+    """Delete Policy Type (POST /api/v2/lines/delete_policy_type)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -543,7 +543,7 @@ def delete_rating_table(
     page: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Rating Table (POST /api/v2/lines/delete_rating_table). (POST /api/v2/lines/delete_rating_table))."""
+    """Delete Rating Table (POST /api/v2/lines/delete_rating_table)."""
     request_json: dict[str, Any] = {
         "sort_by": sort_by,
         "sort_order": sort_order,
@@ -566,7 +566,7 @@ def delete_rating_table(
 def delete_rating_table_file(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Rating Table File (POST /api/v2/lines/delete_rating_table_file). (POST /api/v2/lines/delete_rating_table_file))."""
+    """Delete Rating Table File (POST /api/v2/lines/delete_rating_table_file)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -584,7 +584,7 @@ def get_effective_date(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Effective Date (POST /api/v2/lines/get_effective_date). (POST /api/v2/lines/get_effective_date))."""
+    """Get Effective Date (POST /api/v2/lines/get_effective_date)."""
     request_json: dict[str, Any] = {
         "effective_date_id": effective_date_id,
     }
@@ -604,7 +604,7 @@ def get_policy_type(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Policy Type (POST /api/v2/lines/get_policy_type). (POST /api/v2/lines/get_policy_type))."""
+    """Get Policy Type (POST /api/v2/lines/get_policy_type)."""
     request_json: dict[str, Any] = {
         "id": id,
     }
@@ -623,7 +623,7 @@ def get_policy_type(
 def get_rating_table_template(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Rating Table Template (POST /api/v2/lines/get_rating_table_template). (POST /api/v2/lines/get_rating_table_template))."""
+    """Get Rating Table Template (POST /api/v2/lines/get_rating_table_template)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -641,7 +641,7 @@ def get_underwriting_question_autofill_answers(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Underwriting Question Autofill Answers (POST /api/v2/lines/get_underwriting_question_autofill_answers). (POST /api/v2/lines/get_underwriting_question_autofill_answers))."""
+    """Get Underwriting Question Autofill Answers (POST /api/v2/lines/get_underwriting_question_autofill_answers)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
     }
@@ -662,7 +662,7 @@ def import_rating_table(
     location_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Import Rating Table (POST /api/v2/lines/import_rating_table). (POST /api/v2/lines/import_rating_table))."""
+    """Import Rating Table (POST /api/v2/lines/import_rating_table)."""
     request_json: dict[str, Any] = {"location_id": location_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -682,7 +682,7 @@ def list_effective_dates(
     page_size: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Effective Dates (POST /api/v2/lines/list_effective_dates). (POST /api/v2/lines/list_effective_dates))."""
+    """List Effective Dates (POST /api/v2/lines/list_effective_dates)."""
     request_json: dict[str, Any] = {
         "sort_order": sort_order,
         "page": page,
@@ -703,7 +703,7 @@ def list_effective_dates(
 def list_rating_grid_definitions(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Rating Grid Definitions (POST /api/v2/lines/list_rating_grid_definitions). (POST /api/v2/lines/list_rating_grid_definitions))."""
+    """List Rating Grid Definitions (POST /api/v2/lines/list_rating_grid_definitions)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -720,7 +720,7 @@ def list_rating_grid_definitions(
 def list_rating_tables(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """List Rating Tables (POST /api/v2/lines/list_rating_tables). (POST /api/v2/lines/list_rating_tables))."""
+    """List Rating Tables (POST /api/v2/lines/list_rating_tables)."""
     request_json: dict[str, Any] = {}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -741,7 +741,7 @@ def modify_effective_date(
     description: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Effective Date (POST /api/v2/lines/modify_effective_date). (POST /api/v2/lines/modify_effective_date))."""
+    """Modify Effective Date (POST /api/v2/lines/modify_effective_date)."""
     request_json: dict[str, Any] = {
         "effective_date": effective_date,
         "force": force,
@@ -766,7 +766,7 @@ def modify_policy_type(
     sub_lines: list[dict[str, Any]] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Modify Policy Type (POST /api/v2/lines/modify_policy_type). (POST /api/v2/lines/modify_policy_type))."""
+    """Modify Policy Type (POST /api/v2/lines/modify_policy_type)."""
     request_json: dict[str, Any] = {
         "items": items,
         "id": id,
@@ -788,7 +788,7 @@ def retrieve_policy_type_claims_tabs_visibility(
     policy_type_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Policy Type Claims Tabs Visibility (POST /api/v2/lines/retrieve_policy_type_claims_tabs_visibility). (POST /api/v2/lines/retrieve_policy_type_claims_tabs_visibility))."""
+    """Retrieve Policy Type Claims Tabs Visibility (POST /api/v2/lines/retrieve_policy_type_claims_tabs_visibility)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
     }
@@ -813,7 +813,7 @@ def retrieve_rating_table(
     page: int | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Rating Table (POST /api/v2/lines/retrieve_rating_table). (POST /api/v2/lines/retrieve_rating_table))."""
+    """Retrieve Rating Table (POST /api/v2/lines/retrieve_rating_table)."""
     request_json: dict[str, Any] = {
         "sort_by": sort_by,
         "sort_order": sort_order,
@@ -838,7 +838,7 @@ def retrieve_underwriting_questions(
     effective_date_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Retrieve Underwriting Questions (POST /api/v2/lines/retrieve_underwriting_questions). (POST /api/v2/lines/retrieve_underwriting_questions))."""
+    """Retrieve Underwriting Questions (POST /api/v2/lines/retrieve_underwriting_questions)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "effective_date_id": effective_date_id,
@@ -861,7 +861,7 @@ def update_policy_type_claims_tab_visibility(
     code_value_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Policy Type Claims Tab Visibility (POST /api/v2/lines/update_policy_type_claims_tab_visibility). (POST /api/v2/lines/update_policy_type_claims_tab_visibility))."""
+    """Update Policy Type Claims Tab Visibility (POST /api/v2/lines/update_policy_type_claims_tab_visibility)."""
     request_json: dict[str, Any] = {
         "policy_type_id": policy_type_id,
         "flagged": flagged,
@@ -885,7 +885,7 @@ def update_rating_table(
     file_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update Rating Table (POST /api/v2/lines/update_rating_table). (POST /api/v2/lines/update_rating_table))."""
+    """Update Rating Table (POST /api/v2/lines/update_rating_table)."""
     request_json: dict[str, Any] = {
         "id": id,
         "file_id": file_id,

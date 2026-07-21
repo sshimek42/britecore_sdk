@@ -53,7 +53,7 @@ def get_authority_limit(
     id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Authority Limit (POST /api/v2/authority_limits/get_authority_limit). (POST /api/v2/authority_limits/get_authority_limit))."""
+    """Get Authority Limit (POST /api/v2/authority_limits/get_authority_limit)."""
     request_json: dict[str, Any] = {"id": id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -88,7 +88,7 @@ def update_all_authority_limits(
     authority_limits: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update All Authority Limits (POST /api/v2/authority_limits/update_all_authority_limits). (POST /api/v2/authority_limits/update_all_authority_limits))."""
+    """Update All Authority Limits (POST /api/v2/authority_limits/update_all_authority_limits)."""
     request_json: dict[str, Any] = {"authority_limits": authority_limits}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
