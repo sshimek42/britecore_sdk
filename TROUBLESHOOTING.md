@@ -1505,5 +1505,3 @@ init_api_client("production", client_dry_run=True)
 result = policies.retrieve_policy(policy_number="POL-123")
 print(result["dry_run"])  # True
 ```
-
----

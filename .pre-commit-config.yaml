@@ -67,6 +67,13 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+      - id: sphinx-build
+        name: Sphinx documentation build
+        # Catch doc build failures before pushing (matches RTD's fail_on_warning: true).
+        entry: sphinx-build -W --keep-going -b html ./docs ./docs/_build/html-strict
+        language: system
+        files: ^(docs/|README|AGENTS|API|ARCHITECTURE|CONTRIBUTING|DEPRECATION|GETTING_STARTED|PYTHON_COMPATIBILITY|SECURITY|STABILITY|TROUBLESHOOTING|UNIMPLEMENTED_API_STUBS|BATCH_QUOTE|CONFIG|EVENTS|MIGRATION|MULTI|OBSERVABILITY|RATE|STAGED|LINE)
+        pass_filenames: false
       - id: release-compliance
         name: Release compliance check
         # Verify LICENSE, package metadata, and legal docs before pushing.

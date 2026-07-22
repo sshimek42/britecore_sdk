@@ -34,7 +34,6 @@ This site hosts generated API docs and key project guides.
 
 Project overview <project_overview>
 Getting started <getting_started>
-Quick setup checklist <AGENTS.quickstart>
 Examples overview <examples>
 ```
 
