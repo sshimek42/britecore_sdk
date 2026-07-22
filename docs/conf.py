@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -46,8 +49,32 @@ source_suffix = {
     ".md": "markdown",
 }
 
+
+def _git_show(fmt: str, ref: str = "HEAD") -> str:
+    """Return formatted git metadata or empty string when unavailable."""
+    try:
+        return subprocess.check_output(
+            ["git", "show", "-s", f"--format={fmt}", ref],
+            cwd=ROOT,
+            text=True,
+        ).strip()
+    except Exception:
+        return ""
+
+
+docs_commit_hash = os.environ.get("READTHEDOCS_GIT_COMMIT_HASH", "").strip() or _git_show(
+    "%H"
+)
+docs_commit_short = docs_commit_hash[:8] if docs_commit_hash else "unknown"
+docs_commit_date_iso = _git_show("%cI", docs_commit_hash or "HEAD")
+docs_commit_date = docs_commit_date_iso.split("T")[0] if docs_commit_date_iso else "unknown"
+docs_build_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
 myst_substitutions = {
     "docs_version": release,
+    "docs_commit": docs_commit_short,
+    "docs_commit_date": docs_commit_date,
+    "docs_build_date": docs_build_date,
 }
 
 master_doc = "index"
