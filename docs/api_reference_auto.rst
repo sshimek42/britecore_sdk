@@ -11,12 +11,3 @@ This section groups automobile-policy-adjacent endpoint wrappers.
    Drivers module <api_reference_assets_module_drivers>
    Violations module <api_reference_assets_module_violations>
    Watercrafts module <api_reference_assets_module_watercrafts>
-
-Spatial
--------
-
-.. toctree::
-   :maxdepth: 1
-   :titlesonly:
-
-   Spatial APIs <api_reference_assets>
