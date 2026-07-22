@@ -31,23 +31,9 @@ jobs:
         run: |
           python -m pip_audit
 
-      - name: Determine changed-file range
+      - name: Run pre-commit hooks (all files)
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            git fetch origin "${{ github.base_ref }}" --depth=1
-            echo "FROM_REF=origin/${{ github.base_ref }}" >> "$GITHUB_ENV"
-          else
-            FROM_REF="${{ github.event.before }}"
-            if [ -z "$FROM_REF" ] || [ "$FROM_REF" = "0000000000000000000000000000000000000000" ]; then
-              FROM_REF="HEAD^"
-            fi
-            echo "FROM_REF=$FROM_REF" >> "$GITHUB_ENV"
-          fi
-          echo "TO_REF=${{ github.sha }}" >> "$GITHUB_ENV"
-
-      - name: Run pre-commit hooks (changed files only)
-        run: |
-          python -m pre_commit run --from-ref "$FROM_REF" --to-ref "$TO_REF"
+          python -m pre_commit run --all-files
 
       - name: Install Vale
         run: |
@@ -58,7 +44,7 @@ jobs:
 
       - name: Run Vale on changed Markdown files
         run: |
-          mapfile -t changed_md < <(git diff --name-only --diff-filter=ACMRT "$FROM_REF" "$TO_REF" -- '*.md')
+          mapfile -t changed_md < <(git diff --name-only --diff-filter=ACMRT HEAD^ HEAD -- '*.md')
           if [ ${#changed_md[@]} -eq 0 ]; then
             echo "No Markdown changes to lint with Vale."
             exit 0
