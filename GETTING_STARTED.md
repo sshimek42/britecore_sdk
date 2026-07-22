@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: July 21, 2026*
+*Last updated: July 22, 2026* (added "Getting credentials from BriteCore UI" section)
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.
@@ -59,6 +59,41 @@ python -m pip install -e ".[dev]"
 ```bash
 python -m pip install -e ".[dev]"
 ```
+
+## Getting credentials from BriteCore UI
+
+Before configuring the SDK, you need to obtain API credentials from your BriteCore instance.
+
+### For OAuth authentication (recommended)
+
+1. Log in to your BriteCore administration interface as an administrator.
+2. Navigate to **Administration** → **API Management** → **OAuth Clients**.
+3. Click **Create New Client** or **Add New OAuth Application**.
+4. Enter a descriptive name for your SDK integration (e.g., "Python SDK Integration").
+5. Set the redirect URI (for server-to-server integrations, use `http://localhost:8000/callback` or your application's OAuth callback endpoint).
+6. Save the client; BriteCore will generate:
+   - **Client ID** — a unique identifier for your application
+   - **Client Secret** — keep this secure and never commit to version control
+   - **OAuth Token Endpoint** — typically `https://your-britecore-instance/api/auth/oauth2/token`
+7. Copy the **Client ID** and **Client Secret** and store them securely (e.g., in `~/.britecore/.secrets.toml`).
+
+### For API Key authentication
+
+1. Log in to your BriteCore administration interface.
+2. Navigate to **Administration** → **API Management** → **API Keys**.
+3. Click **Generate New API Key**.
+4. Provide a name and optional description for the key (e.g., "Python SDK").
+5. BriteCore will generate an API Key; copy it immediately as it cannot be retrieved later.
+6. Store the API Key securely in your configuration (`~/.britecore/.secrets.toml`).
+
+### Obtaining your BriteCore API URL
+
+1. In the BriteCore UI, go to **Administration** → **System Settings** or **API Management**.
+2. Look for the **API Base URL** or **API Endpoint** setting (typically something like `https://api.britecore.example.com` or `https://your-company.britecore.com/api`).
+3. Note the base URL (without trailing `/api/` if the wrapper endpoints already include it).
+4. Use this URL as `base_url` in your configuration.
+
+---
 
 ## Configuration
 
