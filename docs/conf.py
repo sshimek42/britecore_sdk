@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import os
 import subprocess
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -62,13 +62,15 @@ def _git_show(fmt: str, ref: str = "HEAD") -> str:
         return ""
 
 
-docs_commit_hash = os.environ.get("READTHEDOCS_GIT_COMMIT_HASH", "").strip() or _git_show(
-    "%H"
-)
+docs_commit_hash = os.environ.get(
+    "READTHEDOCS_GIT_COMMIT_HASH", ""
+).strip() or _git_show("%H")
 docs_commit_short = docs_commit_hash[:8] if docs_commit_hash else "unknown"
 docs_commit_date_iso = _git_show("%cI", docs_commit_hash or "HEAD")
-docs_commit_date = docs_commit_date_iso.split("T")[0] if docs_commit_date_iso else "unknown"
-docs_build_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+docs_commit_date = (
+    docs_commit_date_iso.split("T")[0] if docs_commit_date_iso else "unknown"
+)
+docs_build_date = datetime.now(UTC).strftime("%Y-%m-%d")
 
 myst_substitutions = {
     "docs_version": release,

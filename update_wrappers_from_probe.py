@@ -251,10 +251,12 @@ def _inject_param_into_existing(
             # Add before the closing brace of request_json
             updated_block = re.sub(
                 r"(    request_json: dict\[str, Any\] = \{)(.*?)(\n    \})",
-                lambda m, field=field, py_name=py_name: m.group(1)
-                + m.group(2)
-                + f'\n        "{field}": {py_name},'
-                + m.group(3),
+                lambda m, field=field, py_name=py_name: (
+                    m.group(1)
+                    + m.group(2)
+                    + f'\n        "{field}": {py_name},'
+                    + m.group(3)
+                ),
                 updated_block,
                 count=1,
                 flags=re.DOTALL,
