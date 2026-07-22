@@ -8,7 +8,7 @@ For SDK consumers: understand which Python versions are supported and what featu
 Canonical source: this file. `docs/python_compatibility.md` includes this content.
 *Document type: Living compatibility policy*
 
-**BriteCore Libraries** — supported Python versions and compatibility commitments.
+**BriteCore SDK** — supported Python versions and compatibility commitments.
 
 ---
 

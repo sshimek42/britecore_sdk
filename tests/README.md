@@ -1,4 +1,4 @@
-# Test Suite for BriteCore Libraries
+# Test Suite for BriteCore SDK
 
 This directory contains comprehensive tests for the britecore_sdk package.
 
