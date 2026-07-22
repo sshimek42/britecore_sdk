@@ -1,5 +1,13 @@
 version: 2
 
+# Track multiple versions/releases for documentation
+# RTD automatically builds docs for each git tag matching the pattern below
+# "stable" branch = latest commit on master
+# All tags matching v*.*.* = releases (2.0.0, 2.0.1, 2.1.0, etc.)
+python:
+  version: "3.11"
+
+# Build documentation for releases and development
 build:
   os: ubuntu-22.04
   tools:
@@ -9,9 +17,9 @@ sphinx:
   configuration: docs/conf.py
   fail_on_warning: true
 
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
+# Install package with docs dependencies
+install:
+  - method: pip
+    path: .
+    extra_requirements:
+      - docs

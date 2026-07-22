@@ -2,9 +2,6 @@
 
 This site hosts generated API docs and key project guides.
 
-> **Documentation version:** {{ docs_version }}
-> **Built date (UTC):** {{ docs_build_date }}
-> **Source commit:** {{ docs_commit }} ({{ docs_commit_date }})
 
 ## Quick Navigation
 
@@ -78,6 +75,7 @@ API Domains <api_domains>
 Configuration management <config_management>
 Sensitive map files <MAP_FILES>
 Deployment <DEPLOYMENT>
+ReadTheDocs versioning <RTD_VERSIONING>
 CI/CD and Coverage <CI_AND_COVERAGE>
 Observability <OBSERVABILITY>
 Troubleshooting <troubleshooting>
@@ -104,4 +102,12 @@ Migration v1 to v2 <MIGRATION_v1_to_v2>
 Unimplemented API stubs <unimplemented_api_stubs>
 POST probing workflow <POST_PROBING>
 Endpoint verification snapshot <ENDPOINT_VERIFICATION_2026-04-28>
+```
+
+---
+
+```{note}
+**Documentation metadata**
+
+- **Version:** {{ docs_version }} | **Built:** {{ docs_build_date }} (UTC) | **Commit:** {{ docs_commit }} ({{ docs_commit_date }})
 ```
