@@ -115,7 +115,6 @@ This makes it easier to trace "event received -> SDK request sent -> downstream 
 
 ---
 
----
 
 ## Webhook framework and listener setup
 
