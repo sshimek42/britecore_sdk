@@ -19,6 +19,14 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 
 ### 1. Install
 
+**Windows (PowerShell):**
+
+```powershell
+pip install britecore_sdk
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 pip install britecore_sdk
 ```
@@ -148,6 +156,19 @@ logger.info("SDK logger is configured")
 
 ### Install
 
+**Windows (PowerShell):**
+
+```powershell
+# Base install (API client + wrappers)
+pip install britecore_sdk
+
+# With optional extras
+pip install britecore_sdk[all]         # All extras
+pip install britecore_sdk[dev]         # Development (tests, linting, type checking)
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 # Base install (API client + wrappers)
 pip install britecore_sdk
@@ -211,7 +232,7 @@ Validation rule: each site needs `base_url` and either a full OAuth pair
 
 ### API Wrappers
 
-- **Endpoint modules:** broad v2 domain coverage plus v1 compatibility wrappers (see `API.md` for current module inventory)
+- **Endpoint modules:** broad v2 domain coverage plus supported v1 wrapper modules where the upstream API still uses `v1` paths (see `API.md` for current module inventory)
 - **Async wrappers:** Cache-aware async versions of key endpoint workflows
 
 ### Utilities
@@ -251,11 +272,35 @@ See [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for cache configuration and
 
 ### Install for Development
 
+**Windows (PowerShell):**
+
+```powershell
+pip install -e ".[dev]"
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 pip install -e ".[dev]"
 ```
 
 ### Run Tests
+
+**Windows (PowerShell):**
+
+```powershell
+# All tests
+pytest tests/ -v
+
+# By category
+pytest tests/unit -m unit -v
+pytest tests/integration -m integration -v
+
+# Core client changes
+pytest tests/unit/test_api_client.py tests/unit/test_core_client_coverage.py -v
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 # All tests
@@ -270,6 +315,16 @@ pytest tests/unit/test_api_client.py tests/unit/test_core_client_coverage.py -v
 ```
 
 ### Linting & Type Checking
+
+**Windows (PowerShell):**
+
+```powershell
+ruff check src/
+black --check src/
+mypy src/britecore_sdk/api/britecore_api_client.py
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 ruff check src/

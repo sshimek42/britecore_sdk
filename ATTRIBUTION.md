@@ -52,7 +52,16 @@ Before tagging a release:
 
 Example dependency license inventory (run from repo root):
 
+**Windows (PowerShell):**
+
 ```powershell
+python -m pip install pip-licenses
+python -m piplicenses --format=markdown --with-urls --with-license-file
+```
+
+**Linux/macOS (bash):**
+
+```bash
 python -m pip install pip-licenses
 python -m piplicenses --format=markdown --with-urls --with-license-file
 ```
@@ -61,6 +70,14 @@ Use the command output as input for review, then keep curated final notices in t
 
 You can also run the repository compliance helper:
 
+**Windows (PowerShell):**
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\release_compliance_check.ps1
+```
+
+**Linux/macOS (bash):**
+
+```bash
+pwsh -ExecutionPolicy Bypass -File ./scripts/release_compliance_check.ps1
 ```

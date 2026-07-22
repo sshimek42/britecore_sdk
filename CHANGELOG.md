@@ -210,16 +210,15 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 - Enhanced `britecore_sdk.classes.__init__.py` with comprehensive deprecation guidance
 - New `britecore_sdk.api._compat` module for migration helpers:
-  - `get_v2_path()` — Get v2.0.0 path for legacy endpoints
-  - `V1_TO_V2_ROUTING` — v1→v2 endpoint mapping dictionary
-  - `import_v1_class_with_warning()` — Load legacy classes with deprecation warnings
+  - `get_v2_path()` — Get a direct v2 import path when one exists for a selected wrapper
+  - `V1_TO_V2_ROUTING` — Mapping dictionary for selected wrapper-path cleanup cases
+  - `import_v1_class_with_warning()` — Load compatibility class aliases with guidance
   - `use_implicit_client_with_warning()` — Guide implicit client users
-- Comprehensive v2.0.0 migration guide: `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md`
-  - 5+ real-world migration examples (quotes, policies, pagination, error handling, testing, multi-site)
-  - Migration checklist with 6 steps
-  - Common issues and solutions
-  - Deprecation timeline
-- All deprecated patterns clearly guide users to v2.0.0 equivalents
+- Archived v2.0.0 adoption notes: `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md`
+  - Historical examples for explicit clients, pagination, error handling, testing, and multi-site usage
+  - Adoption checklist for optional modernization work
+  - Compatibility notes and common questions
+- Deprecated patterns that have true replacements now point to their current equivalents without implying blanket removal of supported `api_calls/v1` wrappers
 
 ---
 
@@ -240,15 +239,14 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Implicit module-level client usage (legacy pattern) — Use explicit `client=` parameter
 - Manual pagination loop pattern — Use `iter_*()` iterators instead
 - Raw dict returns — Use typed response models for better type safety
-- Legacy endpoint versions (legacy APIs still work, use v2 for all new code)
 - `britecore_sdk.classes` module — Import from `models` and `validators` instead
 
 ### Documentation
 
 - `V2_ROADMAP.md` — Complete 6-phase roadmap with acceptance criteria
-- `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — Phase 1 migration guide
+- `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — Phase 1 client lifecycle design notes
 - `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
-- `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md` — **Phase 6: Complete end-to-end migration guide with 5+ real-world examples**
+- `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md` — **Phase 6 archived adoption notes with historical examples and support guidance**
 - `V2-PROGRESS-REPORT.md` — v2.0.0 beta readiness status and metrics
 - `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
 - Module docstrings updated with examples for all new features

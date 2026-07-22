@@ -1,7 +1,7 @@
-# Phases 2-5: Typed Responses, Error Models, Pagination & Middleware
+# Phases 2-5: Typed Responses, Error Models, Pagination & Middleware (Archived Notes)
 
 *Last updated: July 16, 2026*
-*Document type: Implementation guide*
+*Document type: Archived implementation record*
 
 ## Overview
 
@@ -71,16 +71,16 @@ raw = quote.raw_data
 print(f"All data: {raw}")
 ```
 
-### Migration Pattern
+### Adoption Pattern
 
-**Before (v1.x):**
+**Earlier dict-based pattern:**
 
 ```python
 response = retrieve_quote(quote_number="Q123")
 premium = response.get("premium")  # No type checking
 ```
 
-**After (v2.0.0):**
+**Typed-response pattern introduced in 2.0.0:**
 
 ```python
 quote: QuoteResponse = retrieve_quote(quote_number="Q123", client=client)
@@ -435,9 +435,9 @@ for policy in iter_policies(
     print(f"Policy: {policy['policyNumber']}")
 ```
 
-### Migration Pattern
+### Adoption Pattern
 
-**Before (v1.x):**
+**Earlier manual pagination pattern:**
 
 ```python
 page = 1
@@ -450,7 +450,7 @@ while True:
     page += 1
 ```
 
-**After (v2.0.0):**
+**Iterator-based pattern introduced in 2.0.0:**
 
 ```python
 # Option 1: Iterator

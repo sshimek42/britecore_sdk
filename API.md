@@ -32,6 +32,7 @@ For known wrapper/spec drift currently tracked in tests, see
 
 See also:
 
+- [docs/api_domains.rst](./docs/api_domains.rst) for the top-level domain index, including Auto APIs
 - [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for async cache-aware wrapper usage
 - [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) for rate limiter configuration
 - [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) for high-throughput quote creation

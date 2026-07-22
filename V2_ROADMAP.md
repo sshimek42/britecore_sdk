@@ -463,19 +463,19 @@ src/britecore_sdk/api/_compat/
 
 #### Implementation Strategy
 1. **Audit `classes/` module** - move useful models to `models/`, remove rest
-2. **Review `api_calls/v1/`** - keep only what has no v2 equivalent
+2. **Review `api_calls/v1/`** - preserve supported wrappers when the upstream API still has no `v2` equivalent
 3. **Move migration shims** to `api/_compat/` with clear deprecation notices
 4. **Update imports in `__init__.py`** to point to new locations
 5. **Remove circular import workarounds** and other v1-specific hacks
-6. **Create migration guide** in `docs/migrations/v2-migration.md`
+6. **Create archived adoption notes** in `docs/migrations/`
 
 #### Acceptance Criteria
 - [ ] `classes/` module removed or fully deprecated
-- [ ] All v1 endpoints deprecated or moved to `_compat/`
+- [ ] Supported `api_calls/v1` wrappers retained when no `v2` SDK equivalent exists
 - [ ] Migration helpers available in `_compat/` with clear instructions
 - [ ] No circular imports or compatibility shims in core path
 - [ ] `__all__` exports cleaned up
-- [ ] Migration guide provided for common v1→v2 transitions
+- [ ] Archived adoption notes provided for the major 2.0.0 design changes
 
 ---
 
@@ -497,6 +497,8 @@ src/britecore_sdk/api/_compat/
 
 ## Version Strategy
 
+> **Historical note:** This roadmap captured pre-release planning. The current 2.x policy does **not** treat all `api_calls/v1` wrappers as legacy, and it does not require a blanket SDK-wide `v1`→`v2` rewrite.
+
 ### 1.6.0 (Minor - Deprecations)
 - Add deprecation warnings for implicit client usage
 - Add new explicit client pattern alongside old one
@@ -506,7 +508,7 @@ src/britecore_sdk/api/_compat/
 
 ### 1.7.0 (Minor - Foundation)
 - Pagination iterators available
-- Migration guide published
+- Adoption/design notes published
 - Deprecations become more vocal
 
 ### v2.0.0 (Major - Breaking)
@@ -516,7 +518,7 @@ src/britecore_sdk/api/_compat/
 - Typed exceptions with metadata
 - Transport middleware required pattern
 - Legacy `classes/` removed
-- v1 endpoints deprecated or in `_compat/`
+- Supported `api_calls/v1` wrappers retained where the upstream API or SDK coverage still requires them
 
 ---
 
@@ -548,7 +550,7 @@ For each phase:
 - [ ] All phases completed
 - [ ] 100% type hint coverage (no `Any` in public API)
 - [ ] Zero breaking changes in 1.x releases
-- [ ] Clear migration path for v1→v2 users
+- [ ] Clear adoption guidance for explicit-client patterns and related 2.0.0 design changes
 - [ ] Cleaner, more maintainable codebase
 - [ ] Community feedback positive on v2 design
 

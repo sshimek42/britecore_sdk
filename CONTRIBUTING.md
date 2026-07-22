@@ -30,6 +30,14 @@ Related docs:
 
 ## Development setup
 
+**Windows (PowerShell):**
+
+```powershell
+python -m pip install -e ".[dev]"
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 python -m pip install -e ".[dev]"
 ```
@@ -60,11 +68,27 @@ The pre-push hook blocks `fileshare-settings` from being pushed to `origin`.
 
 Install Git hooks once per clone:
 
+**Windows (PowerShell):**
+
+```powershell
+pre-commit install
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 pre-commit install
 ```
 
 Run hooks manually across the repo:
+
+**Windows (PowerShell):**
+
+```powershell
+pre-commit run --all-files
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 pre-commit run --all-files
@@ -159,6 +183,14 @@ This pattern is best for test isolation and CI/CD environments where environment
 
 ## Branch and commit workflow
 
+**Windows (PowerShell):**
+
+```powershell
+git checkout -b feature/short-description
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 git checkout -b feature/short-description
 ```
@@ -171,6 +203,16 @@ git checkout -b feature/short-description
 
 Minimum validation command set for API-client or exception changes:
 
+**Windows (PowerShell):**
+
+```powershell
+python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
+python -m pytest tests/unit/test_api_client.py -v
+python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client import BritecoreAPIClient; print(britecore_sdk.__version__)"
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 python -m pytest tests/unit/test_exceptions.py tests/unit/test_core_client_coverage.py -v
 python -m pytest tests/unit/test_api_client.py -v
@@ -179,11 +221,29 @@ python -c "import britecore_sdk; from britecore_sdk.api.britecore_api_client imp
 
 Run targeted tests first:
 
+**Windows (PowerShell):**
+
+```powershell
+python -m pytest tests/unit/test_api_client.py -v
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 python -m pytest tests/unit/test_api_client.py -v
 ```
 
 Run standard suites before opening a PR:
+
+**Windows (PowerShell):**
+
+```powershell
+python -m pytest tests/ -v
+python -m pytest tests/unit -m unit -v
+python -m pytest tests/integration -m integration -v
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 python -m pytest tests/ -v
@@ -220,6 +280,14 @@ python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
 ```
 
 If Sphinx is not installed in your current environment yet, install docs dependencies first:
+
+**Windows (PowerShell):**
+
+```powershell
+python -m pip install -e ".[docs]"
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 python -m pip install -e ".[docs]"
@@ -303,6 +371,17 @@ python -m pip install britecore-sdk
 \`\`\`powershell
 python -m venv .venv
 .\\.venv\\Scripts\\Activate.ps1
+\`\`\`
+
+# Local command examples should normally include both shell variants
+## Windows (PowerShell)
+\`\`\`powershell
+python -m pip install -e ".[dev]"
+\`\`\`
+
+## Linux/macOS (bash)
+\`\`\`bash
+python -m pip install -e ".[dev]"
 \`\`\`
 
 # Configuration/TOML examples
@@ -395,6 +474,7 @@ def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
 - **Descriptive for references**: "The SDK surfaces endpoint wrappers...", "Architecture consists of..."
 - **Active voice**: "The SDK processes payloads" (not "Payloads are processed by the SDK")
 - **Second person when addressing readers**: "You can override timeout..." (not "Users can override...")
+- **Shell parity for local commands**: When a reader is expected to run a command locally, provide both **Windows (PowerShell)** and **Linux/macOS (bash)** examples unless the command is truly shell-specific or embedded in CI YAML.
 
 ## Repo layout contract
 

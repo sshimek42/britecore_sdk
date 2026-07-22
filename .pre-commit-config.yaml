@@ -25,7 +25,7 @@ repos:
       - id: markdown-structure
         name: markdown structure check
         entry: python src/britecore_sdk/utils/check_markdown_structure.py
-        language: system
+        language: python
         files: \.md$
         exclude: ^(build/|dist/|env/|\.venv/|docs/_build/|htmlcov/)
       - id: pymarkdown

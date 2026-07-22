@@ -181,6 +181,16 @@ spec:
 
 ### Store Credentials in a Secret
 
+**Windows (PowerShell):**
+
+```powershell
+kubectl create secret generic britecore-creds `
+  --from-literal=base_url=https://api.example.com `
+  --from-literal=api_key=<YOUR_API_KEY>
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 kubectl create secret generic britecore-creds \
   --from-literal=base_url=https://api.example.com \
@@ -370,6 +380,23 @@ Resources:
 
 ### Deploy to Lambda
 
+**Windows (PowerShell):**
+
+```powershell
+# Package function
+Compress-Archive -Path * -DestinationPath package.zip -Force
+
+# Update function
+aws lambda update-function-code `
+  --function-name policy-lookup `
+  --zip-file fileb://package.zip
+
+# Or use SAM
+sam deploy --guided
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 # Package function
 zip -r package.zip . -x "*.git*" __pycache__ "*.pyc"
@@ -428,6 +455,20 @@ def get_policy(request):
 ```
 
 **Deploy:**
+
+**Windows (PowerShell):**
+
+```powershell
+$secretValue = (gcloud secrets versions access latest --secret=britecore-api-key)
+gcloud functions deploy get_policy `
+  --runtime python311 `
+  --trigger-http `
+  --allow-unauthenticated `
+  --set-env-vars BRITECORE_BASE_URL=https://api.example.com `
+  --set-env-vars BRITECORE_API_KEY=$secretValue
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 gcloud functions deploy get_policy \
@@ -623,6 +664,15 @@ def readiness():
 
 **Solution:** Ensure SDK is in requirements.txt and installed:
 
+**Windows (PowerShell):**
+
+```powershell
+pip install britecore_sdk
+pip freeze | Select-String britecore_sdk
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 pip install britecore_sdk
 pip freeze | grep britecore_sdk
@@ -631,6 +681,14 @@ pip freeze | grep britecore_sdk
 ### "BRITECORE_SDK_BASE_URL not set"
 
 **Solution:** Set environment variables in container/function config:
+
+**Windows (PowerShell):**
+
+```powershell
+docker run -e BRITECORE_SDK_BASE_URL=https://api.example.com ...
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 docker run -e BRITECORE_SDK_BASE_URL=https://api.example.com ...

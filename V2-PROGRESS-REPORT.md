@@ -7,7 +7,7 @@
 
 The v2.0.0 release (now stable) implements **Phases 1-6** of the BriteCore SDK v2.0.0 roadmap. All major architecture improvements are complete, tested, and available in production as v2.0.1+.
 
-**Total effort:** ~3000+ lines of new code, comprehensive documentation, and migration guides.
+**Total effort:** ~3000+ lines of new code, comprehensive documentation, and archived design/adoption notes.
 
 ---
 
@@ -19,7 +19,7 @@ The v2.0.0 release (now stable) implements **Phases 1-6** of the BriteCore SDK v
 **Changes:**
 - ✅ Added `resolve_client()` and `aresolve_client()` helpers
 - ✅ Updated quotes.py sample wrappers with explicit `client=` parameter
-- ✅ Full migration guide: `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md`
+- ✅ Archived client lifecycle design note: `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md`
 - ✅ Complete v2.0.0 roadmap: `V2_ROADMAP.md`
 
 **Impact:** Eliminates implicit module-global state, enables multi-tenancy, improves testability
@@ -142,14 +142,14 @@ all_quotes = list(iter_quotes(client=client))  # Collect all
 
 ## Remaining Work
 
-### Phase 6: Legacy Cleanup ⏳
-**Status:** Not yet started
+### Phase 6: Legacy Cleanup / Compatibility Review (Historical Plan)
+**Status:** Completed historically; section retained for roadmap context
 
-**Planned work:**
+**Planned work at the time:**
 - [ ] Deprecate/remove `classes/` module compatibility layer
-- [ ] Review `api_calls/v1/` endpoints for retirement
+- [ ] Review `api_calls/v1/` wrappers and retain supported ones when no `v2` equivalent exists
 - [ ] Move migration helpers to `api/_compat/` module
-- [ ] Create comprehensive v1→v2 migration guide
+- [ ] Create archived adoption notes for the 2.0.0 design changes
 - [ ] Update all import statements in codebase
 - [ ] Remove circular import workarounds
 - [ ] Clean up `__all__` exports
@@ -167,7 +167,7 @@ all_quotes = list(iter_quotes(client=client))  # Collect all
 | `src/britecore_sdk/api/responses.py` | 280 | Typed response models |
 | `src/britecore_sdk/api/middleware.py` | 280 | Middleware system |
 | `src/britecore_sdk/api/iterators.py` | 220 | Pagination helpers |
-| `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` | 400+ | Phase 1 migration guide |
+| `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` | 400+ | Phase 1 client lifecycle design note |
 | `docs/migrations/PHASES2-5-FEATURES.md` | 500+ | Phases 2-5 guide |
 
 ### Files Modified
@@ -263,7 +263,7 @@ git push origin release/v2.0.0
 | Document | Purpose | Location |
 |----------|---------|----------|
 | **V2_ROADMAP.md** | Full architecture plan | Root directory |
-| **PHASE1-CLIENT-LIFECYCLE.md** | Phase 1 migration guide | `docs/migrations/` |
+| **PHASE1-CLIENT-LIFECYCLE.md** | Phase 1 client lifecycle design note | `docs/migrations/` |
 | **PHASES2-5-FEATURES.md** | Phases 2-5 guide | `docs/migrations/` |
 | **CHANGELOG.md** | Version history | Root directory |
 | **AGENTS.md** | Development workflow | Root directory |
@@ -305,7 +305,7 @@ git push origin release/v2.0.0
 
 - **Backwards compatible:** All legacy code continues to work (no forced migration)
 - **Gradual migration:** Teams can adopt v2.0.0 patterns incrementally
-- **Clear migration paths:** Each phase has dedicated migration guide
+- **Clear adoption guidance:** Each phase has dedicated design/adoption notes
 - **Production ready:** Foundation is solid for full v2.0.0 rollout
 - **Well documented:** Every feature has examples and use cases
 

@@ -739,6 +739,21 @@ for batch in batch_items(large_list, batch_size=100):
 
 **Diagnosis:**
 
+**Windows (PowerShell):**
+
+```powershell
+# Check network connectivity
+ping api.britecore.example.com
+
+# Test DNS resolution
+Resolve-DnsName api.britecore.example.com
+
+# Check SSL/TLS handshake time
+curl.exe -w "@curl_format.txt" -o NUL -s https://api.britecore.example.com
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 # Check network connectivity
 ping api.britecore.example.com
@@ -756,14 +771,16 @@ curl -w "@curl_format.txt" -o /dev/null -s https://api.britecore.example.com
 
 ### "Type hints not working in IDE"
 
-**Cause:** Using v1 endpoints or IDE not properly configured
+**Cause:** The IDE may be indexing stale interpreter metadata, or you may be using an older wrapper path that exposes fewer typed helpers for that specific endpoint.
 
 **Solution:**
 
 ```python
-# Use v2 endpoints for better type hints
-from britecore_sdk.api.api_calls.v2 import policies  # ✓ Good type hints
-# NOT: from britecore_sdk.api.api_calls.v1 import policies  # ✗ Limited type hints
+# Prefer wrappers with the richest typed support for the endpoint you need
+from britecore_sdk.api.api_calls.v2 import policies  # Often the richest typed path when available
+
+# Supported v1 wrappers are still valid when the upstream API remains v1-only
+# or the SDK has no v2 equivalent for that endpoint yet.
 
 # Ensure pyright/mypy is configured
 # In pyproject.toml:
@@ -772,6 +789,14 @@ python_version = "3.11"
 ```
 
 Run type checking:
+
+**Windows (PowerShell):**
+
+```powershell
+mypy src/britecore_sdk --strict
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 mypy src/britecore_sdk --strict
@@ -890,10 +915,27 @@ contact = BritecoreContact(**contact_data)
 
 **Solution:**
 
+**Windows (PowerShell):**
+
+```powershell
+# 1. Verify API key is set
+echo $env:BRITECORE_SDK_API_KEY
+
+# 2. Check settings file
+Get-Content $env:USERPROFILE\.britecore\.secrets.toml
+
+# 3. Verify key is in correct format
+# Keys usually start with specific prefix depending on environment
+
+# 4. Regenerate key if necessary
+britecore-config-wizard
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 # 1. Verify API key is set
-echo $BRITECORE_SDK_API_KEY  # Linux/macOS
-echo $env:BRITECORE_SDK_API_KEY  # PowerShell
+echo $BRITECORE_SDK_API_KEY
 
 # 2. Check settings file
 cat ~/.britecore/.secrets.toml
@@ -927,6 +969,22 @@ configure_logging(level="DEBUG")
 **Cause:** Base URL not configured
 
 **Solution:**
+
+**Windows (PowerShell):**
+
+```powershell
+# Quick setup wizard
+britecore-config-wizard
+
+# OR manually configure settings.toml
+@'
+[production]
+base_url = "https://api.example.com"
+api_key = "your_api_key"
+'@ | Set-Content "$env:USERPROFILE\.britecore\settings.toml"
+```
+
+**Linux/macOS (bash):**
 
 ```bash
 # Quick setup wizard

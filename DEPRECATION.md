@@ -131,6 +131,10 @@ Some BriteCore endpoints are versioned as `v1` in their URL and have no `v2`
 equivalent yet. Those wrappers remain supported and should not be deprecated
 just because the path contains `v1`.
 
+Likewise, do not describe the initial 2.x stable release as a blanket SDK-wide
+"v1 to v2" migration unless an actual deprecated SDK surface has a direct,
+documented replacement.
+
 ---
 
 ## What Cannot Be Deprecated (Breaking Only in Major)

@@ -108,6 +108,18 @@ client = BritecoreAPIClient("production").init_client(
 
 Configure rate limiting via environment variables (highest priority):
 
+**Windows (PowerShell):**
+
+```powershell
+$env:BRITECORE_SDK_RATE_LIMITER_ENABLED = "true"
+$env:BRITECORE_SDK_RATE_LIMITER_REQUESTS_PER_SECOND = "10.0"
+$env:BRITECORE_SDK_RATE_LIMITER_BURST_SIZE = "20"
+$env:BRITECORE_SDK_RATE_LIMITER_ADAPTIVE_BACKOFF = "true"
+$env:BRITECORE_SDK_RATE_LIMITER_BACKOFF_TIMEOUT_SECONDS = "60.0"
+```
+
+**Linux/macOS (bash):**
+
 ```bash
 export BRITECORE_SDK_RATE_LIMITER_ENABLED=true
 export BRITECORE_SDK_RATE_LIMITER_REQUESTS_PER_SECOND=10.0
