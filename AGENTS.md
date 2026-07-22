@@ -106,6 +106,71 @@ logging.basicConfig(level=logging.INFO)  # Global config
 
 - Don't create new logger instances in modules; use the package logger or `logging.getLogger(__name__)`.
 
+## Pre-commit hooks and quality gates
+
+**Pre-commit framework** (`pre-commit.com`) runs automated checks before commits/pushes. This is MANDATORY for preventing CI failures.
+
+### Setup (first time only)
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+### What runs automatically on `git commit`
+
+All hooks defined in `.pre-commit-config.yaml`:
+
+1. **Code linters** (ruff, black) — code style and import ordering
+2. **Type checker** (mypy) — type errors in key modules
+3. **Unit smoke tests** (pytest) — quick validation before commit
+4. **Markdown linter** (pymarkdown) — markdown syntax
+5. **Markdown structure** — custom validation of headings, links, tables
+6. **Sphinx documentation build** — build docs in strict mode (`-W`)
+
+### What runs on `git push`
+
+- **Release compliance check** — validates LICENSE, metadata, and legal docs
+
+### Preventing the documentation build failures
+
+The Sphinx hook validates documentation builds **before you commit**, matching the RTD `-W --keep-going` flags:
+
+```bash
+python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
+```
+
+If this fails locally, it **will also fail in CI**. The solution is **always** visible in the pre-commit output. Common issues:
+
+- Adjacent transitions (`---` markers too close together)
+- Invalid MyST substitutions or syntax
+- Malformed markdown tables
+- Unknown Sphinx directives
+
+See `docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md` for detailed remedies.
+
+### Manual invocation (for debugging)
+
+```bash
+# Test all hooks on all files
+pre-commit run --all-files
+
+# Test specific hook
+pre-commit run sphinx-build --all-files --verbose
+
+# Dry run (no changes)
+pre-commit run --all-files --dry-run
+```
+
+### Bypass (only when absolutely necessary)
+
+```bash
+git commit --no-verify  # Skip hooks for this commit ONLY
+git push --no-verify    # Skip pre-push hooks ONLY
+```
+
+**Note:** Bypassing pre-commit leads to CI failures. If you bypass, you are responsible for fixing CI failures before merge.
+
 ## Gotchas that affect agent changes
 
 - API client initialization is now lazy: `api_client` is a proxy that initializes on first use, avoiding failures in contexts without config/env. Call `get_api_client()` for explicit control.

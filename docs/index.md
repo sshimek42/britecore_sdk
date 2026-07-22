@@ -81,6 +81,7 @@ Deployment <DEPLOYMENT>
 CI/CD and Coverage <CI_AND_COVERAGE>
 Observability <OBSERVABILITY>
 Troubleshooting <troubleshooting>
+Documentation build troubleshooting <DOCUMENTATION_BUILD_TROUBLESHOOTING>
 ```
 
 ```{toctree}

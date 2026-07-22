@@ -1,0 +1,38 @@
+#!/bin/sh
+# Pre-commit hook to run pre-commit framework
+# This ensures all linting, formatting, type checking, and documentation builds
+# pass before allowing a commit to be created.
+#
+# To bypass (not recommended): git commit --no-verify
+
+# Exit immediately if any command fails
+set -e
+
+# Skip in CI environments (GitHub Actions, etc.)
+if [ -n "$CI" ] || [ -n "$GITHUB_ACTIONS" ]; then
+    exit 0
+fi
+
+# Only run pre-commit if it's installed
+if ! command -v pre-commit > /dev/null 2>&1; then
+    echo "⚠️  pre-commit not found in PATH. Install with: pip install pre-commit"
+    echo "Skipping pre-commit checks. To enforce, run: pre-commit install"
+    exit 0
+fi
+
+# Run pre-commit on staged files
+echo "🔍 Running pre-commit checks..."
+pre-commit run --verbose || {
+    echo ""
+    echo "❌ Pre-commit checks failed. Please fix the issues above and try again."
+    echo ""
+    echo "To debug further:"
+    echo "  - Run: python -m pre_commit run --all-files"
+    echo "  - Check: https://pre-commit.com/#usage"
+    echo ""
+    echo "To skip checks (not recommended): git commit --no-verify"
+    exit 1
+}
+
+echo "✅ All pre-commit checks passed!"
+exit 0

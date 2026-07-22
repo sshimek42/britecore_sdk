@@ -456,6 +456,46 @@ python -m pytest tests/unit -m unit -v
 python -m pytest tests/integration -m integration -v
 ```
 
+---
+
+## Contributing code or documentation
+
+### Set up pre-commit hooks (developers only)
+
+If you plan to contribute code or documentation changes, install pre-commit hooks to catch issues before committing:
+
+```powershell
+pip install pre-commit
+pre-commit install
+```
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+After installation, pre-commit hooks automatically run before each commit and validate:
+
+- **Code formatting** (ruff, black)
+- **Type checking** (mypy)
+- **Markdown structure** (syntax, tables)
+- **Documentation build** (Sphinx in strict mode)
+- **Quick tests** (pytest unit smoke checks)
+
+If hooks fail, fix the issues and try committing again. To bypass (not recommended): `git commit --no-verify`
+
+### Documentation build validation
+
+For documentation changes, always test locally before pushing:
+
+```sh
+python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
+```
+
+Common issues and fixes are documented in [`docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md`](docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md).
+
+---
+
 ## API Client Initialization Notes
 
 - The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit control over the shared lazy client. Use `init_api_client()` for advanced/manual initialization scenarios.

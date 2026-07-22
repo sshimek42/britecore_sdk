@@ -16,6 +16,9 @@ For SDK users: diagnose and resolve common issues, understand error messages, an
 | `RateLimitError: Too many requests (429)` | Rate limit exceeded | Implement backoff, see Pattern 3 in docs/COMMON_PATTERNS.md |
 | `ConnectionError: Connection refused` | API unreachable | Check `base_url` and network connectivity |
 | `SSL: CERTIFICATE_VERIFY_FAILED` | Certificate issue | Update CA bundle or use self-signed for dev |
+| `Sphinx build failed` (warnings as errors) | Documentation syntax error | See [`docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md`](docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md) |
+
+> **📚 Developers:** For documentation build errors, see [`docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md`](docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md)
 
 ## Diagnosis Quick Checks
 
