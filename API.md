@@ -89,17 +89,42 @@ of the shared client. Use `init_api_client()` for advanced/manual initialization
 
 ---
 
-## Authentication
+## Authentication (Consolidated)
 
-All API calls require authentication (automatic):
+The SDK supports both auth modes used across BriteCore API tutorials and operational guides:
+
+- **OAuth2** when `client_id` and `client_secret` are configured.
+- **API key** when OAuth credentials are blank and `api_key` is configured.
+
+Auth mode selection is automatic in `BritecoreAPIClient.init_client()`.
 
 ```python
-# API Key Authentication (if client_id/client_secret blank)
-headers = {"Authorization": "ApiKey <api_key>"}
+from britecore_sdk import BritecoreAPIClient
 
-# OAuth2 Authentication (if client_id/client_secret provided)
-headers = {"Authorization": "Bearer <access_token>"}
+# OAuth mode (client_id + client_secret)
+oauth_client = BritecoreAPIClient("production").init_client(
+    base_url="https://api.example.com",
+    client_id="your_client_id",
+    client_secret="your_client_secret",
+)
+
+# API key mode
+api_key_client = BritecoreAPIClient("production").init_client(
+    base_url="https://api.example.com",
+    api_key="your_api_key",
+)
 ```
+
+For SSO/impersonation and event/webhook operational concerns, see:
+
+- `docs/EVENTS_AND_WEBHOOKS.md`
+- `docs/OBSERVABILITY.md`
+
+### Token endpoint and headers
+
+- OAuth token endpoint: `/api/auth/oauth2/token`
+- Request auth header is normalized to `Authorization: Bearer <token>`
+- Requests include `X-SDK-Request-ID` for request correlation
 
 ---
 
@@ -172,6 +197,19 @@ Current domains include:
 - `custom_ui`
 - `printing`
 - `payments.makemanualpolicypayment` / `payments.make_manual_policy_payment`
+
+### Tutorial-to-wrapper mapping
+
+This table maps Help Center API tutorial workflows to current SDK wrapper entry points.
+
+| Tutorial workflow | Primary SDK wrappers/modules |
+| --- | --- |
+| Create and bind a quote | `britecore_sdk.api.api_calls.v2.quotes` (`create_full_quote`, `modify_full_quote`, `rate_quote`, `issue_full_quote`) |
+| Endorse, renew, cancel policy | `britecore_sdk.api.api_calls.v2.quotes` (`create_endorsement_quote`, `create_renewal_quote`), `britecore_sdk.api.api_calls.v2.policies` (`cancel_policy_v2`, `review_revision`) |
+| Retrieve/display policy info | `britecore_sdk.api.api_calls.v2.policies` (`search`, `retrieve_policy`, `retrieve_policy_terms`, `retrieve_policy_snapshot`) |
+| Retrieve product definition | `britecore_sdk.api.api_calls.v2.lines` (`list_effective_dates`, `get_all_effective_dates`, `find_effective_date`, `retrieve_effective_date`) |
+| Print documents | `britecore_sdk.api.api_calls.v1.printing` (`gettobeprinted`, `getattachment`, `markasprinted`, `sendprinthawk`) |
+| Events and webhooks operations | See operational guide `docs/EVENTS_AND_WEBHOOKS.md` and integration-specific wrappers (for example vendor endpoints in `britecore_sdk.api.api_calls.v2.vendors`) |
 
 ### Representative examples
 
