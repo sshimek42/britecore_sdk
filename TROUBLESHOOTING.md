@@ -1,11 +1,38 @@
 # Troubleshooting Guide
 
-*Last updated: July 19, 2026*
+*Last updated: July 22, 2026*
 *Document type: Living troubleshooting guide*
 
 For SDK users: diagnose and resolve common issues, understand error messages, and find workarounds.
 
-**BriteCore Libraries** - Common issues and solutions
+## Quick Reference: Common Errors
+
+| Error | Likely Cause | Solution |
+|-------|--------------|----------|
+| `ModuleNotFoundError: No module named 'britecore_sdk'` | SDK not installed | `pip install -e .` |
+| `No target_site assigned` | Configuration missing | Set `target_site` in `~/.britecore/settings.toml` |
+| `AuthenticationError: Invalid API key` | Wrong/expired credentials | Verify API key in `~/.britecore/.secrets.toml` |
+| `NotFoundError: Policy not found` | Policy doesn't exist | Check policy number is correct |
+| `RateLimitError: Too many requests (429)` | Rate limit exceeded | Implement backoff, see Pattern 3 in docs/COMMON_PATTERNS.md |
+| `ConnectionError: Connection refused` | API unreachable | Check `base_url` and network connectivity |
+| `SSL: CERTIFICATE_VERIFY_FAILED` | Certificate issue | Update CA bundle or use self-signed for dev |
+
+## Diagnosis Quick Checks
+
+```bash
+# 1. Check SDK installed correctly
+python -c "import britecore_sdk; print(britecore_sdk.__version__)"
+
+# 2. Verify configuration
+britecore-check-config
+
+# 3. Test connectivity
+britecore-healthcheck
+
+# 4. Check environment variables
+echo $target_site
+echo $BRITECORE_SDK_API_KEY
+```
 
 ---
 
@@ -1100,3 +1127,351 @@ client = init_api_client("production").init_client()
 - **To swap sites or isolate tests,** call `reset_api_client()` before calling `init_api_client("new_site")`.
 - **To debug without sending a real request,** pass `dry_run=True` to any endpoint wrapper call, or initialize once with `init_api_client(client_dry_run=True)` for a whole scratch script/test flow.
 - **CLI commands** (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are available after `pip install`; fall back to `python -m britecore_sdk.utils.<module>` otherwise.
+
+---
+
+## Additional Resources
+
+### Documentation
+- **Getting Started:** [GETTING_STARTED.md](./GETTING_STARTED.md)
+- **Common Patterns:** [docs/COMMON_PATTERNS.md](./docs/COMMON_PATTERNS.md)
+- **Configuration Guide:** [docs/CONFIGURATION.md](./docs/CONFIGURATION.md)
+- **API Reference:** [API.md](./API.md)
+- **Architecture:** [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
+- **Migration v1→v2:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
+
+### Code Examples
+- **Complete Workflow:** `examples/complete_workflow.py`
+- **Error Handling:** `examples/advanced_error_handling.py`
+- **Async Operations:** `examples/async_operations.py`
+- **Configuration Examples:** `examples/configuration_examples.py`
+- **See all examples:** [examples/README.md](./examples/README.md)
+
+### Support
+- **GitHub Issues:** <https://github.com/sshimek42/britecore_sdk/issues>
+- **Security Issues:** See [SECURITY.md](./SECURITY.md)
+- **Discussion:** GitHub Discussions
+
+---
+
+## Reporting Issues
+
+When reporting an issue, include:
+
+1. **SDK Version:**
+   ```bash
+   python -c "import britecore_sdk; print(britecore_sdk.__version__)"
+   ```
+
+2. **Python Version:**
+   ```bash
+   python --version
+   ```
+
+3. **Error Message:** Full traceback
+
+4. **Steps to Reproduce:** Minimal code example
+
+5. **Configuration Status:**
+   ```bash
+   britecore-check-config
+   # Don't include actual credentials!
+   ```
+
+6. **Environment:**
+   - OS (Windows/macOS/Linux)
+   - Virtual environment (venv/conda/etc)
+   - Network/proxy issues (if any)
+
+
+## Troubleshooting FAQ
+
+### I'm brand new - where do I start?
+
+**Follow these steps in order:**
+
+1. **Install the SDK:**
+   ```bash
+   pip install -e .
+   ```
+
+2. **Create configuration files:**
+   ```bash
+   mkdir -p ~/.britecore
+   # Add your settings to ~/.britecore/settings.toml and ~/.britecore/.secrets.toml
+   # See GETTING_STARTED.md for templates
+   ```
+
+3. **Test the setup:**
+   ```bash
+   britecore-check-config
+   britecore-healthcheck
+   ```
+
+4. **Run your first API call:**
+   ```python
+   from britecore_sdk.api.api_calls import get_api_client
+   from britecore_sdk.api.api_calls.v2 import policies
+   
+   policy = policies.retrieve_policy(policy_number="POL-001")
+   print(policy)
+   ```
+
+**Then read:** [GETTING_STARTED.md](./GETTING_STARTED.md)
+
+---
+
+### I'm getting permission errors during install
+
+**Solution:**
+
+Option A: Use a virtual environment (recommended):
+```bash
+python -m venv .venv
+# Windows:
+.\.venv\Scripts\Activate.ps1
+# macOS/Linux:
+source .venv/bin/activate
+
+pip install -e .
+```
+
+Option B: Use --user flag:
+```bash
+pip install --user -e .
+```
+
+---
+
+### My API calls are failing - how do I debug?
+
+**Step 1: Enable debug logging**
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+# Now make your API call
+from britecore_sdk.api.api_calls import get_api_client
+client = get_api_client()
+```
+
+**Step 2: Check the request details without sending**
+```python
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+init_api_client(client_dry_run=True)
+result = policies.retrieve_policy(policy_number="POL-123")
+print(result["dry_run"])  # True
+```
+
+**Step 3: Check correlation ID**
+Look for `[req_id: xxx]` in the log output - use this to trace requests in API logs.
+
+---
+
+### Configuration is confusing - what's the simplest setup?
+
+**Minimal setup (recommended for most users):**
+
+**File: `~/.britecore/settings.toml`**
+```toml
+[default]
+target_site = "production"
+```
+
+**File: `~/.britecore/.secrets.toml`**
+```toml
+[production]
+base_url = "https://api.britecore.example.com"
+api_key = "your_api_key_here"
+```
+
+**Then in code:**
+```python
+from britecore_sdk.api.api_calls import get_api_client
+client = get_api_client()  # Auto-loads config
+```
+
+---
+
+### I need to use multiple environments/sites
+
+**Setup multiple site configs:**
+
+**`~/.britecore/.secrets.toml`:**
+```toml
+[production]
+base_url = "https://prod.example.com"
+api_key = "prod_key"
+
+[staging]
+base_url = "https://staging.example.com"
+api_key = "staging_key"
+
+[development]
+base_url = "http://localhost:8000"
+api_key = "dev_key"
+```
+
+**Use in code:**
+```python
+from britecore_sdk.api.api_calls import init_api_client, use_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+# Prod context
+with use_api_client(init_api_client("production").init_client()):
+    prod_policy = policies.retrieve_policy(policy_number="POL-123")
+
+# Staging context
+with use_api_client(init_api_client("staging").init_client()):
+    staging_policy = policies.retrieve_policy(policy_number="POL-456")
+```
+
+---
+
+### I keep hitting rate limits - how do I fix it?
+
+**Option 1: Implement backoff**
+See: `examples/advanced_error_handling.py`
+
+**Option 2: Enable client-side rate limiting**
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+client = init_api_client(
+    "production",
+    enable_rate_limiter=True,
+    rate_limiter_requests_per_second=5.0
+)
+```
+
+**Option 3: Use async for concurrent requests**
+```python
+import asyncio
+from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+async def fetch_many():
+    init_async_api_client("production")
+    tasks = [aretrieve_policy(policy_id=f"POL-{i}") for i in range(100)]
+    return await asyncio.gather(*tasks)
+
+results = asyncio.run(fetch_many())
+```
+
+**See also:** [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md)
+
+---
+
+### I want to validate data before sending to API
+
+**Use SDK models and validators:**
+```python
+from britecore_sdk.models import BritecoreContact
+from britecore_sdk.validators import EmailValidator
+
+contact_data = {
+    "name": "John Smith",
+    "email": [{"email": "john@example.com", "type": "Work"}]
+}
+
+# This validates and processes the contact
+contact = BritecoreContact(**contact_data)
+validated = contact.process_contact()
+
+# Now send to API
+from britecore_sdk.api.api_calls.v2 import contacts
+result = contacts.new_contact(contact=validated)
+```
+
+---
+
+### Tests are failing - what should I do?
+
+**Step 1: Check test setup**
+```bash
+# Run from project root
+cd britecore_sdk
+python -m pytest tests/ -v
+```
+
+**Step 2: Run specific test module**
+```bash
+python -m pytest tests/unit/test_models.py -v
+```
+
+**Step 3: Run with coverage**
+```bash
+python -m pytest tests/ --cov=src/britecore_sdk --cov-report=html
+```
+
+**Step 4: Check for missing dependencies**
+```bash
+pip install -e ".[dev]"
+```
+
+---
+
+### I'm upgrading from v1 to v2 - what changed?
+
+**See:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
+
+**Quick checklist:**
+- [ ] Update package: `pip install --upgrade britecore-sdk`
+- [ ] Update imports: `v1` → `v2` endpoints
+- [ ] Update exceptions: `BritecoreError.NotFoundError` → `NotFoundError`
+- [ ] Use lazy client: `get_api_client()` instead of `API_CLIENT`
+- [ ] Test configuration: Run `britecore-healthcheck`
+
+---
+
+### Performance is slow - how do I speed it up?
+
+**1. Enable async:**
+```python
+# Instead of sequential loop:
+for policy_id in policy_ids:
+    policy = policies.retrieve_policy(policy_id=policy_id)
+
+# Use async:
+import asyncio
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+results = asyncio.run(fetch_concurrent(policy_ids))
+```
+
+**2. Use caching:**
+```python
+from britecore_sdk.api.api_calls.v2 import policies
+
+# Cache results for 1 hour
+policy = policies.retrieve_policy(policy_number="POL-123", cache_ttl=3600)
+```
+
+**3. Batch operations:**
+```python
+from britecore_sdk.api.workflows import create_full_quotes_batch
+
+result = create_full_quotes_batch(quotes_data, max_workers=10)
+```
+
+---
+
+### I need to test without making real API calls
+
+**Use dry-run mode:**
+```python
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+# Enable dry-run
+init_api_client("production", client_dry_run=True)
+
+# All calls are logged but not sent
+result = policies.retrieve_policy(policy_number="POL-123")
+print(result["dry_run"])  # True
+```
+
+---
