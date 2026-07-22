@@ -4,7 +4,7 @@ This site hosts generated API docs and key project guides.
 
 > **Documentation version:** {{ docs_version }}
 > **Built date (UTC):** {{ docs_build_date }}
-> **Source commit:** `{{ docs_commit }}` ({{ docs_commit_date }})
+> **Source commit:** {{ docs_commit }} ({{ docs_commit_date }})
 
 ## Quick Navigation
 
