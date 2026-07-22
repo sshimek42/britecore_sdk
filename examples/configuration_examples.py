@@ -9,10 +9,6 @@ This example demonstrates:
 - Multi-site setup
 """
 
-import os
-from britecore_sdk.api.api_calls import init_api_client, get_api_client
-from britecore_sdk.api.api_calls.v2 import policies
-
 
 def example_1_environment_variables():
     """Example 1: Using environment variables for configuration."""
@@ -120,7 +116,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 with use_api_client(init_api_client("production").init_client()):
     prod_policy = policies.retrieve_policy(policy_number="POL-123")
 
-# Get from staging  
+# Get from staging
 with use_api_client(init_api_client("staging").init_client()):
     staging_policy = policies.retrieve_policy(policy_number="POL-456")
 """)
@@ -223,4 +219,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

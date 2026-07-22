@@ -1133,6 +1133,7 @@ client = init_api_client("production").init_client()
 ## Additional Resources
 
 ### Documentation
+
 - **Getting Started:** [GETTING_STARTED.md](./GETTING_STARTED.md)
 - **Common Patterns:** [docs/COMMON_PATTERNS.md](./docs/COMMON_PATTERNS.md)
 - **Configuration Guide:** [docs/CONFIGURATION.md](./docs/CONFIGURATION.md)
@@ -1142,6 +1143,7 @@ client = init_api_client("production").init_client()
 - **Migration v1→v2:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
 
 ### Code Examples
+
 - **Complete Workflow:** `examples/complete_workflow.py`
 - **Error Handling:** `examples/advanced_error_handling.py`
 - **Async Operations:** `examples/async_operations.py`
@@ -1149,6 +1151,7 @@ client = init_api_client("production").init_client()
 - **See all examples:** [examples/README.md](./examples/README.md)
 
 ### Support
+
 - **GitHub Issues:** <https://github.com/sshimek42/britecore_sdk/issues>
 - **Security Issues:** See [SECURITY.md](./SECURITY.md)
 - **Discussion:** GitHub Discussions
@@ -1160,11 +1163,13 @@ client = init_api_client("production").init_client()
 When reporting an issue, include:
 
 1. **SDK Version:**
+
    ```bash
    python -c "import britecore_sdk; print(britecore_sdk.__version__)"
    ```
 
 2. **Python Version:**
+
    ```bash
    python --version
    ```
@@ -1174,6 +1179,7 @@ When reporting an issue, include:
 4. **Steps to Reproduce:** Minimal code example
 
 5. **Configuration Status:**
+
    ```bash
    britecore-check-config
    # Don't include actual credentials!
@@ -1184,7 +1190,6 @@ When reporting an issue, include:
    - Virtual environment (venv/conda/etc)
    - Network/proxy issues (if any)
 
-
 ## Troubleshooting FAQ
 
 ### I'm brand new - where do I start?
@@ -1192,11 +1197,13 @@ When reporting an issue, include:
 **Follow these steps in order:**
 
 1. **Install the SDK:**
+
    ```bash
    pip install -e .
    ```
 
 2. **Create configuration files:**
+
    ```bash
    mkdir -p ~/.britecore
    # Add your settings to ~/.britecore/settings.toml and ~/.britecore/.secrets.toml
@@ -1204,16 +1211,18 @@ When reporting an issue, include:
    ```
 
 3. **Test the setup:**
+
    ```bash
    britecore-check-config
    britecore-healthcheck
    ```
 
 4. **Run your first API call:**
+
    ```python
    from britecore_sdk.api.api_calls import get_api_client
    from britecore_sdk.api.api_calls.v2 import policies
-   
+
    policy = policies.retrieve_policy(policy_number="POL-001")
    print(policy)
    ```
@@ -1227,6 +1236,7 @@ When reporting an issue, include:
 **Solution:**
 
 Option A: Use a virtual environment (recommended):
+
 ```bash
 python -m venv .venv
 # Windows:
@@ -1238,6 +1248,7 @@ pip install -e .
 ```
 
 Option B: Use --user flag:
+
 ```bash
 pip install --user -e .
 ```
@@ -1247,6 +1258,7 @@ pip install --user -e .
 ### My API calls are failing - how do I debug?
 
 **Step 1: Enable debug logging**
+
 ```python
 import logging
 logging.basicConfig(level=logging.DEBUG)
@@ -1258,6 +1270,7 @@ client = get_api_client()
 ```
 
 **Step 2: Check the request details without sending**
+
 ```python
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import policies
@@ -1268,6 +1281,7 @@ print(result["dry_run"])  # True
 ```
 
 **Step 3: Check correlation ID**
+
 Look for `[req_id: xxx]` in the log output - use this to trace requests in API logs.
 
 ---
@@ -1277,12 +1291,14 @@ Look for `[req_id: xxx]` in the log output - use this to trace requests in API l
 **Minimal setup (recommended for most users):**
 
 **File: `~/.britecore/settings.toml`**
+
 ```toml
 [default]
 target_site = "production"
 ```
 
 **File: `~/.britecore/.secrets.toml`**
+
 ```toml
 [production]
 base_url = "https://api.britecore.example.com"
@@ -1290,6 +1306,7 @@ api_key = "your_api_key_here"
 ```
 
 **Then in code:**
+
 ```python
 from britecore_sdk.api.api_calls import get_api_client
 client = get_api_client()  # Auto-loads config
@@ -1302,6 +1319,7 @@ client = get_api_client()  # Auto-loads config
 **Setup multiple site configs:**
 
 **`~/.britecore/.secrets.toml`:**
+
 ```toml
 [production]
 base_url = "https://prod.example.com"
@@ -1317,6 +1335,7 @@ api_key = "dev_key"
 ```
 
 **Use in code:**
+
 ```python
 from britecore_sdk.api.api_calls import init_api_client, use_api_client
 from britecore_sdk.api.api_calls.v2 import policies
@@ -1335,9 +1354,11 @@ with use_api_client(init_api_client("staging").init_client()):
 ### I keep hitting rate limits - how do I fix it?
 
 **Option 1: Implement backoff**
+
 See: `examples/advanced_error_handling.py`
 
 **Option 2: Enable client-side rate limiting**
+
 ```python
 from britecore_sdk.api.api_calls import init_api_client
 
@@ -1349,6 +1370,7 @@ client = init_api_client(
 ```
 
 **Option 3: Use async for concurrent requests**
+
 ```python
 import asyncio
 from britecore_sdk.api.api_calls import init_async_api_client
@@ -1369,6 +1391,7 @@ results = asyncio.run(fetch_many())
 ### I want to validate data before sending to API
 
 **Use SDK models and validators:**
+
 ```python
 from britecore_sdk.models import BritecoreContact
 from britecore_sdk.validators import EmailValidator
@@ -1392,6 +1415,7 @@ result = contacts.new_contact(contact=validated)
 ### Tests are failing - what should I do?
 
 **Step 1: Check test setup**
+
 ```bash
 # Run from project root
 cd britecore_sdk
@@ -1399,16 +1423,19 @@ python -m pytest tests/ -v
 ```
 
 **Step 2: Run specific test module**
+
 ```bash
 python -m pytest tests/unit/test_models.py -v
 ```
 
 **Step 3: Run with coverage**
+
 ```bash
 python -m pytest tests/ --cov=src/britecore_sdk --cov-report=html
 ```
 
 **Step 4: Check for missing dependencies**
+
 ```bash
 pip install -e ".[dev]"
 ```
@@ -1420,6 +1447,7 @@ pip install -e ".[dev]"
 **See:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
 
 **Quick checklist:**
+
 - [ ] Update package: `pip install --upgrade britecore-sdk`
 - [ ] Update imports: `v1` → `v2` endpoints
 - [ ] Update exceptions: `BritecoreError.NotFoundError` → `NotFoundError`
@@ -1431,6 +1459,7 @@ pip install -e ".[dev]"
 ### Performance is slow - how do I speed it up?
 
 **1. Enable async:**
+
 ```python
 # Instead of sequential loop:
 for policy_id in policy_ids:
@@ -1443,6 +1472,7 @@ results = asyncio.run(fetch_concurrent(policy_ids))
 ```
 
 **2. Use caching:**
+
 ```python
 from britecore_sdk.api.api_calls.v2 import policies
 
@@ -1451,6 +1481,7 @@ policy = policies.retrieve_policy(policy_number="POL-123", cache_ttl=3600)
 ```
 
 **3. Batch operations:**
+
 ```python
 from britecore_sdk.api.workflows import create_full_quotes_batch
 
@@ -1462,6 +1493,7 @@ result = create_full_quotes_batch(quotes_data, max_workers=10)
 ### I need to test without making real API calls
 
 **Use dry-run mode:**
+
 ```python
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import policies

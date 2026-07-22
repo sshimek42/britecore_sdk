@@ -12,11 +12,12 @@ Run this after setting up ~/.britecore/.secrets.toml
 """
 
 import logging
+
 from britecore_sdk import configure_logging
 from britecore_sdk.api.api_calls import get_api_client, init_api_client
-from britecore_sdk.api.api_calls.v2 import policies, contacts, quotes
+from britecore_sdk.api.api_calls.v2 import contacts, policies, quotes
+from britecore_sdk.exceptions import AuthenticationError, NotFoundError, ValidationError
 from britecore_sdk.models import BritecoreContact
-from britecore_sdk.exceptions import NotFoundError, ValidationError, AuthenticationError
 
 
 def setup_logging():
@@ -35,7 +36,7 @@ def main():
     # 2. Initialize client (lazy load)
     print("\n1. Initializing API client...")
     try:
-        client = get_api_client()
+        get_api_client()  # Initialize client
         print("✓ Client initialized successfully")
     except AuthenticationError as e:
         print(f"✗ Authentication failed: {e}")
@@ -64,18 +65,8 @@ def main():
     try:
         contact_data = {
             "name": "Jane Smith",
-            "email": [
-                {
-                    "email": "jane.smith@example.com",
-                    "type": "Work"
-                }
-            ],
-            "phone": [
-                {
-                    "phone": "555-123-4567",
-                    "type": "Mobile"
-                }
-            ]
+            "email": [{"email": "jane.smith@example.com", "type": "Work"}],
+            "phone": [{"phone": "555-123-4567", "type": "Mobile"}],
         }
 
         # Validate contact
@@ -105,10 +96,7 @@ def main():
     print("\n5. Testing quote creation (dry-run)...")
     try:
         init_api_client("production", client_dry_run=True)
-        quote_data = {
-            "insured_name": "Test Business",
-            "policy_type": "Commercial"
-        }
+        quote_data = {"insured_name": "Test Business", "policy_type": "Commercial"}
         # This won't actually create anything, just shows the request
         response = quotes.create_quote(**quote_data)
         if response.get("dry_run"):
@@ -129,4 +117,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

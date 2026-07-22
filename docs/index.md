@@ -8,13 +8,13 @@ This site hosts generated API docs and key project guides.
 
 **New to the SDK?** Start here:
 1. [Getting Started](getting_started) — Installation and first API call (5 min)
-2. [Examples Overview](examples) — Runnable code examples 
+2. [Examples Overview](examples) — Runnable code examples
 3. [Common Patterns](COMMON_PATTERNS) — Practical code patterns and recipes
 4. [Configuration](CONFIGURATION) — Setting up credentials and environments
 
 **Looking for specific help?**
 - **"How do I...?"** → [Common Patterns](COMMON_PATTERNS)
-- **"How do I configure...?"** → [Configuration](CONFIGURATION)  
+- **"How do I configure...?"** → [Configuration](CONFIGURATION)
 - **"Something broke"** → [Troubleshooting](troubleshooting)
 - **"I'm upgrading from v1"** → [Migration Guide](MIGRATION_v1_to_v2)
 - **"I need an endpoint reference"** → [API Reference](api_reference)
