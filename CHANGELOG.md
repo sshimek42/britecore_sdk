@@ -13,6 +13,27 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.1.1] - 2026-07-23
+
+### Changed
+
+- Completed the v2.1.x quote-wrapper quality pass in `src/britecore_sdk/api/api_calls/v2/quotes.py` by expanding remaining endpoint docstrings to include parameter intent, return behavior, and error semantics.
+- Added missing input validation to quote wrappers that accepted required identifiers without guardrails (`associate_agentcy_to_quote`, `prefill_loss_history`, `prefill_violations`, `summary`, `turn_quote_into_application`, and `update_e_delivery_enabled`).
+- Continued policy lifecycle quality-of-life improvements in `src/britecore_sdk/api/api_calls/v2/policies.py` for `bind`, `cancel_policy`, `create_policy_from_britequote`, `evaluate_cancellation`, and `submit_quote`.
+
+### Fixed
+
+- Corrected silent validation behavior in policy creation/retrieval paths by ensuring `BritecoreError.MissingParameter` is raised where required parameters are missing.
+
+### Documentation
+
+- Added completion records for the v2.1.x effort:
+  - `QUALITY_OF_LIFE_AUDIT_2026-07-23.md`
+  - `V2.1.1_SESSION_STATUS_2026-07-23.md`
+  - `V2.1.X_COMPLETION_2026-07-23.md`
+
+---
+
 ## [2.0.5] - 2026-07-21
 
 ### Added
