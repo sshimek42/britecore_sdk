@@ -3,9 +3,9 @@
 *Last updated: July 21, 2026*
 *Document type: Living guide*
 
-A professional **Python SDK for the BriteCore API** — complete endpoint coverage, async support, OAuth/API key authentication, and type hints.
+A production-ready **Python SDK for the BriteCore Insurance API**.
 
-> No existing BriteCore client library? Look no further. This SDK provides spec-aligned wrappers, domain models, validators, and clean async helpers.
+> Spec-aligned v2 wrappers, OAuth2/API key auth, lazy client initialization, normalized response handling, and PEP 561 type hints.
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://img.shields.io/pypi/v/britecore_sdk.svg)](https://pypi.org/project/britecore_sdk/)
