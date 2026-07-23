@@ -902,17 +902,38 @@ def bind(
     bind_info: dict[str, Any] | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bind.
+    """Bind a policy to convert it from a quote to an active policy.
+
+    Initiates the binding process, which finalizes underwriting and activates coverage.
+    Requires complete bind information including policy holder, coverage selections,
+    and endorsement details.
+
+    Args:
+        bind_info: The complete binding information dictionary (required).
+            Typically includes policy_id, premium amount, effective_date, and coverage details.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the bound policy details and confirmation.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``bind_info`` is not provided or invalid.
+
+    Example:
+        >>> bind_info = {"policy_id": "...", "premium": 1500, ...}
+        >>> bind(bind_info=bind_info)
 
     POST /api/v2/policies/bind
     """
-    request_json: dict[str, Any] = {
-        "bind_info": bind_info,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    if not bind_info or not isinstance(bind_info, dict):
+        raise BritecoreError.MissingParameter(
+            "bind_info is required and must be a dict"
+        )
+
+    request_json: dict[str, Any] = {"bind_info": bind_info}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/bind",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -928,18 +949,49 @@ def cancel_policy(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Cancel Policy.
+    """Cancel an active policy.
+
+    Initiates policy cancellation with specified reason and effective date.
+    Either ``policy_id`` or ``policy_term_id`` must be provided.
+
+    Args:
+        policy_id: The policy ID to cancel (takes priority if both IDs provided).
+        policy_term_id: The policy term ID to cancel.
+        cancel_date: The cancellation effective date (ISO date format, e.g., "2024-08-01").
+        cancel_reason: Human-readable cancellation reason (e.g., "Customer Request").
+        cancel_reason_id: The cancellation reason code/ID from the system.
+        cancel_pending_date: Optional date for pending cancellations.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing cancellation confirmation and details.
+
+    Raises:
+        BritecoreError.MissingParameter: If neither ``policy_id`` nor ``policy_term_id`` is provided.
+
+    Example:
+        >>> cancel_policy(policy_id="POL-123", cancel_date="2024-08-15", cancel_reason="Customer Request")
 
     POST /api/v2/policies/cancel_policy
     """
-    request_json: dict[str, Any] = {
-        "cancel_reason": cancel_reason,
-        "cancel_pending_date": cancel_pending_date,
-        "policy_term_id": policy_term_id,
-        "cancel_date": cancel_date,
-        "cancel_reason_id": cancel_reason_id,
-        "policy_id": policy_id,
-    }
+    verification_list = [
+        {"policy_id": policy_id},
+        {"policy_term_id": policy_term_id},
+    ]
+    priority_list = ["policy_id", "policy_term_id"]
+    request_json = API_CLIENT.multiple_parameter_verification(
+        verification_list, priority_list
+    )
+
+    if cancel_reason is not None:
+        request_json["cancel_reason"] = cancel_reason
+    if cancel_reason_id is not None:
+        request_json["cancel_reason_id"] = cancel_reason_id
+    if cancel_date is not None:
+        request_json["cancel_date"] = cancel_date
+    if cancel_pending_date is not None:
+        request_json["cancel_pending_date"] = cancel_pending_date
+
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/cancel_policy",
@@ -1153,17 +1205,44 @@ def create_policy_from_britequote(
     transaction_type: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Policy From Britequote.
+    """Create a policy directly from a BriteCore quote.
+
+    Converts a quote into an active policy in a single operation. This is a convenience
+    wrapper that bypasses manual binding steps for automated workflows.
+
+    Args:
+        quote: The complete quote dictionary (required).
+        inception_date: The policy effective date (ISO date format).
+        term_type: The term length (e.g., "1 Year", "3 Years").
+        transaction_type: The type of transaction (e.g., "New Business", "Renewal").
+        postback: Optional postback URL for async notifications.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the created policy details.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote`` is not provided or invalid.
+
+    Example:
+        >>> quote_data = {"insured": {...}, "coverage": {...}, ...}
+        >>> create_policy_from_britequote(quote=quote_data, inception_date="2024-09-01")
 
     POST /api/v2/policies/create_policy_from_britequote
     """
-    request_json: dict[str, Any] = {
-        "quote": quote,
-        "postback": postback,
-        "term_type": term_type,
-        "inception_date": inception_date,
-        "transaction_type": transaction_type,
-    }
+    if not quote or not isinstance(quote, dict):
+        raise BritecoreError.MissingParameter("quote is required and must be a dict")
+
+    request_json: dict[str, Any] = {"quote": quote}
+    if inception_date is not None:
+        request_json["inception_date"] = inception_date
+    if term_type is not None:
+        request_json["term_type"] = term_type
+    if transaction_type is not None:
+        request_json["transaction_type"] = transaction_type
+    if postback is not None:
+        request_json["postback"] = postback
+
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/create_policy_from_britequote",
@@ -1377,17 +1456,33 @@ def evaluate_cancellation(
     policy_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Evaluate Cancellation.
+    """Evaluate cancellation eligibility and penalties for a policy.
+
+    Checks whether a policy can be cancelled and calculates any penalties,
+    prorations, or other financial impacts of cancellation.
+
+    Args:
+        policy_id: The policy ID to evaluate (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing cancellation eligibility, penalties, and prorations.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``policy_id`` is not provided.
+
+    Example:
+        >>> evaluate_cancellation(policy_id="POL-123")
 
     POST /api/v2/policies/evaluate_cancellation
     """
-    request_json: dict[str, Any] = {
-        "policy_id": policy_id,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    if not policy_id or not policy_id.strip():
+        raise BritecoreError.MissingParameter("policy_id is required")
+
+    request_json: dict[str, Any] = {"policy_id": policy_id}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/evaluate_cancellation",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -2608,14 +2703,31 @@ def submit_quote(
     json_dict: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Quote.
+    """Submit a quote for processing in the policy workflow.
+
+    Sends a quote to the next stage in the underwriting or binding process.
+    This is typically used after quote modifications or rate updates.
+
+    Args:
+        json_dict: The quote data dictionary to submit (required).
+        date_cursor: Optional cursor for pagination or batch processing.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing confirmation of submission and next steps.
+
+    Example:
+        >>> quote_data = {"quote_id": "...", "status": "ready", ...}
+        >>> submit_quote(json_dict=quote_data)
 
     POST /api/v2/policies/submit_quote
     """
-    request_json: dict[str, Any] = {
-        "date_cursor": date_cursor,
-        "json_dict": json_dict,
-    }
+    request_json: dict[str, Any] = {}
+    if json_dict is not None:
+        request_json["json_dict"] = json_dict
+    if date_cursor is not None:
+        request_json["date_cursor"] = date_cursor
+
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
         path="/api/v2/policies/submit_quote",
