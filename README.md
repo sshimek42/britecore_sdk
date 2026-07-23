@@ -146,6 +146,7 @@ logger.info("SDK logger is configured")
 | **Rate limiting** | [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) |
 | **Batch operations** | [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) |
 | **Architecture** | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| **Reference projects** | [docs/REFERENCE_PROJECTS.md](./docs/REFERENCE_PROJECTS.md) |
 | **Python compatibility** | [PYTHON_COMPATIBILITY.md](./PYTHON_COMPATIBILITY.md) |
 | **Contributing** | [CONTRIBUTING.md](./CONTRIBUTING.md) |
 | **Code of Conduct** | [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) |
