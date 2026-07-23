@@ -41,6 +41,7 @@ examples
 
 Common patterns <COMMON_PATTERNS>
 CONFIGURATION
+Architecture roadmap <ARCHITECTURE_ROADMAP>
 CACHING_STRATEGY
 ASYNC_CACHING
 ```
@@ -55,6 +56,7 @@ Events and webhooks <EVENTS_AND_WEBHOOKS>
 Multi-tenancy <MULTI_TENANCY>
 Staged workflows <STAGED_WORKFLOWS>
 Line extract stitching <LINE_EXTRACT_STITCHING>
+Implementation example <examples/FIRST_IMPLEMENTATION_EXAMPLE>
 Observability <OBSERVABILITY>
 ```
 
@@ -74,7 +76,6 @@ MAP_FILES
 DEPLOYMENT
 RTD_VERSIONING
 CI_AND_COVERAGE
-OBSERVABILITY
 DOCUMENTATION_BUILD_TROUBLESHOOTING
 ```
 
@@ -82,6 +83,7 @@ DOCUMENTATION_BUILD_TROUBLESHOOTING
 :maxdepth: 2
 :caption: Contributing & Policies
 
+Implementation checklist <IMPLEMENTATION_CHECKLIST>
 Developer workflow <AGENTS>
 ```
 
