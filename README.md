@@ -8,8 +8,12 @@ A professional **Python SDK for the BriteCore API** — complete endpoint covera
 > No existing BriteCore client library? Look no further. This SDK provides spec-aligned wrappers, domain models, validators, and clean async helpers.
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://img.shields.io/pypi/v/britecore_sdk.svg)](https://pypi.org/project/britecore_sdk/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Tests](https://github.com/sshimek42/britecore_sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/sshimek42/britecore_sdk/actions)
 [![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![ReadTheDocs](https://app.readthedocs.org/projects/britecore-sdk/badge/?version=latest)](https://britecore-sdk.readthedocs.io/en/latest/)
 
 **Status:** Stable (v2.0.5+) | **License:** Apache-2.0 | **Python:** 3.11+
 

@@ -6,15 +6,15 @@ This site hosts generated API docs and key project guides.
 ## Quick Navigation
 
 **New to the SDK?** Start here:
-1. [Getting Started](getting_started) — Installation and first API call (5 min)
+1. [Getting Started](../../GETTING_STARTED.md) — Installation and first API call (5 min)
 2. [Examples Overview](examples) — Runnable code examples
 3. [Common Patterns](COMMON_PATTERNS) — Practical code patterns and recipes
-4. [Configuration](CONFIGURATION) — Setting up credentials and environments
+4. [Configuration](../../CONFIG_MANAGEMENT.md) — Setting up credentials and environments
 
 **Looking for specific help?**
 - **"How do I...?"** → [Common Patterns](COMMON_PATTERNS)
-- **"How do I configure...?"** → [Configuration](CONFIGURATION)
-- **"Something broke"** → [Troubleshooting](troubleshooting)
+- **"How do I configure...?"** → [Configuration](../../CONFIG_MANAGEMENT.md)
+- **"Something broke"** → [Troubleshooting](../../TROUBLESHOOTING.md)
 - **"I'm upgrading from v1"** → [Migration Guide](MIGRATION_v1_to_v2)
 - **"I need an endpoint reference"** → [API Reference](api_reference)
 
@@ -32,8 +32,7 @@ This site hosts generated API docs and key project guides.
 :caption: Getting Started
 
 Project overview <project_overview>
-Getting started <getting_started>
-Examples overview <examples>
+examples
 ```
 
 ```{toctree}
@@ -41,8 +40,7 @@ Examples overview <examples>
 :caption: Learn by Doing
 
 Common patterns <COMMON_PATTERNS>
-Configuration guide <CONFIGURATION>
-Python compatibility <python_compatibility>
+CONFIGURATION
 CACHING_STRATEGY
 ASYNC_CACHING
 ```
@@ -72,25 +70,18 @@ API Domains <api_domains>
 :maxdepth: 2
 :caption: Deployment & Operations
 
-Configuration management <config_management>
-Sensitive map files <MAP_FILES>
-Deployment <DEPLOYMENT>
-ReadTheDocs versioning <RTD_VERSIONING>
-CI/CD and Coverage <CI_AND_COVERAGE>
-Observability <OBSERVABILITY>
-Troubleshooting <troubleshooting>
-Documentation build troubleshooting <DOCUMENTATION_BUILD_TROUBLESHOOTING>
+MAP_FILES
+DEPLOYMENT
+RTD_VERSIONING
+CI_AND_COVERAGE
+OBSERVABILITY
+DOCUMENTATION_BUILD_TROUBLESHOOTING
 ```
 
 ```{toctree}
 :maxdepth: 2
 :caption: Contributing & Policies
 
-Contributing <contributing>
-Security policy <security>
-Deprecation policy <deprecation>
-Changelog <changelog>
-Code of conduct <code_of_conduct>
 Developer workflow <AGENTS>
 ```
 
@@ -98,10 +89,9 @@ Developer workflow <AGENTS>
 :maxdepth: 1
 :caption: Reference & Migration
 
-Migration v1 to v2 <MIGRATION_v1_to_v2>
-Unimplemented API stubs <unimplemented_api_stubs>
-POST probing workflow <POST_PROBING>
-Endpoint verification snapshot <ENDPOINT_VERIFICATION_2026-04-28>
+MIGRATION_v1_to_v2
+POST_PROBING
+ENDPOINT_VERIFICATION_2026-04-28
 ```
 
 ---
