@@ -30,7 +30,22 @@ def create_full_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[dict[str, Any] | None, str | None]:
-    """Create a quote from the supplied quote payload.
+    """Create a full quote from the supplied payload.
+
+    Uses the configured API client to submit a quote payload and returns both
+    the normalized response body and the created quote ID.
+
+    Args:
+        quote_json: Full quote payload dictionary (required).
+        client: Optional explicit client override.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        A tuple of ``(quote_json, quote_id)``. Returns ``(None, None)`` when the
+        API response is empty after normalization.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_json`` is missing or invalid.
 
     POST /api/v2/quotes/create_full_quote
     """
@@ -71,7 +86,18 @@ def get_quote(
     client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote.
+    """Retrieve a quote by ID.
+
+    Args:
+        quote_id: Internal quote ID (required).
+        client: Optional explicit client override.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized quote response payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is missing.
 
     POST /api/v2/quotes/get_quote
     """
@@ -105,10 +131,23 @@ def associate_agentcy_to_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Associate Agentcy To Quote.
+    """Associate an agency with an existing quote.
+
+    Args:
+        quote_id: Internal quote ID (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized API response for the association action.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is missing.
 
     POST /api/v2/quotes/associate_agentcy_to_quote
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -541,7 +580,20 @@ def get_quote_wizard_plugin(
     property_id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Wizard Plugin.
+    """Retrieve quote wizard plugin output for a revision/property context.
+
+    At minimum, callers should provide ``integration_point_code`` and
+    ``revision_id`` for deterministic behavior.
+
+    Args:
+        integration_point_code: Plugin integration point code.
+        revision_id: Revision ID used by the quote wizard plugin.
+        integration_instance_id: Optional integration instance ID.
+        property_id: Optional property ID context.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized plugin payload.
 
     POST /api/v2/quotes/get_quote_wizard_plugin
     """
@@ -741,10 +793,23 @@ def prefill_loss_history(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Loss History.
+    """Prefill quote loss history data for the given quote.
+
+    Args:
+        quote_id: Internal quote ID (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized prefill response payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is missing.
 
     POST /api/v2/quotes/prefill_loss_history
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -806,10 +871,23 @@ def prefill_violations(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Prefill Violations.
+    """Prefill violations data for the given quote.
+
+    Args:
+        quote_id: Internal quote ID (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized prefill response payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is missing.
 
     POST /api/v2/quotes/prefill_violations
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -969,7 +1047,13 @@ def retrieve_full_quote(
 def submit_application(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Application.
+    """Submit the current quote application workflow.
+
+    Args:
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized submission response payload.
 
     POST /api/v2/quotes/submit_application
     """
@@ -989,7 +1073,13 @@ def submit_application(
 def submit_change(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Submit Change.
+    """Submit a pending quote change workflow.
+
+    Args:
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized submission response payload.
 
     POST /api/v2/quotes/submit_change
     """
@@ -1010,10 +1100,23 @@ def summary(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Summary.
+    """Retrieve summary data for a quote.
+
+    Args:
+        quote_id: Internal quote ID (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized quote summary payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is missing.
 
     POST /api/v2/quotes/summary
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1029,10 +1132,23 @@ def turn_quote_into_application(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Turn Quote Into Application.
+    """Convert a quote record into an application state.
+
+    Args:
+        quote_id: Internal quote ID (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized conversion response payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is missing.
 
     POST /api/v2/quotes/turn_quote_into_application
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
@@ -1050,10 +1166,23 @@ def update_e_delivery_enabled(
     revision_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Update E Delivery Enabled.
+    """Update e-delivery settings for a revision.
+
+    Args:
+        revision_id: Revision ID to update (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        Normalized update response payload.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``revision_id`` is missing.
 
     POST /api/v2/quotes/update_e_delivery_enabled
     """
+    if not revision_id:
+        raise BritecoreError.MissingParameter("revision_id is required")
+
     request_json: dict[str, Any] = {"revision_id": revision_id}
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
