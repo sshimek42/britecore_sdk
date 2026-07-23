@@ -223,7 +223,9 @@ def create_policy(
     POST /api/v2/policies/create_policy
     """
     if term_type == "Custom" and not expiration_date:
-        BritecoreError.MissingParameter("expiation_date needed with 'Custom' term_type")
+        raise BritecoreError.MissingParameter(
+            "expiration_date needed with 'Custom' term_type"
+        )
 
     LOGGER.debug("Creating policy '%s'", policy_number)
     local_env: dict[str, Any] = locals()
@@ -250,7 +252,9 @@ def retrieve_policy_terms(
     """
     LOGGER.debug("Retrieving terms")
     if not policy_number and not policy_id:
-        BritecoreError.MissingParameter("Either policy_id or policy_number is required")
+        raise BritecoreError.MissingParameter(
+            "Either policy_id or policy_number is required"
+        )
 
     parameter_list: list[dict[str, str | None]] = [
         {"policy_id": policy_id},

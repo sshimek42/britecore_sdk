@@ -128,19 +128,45 @@ def bind_full_quote(
     submit_bound: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Bind Full Quote.
+    """Bind a full quote to a policy.
+
+    Either ``id`` or ``external_system_reference`` must be provided.
+    If both are provided, ``id`` takes priority.
+
+    Args:
+        id: The internal quote ID (takes priority if both are provided).
+        external_system_reference: The external system reference for the quote.
+        submit_bound: Whether to submit the bound quote immediately (default: False).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the binding confirmation and policy details.
+
+    Raises:
+        BritecoreError.MissingParameter: If neither ``id`` nor
+            ``external_system_reference`` is provided.
+
+    Example:
+        >>> bind_full_quote(id="quote-123", submit_bound=True)
+        >>> bind_full_quote(external_system_reference="EXT-456")
 
     POST /api/v2/quotes/bind_full_quote
     """
-    request_json: dict[str, Any] = {
-        "external_system_reference": external_system_reference,
-        "id": id,
-        "submit_bound": submit_bound,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    verification_list = [
+        {"id": id},
+        {"external_system_reference": external_system_reference},
+    ]
+    priority_list = ["id", "external_system_reference"]
+    request_json: dict[str, Any] = API_CLIENT.multiple_parameter_verification(
+        verification_list, priority_list
+    )
+
+    if submit_bound is not None:
+        request_json["submit_bound"] = submit_bound
+
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/bind_full_quote",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -153,15 +179,30 @@ def copy_quote(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Copy Quote.
+    """Create a copy of an existing quote.
+
+    Args:
+        quote_id: The internal ID of the quote to copy (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the new quote details.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is not provided.
+
+    Example:
+        >>> copy_quote(quote_id="quote-123")
 
     POST /api/v2/quotes/copy_quote
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/copy_quote",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -203,19 +244,45 @@ def create_endorsement_quote(
     endorsement_date: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Endorsement Quote.
+    """Create an endorsement quote from an existing quote.
+
+    Either ``quote_id`` or ``quote_external_system_reference`` must be provided.
+    If both are provided, ``quote_id`` takes priority.
+
+    Args:
+        quote_id: The internal quote ID (takes priority if both are provided).
+        quote_external_system_reference: The external system reference for the source quote.
+        endorsement_date: The effective date for the endorsement (typically ISO 8601 format).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the new endorsement quote details.
+
+    Raises:
+        BritecoreError.MissingParameter: If neither ``quote_id`` nor
+            ``quote_external_system_reference`` is provided.
+
+    Example:
+        >>> create_endorsement_quote(quote_id="quote-123", endorsement_date="2024-08-01")
+        >>> create_endorsement_quote(quote_external_system_reference="EXT-456")
 
     POST /api/v2/quotes/create_endorsement_quote
     """
-    request_json: dict[str, Any] = {
-        "quote_external_system_reference": quote_external_system_reference,
-        "quote_id": quote_id,
-        "endorsement_date": endorsement_date,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    verification_list = [
+        {"quote_id": quote_id},
+        {"quote_external_system_reference": quote_external_system_reference},
+    ]
+    priority_list = ["quote_id", "quote_external_system_reference"]
+    request_json = API_CLIENT.multiple_parameter_verification(
+        verification_list, priority_list
+    )
+
+    if endorsement_date is not None:
+        request_json["endorsement_date"] = endorsement_date
+
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/create_endorsement_quote",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -230,19 +297,53 @@ def create_renewal_quote(
     policy_number: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Create Renewal Quote.
+    """Create a renewal quote for an existing policy.
+
+    Either ``quote_id`` or ``external_system_reference`` must be provided if creating
+    from an existing quote. Alternatively, ``policy_number`` may be used to create
+    a renewal from a policy directly.
+
+    Args:
+        quote_id: The internal quote ID (priority if both quote identifiers provided).
+        external_system_reference: The external system reference for the source quote.
+        policy_number: The policy number to renew (used instead of quote identifiers).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the new renewal quote details.
+
+    Raises:
+        BritecoreError.MissingParameter: If no identifying parameters are provided.
+
+    Example:
+        >>> create_renewal_quote(quote_id="quote-123")
+        >>> create_renewal_quote(policy_number="POL-456")
 
     POST /api/v2/quotes/create_renewal_quote
     """
-    request_json: dict[str, Any] = {
-        "external_system_reference": external_system_reference,
-        "quote_id": quote_id,
-        "policy_number": policy_number,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    if not quote_id and not external_system_reference and not policy_number:
+        raise BritecoreError.MissingParameter(
+            "At least one of quote_id, external_system_reference, or policy_number is required"
+        )
+
+    request_json: dict[str, Any] = {}
+
+    if quote_id or external_system_reference:
+        verification_list = [
+            {"quote_id": quote_id},
+            {"external_system_reference": external_system_reference},
+        ]
+        priority_list = ["quote_id", "external_system_reference"]
+        quote_params = API_CLIENT.multiple_parameter_verification(
+            verification_list, priority_list
+        )
+        request_json.update(quote_params)
+    elif policy_number:
+        request_json["policy_number"] = policy_number
+
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/create_renewal_quote",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -256,18 +357,41 @@ def delete_full_quote(
     id: str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Delete Full Quote.
+    """Delete a full quote by internal ID or external system reference.
+
+    Either ``id`` or ``external_system_reference`` must be provided.
+    If both are provided, ``id`` takes priority.
+
+    Args:
+        id: The internal quote ID (takes priority if both are provided).
+        external_system_reference: The external system reference for the quote.
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response (typically empty on success).
+
+    Raises:
+        BritecoreError.MissingParameter: If neither ``id`` nor
+            ``external_system_reference`` is provided.
+
+    Example:
+        >>> delete_full_quote(id="quote-123")
+        >>> delete_full_quote(external_system_reference="EXT-456")
 
     POST /api/v2/quotes/delete_full_quote
     """
-    request_json: dict[str, Any] = {
-        "external_system_reference": external_system_reference,
-        "id": id,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    verification_list = [
+        {"id": id},
+        {"external_system_reference": external_system_reference},
+    ]
+    priority_list = ["id", "external_system_reference"]
+    request_json = API_CLIENT.multiple_parameter_verification(
+        verification_list, priority_list
+    )
+
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/delete_full_quote",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
@@ -302,15 +426,31 @@ def get_estimated_quote(
     stateless: bool | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Estimated Quote.
+    """Get an estimated quote with optional rating.
+
+    Args:
+        quote_id: The internal quote ID (required).
+        rate_quote: Whether to perform rating on the quote (default: False).
+        stateless: Whether to use stateless mode for the request (default: False).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing the estimated quote details.
+
+    Example:
+        >>> get_estimated_quote(quote_id="quote-123", rate_quote=True)
 
     POST /api/v2/quotes/get_estimated_quote
     """
-    request_json: dict[str, Any] = {
-        "rate_quote": rate_quote,
-        "quote_id": quote_id,
-        "stateless": stateless,
-    }
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
+    request_json: dict[str, Any] = {"quote_id": quote_id}
+    if rate_quote is not None:
+        request_json["rate_quote"] = rate_quote
+    if stateless is not None:
+        request_json["stateless"] = stateless
+
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/get_estimated_quote",
@@ -327,15 +467,30 @@ def get_quote_properties_summary(
     quote_id: Any | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Quote Properties Summary.
+    """Get a summary of all properties in a quote.
+
+    Args:
+        quote_id: The internal quote ID (required).
+        **kwargs: Additional request parameters (timeout, retry, headers, etc.).
+
+    Returns:
+        API response containing a list of properties with summary details.
+
+    Raises:
+        BritecoreError.MissingParameter: If ``quote_id`` is not provided.
+
+    Example:
+        >>> get_quote_properties_summary(quote_id="quote-123")
 
     POST /api/v2/quotes/get_quote_properties_summary
     """
+    if not quote_id:
+        raise BritecoreError.MissingParameter("quote_id is required")
+
     request_json: dict[str, Any] = {"quote_id": quote_id}
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
         path="/api/v2/quotes/get_quote_properties_summary",
-        json=filtered_json,
+        json=request_json,
         method="POST",
         **kwargs,
     )
