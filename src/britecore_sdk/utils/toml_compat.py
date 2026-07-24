@@ -6,9 +6,9 @@ used by SDK utilities while relying on stdlib parsing and ``tomli-w`` for writin
 
 from __future__ import annotations
 
-from io import BufferedIOBase, TextIOBase
+from io import BufferedIOBase, TextIOBase, TextIOWrapper
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 
 class _TomlCompat:
@@ -61,11 +61,43 @@ class _TomlCompat:
         destination: TextIOBase | BufferedIOBase,
     ) -> None:
         """Write TOML to a file-like object."""
-        serialized = cls.dumps(data)
-        if isinstance(destination, BufferedIOBase):
-            destination.write(serialized.encode("utf-8"))
+        try:
+            import tomli_w
+
+            if isinstance(destination, BufferedIOBase):
+                wrapped = TextIOWrapper(
+                    cast(Any, destination), encoding="utf-8", write_through=True
+                )
+                try:
+                    cast(Any, tomli_w).dump(data, wrapped)
+                    wrapped.flush()
+                finally:
+                    wrapped.detach()
+                return
+
+            cast(Any, tomli_w).dump(data, destination)
             return
-        destination.write(serialized)
+        except ImportError:
+            try:
+                import toml as legacy_toml  # type: ignore[import-untyped]
+            except ImportError as import_error:
+                raise RuntimeError(
+                    "TOML writing support is unavailable. Install britecore_sdk dependencies "
+                    "(tomli-w) or legacy toml."
+                ) from import_error
+
+            if isinstance(destination, BufferedIOBase):
+                wrapped = TextIOWrapper(
+                    cast(Any, destination), encoding="utf-8", write_through=True
+                )
+                try:
+                    legacy_toml.dump(data, wrapped)
+                    wrapped.flush()
+                finally:
+                    wrapped.detach()
+                return
+
+            legacy_toml.dump(data, destination)
 
 
 toml = _TomlCompat()
