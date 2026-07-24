@@ -1,0 +1,73 @@
+"""Small TOML compatibility wrapper built on Python 3.11+ tomllib.
+
+This keeps a tiny ``toml``-like API (``load``/``dump``/``loads``/``dumps``)
+used by SDK utilities while relying on stdlib parsing and ``tomli-w`` for writing.
+"""
+
+from __future__ import annotations
+
+from io import BufferedIOBase, TextIOBase
+from pathlib import Path
+from typing import Any
+
+
+class _TomlCompat:
+    """Expose a minimal ``toml`` module compatible surface."""
+
+    @staticmethod
+    def loads(data: str | bytes) -> dict[str, Any]:
+        """Parse TOML from a string or UTF-8 bytes payload."""
+        import tomllib
+
+        if isinstance(data, bytes):
+            return tomllib.loads(data.decode("utf-8"))
+        return tomllib.loads(data)
+
+    @staticmethod
+    def dumps(data: dict[str, Any]) -> str:
+        """Serialize a dictionary to TOML text."""
+        try:
+            import tomli_w
+        except ImportError:
+            try:
+                import toml as legacy_toml  # type: ignore[import-untyped]
+            except ImportError as import_error:
+                raise RuntimeError(
+                    "TOML writing support is unavailable. Install britecore_sdk dependencies "
+                    "(tomli-w) or legacy toml."
+                ) from import_error
+            return legacy_toml.dumps(data)
+
+        return tomli_w.dumps(data)
+
+    @classmethod
+    def load(cls, source: str | Path | TextIOBase | BufferedIOBase) -> dict[str, Any]:
+        """Parse TOML from a path or file object."""
+        import tomllib
+
+        if isinstance(source, (str, Path)):
+            with open(source, "rb") as handle:
+                return tomllib.load(handle)
+
+        # tomllib.load requires bytes-mode file objects.
+        if isinstance(source, TextIOBase):
+            return cls.loads(source.read())
+        return tomllib.load(source)
+
+    @classmethod
+    def dump(
+        cls,
+        data: dict[str, Any],
+        destination: TextIOBase | BufferedIOBase,
+    ) -> None:
+        """Write TOML to a file-like object."""
+        serialized = cls.dumps(data)
+        if isinstance(destination, BufferedIOBase):
+            destination.write(serialized.encode("utf-8"))
+            return
+        destination.write(serialized)
+
+
+toml = _TomlCompat()
+
+__all__ = ["toml"]

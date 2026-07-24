@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any, NotRequired, TypedDict
+import uuid
+from typing import Any, Literal, NotRequired, TypedDict
 
+import urllib3
 from urllib3 import BaseHTTPResponse
 from urllib3.util import Retry, Timeout
 
-from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient, _full_url
 from britecore_sdk.api.request_cache import RequestCache, build_cache_key
+from britecore_sdk.exceptions import BritecoreError
+
+_AsyncTransport = Literal["threaded", "httpx"]
 
 
 class _AsyncInitClientParams(TypedDict):
@@ -31,6 +36,8 @@ class AsyncBritecoreAPIClient:
         client: BritecoreAPIClient | None = None,
         cache: RequestCache | None = None,
         default_cache_ttl_seconds: int = 60,
+        async_transport: _AsyncTransport = "threaded",
+        httpx_client: Any | None = None,
         client_dry_run: bool | None = None,
         base_url: str | None = None,
         api_key: str | None = None,
@@ -53,16 +60,26 @@ class AsyncBritecoreAPIClient:
             client: Pre-built :class:`BritecoreAPIClient` to wrap (skips lazy init).
             cache: Optional :class:`~britecore_sdk.api.request_cache.RequestCache`.
             default_cache_ttl_seconds: Default TTL for cached responses.
+            async_transport: Request transport mode. Use ``"threaded"`` to wrap the
+                sync client via ``asyncio.to_thread`` (default) or ``"httpx"`` for
+                native async HTTP requests.
+            httpx_client: Optional injected ``httpx.AsyncClient`` when using
+                ``async_transport="httpx"``.
             client_dry_run: Forward to the underlying sync client's dry-run mode.
             base_url: Explicit base URL; bypasses config-file lookup when provided.
             api_key: Explicit API key (used only when ``base_url`` is also given).
             client_id: Explicit OAuth client ID (used only when ``base_url`` is given).
             client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
         """
+        if async_transport not in {"threaded", "httpx"}:
+            raise ValueError("async_transport must be one of: 'threaded', 'httpx'")
+
         self.target_site = target_site or getattr(client, "target_site", None)
         self._client = client
         self._cache = cache or RequestCache()
         self._default_cache_ttl_seconds = default_cache_ttl_seconds
+        self._async_transport: _AsyncTransport = async_transport
+        self._httpx_client = httpx_client
         self._client_dry_run = (
             getattr(client, "client_dry_run", False)
             if client_dry_run is None
@@ -136,7 +153,20 @@ class AsyncBritecoreAPIClient:
         dry_run: bool | None,
         dry_run_include_sensitive_headers: bool,
     ) -> BaseHTTPResponse | None:
-        """Execute the sync request in a worker thread."""
+        """Execute request via configured transport backend."""
+        if self._async_transport == "httpx":
+            return await self._perform_request_httpx(
+                path=path,
+                json=json,
+                request_timeout=request_timeout,
+                request_retries=request_retries,
+                request_headers=request_headers,
+                method=method,
+                rate_limiter_bypass=rate_limiter_bypass,
+                dry_run=dry_run,
+                dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
+            )
+
         client = await self.aget_client()
         return await asyncio.to_thread(
             client.do_request,
@@ -149,6 +179,121 @@ class AsyncBritecoreAPIClient:
             rate_limiter_bypass=rate_limiter_bypass,
             dry_run=dry_run,
             dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
+        )
+
+    @staticmethod
+    def _import_httpx() -> Any:
+        """Import httpx lazily so it remains an optional dependency."""
+        try:
+            import httpx
+        except ImportError as import_error:
+            raise BritecoreError.ConfigurationError(
+                "httpx transport requested but dependency is missing. "
+                "Install with: pip install britecore_sdk[async-http]"
+            ) from import_error
+        return httpx
+
+    async def _perform_request_httpx(
+        self,
+        *,
+        path: str,
+        json: dict[str, Any] | None,
+        request_timeout: Timeout | None,
+        request_retries: Retry | None,
+        request_headers: dict[str, Any] | None,
+        method: str,
+        rate_limiter_bypass: bool,
+        dry_run: bool | None,
+        dry_run_include_sensitive_headers: bool,
+    ) -> BaseHTTPResponse | None:
+        """Execute a request using optional native async httpx transport."""
+        client = await self.aget_client()
+        effective_dry_run = client.client_dry_run if dry_run is None else dry_run
+
+        if effective_dry_run:
+            return await asyncio.to_thread(
+                client.do_request,
+                path=path,
+                json=json,
+                request_timeout=request_timeout,
+                request_retries=request_retries,
+                request_headers=request_headers,
+                method=method,
+                rate_limiter_bypass=rate_limiter_bypass,
+                dry_run=effective_dry_run,
+                dry_run_include_sensitive_headers=dry_run_include_sensitive_headers,
+            )
+
+        if not client.base_url:
+            raise BritecoreError.ConfigurationError("base_url not configured")
+
+        resolved_headers: dict[str, Any] = dict(request_headers or {})
+        caller_supplied_authorization = client._has_header(
+            resolved_headers,
+            "Authorization",
+        )
+        if not client.use_api_key and not caller_supplied_authorization:
+            token_manager = client.token_class
+            if token_manager is None:
+                raise BritecoreError.ConfigurationError(
+                    "OAuth token manager not initialized"
+                )
+            resolved_headers.update(token_manager.get_authorization_headers())
+
+        request_id: str = uuid.uuid4().hex[:8]
+        resolved_headers["X-SDK-Request-ID"] = request_id
+
+        request_body: dict[str, Any] = dict(json or {})
+        if client.use_api_key and getattr(client, "site_settings", None) is not None:
+            api_key = getattr(client.site_settings, "api_key", None)
+            if api_key:
+                request_body["api_key"] = api_key
+
+        timeout_seconds = client._timeout_seconds(request_timeout)
+        if timeout_seconds is None:
+            timeout_seconds = client.web_timeout
+
+        rate_limiter = getattr(client, "rate_limiter", None)
+        if rate_limiter is not None and not rate_limiter_bypass:
+            rate_limiter.acquire(timeout=timeout_seconds)
+
+        url = _full_url(client.base_url, path)
+        httpx = self._import_httpx()
+
+        own_client = self._httpx_client is None
+        async_client = self._httpx_client or httpx.AsyncClient(timeout=timeout_seconds)
+        try:
+            response = await async_client.request(
+                method=method,
+                url=url,
+                headers=resolved_headers,
+                json=request_body if request_body else None,
+            )
+        except httpx.TimeoutException as timeout_error:
+            raise BritecoreError.RequestTimeoutError(
+                str(timeout_error),
+                timeout_seconds=timeout_seconds,
+                request_id=request_id,
+                sanitized_body=client._sanitize_dry_run_body(request_body),
+            ) from timeout_error
+        except httpx.HTTPError as request_error:
+            raise BritecoreError.NoDataReturned(
+                str(request_error),
+                request_id=request_id,
+                sanitized_body=client._sanitize_dry_run_body(request_body),
+            ) from request_error
+        finally:
+            if own_client:
+                await async_client.aclose()
+
+        response_headers = dict(response.headers)
+        response_headers.setdefault("X-SDK-Request-ID", request_id)
+        return urllib3.HTTPResponse(
+            body=response.content,
+            status=response.status_code,
+            reason=response.reason_phrase or "",
+            headers=response_headers,
+            preload_content=True,
         )
 
     def _build_request_cache_key(

@@ -3,7 +3,7 @@
 import asyncio
 import time
 from datetime import UTC, datetime, timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -170,6 +170,41 @@ class TestAsyncBritecoreAPIClient:
 
         assert isinstance(client, BritecoreAPIClient)
         mock_init.assert_called_once_with(client, client_dry_run=True)
+
+    @pytest.mark.unit
+    def test_constructor_rejects_unknown_async_transport(self):
+        """Constructor should validate async transport selection."""
+        with pytest.raises(ValueError):
+            AsyncBritecoreAPIClient(
+                target_site="test_site",
+                async_transport="invalid",  # type: ignore[arg-type]
+            )
+
+    @pytest.mark.unit
+    def test_ado_request_uses_httpx_transport_when_configured(self):
+        """httpx mode should route request execution through native async transport."""
+        response = _make_response()
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with (
+            patch.object(
+                adapter,
+                "_perform_request_httpx",
+                new=AsyncMock(return_value=response),
+            ) as mock_httpx_request,
+            patch.object(client, "do_request") as mock_sync_request,
+        ):
+            result = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/retrieve", json={"policy_id": "123"}
+                )
+            )
+
+        assert result is response
+        mock_httpx_request.assert_awaited_once()
+        mock_sync_request.assert_not_called()
 
     @pytest.mark.unit
     def test_ado_request_returns_cached_response_on_second_call(self):

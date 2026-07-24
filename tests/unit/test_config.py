@@ -175,6 +175,27 @@ class TestConfigInitialization:
 
         assert callable(get_target_site)
 
+    @pytest.mark.unit
+    def test_get_typed_settings_exported(self):
+        """get_typed_settings is exported from the settings package."""
+        from britecore_sdk.settings import get_typed_settings
+
+        assert callable(get_typed_settings)
+
+    @pytest.mark.unit
+    def test_get_typed_settings_delegates_builder(self):
+        """get_typed_settings should call the typed builder with active settings."""
+        from britecore_sdk.settings.config import get_typed_settings
+
+        expected = {"ok": True}
+        with patch(
+            "britecore_sdk.settings.typed.build_typed_settings", return_value=expected
+        ) as mock_build:
+            result = get_typed_settings(site_names=["prod"])
+
+        assert result == expected
+        assert mock_build.call_count == 1
+
 
 # ---------------------------------------------------------------------------
 # New: layered settings file discovery

@@ -9,7 +9,73 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-- No unreleased changes yet.
+### Added
+
+- **Optional native async HTTP transport** — `AsyncBritecoreAPIClient` now accepts
+  `async_transport="httpx"` (default: `"threaded"`). When set to `"httpx"`, requests
+  are executed natively via `httpx.AsyncClient` instead of wrapping the sync client in
+  `asyncio.to_thread`. An optional `httpx_client` kwarg allows injecting a pre-built
+  client (e.g., for shared connection pools or testing). Install the new optional extra
+  to enable: `pip install britecore_sdk[async-http]`.
+
+- **Optional pydantic-validated settings view** — `get_typed_settings(site_names=[...])`
+  is now exported from `britecore_sdk.settings`. It returns a strongly-typed pydantic
+  model built from the live Dynaconf config, providing IDE autocompletion and runtime
+  field validation without changing SDK initialization behavior. Requires:
+  `pip install britecore_sdk[typed-config]`.
+
+- **New `toml_compat` wrapper** (`britecore_sdk.utils.toml_compat`) — thin adapter that
+  exposes a `toml`-like API (`load` / `dump` / `loads` / `dumps`) backed by stdlib
+  `tomllib` for parsing and `tomli-w` for serialization. Internal SDK utilities now use
+  this wrapper, removing the dependency on the untyped `toml` package.
+
+- **New optional dependency extras** in `pyproject.toml`:
+  - `britecore_sdk[async-http]` — pulls in `httpx` for native async transport.
+  - `britecore_sdk[typed-config]` — pulls in `pydantic` and `pydantic-settings`.
+  - `britecore_sdk[all]` — now includes both new extras in addition to `interactive`.
+
+### Changed
+
+- **Removed `typing-extensions` from core runtime dependencies** — the project targets
+  Python `>=3.11`, where `TypedDict` is part of stdlib `typing`. The only consumer
+  (`api/types.py`) now imports from `typing` directly.
+
+- **Replaced `toml` with `tomli-w`** in core runtime dependencies. `tomllib` (stdlib
+  since Python 3.11) handles parsing; `tomli-w` provides the write path.
+  If `tomli-w` is unavailable at runtime the wrapper transparently falls back to `toml`
+  (backward compatible, no hard breakage).
+
+### Migration notes
+
+**`toml` → `tomli-w` (write path)**
+
+No action required for most consumers. The internal TOML I/O used by config utilities
+is fully backward-compatible. If you import `toml` from `check_site_configs.py` or
+`_config_common` directly, switch to:
+
+```python
+from britecore_sdk.utils.toml_compat import toml
+```
+
+**Async transport**
+
+Existing code that uses `AsyncBritecoreAPIClient` is unaffected; the default transport
+remains `"threaded"`. To opt into native async I/O:
+
+```python
+from britecore_sdk.api import AsyncBritecoreAPIClient
+
+client = AsyncBritecoreAPIClient(target_site="prod", async_transport="httpx")
+```
+
+**Typed settings (opt-in)**
+
+```python
+from britecore_sdk.settings import get_typed_settings
+
+typed = get_typed_settings(site_names=["prod", "staging"])
+print(typed.sites["prod"].base_url)
+```
 
 ---
 
