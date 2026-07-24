@@ -78,7 +78,6 @@ class _TomlCompat:
             # Some text streams (for example StringIO) do not expose .buffer.
             # Defer to legacy text-mode writer in the fallback block below.
             raise TypeError("Text stream destination must provide a binary buffer")
-            return
         except (ImportError, TypeError):
             try:
                 import toml as legacy_toml  # type: ignore[import-untyped]
