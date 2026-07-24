@@ -96,7 +96,7 @@ pre-commit run --all-files
 
 Notes:
 
-- Python hooks include `ruff`, `ruff-format`, and `black`.
+- Python hooks include `ruff` (with `--fix`) and `black`.
 - Markdown structure linting runs via `pymarkdown` and only triggers when `*.md` files are changed.- A local Markdown structure check also runs on changed `*.md` files to catch unclosed fenced code blocks and checklist-style lines missing real list markers (for example, `✅ item` instead of `- ✅ item`).
 - CI also runs `Vale` on changed Markdown files for low-noise prose/style checks.
 - If you have `Vale` installed locally, you can run it manually with `vale --config=.vale.ini README.md`.
