@@ -113,4 +113,3 @@ pip install britecore_sdk[async-http,typed-config]
 ```
 
 The `all` extra is equivalent to `britecore_sdk[interactive,async-http,typed-config]`.
-

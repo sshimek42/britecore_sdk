@@ -11,6 +11,18 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Deprecated
+
+---
+
+## [2.2.0] - 2026-07-24
+
+### Added
+
 - **Optional native async HTTP transport** — `AsyncBritecoreAPIClient` now accepts
   `async_transport="httpx"` (default: `"threaded"`). When set to `"httpx"`, requests
   are executed natively via `httpx.AsyncClient` instead of wrapping the sync client in
