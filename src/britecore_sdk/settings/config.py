@@ -129,6 +129,20 @@ def get_target_site() -> str | None:
     return site
 
 
+def get_typed_settings(
+    *,
+    site_names: list[str] | tuple[str, ...] | None = None,
+) -> Any:
+    """Return an optional pydantic-validated view of selected SDK settings.
+
+    This function is additive and does not alter runtime behavior. Dynaconf remains
+    the live configuration source. Install ``britecore_sdk[typed-config]`` to enable.
+    """
+    from britecore_sdk.settings.typed import build_typed_settings
+
+    return build_typed_settings(settings, site_names=site_names)
+
+
 settings.validators.register(
     Validator(
         "base_url",

@@ -250,7 +250,12 @@ Validation rule: each site needs `base_url` and either a full OAuth pair
 
 ### Optional Extras
 
-- **Interactive:** Menu-driven CLI utilities (`questionary`)
+| Extra | Install | Adds |
+| --- | --- | --- |
+| `interactive` | `pip install britecore_sdk[interactive]` | `questionary` — menu-driven CLI utilities |
+| `async-http` | `pip install britecore_sdk[async-http]` | `httpx` — native async HTTP transport for `AsyncBritecoreAPIClient` |
+| `typed-config` | `pip install britecore_sdk[typed-config]` | `pydantic` + `pydantic-settings` — strongly-typed settings view via `get_typed_settings()` |
+| `all` | `pip install britecore_sdk[all]` | All three extras above |
 
 ---
 
@@ -269,7 +274,22 @@ async def main():
 asyncio.run(main())
 ```
 
-See [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for cache configuration and invalidation.
+### Native async transport (optional)
+
+By default the async client wraps the sync urllib3 transport in a thread pool. For true
+non-blocking I/O install the optional `async-http` extra and select the `httpx` transport:
+
+```powershell
+pip install britecore_sdk[async-http]
+```
+
+```python
+from britecore_sdk.api import AsyncBritecoreAPIClient
+
+async_client = AsyncBritecoreAPIClient(target_site="prod", async_transport="httpx")
+```
+
+See [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) for cache configuration, transport options, and invalidation.
 
 ---
 

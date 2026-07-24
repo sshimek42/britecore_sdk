@@ -11,9 +11,9 @@ Additional paths for each method follow those four.
 """
 
 import pytest
-import toml  # type: ignore[import-untyped]
 
 from britecore_sdk.utils.config_manager import ConfigManager
+from britecore_sdk.utils.toml_compat import toml
 
 # ---------------------------------------------------------------------------
 # Fixtures

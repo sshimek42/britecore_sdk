@@ -16,9 +16,7 @@ Example::
     print(result["policy_number"])
 """
 
-from typing import Any, NotRequired
-
-from typing_extensions import TypedDict
+from typing import Any, NotRequired, TypedDict
 
 
 class BritecoreResponse(TypedDict, total=False):

@@ -12,7 +12,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import toml  # type: ignore[import-untyped]
+from britecore_sdk.utils.toml_compat import toml
 
 logger = logging.getLogger("britecore_sdk")
 

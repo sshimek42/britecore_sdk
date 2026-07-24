@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_sdk"
-version = "2.1.1"
+version = "2.2.0"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = "Apache-2.0"
@@ -28,10 +28,9 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "dynaconf>=3.3.2,<3.4.0",
-    "typing-extensions>=4.16.0,<5.0.0",
+    "dynaconf>=3.3.3,<3.4.0",
     "urllib3>=2.7.0,<3.0.0",
-    "toml>=0.10.2,<0.11.0",
+    "tomli-w>=1.2.0,<2.0.0",
 ]
 
 [project.scripts]
@@ -51,8 +50,17 @@ Changelog = "https://github.com/sshimek42/britecore_sdk/blob/master/CHANGELOG.md
 interactive = [
     "questionary~=2.1.1",
 ]
+async-http = [
+    "httpx>=0.28.1,<1.0.0",
+]
+typed-config = [
+    "pydantic>=2.11.0,<3.0.0",
+    "pydantic-settings>=2.11.0,<3.0.0",
+]
 all = [
     "britecore_sdk[interactive]",
+    "britecore_sdk[async-http]",
+    "britecore_sdk[typed-config]",
 ]
 dev = [
     "setuptools>=83.0.0",

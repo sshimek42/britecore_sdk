@@ -43,11 +43,17 @@ API-only profile (recommended):
 Optional extras (only if your app explicitly uses those helpers):
 
 ```powershell
-python -m pip install -e ".[all]"        # all optional extras
+python -m pip install -e ".[interactive]"   # interactive CLI menu utilities (questionary)
+python -m pip install -e ".[async-http]"    # native async httpx transport for AsyncBritecoreAPIClient
+python -m pip install -e ".[typed-config]"  # pydantic-settings typed view via get_typed_settings()
+python -m pip install -e ".[all]"           # all optional extras
 ```
 
 ```bash
-python -m pip install -e ".[all]"        # all optional extras
+python -m pip install -e ".[interactive]"   # interactive CLI menu utilities (questionary)
+python -m pip install -e ".[async-http]"    # native async httpx transport for AsyncBritecoreAPIClient
+python -m pip install -e ".[typed-config]"  # pydantic-settings typed view via get_typed_settings()
+python -m pip install -e ".[all]"           # all optional extras
 ```
 
 Install development tooling when you plan to run tests:
