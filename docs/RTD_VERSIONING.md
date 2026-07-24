@@ -13,11 +13,12 @@ ReadTheDocs (RTD) automatically tracks and builds documentation for different ve
 
 ### Current configuration
 
-The `.readthedocs.yml` configuration automatically:
+The `.readthedocs.yml` configuration enables docs builds on RTD, but version visibility is controlled by RTD project state:
 
-1. **Builds from `master` branch** (displayed as "latest" release)
-2. **Builds from every git tag** matching `v*.*.*` pattern (displayed as "2.0.5", "2.0.4", "2.1.0", etc.)
-3. **Marks the highest tag** as the "stable" version
+1. **`master` branch** is typically available as `latest`.
+2. **Git tags** are discovered by RTD as version candidates.
+3. Versions appear in the selector only when they are **active** and **built** in RTD.
+4. `stable` is an alias managed in RTD (commonly the latest release tag).
 
 ---
 
@@ -25,11 +26,11 @@ The `.readthedocs.yml` configuration automatically:
 
 ### Release versions (git tags)
 
-When you tag a commit with a version number (e.g., `v2.0.5`), RTD automatically:
+When you tag a commit with a version number (e.g., `v2.0.5`), RTD:
 
-1. Detects the tag
-2. Builds documentation from that commit
-3. Makes it available at `https://britecore-sdk.readthedocs.io/en/v2.0.5/`
+1. Detects the tag as a version candidate.
+2. Builds and exposes it only if that version is active and built (manually or via automation rules).
+3. Serves docs at `https://britecore-sdk.readthedocs.io/en/v2.0.5/` once built.
 
 Users can then select that version from the RTD version switcher (bottom-left of documentation).
 
@@ -75,16 +76,14 @@ git commit -m "Bump version to 2.0.6"
 git push origin master
 ```
 
-### Step 3: RTD automatic build
+### Step 3: RTD build and activation
 
-RTD will detect the tag and automatically:
+After pushing the tag, RTD detects it. To ensure it appears in the version selector:
 
-1. Build docs from the `v2.0.6` tag
-2. Make it available at `/en/v2.0.6/`
-3. Mark it as "stable" if it's the highest version
-4. Show version switcher with all available versions
-
-**No manual RTD configuration needed** — it's automatic!
+1. Confirm the tag version is **active** in **Admin -> Versions**.
+2. Trigger/retry a build for the tag if it is not already built.
+3. Optionally add/update **Automation Rules** so future `v*` tags auto-activate and build.
+4. Verify the docs URL exists (for example, `/en/v2.0.6/`).
 
 ---
 
@@ -114,7 +113,7 @@ RTD will detect the tag and automatically:
 
 ### Q: Can users view docs for older releases?
 
-**A:** Yes! RTD maintains all tagged versions indefinitely. Users can:
+**A:** Yes, as long as those versions are active and built in RTD. Users can:
 
 1. Click the version switcher (bottom-left of any doc page)
 2. Select any version from the list
@@ -122,11 +121,7 @@ RTD will detect the tag and automatically:
 
 ### Q: Will RTD build from all my branches?
 
-**A:** No, only:
-- `master` (default) → "latest"
-- Git tags matching `v*.*.*` → individual versions
-
-Other branches require explicit configuration in RTD's **Admin** → **Versions** tab.
+**A:** No. By default, `master` maps to `latest`. Other branches/tags must be enabled in RTD project settings (or covered by automation rules) to be built and shown.
 
 ### Q: What if I want to hide an old version?
 
@@ -146,6 +141,10 @@ This is useful for yanked releases or pre-releases.
 - `v2.1.0a1` (alpha) — also supported
 
 All follow semantic versioning patterns that RTD recognizes.
+
+### Q: Why do I only see `latest` and `stable` in the selector?
+
+**A:** This usually means tag versions are discovered but not active/built. Check **Admin -> Versions** and ensure each release tag is enabled and has a successful build.
 
 ### Q: How do I update docs for a released version?
 
