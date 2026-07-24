@@ -65,19 +65,21 @@ class _TomlCompat:
             import tomli_w
 
             if isinstance(destination, BufferedIOBase):
-                wrapped = TextIOWrapper(
-                    cast(Any, destination), encoding="utf-8", write_through=True
-                )
-                try:
-                    cast(Any, tomli_w).dump(data, wrapped)
-                    wrapped.flush()
-                finally:
-                    wrapped.detach()
+                cast(Any, tomli_w).dump(data, destination)
+                destination.flush()
                 return
 
-            cast(Any, tomli_w).dump(data, destination)
+            binary_buffer = getattr(destination, "buffer", None)
+            if binary_buffer is not None:
+                cast(Any, tomli_w).dump(data, binary_buffer)
+                destination.flush()
+                return
+
+            # Some text streams (for example StringIO) do not expose .buffer.
+            # Defer to legacy text-mode writer in the fallback block below.
+            raise TypeError("Text stream destination must provide a binary buffer")
             return
-        except ImportError:
+        except (ImportError, TypeError):
             try:
                 import toml as legacy_toml  # type: ignore[import-untyped]
             except ImportError as import_error:
