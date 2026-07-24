@@ -1,12 +1,64 @@
 # Async Caching Guide
 
-Use this guide for exact behavior of async `v2` wrappers and cache tuning options.
+Use this guide for exact behavior of async `v2` wrappers, transport selection, and cache tuning options.
 
 ## Where async wrappers live
 
 - Wrapper exports: `src/britecore_sdk/api/api_calls/v2/__init__.py`
 - Async transport: `src/britecore_sdk/api/britecore_async_api_client.py`
 - Cache primitives: `src/britecore_sdk/api/request_cache.py`
+
+## Transport modes
+
+`AsyncBritecoreAPIClient` supports two transport backends via the `async_transport`
+constructor kwarg:
+
+| Mode | Value | Behavior | Extra required |
+| --- | --- | --- | --- |
+| Threaded (default) | `"threaded"` | Wraps sync urllib3 client in `asyncio.to_thread` | None |
+| Native async | `"httpx"` | Uses `httpx.AsyncClient` for true non-blocking I/O | `britecore_sdk[async-http]` |
+
+### Threaded transport (default)
+
+No extra packages needed. Existing code continues to work without changes.
+
+```python
+from britecore_sdk.api import AsyncBritecoreAPIClient
+
+# default — threaded transport
+client = AsyncBritecoreAPIClient(target_site="prod")
+```
+
+### httpx native async transport
+
+Install the optional extra first:
+
+```bash
+pip install britecore_sdk[async-http]
+```
+
+```python
+from britecore_sdk.api import AsyncBritecoreAPIClient
+
+client = AsyncBritecoreAPIClient(target_site="prod", async_transport="httpx")
+```
+
+You can inject a pre-built `httpx.AsyncClient` for connection pool sharing or testing:
+
+```python
+import httpx
+from britecore_sdk.api import AsyncBritecoreAPIClient
+
+shared_httpx = httpx.AsyncClient(timeout=30)
+client = AsyncBritecoreAPIClient(
+    target_site="prod",
+    async_transport="httpx",
+    httpx_client=shared_httpx,
+)
+```
+
+> **Note:** Dry-run requests always use the threaded transport even in `httpx` mode,
+> since they do not actually send a network request.
 
 ## Default behavior
 

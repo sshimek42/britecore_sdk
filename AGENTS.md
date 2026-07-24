@@ -52,7 +52,9 @@ For a compact version, see `AGENTS.quickstart.md`.
 - `init_api_client()` and `BritecoreAPIClient.init_client()` accept explicit `base_url`, `api_key`, `client_id`, `client_secret` kwargs to bypass file-based lookup entirely. When `base_url` is given, `target_site` is optional (defaults to `"explicit"`).
 - Required site keys are validated (`base_url`, `client_id`, `client_secret`, `api_key`) for configured environments.
 - Important env vars used directly by code: `target_site` (client init) and `system` (regex map selection in `maps/britecore_policy_name_map.py`).
-- External integrations: `urllib3` (HTTP), OAuth2 token endpoint `/api/auth/oauth2/token`, CSV-backed zip lookup in `utils/zip_code_lookup.py`.
+- External integrations: `urllib3` (HTTP sync transport), `httpx` (optional native async transport — `britecore_sdk[async-http]`), OAuth2 token endpoint `/api/auth/oauth2/token`, CSV-backed zip lookup in `utils/zip_code_lookup.py`.
+- TOML I/O uses stdlib `tomllib` for parsing and `tomli-w` for writing via `britecore_sdk.utils.toml_compat`; the `toml` package is no longer a dependency.
+- Optional `pydantic-settings` integration available via `get_typed_settings()` (install `britecore_sdk[typed-config]`); Dynaconf remains the runtime source of truth.
 
 ## Developer workflow in this repo
 

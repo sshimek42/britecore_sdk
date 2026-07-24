@@ -140,7 +140,9 @@ class QuoteResponse:
 - [ ] All v2 wrappers return typed models (not `Any` or `dict`)
 - [ ] Async wrappers return same types as sync equivalents
 - [ ] Response models support `.from_api()` factory pattern
-- [ ] Pydantic validation available (opt-in via `settings.toml`)
+- [x] Pydantic validation available (opt-in via `britecore_sdk[typed-config]` extra;
+  see `britecore_sdk.settings.get_typed_settings()` for the settings view)
+- [ ] Full pydantic response models for API payloads (not yet implemented)
 - [ ] Type stubs (`.pyi`) generated or provided for IDE support
 
 ---

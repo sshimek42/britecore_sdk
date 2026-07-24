@@ -44,6 +44,7 @@ CONFIGURATION
 Architecture roadmap <ARCHITECTURE_ROADMAP>
 CACHING_STRATEGY
 ASYNC_CACHING
+Optional extras <OPTIONAL_EXTRAS>
 ```
 
 ```{toctree}

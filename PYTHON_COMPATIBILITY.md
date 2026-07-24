@@ -1,6 +1,6 @@
 # Python Compatibility Matrix
 
-*Last updated: July 19, 2026*
+*Last updated: July 24, 2026*
 *Document type: Reference*
 
 For SDK consumers: understand which Python versions are supported and what features are guaranteed.
@@ -28,11 +28,11 @@ The codebase uses several Python 3.10+ features:
 
 - **`X | Y` union type syntax** (PEP 604) — e.g. `str | None` in signatures
 - **`match`/`case`** is not used but structural pattern matching is available
-- **`TypedDict` with `NotRequired`** (PEP 655) — requires 3.11 for full runtime
-  support
+- **`TypedDict` with `NotRequired`** (PEP 655) — available as stdlib in 3.11+; no
+  `typing_extensions` required
 
 Syntax compatibility with 3.10 is marginal; 3.11 is the safe floor because
-`tomllib` (used by tooling), `Self`, and `LiteralString` are stdlib on 3.11.
+`tomllib` (used for TOML parsing), `Self`, and `LiteralString` are stdlib on 3.11.
 
 ---
 
@@ -77,10 +77,25 @@ Runtime dependencies are pinned with bounded ranges in `pyproject.toml`:
 
 ```text
 
-dynaconf>=3.2.13,<3.4.0         # Configuration management
-typing_extensions>=4.15.0,<5.0.0 # Compatibility typing helpers
+dynaconf>=3.3.3,<3.4.0          # Configuration management
 urllib3>=2.7.0,<3.0.0           # HTTP transport
-toml>=0.10.2,<0.11.0            # TOML config parsing
+tomli-w>=1.2.0,<2.0.0           # TOML config serialization (stdlib tomllib handles parsing)
+
+```
+
+Optional extras (not installed by default):
+
+```text
+
+# pip install britecore_sdk[async-http]
+httpx>=0.28.1,<1.0.0            # Native async HTTP transport for AsyncBritecoreAPIClient
+
+# pip install britecore_sdk[typed-config]
+pydantic>=2.11.0,<3.0.0         # Typed settings model support
+pydantic-settings>=2.11.0,<3.0.0  # Pydantic-settings integration
+
+# pip install britecore_sdk[interactive]
+questionary~=2.1.1              # Interactive CLI prompts
 
 ```
 
@@ -106,7 +121,9 @@ The CI pipeline validates the following matrix:
 
 ### Python 3.11
 
-- `tomllib` is stdlib; no `tomli` backport needed.
+- `tomllib` is stdlib; no `tomli` backport needed. The SDK uses `tomllib` for TOML
+  parsing internally via `britecore_sdk.utils.toml_compat`.
+- `TypedDict` is stdlib; `typing_extensions` is no longer a runtime dependency.
 - `Self` type (`typing.Self`) available.
 - `LiteralString` available.
 

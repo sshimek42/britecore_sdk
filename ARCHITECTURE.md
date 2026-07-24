@@ -212,11 +212,15 @@ print(repr(client))
 
 ### HTTP Transport Choice
 
-This SDK intentionally uses `urllib3` as the primary HTTP transport instead of `requests`.
+This SDK uses `urllib3` as its default HTTP transport instead of `requests`.
 
 - SDK-level control: direct access to retries, pooling, and timeout behavior.
 - Fewer abstraction layers: `requests` is built on top of `urllib3`.
 - Operational consistency: easier to keep transport behavior explicit in a reusable library.
+
+`AsyncBritecoreAPIClient` additionally supports **native async transport via `httpx`**
+(optional; install `britecore_sdk[async-http]`). Use `async_transport="httpx"` to opt in.
+The default async mode wraps the sync urllib3 client in `asyncio.to_thread`.
 
 ### API Workflows
 
@@ -691,9 +695,13 @@ validators/             # Uses
 Core (always installed):
   urllib3          # HTTP requests and connection pooling
   dynaconf         # Configuration management
+  tomli-w          # TOML serialization (stdlib tomllib handles parsing on Python 3.11+)
 
 Optional extras:
   questionary      # Interactive CLI menus ([interactive])
+  httpx            # Native async HTTP transport ([async-http])
+  pydantic         # Typed response/settings models ([typed-config])
+  pydantic-settings  # Pydantic-backed settings integration ([typed-config])
 
 ```
 
@@ -712,6 +720,7 @@ Optional extras:
 
 1. **TTL Cache:** In-memory response cache per request key, default TTL 60s
 2. **In-flight Deduplication:** Concurrent identical requests share one `asyncio.Task`
+3. **Transport selection:** `async_transport="threaded"` (default) wraps sync client; `async_transport="httpx"` uses native async I/O (requires `britecore_sdk[async-http]`)
 3. **Namespace Invalidation:** Targeted cache invalidation on mutation success
 
 ### Validation Caching
