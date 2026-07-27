@@ -228,7 +228,7 @@ class AsyncBritecoreAPIClient:
             raise BritecoreError.ConfigurationError("base_url not configured")
 
         resolved_headers: dict[str, Any] = dict(request_headers or {})
-        caller_supplied_authorization = client._has_header(
+        caller_supplied_authorization = BritecoreAPIClient._has_header(
             resolved_headers,
             "Authorization",
         )
@@ -249,7 +249,7 @@ class AsyncBritecoreAPIClient:
             if api_key:
                 request_body["api_key"] = api_key
 
-        timeout_seconds = client._timeout_seconds(request_timeout)
+        timeout_seconds = BritecoreAPIClient._timeout_seconds(request_timeout)
         if timeout_seconds is None:
             timeout_seconds = client.web_timeout
 
@@ -274,13 +274,13 @@ class AsyncBritecoreAPIClient:
                 str(timeout_error),
                 timeout_seconds=timeout_seconds,
                 request_id=request_id,
-                sanitized_body=client._sanitize_dry_run_body(request_body),
+                sanitized_body=BritecoreAPIClient._sanitize_dry_run_body(request_body),
             ) from timeout_error
         except httpx.HTTPError as request_error:
             raise BritecoreError.NoDataReturned(
                 str(request_error),
                 request_id=request_id,
-                sanitized_body=client._sanitize_dry_run_body(request_body),
+                sanitized_body=BritecoreAPIClient._sanitize_dry_run_body(request_body),
             ) from request_error
         finally:
             if own_client:

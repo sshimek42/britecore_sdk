@@ -96,7 +96,7 @@ async def alist_quotes(
     page: int = 1,
     limit: int = 100,
     client: AsyncBritecoreAPIClient | None = None,
-    **kwargs: Any,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Return a paginated list of quotes (async).
 
@@ -113,6 +113,8 @@ async def alist_quotes(
     Returns:
         Empty result dict (``{"data": []}``) — no list endpoint available.
     """
+    # Quote listing is intentionally a no-op until a list endpoint is available.
+    _ = page, limit, client, kwargs
     return {"data": []}
 
 
