@@ -105,6 +105,25 @@ class TestBritecoreExceptions:
         with pytest.raises(BritecoreError.Base):
             raise BritecoreError.NotFoundError("not found")
 
+    @pytest.mark.unit
+    def test_key_exception_subclasses_have_expected_inheritance(self):
+        """Importer-facing exception aliases should keep stable inheritance contracts."""
+        assert issubclass(BritecoreError.NotFoundError, BritecoreError.NoDataReturned)
+        assert issubclass(BritecoreError.ConflictError, BritecoreError.NoDataReturned)
+        assert issubclass(BritecoreError.ValidationError, BritecoreError.Base)
+
+    @pytest.mark.unit
+    def test_key_exception_subclasses_expose_message_field(self):
+        """Importer-facing exception aliases should expose a stable `message` attribute."""
+        exc = BritecoreError.NotFoundError("missing resource")
+        assert exc.message == "missing resource"
+
+        exc = BritecoreError.ValidationError("bad payload")
+        assert exc.message == "bad payload"
+
+        exc = BritecoreError.ConflictError("duplicate")
+        assert exc.message == "duplicate"
+
 
 class TestRequestContextOnExceptions:
     """Tests for request_id and sanitized_body fields on SDK exceptions."""

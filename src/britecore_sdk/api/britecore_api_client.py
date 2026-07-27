@@ -1154,6 +1154,8 @@ class BritecoreAPIClient:
         quotes_json: list[Any],
         max_workers: int = 5,
         fail_fast: bool = False,
+        include_legacy_keys: bool = True,
+        client: "BritecoreAPIClient | None" = None,
         **kwargs: "Unpack[RequestParameters]",
     ) -> dict[str, Any]:
         """Create many quotes concurrently and return per-item outcomes.
@@ -1167,6 +1169,9 @@ class BritecoreAPIClient:
             max_workers: Maximum concurrent workers. Defaults to ``5``.
             fail_fast: When ``True``, re-raises the first encountered exception
                 and cancels pending futures. Defaults to ``False``.
+            include_legacy_keys: Include legacy ``quote_id``/``quote_data`` keys
+                alongside strict ``id``/``data`` fields. Defaults to ``True``.
+            client: Optional explicit client override forwarded to workflow helper.
             **kwargs: ``RequestParameters`` passed through to each quote create
                 call.
 
@@ -1183,6 +1188,8 @@ class BritecoreAPIClient:
             quotes_json,
             max_workers=max_workers,
             fail_fast=fail_fast,
+            include_legacy_keys=include_legacy_keys,
+            client=client,
             **kwargs,
         )
 
@@ -1191,6 +1198,8 @@ class BritecoreAPIClient:
         contacts_json: list[Any],
         max_workers: int = 5,
         fail_fast: bool = False,
+        include_legacy_keys: bool = True,
+        client: "BritecoreAPIClient | None" = None,
         **kwargs: "Unpack[RequestParameters]",
     ) -> dict[str, Any]:
         """Create many contacts concurrently and return per-item outcomes.
@@ -1205,6 +1214,9 @@ class BritecoreAPIClient:
             max_workers: Maximum concurrent workers. Defaults to ``5``.
             fail_fast: When ``True``, re-raises the first encountered exception
                 and cancels pending futures. Defaults to ``False``.
+            include_legacy_keys: Include legacy ``contact_id``/``contact_data`` keys
+                alongside strict ``id``/``data`` fields. Defaults to ``True``.
+            client: Optional explicit client override forwarded to workflow helper.
             **kwargs: ``RequestParameters`` passed through to each contact create
                 call.
 
@@ -1221,6 +1233,8 @@ class BritecoreAPIClient:
             contacts_json,
             max_workers=max_workers,
             fail_fast=fail_fast,
+            include_legacy_keys=include_legacy_keys,
+            client=client,
             **kwargs,
         )
 

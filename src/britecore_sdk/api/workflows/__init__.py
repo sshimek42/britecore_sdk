@@ -67,6 +67,9 @@ from britecore_sdk.api.workflows.batch_quotes import (
     BatchQuoteCreateResult,
     create_full_quotes_batch,
 )
+from britecore_sdk.api.workflows.contact_search_normalization import (
+    normalize_contact_search_results,
+)
 from britecore_sdk.api.workflows.staged_creation import (
     StagedWorkflowJob,
     StagedWorkflowResult,
@@ -91,6 +94,7 @@ __all__ = [
     "create_contacts_batch",
     "create_entities_staged_batch",
     "create_full_quotes_batch",
+    "normalize_contact_search_results",
     "create_policies_batch",
     "create_risks_batch",
 ]

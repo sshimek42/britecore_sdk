@@ -40,9 +40,10 @@ See ``docs/STAGED_WORKFLOWS.md`` for tuning guidance and integration notes.
 
 import asyncio
 from logging import Logger
-from typing import Any
+from typing import Any, Unpack
 
 from britecore_sdk import BritecoreError, logger
+from britecore_sdk.api.api_calls import AsyncBritecoreAPIClient, RequestParameters
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
 from britecore_sdk.api.api_calls.v2.async_policies import acreate_policy, acreate_risk
 from britecore_sdk.api.api_calls.v2.async_quotes import acreate_full_quote
@@ -114,12 +115,13 @@ async def _run_stage_async(
 async def acreate_entities_staged_batch(
     jobs: list[StagedWorkflowJob],
     *,
+    client: AsyncBritecoreAPIClient | None = None,
     contact_max_concurrent: int = 5,
     quote_max_concurrent: int = 5,
     policy_max_concurrent: int = 3,
     risk_max_concurrent: int = 3,
     fail_fast: bool = False,
-    **kwargs: Any,
+    **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
     """Create contacts, quotes, policies, and risks in a staged async batch workflow.
 
@@ -139,6 +141,7 @@ async def acreate_entities_staged_batch(
     Args:
         jobs: List of :class:`StagedWorkflowJob` dicts describing one
             end-to-end creation per element.
+        client: Optional explicit async API client to use for all stage calls.
         contact_max_concurrent: Max concurrent coroutines for contacts stage.
             Defaults to ``5``.
         quote_max_concurrent: Max concurrent coroutines for quotes stage.
@@ -209,6 +212,7 @@ async def acreate_entities_staged_batch(
             phone=payload.get("phone"),
             email=payload.get("email"),
             contact_type=payload.get("contact_type", "individual"),
+            client=client,
             **kwargs,
         )
         result = results[idx]
@@ -242,7 +246,9 @@ async def acreate_entities_staged_batch(
 
     async def _create_quote(idx: int) -> None:
         payload = jobs[idx]["quote_payload"]
-        quote_data, quote_id = await acreate_full_quote(payload, **kwargs)
+        quote_data, quote_id = await acreate_full_quote(
+            payload, client=client, **kwargs
+        )
         result = results[idx]
         if result is not None:
             result["quote_data"] = quote_data
@@ -275,7 +281,9 @@ async def acreate_entities_staged_batch(
 
     async def _create_policy(idx: int) -> None:
         payload = dict(jobs[idx]["policy_payload"])
-        policy_data, revision_id = await acreate_policy(**payload, **kwargs)
+        policy_data, revision_id = await acreate_policy(
+            client=client, **payload, **kwargs
+        )
         result = results[idx]
         if result is not None:
             result["policy_data"] = policy_data
@@ -316,7 +324,7 @@ async def acreate_entities_staged_batch(
             payload = dict(rp)
             if "revision_id" not in payload and revision_id:
                 payload["revision_id"] = revision_id
-            risk_data = await acreate_risk(**payload, **kwargs)
+            risk_data = await acreate_risk(client=client, **payload, **kwargs)
             risk_results_list.append(risk_data)
             if isinstance(risk_data, dict):
                 rid = risk_data.get("risk_id") or risk_data.get("id")

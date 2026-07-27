@@ -88,6 +88,8 @@ def create_full_quotes_batch(
     quotes_json: list[dict[str, Any]],
     max_workers: int = 5,
     fail_fast: bool = False,
+    include_legacy_keys: bool = True,
+    client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
 ```
@@ -99,6 +101,8 @@ def create_full_quotes_batch(
 | `quotes_json` | `list[dict]` | **Required** | List of quote payload dicts. |
 | `max_workers` | `int` | `5` | Max concurrent threads. Tune based on API rate limits & network I/O. |
 | `fail_fast` | `bool` | `False` | If `True`, stop on first error & cancel pending futures. If `False`, collect all errors. |
+| `include_legacy_keys` | `bool` | `True` | Include compatibility aliases `quote_id` and `quote_data` in each result item. |
+| `client` | `BritecoreAPIClient \| None` | `None` | Optional explicit client override for multi-site/multi-client workflows. |
 | `**kwargs` | `RequestParameters` | — | Timeout, retry, header overrides (passed to each create call). |
 
 **Returns:**
@@ -112,9 +116,13 @@ def create_full_quotes_batch(
         {
             "index": int,                       # Original input index
             "success": bool,                    # True/False
-            "quote_data": dict | None,          # Full API response (on success)
-            "quote_id": str | None,             # Extracted quote ID (on success)
+            "id": str | None,                   # Extracted quote ID (on success)
+            "data": dict | None,                # Full API response (on success)
             "error": str | None,                # Error message (on failure)
+            "error_type": str | None,           # Exception class name (on failure)
+            # Optional compatibility aliases when include_legacy_keys=True:
+            "quote_id": str | None,
+            "quote_data": dict | None,
         },
         ...
     ]
@@ -138,6 +146,8 @@ async def acreate_full_quotes_batch(
     quotes_json: list[dict[str, Any]],
     max_concurrent: int = 5,
     fail_fast: bool = False,
+    include_legacy_keys: bool = True,
+    client: AsyncBritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
 ```
@@ -169,7 +179,7 @@ result = create_full_quotes_batch(quotes, max_workers=5, fail_fast=False)
 print(f"Created: {result['succeeded']}/{result['total']}")
 
 # Save successful quote IDs to database
-successful_ids = [item['quote_id'] for item in result['results'] if item['success']]
+successful_ids = [item['id'] for item in result['results'] if item['success']]
 db.save_quote_ids(successful_ids)
 
 # Retry failed quotes (optional)
@@ -198,7 +208,7 @@ for chunk_idx, chunk in enumerate(chunks, 1):
     print(f"Processing chunk {chunk_idx}/{len(chunks)}...")
     result = create_full_quotes_batch(chunk, max_workers=5, fail_fast=False)
 
-    all_successful.extend([item['quote_id'] for item in result['results'] if item['success']])
+    all_successful.extend([item['id'] for item in result['results'] if item['success']])
     all_failed.extend([
         {
             'index': item['index'],
@@ -329,7 +339,7 @@ if result['failed'] > 0:
     failures_by_error = {}
     for item in result['results']:
         if not item['success']:
-            error_type = item['error'].split(':')[0]
+            error_type = item.get('error_type') or item['error'].split(':')[0]
             failures_by_error.setdefault(error_type, []).append({
                 'index': item['index'],
                 'error': item['error']

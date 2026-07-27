@@ -194,3 +194,60 @@ class TestAsyncStagedWorkflow:
                 await acreate_entities_staged_batch([])
 
         asyncio.run(_run())
+
+    @pytest.mark.unit
+    def test_async_staged_batch_passes_explicit_client(self):
+        """All async staged API calls should receive the explicit client override."""
+        from britecore_sdk.api.workflows.async_staged_creation import (
+            acreate_entities_staged_batch,
+        )
+
+        fake_client = object()
+        jobs = _make_jobs(
+            1, include_contact=True, include_quote=True, include_risk=True
+        )
+
+        async def _mock_contact(name, address, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        async def _mock_quote(payload, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"id": payload["number"]}, payload["number"]
+
+        async def _mock_policy(**kwargs):
+            assert kwargs["client"] is fake_client
+            return {"revision_id": "REV-1"}, "REV-1"
+
+        async def _mock_risk(**kwargs):
+            assert kwargs["client"] is fake_client
+            return {"risk_id": "RK-1"}
+
+        async def _run():
+            with (
+                patch(
+                    "britecore_sdk.api.workflows.async_staged_creation.anew_contact",
+                    new_callable=AsyncMock,
+                    side_effect=_mock_contact,
+                ),
+                patch(
+                    "britecore_sdk.api.workflows.async_staged_creation.acreate_full_quote",
+                    new_callable=AsyncMock,
+                    side_effect=_mock_quote,
+                ),
+                patch(
+                    "britecore_sdk.api.workflows.async_staged_creation.acreate_policy",
+                    new_callable=AsyncMock,
+                    side_effect=_mock_policy,
+                ),
+                patch(
+                    "britecore_sdk.api.workflows.async_staged_creation.acreate_risk",
+                    new_callable=AsyncMock,
+                    side_effect=_mock_risk,
+                ),
+            ):
+                result = await acreate_entities_staged_batch(jobs, client=fake_client)
+
+            assert result["succeeded"] == 1
+
+        asyncio.run(_run())

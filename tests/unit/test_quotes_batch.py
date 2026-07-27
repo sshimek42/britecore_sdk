@@ -31,11 +31,41 @@ class TestQuotesBatchEndpoints:
         assert batch_result["total"] == 3
         assert batch_result["succeeded"] == 3
         assert batch_result["failed"] == 0
+        assert [item["id"] for item in batch_result["results"]] == [
+            "Q-001",
+            "Q-002",
+            "Q-003",
+        ]
+        assert all(
+            {"index", "success", "id", "data", "error", "error_type"}.issubset(
+                set(item.keys())
+            )
+            for item in batch_result["results"]
+        )
         assert [item["quote_id"] for item in batch_result["results"]] == [
             "Q-001",
             "Q-002",
             "Q-003",
         ]
+
+    @pytest.mark.unit
+    def test_create_full_quotes_batch_can_disable_legacy_keys(self):
+        """Batch helper can omit legacy aliases when strict-only output is requested."""
+        from britecore_sdk.api.workflows import batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+
+        def _mock_create(payload, **kwargs):
+            return {"id": payload["number"]}, payload["number"]
+
+        with patch.object(batch_quotes, "create_full_quote", side_effect=_mock_create):
+            batch_result = batch_quotes.create_full_quotes_batch(
+                payloads,
+                include_legacy_keys=False,
+            )
+
+        assert "quote_id" not in batch_result["results"][0]
+        assert "quote_data" not in batch_result["results"][0]
 
     @pytest.mark.unit
     def test_create_full_quotes_batch_partial_failure(self):
@@ -65,6 +95,22 @@ class TestQuotesBatchEndpoints:
         assert batch_result["failed"] == 1
         assert batch_result["results"][1]["success"] is False
         assert "number is required" in str(batch_result["results"][1]["error"])
+        assert batch_result["results"][1]["error_type"] == "MissingParameter"
+
+    @pytest.mark.unit
+    def test_create_full_quotes_batch_passes_explicit_client(self):
+        """Batch helper forwards explicit client to each quote creation call."""
+        from britecore_sdk.api.workflows import batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+        fake_client = object()
+
+        def _mock_create(payload, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"id": payload["number"]}, payload["number"]
+
+        with patch.object(batch_quotes, "create_full_quote", side_effect=_mock_create):
+            batch_quotes.create_full_quotes_batch(payloads, client=fake_client)
 
     @pytest.mark.unit
     def test_create_full_quotes_batch_fail_fast(self):
@@ -126,6 +172,10 @@ class TestBritecoreAPIClientBatchMethod:
             )
 
         mock_fn.assert_called_once_with(
-            [{"number": "Q-001"}], max_workers=2, fail_fast=False
+            [{"number": "Q-001"}],
+            max_workers=2,
+            fail_fast=False,
+            include_legacy_keys=True,
+            client=None,
         )
         assert result == expected

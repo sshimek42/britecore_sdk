@@ -186,6 +186,7 @@ async def acreate_policy(
     underwriting_questions: list[Any] | None = None,
     underwriting_options: list[Any] | None = None,
     external_system_reference: str | None = "",
+    client: AsyncBritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str]:
     """Create a new policy asynchronously.
@@ -228,6 +229,7 @@ async def acreate_policy(
         )
 
     LOGGER.debug("Creating policy '%s'", policy_number)
+    effective_client: AsyncBritecoreAPIClient = client or API_CLIENT
     policy_request_json = {
         key: value
         for key, value in {
@@ -248,14 +250,14 @@ async def acreate_policy(
         }.items()
         if value not in (None, "")
     }
-    request_result = await API_CLIENT.ado_request(
+    request_result = await effective_client.ado_request(
         path="/api/v2/policies/create_policy",
         json=policy_request_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
     if request_result is None:
         raise RuntimeError("ado_request returned None for acreate_policy")
-    policy_json = await API_CLIENT.aprocess_result(request_result)
+    policy_json = await effective_client.aprocess_result(request_result)
     return policy_json, policy_json["revision_id"]
 
 
@@ -539,12 +541,14 @@ async def acreate_risk(
     property_group_number: int | None = None,
     building_number: int | None = None,
     force_categories: bool | None = None,
+    client: AsyncBritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a risk for a revision asynchronously.
 
     POST /api/v2/policies/create_risk
     """
+    effective_client: AsyncBritecoreAPIClient = client or API_CLIENT
     risk_json = {
         key: value
         for key, value in {
@@ -555,14 +559,14 @@ async def acreate_risk(
         }.items()
         if value is not None
     }
-    request_result = await API_CLIENT.ado_request(
+    request_result = await effective_client.ado_request(
         path="/api/v2/policies/create_risk",
         json=risk_json,
         **_apply_policy_mutation_cache(dict(kwargs)),
     )
     if request_result is None:
         raise RuntimeError("ado_request returned None for acreate_risk")
-    return await API_CLIENT.aprocess_result(request_result)
+    return await effective_client.aprocess_result(request_result)
 
 
 async def aupdate_property_location(

@@ -6,11 +6,34 @@ Endpoint wrappers for individual contact calls live in
 """
 
 import asyncio
-from typing import Any
+from typing import Any, Unpack
 
 from britecore_sdk import BritecoreError
+from britecore_sdk.api.api_calls import AsyncBritecoreAPIClient, RequestParameters
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
 from britecore_sdk.api.workflows.batch_contacts import BatchContactCreateResult
+from britecore_sdk.models import BatchItemResult
+
+
+def _with_legacy_contact_keys(
+    item: BatchItemResult,
+    *,
+    include_legacy_keys: bool,
+) -> BatchContactCreateResult:
+    """Attach legacy contact keys for compatibility during migration."""
+    result: BatchContactCreateResult = {
+        "index": item["index"],
+        "success": item["success"],
+        "id": item["id"],
+        "data": item["data"],
+        "error": item["error"],
+        "error_type": item["error_type"],
+    }
+    if include_legacy_keys:
+        result["contact_id"] = item["id"]
+        result["contact_data"] = item["data"]
+    return result
+
 
 ContactTaskResult = tuple[int, Any, str | None]
 
@@ -19,7 +42,9 @@ async def acreate_contacts_batch(
     contacts_json: list[dict[str, Any]],
     max_concurrent: int = 5,
     fail_fast: bool = False,
-    **kwargs: Any,
+    include_legacy_keys: bool = True,
+    client: AsyncBritecoreAPIClient | None = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
     """Create many contacts concurrently and return per-item outcomes.
 
@@ -36,6 +61,9 @@ async def acreate_contacts_batch(
         max_concurrent: Maximum concurrent coroutines.  Defaults to ``5``.
         fail_fast: When ``True``, raises the first encountered exception and
             cancels remaining tasks.  Defaults to ``False``.
+        include_legacy_keys: When ``True`` (default), include legacy
+            ``contact_id``/``contact_data`` aliases alongside ``id``/``data``.
+        client: Optional explicit async API client to use for all create calls.
         **kwargs: ``RequestParameters`` passed through to each contact create call.
 
     Returns:
@@ -57,7 +85,7 @@ async def acreate_contacts_batch(
     if max_concurrent < 1:
         raise ValueError("max_concurrent must be at least 1")
 
-    results: list[BatchContactCreateResult | None] = [None] * len(contacts_json)
+    results: list[BatchItemResult | None] = [None] * len(contacts_json)
     semaphore = asyncio.Semaphore(max_concurrent)
 
     async def _create_one_semaphored(
@@ -70,6 +98,7 @@ async def acreate_contacts_batch(
                 phone=payload.get("phone"),
                 email=payload.get("email"),
                 contact_type=payload.get("contact_type", "individual"),
+                client=client,
                 **kwargs,
             )
             return index, contact_data, contact_id
@@ -86,9 +115,10 @@ async def acreate_contacts_batch(
                 success_result: BatchContactCreateResult = {
                     "index": result_idx,
                     "success": True,
-                    "contact_data": contact_data,
-                    "contact_id": contact_id,
+                    "id": contact_id,
+                    "data": contact_data,
                     "error": None,
+                    "error_type": None,
                 }
                 results[result_idx] = success_result
         except Exception:
@@ -104,9 +134,10 @@ async def acreate_contacts_batch(
                 failed_result: BatchContactCreateResult = {
                     "index": idx,
                     "success": False,
-                    "contact_data": None,
-                    "contact_id": None,
+                    "id": None,
+                    "data": None,
                     "error": str(result),
+                    "error_type": type(result).__name__,
                 }
                 results[idx] = failed_result
             elif not isinstance(result, BaseException):
@@ -114,13 +145,18 @@ async def acreate_contacts_batch(
                 ok_result: BatchContactCreateResult = {
                     "index": result_idx,
                     "success": True,
-                    "contact_data": contact_data,
-                    "contact_id": contact_id,
+                    "id": contact_id,
+                    "data": contact_data,
                     "error": None,
+                    "error_type": None,
                 }
                 results[result_idx] = ok_result
 
-    finalized_results = [item for item in results if item is not None]
+    finalized_items = [item for item in results if item is not None]
+    finalized_results = [
+        _with_legacy_contact_keys(item, include_legacy_keys=include_legacy_keys)
+        for item in finalized_items
+    ]
     succeeded = sum(1 for item in finalized_results if item["success"])
     failed = len(finalized_results) - succeeded
 

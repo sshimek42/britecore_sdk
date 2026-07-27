@@ -496,6 +496,8 @@ class AsyncBritecoreAPIClient:
         quotes_json: list[Any],
         max_concurrent: int = 5,
         fail_fast: bool = False,
+        include_legacy_keys: bool = True,
+        client: AsyncBritecoreAPIClient | None = None,
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Create many quotes concurrently and return per-item outcomes.
@@ -509,6 +511,9 @@ class AsyncBritecoreAPIClient:
             max_concurrent: Maximum concurrent coroutines. Defaults to ``5``.
             fail_fast: When ``True``, raises the first encountered exception and
                 cancels remaining tasks. Defaults to ``False``.
+            include_legacy_keys: Include legacy ``quote_id``/``quote_data`` keys
+                alongside strict ``id``/``data`` fields. Defaults to ``True``.
+            client: Optional explicit async client override forwarded to workflow helper.
             **kwargs: ``RequestParameters`` passed through to each quote create
                 call.
 
@@ -525,6 +530,8 @@ class AsyncBritecoreAPIClient:
             quotes_json,
             max_concurrent=max_concurrent,
             fail_fast=fail_fast,
+            include_legacy_keys=include_legacy_keys,
+            client=client,
             **kwargs,
         )
 
@@ -533,6 +540,8 @@ class AsyncBritecoreAPIClient:
         contacts_json: list[Any],
         max_concurrent: int = 5,
         fail_fast: bool = False,
+        include_legacy_keys: bool = True,
+        client: AsyncBritecoreAPIClient | None = None,
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Create many contacts concurrently and return per-item outcomes.
@@ -547,6 +556,9 @@ class AsyncBritecoreAPIClient:
             max_concurrent: Maximum concurrent coroutines. Defaults to ``5``.
             fail_fast: When ``True``, raises the first encountered exception and
                 cancels remaining tasks. Defaults to ``False``.
+            include_legacy_keys: Include legacy ``contact_id``/``contact_data`` keys
+                alongside strict ``id``/``data`` fields. Defaults to ``True``.
+            client: Optional explicit async client override forwarded to workflow helper.
             **kwargs: ``RequestParameters`` passed through to each contact create
                 call.
 
@@ -563,6 +575,8 @@ class AsyncBritecoreAPIClient:
             contacts_json,
             max_concurrent=max_concurrent,
             fail_fast=fail_fast,
+            include_legacy_keys=include_legacy_keys,
+            client=client,
             **kwargs,
         )
 

@@ -35,8 +35,10 @@ class TestAsyncContactsBatchEndpoints:
             assert result["total"] == 2
             assert result["succeeded"] == 2
             assert result["failed"] == 0
-            cids = sorted([item["contact_id"] for item in result["results"]])
+            cids = sorted([item["id"] for item in result["results"]])
             assert cids == ["CID-Alice", "CID-Bob"]
+            legacy_cids = sorted([item["contact_id"] for item in result["results"]])
+            assert legacy_cids == ["CID-Alice", "CID-Bob"]
 
         asyncio.run(_run())
 
@@ -69,6 +71,63 @@ class TestAsyncContactsBatchEndpoints:
             assert result["total"] == 2
             assert result["succeeded"] == 1
             assert result["failed"] == 1
+            failed_item = next(
+                item for item in result["results"] if not item["success"]
+            )
+            assert failed_item["error_type"] == "MissingParameter"
+
+        asyncio.run(_run())
+
+    @pytest.mark.unit
+    def test_acreate_contacts_batch_can_disable_legacy_keys(self):
+        """Async batch helper can omit legacy aliases when strict-only output is requested."""
+        from britecore_sdk.api.workflows import async_batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+
+        async def _mock_new_contact(name, address, **kwargs):
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        async def _run():
+            with patch.object(
+                async_batch_contacts,
+                "anew_contact",
+                new_callable=AsyncMock,
+                side_effect=_mock_new_contact,
+            ):
+                result = await async_batch_contacts.acreate_contacts_batch(
+                    payloads,
+                    include_legacy_keys=False,
+                )
+
+            assert "contact_id" not in result["results"][0]
+            assert "contact_data" not in result["results"][0]
+
+        asyncio.run(_run())
+
+    @pytest.mark.unit
+    def test_acreate_contacts_batch_passes_explicit_client(self):
+        """Async batch helper forwards explicit async client to each create call."""
+        from britecore_sdk.api.workflows import async_batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+        fake_client = object()
+
+        async def _mock_new_contact(name, address, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        async def _run():
+            with patch.object(
+                async_batch_contacts,
+                "anew_contact",
+                new_callable=AsyncMock,
+                side_effect=_mock_new_contact,
+            ):
+                await async_batch_contacts.acreate_contacts_batch(
+                    payloads,
+                    client=fake_client,
+                )
 
         asyncio.run(_run())
 

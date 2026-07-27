@@ -45,9 +45,10 @@ See ``docs/STAGED_WORKFLOWS.md`` for tuning guidance and integration notes.
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from logging import Logger
-from typing import Any, TypedDict
+from typing import Any, TypedDict, Unpack
 
 from britecore_sdk import BritecoreError, logger
+from britecore_sdk.api.api_calls import BritecoreAPIClient, RequestParameters
 from britecore_sdk.api.api_calls.v2.contacts import new_contact
 from britecore_sdk.api.api_calls.v2.policies import create_policy, create_risk
 from britecore_sdk.api.api_calls.v2.quotes import create_full_quote
@@ -176,12 +177,13 @@ def _run_stage(
 def create_entities_staged_batch(
     jobs: list[StagedWorkflowJob],
     *,
+    client: BritecoreAPIClient | None = None,
     contact_max_workers: int = 5,
     quote_max_workers: int = 5,
     policy_max_workers: int = 3,
     risk_max_workers: int = 3,
     fail_fast: bool = False,
-    **kwargs: Any,
+    **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
     """Create contacts, quotes, policies, and risks in a staged batch workflow.
 
@@ -202,6 +204,7 @@ def create_entities_staged_batch(
     Args:
         jobs: List of :class:`StagedWorkflowJob` dicts describing one
             end-to-end creation per element.
+        client: Optional explicit API client to use for all stage calls.
         contact_max_workers: Max concurrent workers for the contacts stage.
             Defaults to ``5``.
         quote_max_workers: Max concurrent workers for the quotes stage.
@@ -275,6 +278,7 @@ def create_entities_staged_batch(
             phone=payload.get("phone"),
             email=payload.get("email"),
             contact_type=payload.get("contact_type", "individual"),
+            client=client,
             **kwargs,
         )
         result = results[idx]
@@ -311,7 +315,7 @@ def create_entities_staged_batch(
 
     def _create_quote(idx: int) -> None:
         payload = jobs[idx]["quote_payload"]
-        quote_data, quote_id = create_full_quote(payload, **kwargs)
+        quote_data, quote_id = create_full_quote(payload, client=client, **kwargs)
         result = results[idx]
         if result is not None:
             result["quote_data"] = quote_data
@@ -344,7 +348,7 @@ def create_entities_staged_batch(
 
     def _create_policy(idx: int) -> None:
         payload = dict(jobs[idx]["policy_payload"])
-        policy_data, revision_id = create_policy(**payload, **kwargs)
+        policy_data, revision_id = create_policy(client=client, **payload, **kwargs)
         result = results[idx]
         if result is not None:
             result["policy_data"] = policy_data
@@ -385,7 +389,7 @@ def create_entities_staged_batch(
             payload = dict(rp)
             if "revision_id" not in payload and revision_id:
                 payload["revision_id"] = revision_id
-            risk_data = create_risk(**payload, **kwargs)
+            risk_data = create_risk(client=client, **payload, **kwargs)
             risk_results_list.append(risk_data)
             if isinstance(risk_data, dict):
                 rid = risk_data.get("risk_id") or risk_data.get("id")

@@ -44,7 +44,10 @@ def _apply_quote_mutation_cache(kwargs: dict[str, Any]) -> dict[str, Any]:
 
 
 async def acreate_full_quote(
-    quote_json: dict[str, Any], **kwargs: Unpack[RequestParameters]
+    quote_json: dict[str, Any],
+    *,
+    client: AsyncBritecoreAPIClient | None = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> tuple[dict[str, Any] | None, str | None]:
     """Create a full quote asynchronously.
 
@@ -53,13 +56,14 @@ async def acreate_full_quote(
     payload together with the extracted quote ID, invalidates cached quote reads
     on success, and accepts ``RequestParameters`` overrides via ``**kwargs``.
     """
+    effective_client: AsyncBritecoreAPIClient = client or API_CLIENT
     request_kwargs = _apply_quote_mutation_cache(dict(kwargs))
-    request_result: Any = await API_CLIENT.ado_request(
+    request_result: Any = await effective_client.ado_request(
         path="/api/v2/quotes/create_full_quote",
         json=quote_json,
         **request_kwargs,
     )
-    json_info: Any = await API_CLIENT.aprocess_result(request_result)
+    json_info: Any = await effective_client.aprocess_result(request_result)
 
     if not json_info:
         return None, None

@@ -19,6 +19,32 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.3.0] - 2026-07-27
+
+### Added
+
+- Added `normalize_contact_search_results(...)` in `src/britecore_sdk/api/workflows/contact_search_normalization.py` to normalize common contact-search response envelopes to `list[dict]`.
+
+- Added typed workflow result model `BatchItemResult` and legacy conversion helpers (`to_legacy_quote_result`, `to_legacy_contact_result`) in `src/britecore_sdk/models/workflow_results.py`.
+
+### Changed
+
+- Standardized sync and async quote/contact batch workflow result items around strict keys: `index`, `success`, `id`, `data`, `error`, and `error_type`.
+
+- Added compatibility aliases to quote/contact batch result items by default (`quote_id`/`quote_data`, `contact_id`/`contact_data`) with opt-out via `include_legacy_keys=False`.
+
+- Added explicit `client=` support across staged and batch workflow helpers (sync + async) and supporting endpoint wrappers (`new_contact`/`anew_contact`, `create_policy`/`acreate_policy`, `create_risk`/`acreate_risk`, `create_full_quote`/`acreate_full_quote`).
+
+- Updated sync/async client batch convenience methods to expose `include_legacy_keys` and `client` passthrough parameters.
+
+- Added a README migration note documenting canonical batch keys (`id`/`data`/`error_type`), compatibility aliases, and `include_legacy_keys=False` opt-out guidance for importer consumers.
+
+### Fixed
+
+### Deprecated
+
+---
+
 ## [2.2.0] - 2026-07-24
 
 ### Added

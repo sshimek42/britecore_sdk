@@ -6,27 +6,48 @@ Endpoint wrappers for individual contact calls live in
 """
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
-from typing import Any, TypedDict
+from typing import Any, NotRequired, Unpack
 
 from britecore_sdk import BritecoreError
+from britecore_sdk.api.api_calls import BritecoreAPIClient, RequestParameters
 from britecore_sdk.api.api_calls.v2.contacts import new_contact
+from britecore_sdk.models import BatchItemResult
 
 
-class BatchContactCreateResult(TypedDict):
-    """Per-item outcome for ``create_contacts_batch``."""
+class BatchContactCreateResult(BatchItemResult, total=False):
+    """Per-item contact batch result with optional legacy aliases."""
 
-    index: int
-    success: bool
-    contact_data: dict[str, Any] | None
-    contact_id: str | None
-    error: str | None
+    contact_id: NotRequired[str | None]
+    contact_data: NotRequired[dict[str, Any] | None]
+
+
+def _with_legacy_contact_keys(
+    item: BatchItemResult,
+    *,
+    include_legacy_keys: bool,
+) -> BatchContactCreateResult:
+    """Attach legacy contact keys for compatibility during migration."""
+    result: BatchContactCreateResult = {
+        "index": item["index"],
+        "success": item["success"],
+        "id": item["id"],
+        "data": item["data"],
+        "error": item["error"],
+        "error_type": item["error_type"],
+    }
+    if include_legacy_keys:
+        result["contact_id"] = item["id"]
+        result["contact_data"] = item["data"]
+    return result
 
 
 def create_contacts_batch(
     contacts_json: list[dict[str, Any]],
     max_workers: int = 5,
     fail_fast: bool = False,
-    **kwargs: Any,
+    include_legacy_keys: bool = True,
+    client: BritecoreAPIClient | None = None,
+    **kwargs: Unpack[RequestParameters],
 ) -> dict[str, Any]:
     """Create many contacts concurrently and return per-item outcomes.
 
@@ -43,6 +64,9 @@ def create_contacts_batch(
         max_workers: Maximum concurrent workers.  Defaults to ``5``.
         fail_fast: When ``True``, re-raises the first encountered exception
             and cancels pending futures.  Defaults to ``False``.
+        include_legacy_keys: When ``True`` (default), include legacy
+            ``contact_id``/``contact_data`` aliases alongside ``id``/``data``.
+        client: Optional explicit API client to use for all create calls.
         **kwargs: ``RequestParameters`` passed through to each contact create call.
 
     Returns:
@@ -65,7 +89,7 @@ def create_contacts_batch(
         raise ValueError("max_workers must be at least 1")
 
     worker_count = min(max_workers, len(contacts_json))
-    results: list[BatchContactCreateResult | None] = [None] * len(contacts_json)
+    results: list[BatchItemResult | None] = [None] * len(contacts_json)
 
     def _create_one(index: int, payload: dict[str, Any]) -> tuple[int, Any, str | None]:
         contact_data, contact_id = new_contact(
@@ -74,6 +98,7 @@ def create_contacts_batch(
             phone=payload.get("phone"),
             email=payload.get("email"),
             contact_type=payload.get("contact_type", "individual"),
+            client=client,
             **kwargs,
         )
         return index, contact_data, contact_id
@@ -91,9 +116,10 @@ def create_contacts_batch(
                 results[result_idx] = {
                     "index": result_idx,
                     "success": True,
-                    "contact_data": contact_data,
-                    "contact_id": contact_id,
+                    "id": contact_id,
+                    "data": contact_data,
                     "error": None,
+                    "error_type": None,
                 }
             except Exception as exc:
                 if fail_fast:
@@ -103,12 +129,17 @@ def create_contacts_batch(
                 results[idx] = {
                     "index": idx,
                     "success": False,
-                    "contact_data": None,
-                    "contact_id": None,
+                    "id": None,
+                    "data": None,
                     "error": str(exc),
+                    "error_type": type(exc).__name__,
                 }
 
-    finalized_results = [item for item in results if item is not None]
+    finalized_items = [item for item in results if item is not None]
+    finalized_results = [
+        _with_legacy_contact_keys(item, include_legacy_keys=include_legacy_keys)
+        for item in finalized_items
+    ]
     succeeded = sum(1 for item in finalized_results if item["success"])
     failed = len(finalized_results) - succeeded
 

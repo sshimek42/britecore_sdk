@@ -53,6 +53,7 @@ async def anew_contact(
     phone: list[dict[str, str] | None] | None = None,
     email: list[dict[str, str] | None] | None = None,
     contact_type: Literal["individual", "organization"] | None = "individual",
+    client: AsyncBritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str | None]:
     """Create a new contact record asynchronously.
@@ -65,6 +66,7 @@ async def anew_contact(
     if not email:
         email = [{}]
 
+    effective_client: AsyncBritecoreAPIClient = client or API_CLIENT
     contact_request_json: dict[str, Any] = {
         "name": name,
         "addresses": address,
@@ -75,14 +77,14 @@ async def anew_contact(
     if phone[0] != {}:
         contact_request_json.update({"phones": phone})
 
-    request_result: Any = await API_CLIENT.ado_request(
+    request_result: Any = await effective_client.ado_request(
         path="/api/v2/contacts/new_contact",
         json=contact_request_json,
         **_apply_contact_mutation_cache(dict(kwargs)),
     )
     if request_result is None:
         raise RuntimeError("ado_request returned None for anew_contact")
-    contact_json: Any = await API_CLIENT.aprocess_result(request_result)
+    contact_json: Any = await effective_client.aprocess_result(request_result)
 
     try:
         new_id: str = contact_json.get("contact_id", "Fail")

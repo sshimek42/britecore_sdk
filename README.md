@@ -1,6 +1,6 @@
 # britecore_sdk
 
-*Last updated: July 23, 2026*
+*Last updated: July 27, 2026*
 *Document type: Living guide*
 
 A production-ready **Python SDK for the BriteCore Insurance API**.
@@ -133,6 +133,58 @@ logger.info("SDK logger is configured")
 - ✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
 - ✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses
 - ✅ **Batch operations** — workflow helpers for parallel quote/contact/policy/risk creation
+
+---
+
+## Migration Notes
+
+### Batch result schema — `id`/`data` replaces legacy alias keys (v2.2+)
+
+Importer consumers of `create_full_quotes_batch` and `create_contacts_batch` should migrate
+from the old per-item alias keys to the new canonical keys.
+
+**Old pattern (legacy aliases — still emitted by default):**
+
+```python
+results = create_full_quotes_batch(quotes)
+for item in results["items"]:
+    quote_id   = item["quote_id"]    # legacy alias
+    quote_data = item["quote_data"]  # legacy alias
+```
+
+**New pattern (canonical keys — preferred):**
+
+```python
+results = create_full_quotes_batch(quotes)
+for item in results["items"]:
+    quote_id   = item["id"]    # canonical
+    quote_data = item["data"]  # canonical
+    error_type = item["error_type"]  # new — machine-readable error category
+```
+
+**Per-item schema** (all keys always present):
+
+| Key | Type | Description |
+| --- | --- | --- |
+| `index` | `int` | Position in the input list |
+| `success` | `bool` | Whether this item succeeded |
+| `id` | `str \| None` | Created resource ID (quote ID, contact ID, etc.) |
+| `data` | `dict \| None` | Full API response payload for this item |
+| `error` | `str \| None` | Human-readable error message |
+| `error_type` | `str \| None` | Machine-readable error category (e.g. `"validation"`, `"not_found"`) |
+
+**Legacy alias keys** (`quote_id`/`quote_data`, `contact_id`/`contact_data`) are included by
+default for backward compatibility. Opt out once your importer is migrated:
+
+```python
+results = create_full_quotes_batch(quotes, include_legacy_keys=False)
+```
+
+The legacy alias keys will be removed in a future major version. Migrate to `id`/`data` now
+to avoid breaking changes.
+
+See [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) for the full parameter
+reference and workflow examples.
 
 ---
 

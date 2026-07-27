@@ -29,8 +29,35 @@ class TestContactsBatchEndpoints:
         assert result["total"] == 3
         assert result["succeeded"] == 3
         assert result["failed"] == 0
-        contact_ids = [item["contact_id"] for item in result["results"]]
+        contact_ids = [item["id"] for item in result["results"]]
         assert sorted(contact_ids) == ["CID-Alice", "CID-Bob", "CID-Carol"]
+        legacy_contact_ids = [item["contact_id"] for item in result["results"]]
+        assert sorted(legacy_contact_ids) == ["CID-Alice", "CID-Bob", "CID-Carol"]
+        assert all(
+            {"index", "success", "id", "data", "error", "error_type"}.issubset(
+                set(item.keys())
+            )
+            for item in result["results"]
+        )
+
+    @pytest.mark.unit
+    def test_create_contacts_batch_can_disable_legacy_keys(self):
+        """Batch helper can omit legacy aliases when strict-only output is requested."""
+        from britecore_sdk.api.workflows import batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+
+        def _mock_new_contact(name, address, **kwargs):
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
+            result = batch_contacts.create_contacts_batch(
+                payloads,
+                include_legacy_keys=False,
+            )
+
+        assert "contact_id" not in result["results"][0]
+        assert "contact_data" not in result["results"][0]
 
     @pytest.mark.unit
     def test_create_contacts_batch_partial_failure(self):
@@ -57,6 +84,22 @@ class TestContactsBatchEndpoints:
         assert result["failed"] == 1
         failed_item = next(i for i in result["results"] if not i["success"])
         assert "name is required" in failed_item["error"]
+        assert failed_item["error_type"] == "MissingParameter"
+
+    @pytest.mark.unit
+    def test_create_contacts_batch_passes_explicit_client(self):
+        """Batch helper forwards explicit client to each contact creation call."""
+        from britecore_sdk.api.workflows import batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+        fake_client = object()
+
+        def _mock_new_contact(name, address, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
+            batch_contacts.create_contacts_batch(payloads, client=fake_client)
 
     @pytest.mark.unit
     def test_create_contacts_batch_fail_fast(self):

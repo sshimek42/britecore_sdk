@@ -38,11 +38,27 @@ class TestAsyncQuotesBatchEndpoints:
             assert batch_result["total"] == 3
             assert batch_result["succeeded"] == 3
             assert batch_result["failed"] == 0
+            assert sorted([item["id"] for item in batch_result["results"]]) == [
+                "Q-001",
+                "Q-002",
+                "Q-003",
+            ]
             assert sorted([item["quote_id"] for item in batch_result["results"]]) == [
                 "Q-001",
                 "Q-002",
                 "Q-003",
             ]
+            assert all(
+                {
+                    "index",
+                    "success",
+                    "id",
+                    "data",
+                    "error",
+                    "error_type",
+                }.issubset(set(item.keys()))
+                for item in batch_result["results"]
+            )
 
         asyncio.run(_run_test())
 
@@ -82,6 +98,7 @@ class TestAsyncQuotesBatchEndpoints:
                 item for item in batch_result["results"] if not item["success"]
             ][0]
             assert "number is required" in failed_item["error"]
+            assert failed_item["error_type"] == "MissingParameter"
 
         asyncio.run(_run_test())
 
@@ -131,6 +148,59 @@ class TestAsyncQuotesBatchEndpoints:
             with pytest.raises(ValueError):
                 await async_batch_quotes.acreate_full_quotes_batch(
                     [{"number": "Q-001"}], max_concurrent=0
+                )
+
+        asyncio.run(_run_test())
+
+    @pytest.mark.unit
+    def test_acreate_full_quotes_batch_can_disable_legacy_keys(self):
+        """Async batch helper can omit legacy aliases when strict-only output is requested."""
+        from britecore_sdk.api.workflows import async_batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+
+        async def _mock_create(payload, **kwargs):
+            return {"id": payload["number"]}, payload["number"]
+
+        async def _run_test():
+            with patch.object(
+                async_batch_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
+            ):
+                batch_result = await async_batch_quotes.acreate_full_quotes_batch(
+                    payloads,
+                    include_legacy_keys=False,
+                )
+
+            assert "quote_id" not in batch_result["results"][0]
+            assert "quote_data" not in batch_result["results"][0]
+
+        asyncio.run(_run_test())
+
+    @pytest.mark.unit
+    def test_acreate_full_quotes_batch_passes_explicit_client(self):
+        """Async batch helper forwards explicit async client to each create call."""
+        from britecore_sdk.api.workflows import async_batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+        fake_client = object()
+
+        async def _mock_create(payload, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"id": payload["number"]}, payload["number"]
+
+        async def _run_test():
+            with patch.object(
+                async_batch_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
+            ):
+                await async_batch_quotes.acreate_full_quotes_batch(
+                    payloads,
+                    client=fake_client,
                 )
 
         asyncio.run(_run_test())
@@ -195,7 +265,11 @@ class TestAsyncBritecoreAPIClientBatchMethod:
                 )
 
             mock_fn.assert_called_once_with(
-                [{"number": "Q-001"}], max_concurrent=2, fail_fast=False
+                [{"number": "Q-001"}],
+                max_concurrent=2,
+                fail_fast=False,
+                include_legacy_keys=True,
+                client=None,
             )
             assert result == expected
 

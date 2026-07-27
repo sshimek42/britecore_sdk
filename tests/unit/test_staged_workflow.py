@@ -224,3 +224,53 @@ class TestStagedWorkflowSync:
 
         assert result["succeeded"] == 1
         assert captured_risk_kwargs[0]["revision_id"] == "REV-AUTO"
+
+    @pytest.mark.unit
+    def test_staged_batch_passes_explicit_client(self):
+        """All staged API calls should receive the explicit client override."""
+        from britecore_sdk.api.workflows.staged_creation import (
+            create_entities_staged_batch,
+        )
+
+        fake_client = object()
+        jobs = _make_jobs(
+            1, include_contact=True, include_quote=True, include_risk=True
+        )
+
+        def _mock_contact(name, address, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        def _mock_quote(payload, **kwargs):
+            assert kwargs["client"] is fake_client
+            return {"id": payload["number"]}, payload["number"]
+
+        def _mock_policy(**kwargs):
+            assert kwargs["client"] is fake_client
+            return {"revision_id": "REV-1"}, "REV-1"
+
+        def _mock_risk(**kwargs):
+            assert kwargs["client"] is fake_client
+            return {"risk_id": "RK-1"}
+
+        with (
+            patch(
+                "britecore_sdk.api.workflows.staged_creation.new_contact",
+                side_effect=_mock_contact,
+            ),
+            patch(
+                "britecore_sdk.api.workflows.staged_creation.create_full_quote",
+                side_effect=_mock_quote,
+            ),
+            patch(
+                "britecore_sdk.api.workflows.staged_creation.create_policy",
+                side_effect=_mock_policy,
+            ),
+            patch(
+                "britecore_sdk.api.workflows.staged_creation.create_risk",
+                side_effect=_mock_risk,
+            ),
+        ):
+            result = create_entities_staged_batch(jobs, client=fake_client)
+
+        assert result["succeeded"] == 1

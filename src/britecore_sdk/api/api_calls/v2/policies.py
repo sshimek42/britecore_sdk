@@ -211,6 +211,7 @@ def create_policy(
     is_renewal: bool | None = False,
     as_agent: bool | None = False,
     manual_policy_number: bool | None = True,
+    client: BritecoreAPIClient | None = None,
     effective_date: str | None = "",
     property_zip: str | None = "",
     underwriting_questions: list | None = None,
@@ -228,15 +229,22 @@ def create_policy(
         )
 
     LOGGER.debug("Creating policy '%s'", policy_number)
+    effective_client: BritecoreAPIClient = client or API_CLIENT
     local_env: dict[str, Any] = locals()
-    policy_request_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/policies/create_policy",
-        json=policy_request_json,
-        **kwargs,
+    local_env.pop("client", None)
+    local_env.pop("effective_client", None)
+    policy_request_json: dict[str, Any] = effective_client.json_dict_builder(
+        {**local_env}
+    )
+    request_result: BaseHTTPResponse | HTTPResponse | None = (
+        effective_client.do_request(
+            path="/api/v2/policies/create_policy",
+            json=policy_request_json,
+            **kwargs,
+        )
     )
 
-    policy_json = API_CLIENT.process_result(request_result)
+    policy_json = effective_client.process_result(request_result)
 
     return policy_json, policy_json["revision_id"]
 
@@ -498,21 +506,27 @@ def create_risk(
     property_group_number: int | None = None,
     building_number: int | None = None,
     force_categories: bool | None = None,
+    client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Create a risk for a revision.
 
     POST /api/v2/policies/create_risk
     """
+    effective_client: BritecoreAPIClient = client or API_CLIENT
     local_env: dict[str, Any] = locals()
+    local_env.pop("client", None)
+    local_env.pop("effective_client", None)
 
-    risk_json: dict[str, Any] = API_CLIENT.json_dict_builder({**local_env})
+    risk_json: dict[str, Any] = effective_client.json_dict_builder({**local_env})
 
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/policies/create_risk", json=risk_json, **kwargs
+    request_result: BaseHTTPResponse | HTTPResponse | None = (
+        effective_client.do_request(
+            path="/api/v2/policies/create_risk", json=risk_json, **kwargs
+        )
     )
 
-    return API_CLIENT.process_result(
+    return effective_client.process_result(
         request_result, endpoint="/api/v2/policies/create_risk"
     )
 

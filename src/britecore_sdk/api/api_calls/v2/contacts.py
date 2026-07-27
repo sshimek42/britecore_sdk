@@ -35,6 +35,7 @@ def new_contact(
     phone: list[dict[str, str] | None] | None = None,
     email: list[dict[str, str] | None] | None = None,
     contact_type: Literal["individual", "organization"] | None = "individual",
+    client: BritecoreAPIClient | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> tuple[Any, str | None]:
     """Create a contact record.
@@ -103,11 +104,15 @@ def new_contact(
 
     contact_request_json.update({"type": contact_type})
 
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/contacts/new_contact", json=contact_request_json, **kwargs
+    effective_client: BritecoreAPIClient = client or API_CLIENT
+
+    request_result: BaseHTTPResponse | HTTPResponse | None = (
+        effective_client.do_request(
+            path="/api/v2/contacts/new_contact", json=contact_request_json, **kwargs
+        )
     )
 
-    contact_json: Any = API_CLIENT.process_result(
+    contact_json: Any = effective_client.process_result(
         request_result, endpoint="/api/v2/contacts/new_contact"
     )
 
