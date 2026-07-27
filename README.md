@@ -15,7 +15,7 @@ A production-ready **Python SDK for the BriteCore Insurance API**.
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![ReadTheDocs](https://app.readthedocs.org/projects/britecore-sdk/badge/?version=latest)](https://britecore-sdk.readthedocs.io/en/latest/)
 
-**Status:** Stable (v2.1.1+) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v2.3.1+) | **License:** Apache-2.0 | **Python:** 3.11+
 
 ---
 

@@ -1,5 +1,8 @@
 # Batch Quote Creation Guide
 
+*Last updated: July 27, 2026*
+*Document type: Implementation guide*
+
 ## Overview
 
 The BriteCore SDK provides **synchronous and asynchronous batch quote creation helpers** to efficiently handle high-volume quote creation workflows. This guide explains how to use batch operations to create 100+ quotes in minutes instead of hours.
