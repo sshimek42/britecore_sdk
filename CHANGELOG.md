@@ -19,6 +19,32 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.0] - 2026-07-30
+
+### Added
+
+- Added `download_report_file_decoded(...)` and `parse_report_file_content(...)` in `src/britecore_sdk/api/api_calls/v2/reports.py` to safely decode JSON, gzip, zip, and raw binary report downloads.
+
+- Added a `parameters` payload field to `run_report(...)` in `src/britecore_sdk/api/api_calls/v2/reports.py` for APIs that require parameterized report execution.
+
+- Added a dedicated unit test module `tests/unit/test_v2_reports_download_parsing.py` covering JSON/gzip/zip/raw-bytes report decoding behavior.
+
+### Changed
+
+- Standardized multiple v2 wrappers (`accounting`, `claims`, `insured`, `lines`, `notes`, `policies`, `reports`) to send explicit `method="POST"` and pass the endpoint path into `process_result(...)` for consistent request/exception context.
+
+- Added `search_policies(...)` to `src/britecore_sdk/api/api_calls/v2/policies.py` and updated policy-list helpers to reuse the shared search implementation.
+
+### Fixed
+
+- Added a compatibility fallback in `BritecoreAPIClient._parse_response_payload(...)` to accept legacy single-quoted Python-literal dict/list payloads when valid JSON decoding fails.
+
+- Updated report wrappers that return file content to avoid JSON-only parsing assumptions and correctly handle binary responses.
+
+### Deprecated
+
+---
+
 ## [2.3.1] - 2026-07-27
 
 ### Added

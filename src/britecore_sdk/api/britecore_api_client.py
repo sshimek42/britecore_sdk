@@ -2,6 +2,7 @@
 
 import time
 import uuid
+from ast import literal_eval
 from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
 from typing import TYPE_CHECKING, Any, NotRequired, Self, TypedDict, Unpack
@@ -711,7 +712,24 @@ class BritecoreAPIClient:
         response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
     ) -> Any:
         """Decode and parse the JSON payload from a response object."""
-        return loads(response.data.decode("utf-8"))
+        payload = response.data.decode("utf-8-sig")
+        try:
+            return loads(payload)
+        except JSONDecodeError:
+            normalized_payload = payload.strip()
+            # Compatibility fallback for legacy endpoints returning Python-literal payloads.
+            if normalized_payload.startswith(("{", "[")) and "'" in normalized_payload:
+                try:
+                    parsed_payload = literal_eval(normalized_payload)
+                except (SyntaxError, ValueError):
+                    pass
+                else:
+                    if isinstance(parsed_payload, dict | list):
+                        LOGGER.warning(
+                            "Response payload was not valid JSON; parsed as Python literal fallback"
+                        )
+                        return parsed_payload
+            raise
 
     @classmethod
     def _extract_success_data(

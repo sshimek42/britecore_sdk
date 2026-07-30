@@ -12,17 +12,8 @@ from britecore_sdk.api.api_calls import (
     api_client,
 )
 from britecore_sdk.api.api_calls.v2._common import build_payload
-from britecore_sdk.api.api_calls.v2._common import post as common_post
 
 API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    return common_post(path, payload, client=API_CLIENT, **kwargs)
 
 
 def get_claim(
@@ -43,10 +34,15 @@ def get_claim(
         verification_list,
         priority_list,
     )
-    return _post(
-        "/api/v2/claims/get_claim",
-        request_json,
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/get_claim",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/get_claim",
     )
 
 
@@ -55,21 +51,45 @@ def export_claim_payments(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Export claim payments for one or more claim identifiers."""
-    return _post(
-        "/api/v2/claims/export_claim_payments",
-        build_payload(claim_ids=claim_ids),
+    request_json = build_payload(claim_ids=claim_ids)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/export_claim_payments",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/export_claim_payments",
     )
 
 
 def get_all_catastrophes(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve all catastrophe records available to the claims domain."""
-    return _post("/api/v2/claims/get_all_catastrophes", **kwargs)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/get_all_catastrophes",
+        json={},
+        method="POST",
+        **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/get_all_catastrophes",
+    )
 
 
 def get_all_perils(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve all peril records available to the claims domain."""
-    return _post("/api/v2/claims/get_all_perils", **kwargs)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/get_all_perils",
+        json={},
+        method="POST",
+        **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/get_all_perils",
+    )
 
 
 def get_claim_contacts(
@@ -77,10 +97,16 @@ def get_claim_contacts(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve contacts associated with a claim."""
-    return _post(
-        "/api/v2/claims/get_claim_contacts",
-        build_payload(claim_id=claim_id),
+    request_json = build_payload(claim_id=claim_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/get_claim_contacts",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/get_claim_contacts",
     )
 
 
@@ -89,10 +115,16 @@ def get_claim_payments(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve payment records associated with a claim."""
-    return _post(
-        "/api/v2/claims/get_claim_payments",
-        build_payload(claim_id=claim_id),
+    request_json = build_payload(claim_id=claim_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/get_claim_payments",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/get_claim_payments",
     )
 
 
@@ -102,10 +134,16 @@ def update_claim(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update claim fields for the provided claim identifier."""
-    return _post(
-        "/api/v2/claims/update_claim",
-        build_payload(claim_id=claim_id, claim=claim),
+    request_json = build_payload(claim_id=claim_id, claim=claim)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/claims/update_claim",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/claims/update_claim",
     )
 
 

@@ -275,16 +275,10 @@ def edit_attachment(
 
     POST /api/v2/attachments/edit_attachment
     """
-    request_json: dict[str, Any] = {"attachment": attachment}
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
-    request_result = API_CLIENT.do_request(
-        path="/api/v2/attachments/edit_attachment",
-        json=filtered_json,
-        method="POST",
+    return post(
+        "/api/v2/attachments/edit_attachment",
+        build_payload(attachment=attachment),
         **kwargs,
-    )
-    return API_CLIENT.process_result(
-        request_result, endpoint="/api/v2/attachments/edit_attachment"
     )
 
 

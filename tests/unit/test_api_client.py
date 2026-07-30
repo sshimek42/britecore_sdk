@@ -269,6 +269,38 @@ class TestBritecoreAPIClientProcessResult:
             with pytest.raises(BritecoreError.NoDataReturned):
                 client.process_result(response)
 
+    @pytest.mark.unit
+    def test_process_result_accepts_single_quoted_payload(self):
+        """Test process_result supports legacy Python-literal response payloads."""
+        from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        response = MagicMock()
+        response.status = 200
+        response.data = b"{'success': True, 'data': {'id': 'legacy-id'}}"
+        response.headers = {}
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            result = client.process_result(response)
+
+            assert result == {"id": "legacy-id"}
+
 
 class TestRequestContextAttachedToExceptions:
     """Integration tests: request_id and sanitized_body are propagated to raised exceptions."""

@@ -42,10 +42,14 @@ def get_accounting_deliverable(
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/accounting/get_accounting_deliverable",
         json=request_json,
+        method="POST",
         **kwargs,
     )
 
-    return API_CLIENT.process_result(cast(Any, request_result))
+    return API_CLIENT.process_result(
+        cast(Any, request_result),
+        endpoint="/api/v2/accounting/get_accounting_deliverable",
+    )
 
 
 def get_invoices(
@@ -87,10 +91,14 @@ def get_invoices(
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/accounting/get_invoices",
         json=request_json,
+        method="POST",
         **kwargs,
     )
 
-    return API_CLIENT.process_result(cast(Any, request_result))
+    return API_CLIENT.process_result(
+        cast(Any, request_result),
+        endpoint="/api/v2/accounting/get_invoices",
+    )
 
 
 def run_rescind_underwriting_cancellation_pending_logic(
@@ -119,10 +127,14 @@ def run_rescind_underwriting_cancellation_pending_logic(
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic",
         json=request_json,
+        method="POST",
         **kwargs,
     )
 
-    return API_CLIENT.process_result(cast(Any, request_result))
+    return API_CLIENT.process_result(
+        cast(Any, request_result),
+        endpoint="/api/v2/accounting/run_rescind_underwriting_cancellation_pending_logic",
+    )
 
 
 __all__ = [

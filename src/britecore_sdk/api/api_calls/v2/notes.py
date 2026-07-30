@@ -80,7 +80,10 @@ def retrieve_notes(
         kwargs.update({"request_timeout": Timeout(web_timeout_long)})
 
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/notes/retrieveNotes", json=notes_json, **kwargs
+        path="/api/v2/notes/retrieveNotes",
+        json=notes_json,
+        method="POST",
+        **kwargs,
     )
     if not request_result:
         return []

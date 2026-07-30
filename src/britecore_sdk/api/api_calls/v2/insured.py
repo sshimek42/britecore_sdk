@@ -12,25 +12,8 @@ from britecore_sdk.api.api_calls import (
     api_client,
 )
 from britecore_sdk.api.api_calls.v2._common import build_payload
-from britecore_sdk.api.api_calls.v2._common import post as common_post
 
 API_CLIENT: BritecoreAPIClient = api_client
-
-
-def _post(
-    path: str,
-    payload: dict[str, Any] | None = None,
-    *,
-    include_endpoint: bool = False,
-    **kwargs: Unpack[RequestParameters],
-) -> Any:
-    return common_post(
-        path,
-        payload,
-        include_endpoint=include_endpoint,
-        client=API_CLIENT,
-        **kwargs,
-    )
 
 
 def get_property_information_and_photos(
@@ -40,11 +23,16 @@ def get_property_information_and_photos(
 
     POST /api/v2/insured/get_property_information_and_photos
     """
-    return _post(
-        "/api/v2/insured/get_property_information_and_photos",
-        build_payload(property_id=property_id),
-        include_endpoint=True,
+    request_json = build_payload(property_id=property_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/get_property_information_and_photos",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/get_property_information_and_photos",
     )
 
 
@@ -54,11 +42,16 @@ def new_claim_information(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve claim starter information for a property/policy pair."""
-    return _post(
-        "/api/v2/insured/new_claim_information",
-        build_payload(property_id=property_id, policy_id=policy_id),
-        include_endpoint=True,
+    request_json = build_payload(property_id=property_id, policy_id=policy_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/new_claim_information",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/new_claim_information",
     )
 
 
@@ -68,11 +61,16 @@ def set_photo_as_insurred_preferred(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Mark an uploaded photo as the preferred insured photo."""
-    return _post(
-        "/api/v2/insured/set_photo_as_insurred_preferred",
-        build_payload(file_id=file_id, reference_id=reference_id),
-        include_endpoint=True,
+    request_json = build_payload(file_id=file_id, reference_id=reference_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/set_photo_as_insurred_preferred",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/set_photo_as_insurred_preferred",
     )
 
 
@@ -81,20 +79,30 @@ def update_claim(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update claim details for an insured workflow."""
-    return _post(
-        "/api/v2/insured/update_claim",
-        payload,
-        include_endpoint=True,
+    request_json = payload or {}
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/update_claim",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/update_claim",
     )
 
 
 def get_primary_carrier(**kwargs: Unpack[RequestParameters]) -> Any:
     """Retrieve the primary carrier metadata."""
-    return _post(
-        "/api/v2/insured/get_primary_carrier",
-        include_endpoint=True,
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/get_primary_carrier",
+        json={},
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/get_primary_carrier",
     )
 
 
@@ -103,11 +111,16 @@ def retrieve_contact_information(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve insured contact information."""
-    return _post(
-        "/api/v2/insured/retrieve_contact_information",
-        payload,
-        include_endpoint=True,
+    request_json = payload or {}
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/retrieve_contact_information",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/retrieve_contact_information",
     )
 
 
@@ -118,15 +131,20 @@ def change_billing_schedule(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Change an insured's billing schedule selection."""
-    return _post(
-        "/api/v2/insured/change_billing_schedule",
-        build_payload(
-            policy_id=policy_id,
-            billing_schedule_id=billing_schedule_id,
-            policy_term_id=policy_term_id,
-        ),
-        include_endpoint=True,
+    request_json = build_payload(
+        policy_id=policy_id,
+        billing_schedule_id=billing_schedule_id,
+        policy_term_id=policy_term_id,
+    )
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/change_billing_schedule",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/change_billing_schedule",
     )
 
 
@@ -136,11 +154,16 @@ def set_file_metadata(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update metadata for an insured file record."""
-    return _post(
-        "/api/v2/insured/set_file_metadata",
-        build_payload(file_id=file_id, metadata=metadata),
-        include_endpoint=True,
+    request_json = build_payload(file_id=file_id, metadata=metadata)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/set_file_metadata",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/set_file_metadata",
     )
 
 
@@ -149,11 +172,16 @@ def update_contact_information(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update insured contact information."""
-    return _post(
-        "/api/v2/insured/update_contact_information",
-        payload,
-        include_endpoint=True,
+    request_json = payload or {}
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/update_contact_information",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/update_contact_information",
     )
 
 
@@ -163,11 +191,16 @@ def set_photo_caption(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Set or update a caption for an insured photo."""
-    return _post(
-        "/api/v2/insured/set_photo_caption",
-        build_payload(file_id=file_id, caption=caption),
-        include_endpoint=True,
+    request_json = build_payload(file_id=file_id, caption=caption)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/set_photo_caption",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/set_photo_caption",
     )
 
 
@@ -176,11 +209,16 @@ def get_complete_contact_information(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve complete insured contact details."""
-    return _post(
-        "/api/v2/insured/get_complete_contact_information",
-        payload,
-        include_endpoint=True,
+    request_json = payload or {}
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/get_complete_contact_information",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/get_complete_contact_information",
     )
 
 
@@ -189,11 +227,16 @@ def upload_property_or_claim_photo(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Upload a property or claim photo."""
-    return _post(
-        "/api/v2/insured/upload_property_or_claim_photo",
-        payload,
-        include_endpoint=True,
+    request_json = payload or {}
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/upload_property_or_claim_photo",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/upload_property_or_claim_photo",
     )
 
 
@@ -202,21 +245,31 @@ def get_agent_and_agencies_from_contact(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve agent and agency records for a contact."""
-    return _post(
-        "/api/v2/insured/get_agent_and_agencies_from_contact",
-        build_payload(contact_id=contact_id),
-        include_endpoint=True,
+    request_json = build_payload(contact_id=contact_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/get_agent_and_agencies_from_contact",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/get_agent_and_agencies_from_contact",
     )
 
 
 def submit_claim(claim_id: str, **kwargs: Unpack[RequestParameters]) -> Any:
     """Submit a claim for processing."""
-    return _post(
-        "/api/v2/insured/submit_claim",
-        build_payload(claim_id=claim_id),
-        include_endpoint=True,
+    request_json = build_payload(claim_id=claim_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/submit_claim",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/submit_claim",
     )
 
 
@@ -226,11 +279,16 @@ def is_email_available(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Check whether an email address is available for use."""
-    return _post(
-        "/api/v2/insured/is_email_available",
-        build_payload(email=email, contact_id=contact_id),
-        include_endpoint=True,
+    request_json = build_payload(email=email, contact_id=contact_id)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/is_email_available",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/is_email_available",
     )
 
 
@@ -240,11 +298,16 @@ def update_contact_email_notices_flag(
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Update the insured contact email-notices preference flag."""
-    return _post(
-        "/api/v2/insured/update_contact_email_notices_flag",
-        build_payload(contact_id=contact_id, enabled=enabled),
-        include_endpoint=True,
+    request_json = build_payload(contact_id=contact_id, enabled=enabled)
+    request_result = API_CLIENT.do_request(
+        path="/api/v2/insured/update_contact_email_notices_flag",
+        json=request_json,
+        method="POST",
         **kwargs,
+    )
+    return API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/insured/update_contact_email_notices_flag",
     )
 
 

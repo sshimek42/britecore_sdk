@@ -61,12 +61,16 @@ def get_export_line_file(
     request_result = API_CLIENT.do_request(
         path="/api/v2/lines/get_export_line_file",
         json={k: v for k, v in web_request_json.items() if v is not None},
+        method="POST",
         **kwargs,
     )
 
     LOGGER.info("Finished retrieving line export for IDs: %s", line)
 
-    processed_result = API_CLIENT.process_result(request_result)
+    processed_result = API_CLIENT.process_result(
+        request_result,
+        endpoint="/api/v2/lines/get_export_line_file",
+    )
     if processed_result is not None:
         return loads(processed_result)
 
@@ -79,7 +83,10 @@ def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
     POST /api/v2/lines/get_all_effective_dates
     """
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/lines/get_all_effective_dates", **kwargs
+        path="/api/v2/lines/get_all_effective_dates",
+        json={},
+        method="POST",
+        **kwargs,
     )
 
     return API_CLIENT.process_result(
@@ -100,7 +107,10 @@ def get_all_states(
         effective_date_json = {"effective_date_id": effective_date_id}
 
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/lines/get_all_states", json=effective_date_json, **kwargs
+        path="/api/v2/lines/get_all_states",
+        json=effective_date_json,
+        method="POST",
+        **kwargs,
     )
 
     return API_CLIENT.process_result(
@@ -125,7 +135,10 @@ def get_all_lines(
         current_lines_json.update({"location_id": location_id})
 
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/lines/get_all_lines", json=current_lines_json, **kwargs
+        path="/api/v2/lines/get_all_lines",
+        json=current_lines_json,
+        method="POST",
+        **kwargs,
     )
 
     return API_CLIENT.process_result(
@@ -168,6 +181,7 @@ def list_policy_types(
     request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
         path="/api/v2/lines/list_policy_types",
         json=filtered_policy_types_json,
+        method="POST",
         **kwargs,
     )
 

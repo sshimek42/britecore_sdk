@@ -1192,8 +1192,15 @@ class TestAccountingEndpoints:
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
-        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
-        mock_process_result.assert_called_once_with(mock_response)
+        mock_do_request.assert_called_once_with(
+            path=expected_path,
+            json=expected_json,
+            method="POST",
+        )
+        mock_process_result.assert_called_once_with(
+            mock_response,
+            endpoint=expected_path,
+        )
 
 
 class TestCommissionsEndpoints:
@@ -1270,8 +1277,15 @@ class TestClaimsEndpoints:
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
-        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
-        mock_process_result.assert_called_once_with(mock_response)
+        mock_do_request.assert_called_once_with(
+            path=expected_path,
+            json=expected_json,
+            method="POST",
+        )
+        mock_process_result.assert_called_once_with(
+            mock_response,
+            endpoint=expected_path,
+        )
 
 
 class TestLinesEndpoints:
@@ -1344,7 +1358,11 @@ class TestInsuredEndpoints:
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
-        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
+        mock_do_request.assert_called_once_with(
+            path=expected_path,
+            json=expected_json,
+            method="POST",
+        )
         mock_process_result.assert_called_once_with(
             mock_response, endpoint=expected_path
         )
@@ -1418,8 +1436,15 @@ class TestReportsEndpoints:
             result = getattr(module, function_name)(**call_kwargs)
 
         assert result == {"ok": True}
-        mock_do_request.assert_called_once_with(path=expected_path, json=expected_json)
-        mock_process_result.assert_called_once_with(mock_response)
+        mock_do_request.assert_called_once_with(
+            path=expected_path,
+            json=expected_json,
+            method="POST",
+        )
+        mock_process_result.assert_called_once_with(
+            mock_response,
+            endpoint=expected_path,
+        )
 
 
 class TestPaymentsEndpoints:

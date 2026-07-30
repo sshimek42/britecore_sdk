@@ -140,18 +140,13 @@ def retrieve_policy_list_from_user(
     against ``namedInsured`` entries before returning values.
     """
     LOGGER.debug("Searching for '%s'", contact_name)
-    user_request_json: dict[str, Any] = {
-        "sort_obj": {"field": "policy_number", "order": "asc"},
-        "current_page": 1,
-        "page_size": 100,
-        "search_string": contact_name,
-    }
-    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
-        path="/api/v2/policies/search",
-        json=user_request_json,
+    user_json = search_policies(
+        sort_obj={"field": "policy_number", "order": "asc"},
+        current_page=1,
+        page_size=100,
+        search_string=contact_name,
         **kwargs,
-    )
-    user_json = API_CLIENT.process_result(request_result)["records"]
+    )["records"]
 
     policy_list: list[str] = []
 
@@ -169,6 +164,33 @@ def retrieve_policy_list_from_user(
             policy_list.append(each_policy["policyNumber"])
 
     return list(dict.fromkeys(policy_list))
+
+
+def search_policies(
+    sort_obj: dict[str, Any] | None = None,
+    current_page: int | None = None,
+    page_size: int | None = None,
+    search_string: str | None = None,
+    **kwargs: Unpack[RequestParameters],
+) -> Any:
+    """Search policies.
+
+    POST /api/v2/policies/search
+    """
+    request_json: dict[str, Any] = {
+        "sort_obj": sort_obj,
+        "current_page": current_page,
+        "page_size": page_size,
+        "search_string": search_string,
+    }
+    filtered_json = {k: v for k, v in request_json.items() if v is not None}
+    request_result: BaseHTTPResponse | HTTPResponse | None = API_CLIENT.do_request(
+        path="/api/v2/policies/search",
+        json=filtered_json,
+        method="POST",
+        **kwargs,
+    )
+    return API_CLIENT.process_result(request_result, endpoint="/api/v2/policies/search")
 
 
 def retrieve_policy_contact_info(
@@ -3347,17 +3369,25 @@ def list_policies(
         Normalized API response dict, typically ``{"data": [...], ...}``.
     """
     _client = client if client is not None else API_CLIENT
-    request_json: dict[str, Any] = {
-        "sort_obj": {"field": "policy_number", "order": "asc"},
-        "current_page": page,
-        "page_size": limit,
-    }
-    request_result = _client.do_request(
-        path="/api/v2/policies/search",
-        json=request_json,
-        **kwargs,
-    )
-    raw = _client.process_result(request_result)
+    if _client is API_CLIENT:
+        raw = search_policies(
+            sort_obj={"field": "policy_number", "order": "asc"},
+            current_page=page,
+            page_size=limit,
+            **kwargs,
+        )
+    else:
+        request_json: dict[str, Any] = {
+            "sort_obj": {"field": "policy_number", "order": "asc"},
+            "current_page": page,
+            "page_size": limit,
+        }
+        request_result = _client.do_request(
+            path="/api/v2/policies/search",
+            json=request_json,
+            **kwargs,
+        )
+        raw = _client.process_result(request_result)
     # Normalise to {"data": [...]} so iter_policies works uniformly
     if isinstance(raw, dict) and "records" in raw:
         return {"data": raw["records"]}
