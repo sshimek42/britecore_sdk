@@ -417,9 +417,10 @@ def download_report_file(
         method="POST",
         **kwargs,
     )
-
-    return API_CLIENT.process_result(
-        request_result, endpoint="/api/v2/reports/download_report_file"
+    raw_bytes = bytes(getattr(request_result, "data", b""))
+    return parse_report_file_content(
+        raw_bytes,
+        content_type=_extract_content_type(request_result),
     )
 
 
@@ -432,21 +433,7 @@ def download_report_file_decoded(
     This bypasses ``process_result(...)`` so binary response bodies are handled
     safely. Use this helper when the endpoint returns file content directly.
     """
-    request_json: dict[str, Any] = {
-        "file_id": file_id,
-    }
-    filtered_json = {k: v for k, v in request_json.items() if v is not None}
-    request_result = API_CLIENT.do_request(
-        path="/api/v2/reports/download_report_file",
-        json=filtered_json,
-        method="POST",
-        **kwargs,
-    )
-    raw_bytes = bytes(getattr(request_result, "data", b""))
-    return parse_report_file_content(
-        raw_bytes,
-        content_type=_extract_content_type(request_result),
-    )
+    return download_report_file(file_id=file_id, **kwargs)
 
 
 def generate_consolidated_declaration(

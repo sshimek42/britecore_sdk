@@ -89,3 +89,22 @@ def test_download_report_file_decoded_uses_content_type_header() -> None:
         json={"file_id": "F-1"},
         method="POST",
     )
+
+
+@pytest.mark.unit
+def test_download_report_file_decoded_is_used_by_public_wrapper() -> None:
+    response = MagicMock()
+    response.data = gzip.compress(b'{"ok": true, "count": 7}')
+    response.headers = {"Content-Type": "application/gzip"}
+
+    with patch.object(reports, "API_CLIENT") as mock_client:
+        mock_client.do_request.return_value = response
+
+        result = reports.download_report_file(file_id="F-2")
+
+    assert result == {"ok": True, "count": 7}
+    mock_client.do_request.assert_called_once_with(
+        path="/api/v2/reports/download_report_file",
+        json={"file_id": "F-2"},
+        method="POST",
+    )

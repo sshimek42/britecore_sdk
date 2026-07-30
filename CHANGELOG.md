@@ -19,6 +19,24 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.1] - 2026-07-30
+
+### Added
+
+### Changed
+
+- Updated `download_report_file(...)` in `src/britecore_sdk/api/api_calls/v2/reports.py` to decode file responses directly instead of routing binary payloads through JSON parsing.
+
+- Kept `download_report_file_decoded(...)` as a compatibility alias for callers that prefer an explicit decoded-file helper.
+
+### Fixed
+
+- Prevented `download_report_file(...)` from raising `NoDataReturned` on gzip/zip/raw binary report responses that are not valid JSON.
+
+### Deprecated
+
+---
+
 ## [2.4.0] - 2026-07-30
 
 ### Added
