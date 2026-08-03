@@ -25,7 +25,10 @@ API_CLIENT: AsyncBritecoreAPIClient = async_api_client
 
 
 async def aget_export_line_file(
-    line: tuple,
+    line: tuple[str, str, str] | None = None,
+    curr_eff_date_id: str | None = None,
+    curr_state_id: str | None = None,
+    curr_line_id: str | None = None,
     include_custom_sequences: bool = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
@@ -33,12 +36,28 @@ async def aget_export_line_file(
 
     POST /api/v2/lines/get_export_line_file
     """
-    LOGGER.info("Retrieving line export for IDs: %s", line)
+    if line is not None:
+        try:
+            curr_eff_date_id = str(line[0])
+            curr_state_id = str(line[1])
+            curr_line_id = str(line[2])
+        except (IndexError, TypeError) as exc:
+            raise BritecoreError.MissingParameter(
+                "line must be a tuple of (curr_eff_date_id, curr_state_id, curr_line_id)"
+            ) from exc
+
+    if not curr_eff_date_id or not curr_state_id or not curr_line_id:
+        raise BritecoreError.MissingParameter(
+            "curr_eff_date_id, curr_state_id, and curr_line_id are required"
+        )
+
+    line_ids = (curr_eff_date_id, curr_state_id, curr_line_id)
+    LOGGER.info("Retrieving line export for IDs: %s", line_ids)
 
     web_request_json: dict[str, Any] = {
-        "curr_eff_date_id": line[0],
-        "curr_line_id": line[2],
-        "curr_state_id": line[1],
+        "curr_eff_date_id": curr_eff_date_id,
+        "curr_line_id": curr_line_id,
+        "curr_state_id": curr_state_id,
         "include_custom_sequences": include_custom_sequences,
     }
 
@@ -50,13 +69,27 @@ async def aget_export_line_file(
     if request_result is None:
         raise RuntimeError("ado_request returned None for aget_export_line_file")
 
-    LOGGER.info("Finished retrieving line export for IDs: %s", line)
+    LOGGER.info("Finished retrieving line export for IDs: %s", line_ids)
 
     processed_result = await API_CLIENT.aprocess_result(request_result)
     if processed_result is not None:
         return loads(processed_result)
 
     return request_result
+
+
+async def aget_line_export(*args: Any, **kwargs: Any) -> Any:
+    """Backward-compatible alias for aget_export_line_file."""
+    if args:
+        if len(args) == 1 and "line" not in kwargs:
+            kwargs["line"] = args[0]
+        elif len(args) == 3 and "line" not in kwargs:
+            kwargs["line"] = (args[0], args[1], args[2])
+        else:
+            raise TypeError(
+                "aget_line_export accepts either one tuple argument or three ID arguments"
+            )
+    return await aget_export_line_file(**kwargs)
 
 
 async def aget_export_line_files_stitched(
@@ -128,5 +161,6 @@ async def aget_export_line_files_stitched(
 
 __all__ = [
     "aget_export_line_file",
+    "aget_line_export",
     "aget_export_line_files_stitched",
 ]

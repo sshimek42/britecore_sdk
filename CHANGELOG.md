@@ -19,6 +19,28 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.2] - 2026-08-03
+
+### Added
+
+### Changed
+
+- Updated line export wrappers in `src/britecore_sdk/api/api_calls/v2/lines.py` and `src/britecore_sdk/api/api_calls/v2/async_lines.py` to accept explicit `curr_eff_date_id`, `curr_state_id`, and `curr_line_id` keyword arguments while preserving tuple-based compatibility input.
+
+- Added compatibility alias helpers `get_line_export(...)` and `aget_line_export(...)` for callers using prior line-export call patterns.
+
+- Extended selected wrappers to support doc-accurate argument aliases while preserving existing SDK aliases: `type` for payment method payloads in `src/britecore_sdk/api/api_calls/v2/payments.py`, and `id` for search index operations in `src/britecore_sdk/api/api_calls/v2/search.py`.
+
+- Updated `get_contacts_by_ids(...)` in `src/britecore_sdk/api/api_calls/v2/contacts.py` to accept either a list of contact IDs or a comma-separated contact ID string.
+
+### Fixed
+
+- Added and updated unit tests in `tests/unit/test_interactive_menu.py`, `tests/unit/test_v2_coverage_gaps.py`, and `tests/unit/test_v2_new_endpoints.py` to validate backward-compatible input shapes and argument normalization.
+
+### Deprecated
+
+---
+
 ## [2.4.1] - 2026-07-30
 
 ### Added

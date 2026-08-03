@@ -228,22 +228,33 @@ def find_contact_by_params(
 
 
 def get_contacts_by_ids(
-    contact_id_list: list[str], **kwargs: Unpack[RequestParameters]
+    contact_id_list: list[str] | str,
+    **kwargs: Unpack[RequestParameters],
 ) -> Any:
     """Retrieve contacts by a list of IDs.
 
     POST /api/v2/contacts/get_contacts_by_ids
     """
-    if (
-        not contact_id_list
-        or not isinstance(contact_id_list, list)
-        or not all(isinstance(x, str) for x in contact_id_list)
+    joined_contact_ids: str
+    if isinstance(contact_id_list, str):
+        joined_contact_ids = contact_id_list.strip()
+        if not joined_contact_ids:
+            raise BritecoreError.MissingParameter(
+                "contact_id_list (list of str or comma-separated str) is required"
+            )
+    elif (
+        isinstance(contact_id_list, list)
+        and contact_id_list
+        and all(isinstance(x, str) and x.strip() for x in contact_id_list)
     ):
+        joined_contact_ids = ",".join(contact_id_list)
+    else:
         raise BritecoreError.MissingParameter(
-            "contact_id_list (list of str) is required"
+            "contact_id_list (list of str or comma-separated str) is required"
         )
-    LOGGER.debug("Retrieving contacts by ids: %s", contact_id_list)
-    request_json: dict[str, str] = {"contact_id_list": ",".join(contact_id_list)}
+
+    LOGGER.debug("Retrieving contacts by ids: %s", joined_contact_ids)
+    request_json: dict[str, str] = {"contact_id_list": joined_contact_ids}
     request_result = API_CLIENT.do_request(
         path="/api/v2/contacts/get_contacts_by_ids",
         json=request_json,

@@ -41,7 +41,10 @@ def _effective_date_payload(
 
 
 def get_export_line_file(
-    line: tuple,
+    line: tuple[str, str, str] | None = None,
+    curr_eff_date_id: str | None = None,
+    curr_state_id: str | None = None,
+    curr_line_id: str | None = None,
     include_custom_sequences: bool | None = False,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
@@ -49,12 +52,29 @@ def get_export_line_file(
 
     POST /api/v2/lines/get_export_line_file
     """
-    LOGGER.info("Retrieving line export for IDs: %s", line)
+    # Preserve legacy tuple input while supporting explicit keyword IDs.
+    if line is not None:
+        try:
+            curr_eff_date_id = str(line[0])
+            curr_state_id = str(line[1])
+            curr_line_id = str(line[2])
+        except (IndexError, TypeError) as exc:
+            raise BritecoreError.MissingParameter(
+                "line must be a tuple of (curr_eff_date_id, curr_state_id, curr_line_id)"
+            ) from exc
+
+    if not curr_eff_date_id or not curr_state_id or not curr_line_id:
+        raise BritecoreError.MissingParameter(
+            "curr_eff_date_id, curr_state_id, and curr_line_id are required"
+        )
+
+    line_ids = (curr_eff_date_id, curr_state_id, curr_line_id)
+    LOGGER.info("Retrieving line export for IDs: %s", line_ids)
 
     web_request_json: dict[str, str | bool | None] = {
-        "curr_eff_date_id": line[0],
-        "curr_line_id": line[2],
-        "curr_state_id": line[1],
+        "curr_eff_date_id": curr_eff_date_id,
+        "curr_line_id": curr_line_id,
+        "curr_state_id": curr_state_id,
         "include_custom_sequences": include_custom_sequences,
     }
 
@@ -65,7 +85,7 @@ def get_export_line_file(
         **kwargs,
     )
 
-    LOGGER.info("Finished retrieving line export for IDs: %s", line)
+    LOGGER.info("Finished retrieving line export for IDs: %s", line_ids)
 
     processed_result = API_CLIENT.process_result(
         request_result,
@@ -75,6 +95,26 @@ def get_export_line_file(
         return loads(processed_result)
 
     return request_result
+
+
+def get_line_export(*args: Any, **kwargs: Any) -> Any:
+    """Backward-compatible alias for get_export_line_file.
+
+    Accepts either:
+    - ``get_line_export((eff_date_id, state_id, line_id), ...)``
+    - ``get_line_export(eff_date_id, state_id, line_id, ...)``
+    - keyword arguments accepted by ``get_export_line_file``
+    """
+    if args:
+        if len(args) == 1 and "line" not in kwargs:
+            kwargs["line"] = args[0]
+        elif len(args) == 3 and "line" not in kwargs:
+            kwargs["line"] = (args[0], args[1], args[2])
+        else:
+            raise TypeError(
+                "get_line_export accepts either one tuple argument or three ID arguments"
+            )
+    return get_export_line_file(**kwargs)
 
 
 def get_all_effective_dates(**kwargs: Unpack[RequestParameters]) -> Any:
@@ -998,6 +1038,25 @@ def update_rating_table(
 
 
 __all__ = [
+    "get_export_line_file",
+    "get_line_export",
+    "get_all_effective_dates",
+    "get_all_states",
+    "get_all_lines",
+    "list_policy_types",
+    "find_effective_date",
+    "retrieve_effective_date",
+    "create_builderdiff_mapping",
+    "copy_underwriting_rules",
+    "delete_builderdiff_mapping",
+    "copy_line_items",
+    "get_policies_with_line_item",
+    "retrieve_policy_type",
+    "delete_line_item",
+    "import_line",
+    "copy_policy_type",
+    "get_all_policy_types",
+    "get_export_line_files_stitched",
     "create_effective_date",
     "create_policy_type",
     "create_rating_grid_definition",

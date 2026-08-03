@@ -1007,7 +1007,27 @@ class TestContactsGetContactsByIds:
             )
 
     @pytest.mark.unit
-    @pytest.mark.parametrize("bad_ids", [None, [], "notalist"])
+    def test_get_contacts_by_ids_accepts_comma_separated_string(self):
+        from britecore_sdk.api.api_calls.v2 import contacts
+
+        mock_response = MagicMock()
+        with patch.object(contacts, "API_CLIENT") as mock_client:
+            mock_client.do_request.return_value = mock_response
+            mock_client.process_result.return_value = {
+                "success": True,
+                "data": {},
+                "messages": [],
+            }
+
+            contacts.get_contacts_by_ids("C1,C2")
+
+            mock_client.do_request.assert_called_once_with(
+                path="/api/v2/contacts/get_contacts_by_ids",
+                json={"contact_id_list": "C1,C2"},
+            )
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("bad_ids", [None, [], ""])
     def test_get_contacts_by_ids_invalid(self, bad_ids):
         from britecore_sdk.api.api_calls.v2 import contacts
 

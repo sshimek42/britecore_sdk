@@ -828,12 +828,20 @@ class TestContactsMissingPaths:
         with pytest.raises(BritecoreError.MissingParameter):
             contacts.get_contacts_by_ids([])  # empty list
 
-    def test_get_contacts_by_ids_raises_on_non_list(self, env_api_key, mock_settings):
+    def test_get_contacts_by_ids_accepts_comma_separated_string(
+        self, env_api_key, mock_settings
+    ):
         from britecore_sdk.api.api_calls.v2 import contacts
 
-        _client(mock_settings)
-        with pytest.raises(BritecoreError.MissingParameter):
-            contacts.get_contacts_by_ids("C-1")  # type: ignore[arg-type]
+        client = _client(mock_settings)
+        with (
+            patch.object(client, "do_request", return_value=_resp()) as mock_req,
+            patch.object(client, "process_result", return_value={"contacts": {}}),
+        ):
+            contacts.get_contacts_by_ids("C-1,C-2")
+
+        call = mock_req.call_args
+        assert call.kwargs["json"]["contact_id_list"] == "C-1,C-2"
 
     def test_get_contacts_by_ids_success(self, env_api_key, mock_settings):
         from britecore_sdk.api.api_calls.v2 import contacts

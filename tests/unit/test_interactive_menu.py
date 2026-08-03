@@ -220,6 +220,18 @@ class TestLinesExports:
 
         assert result == {"ok": True}
 
+    @pytest.mark.unit
+    def test_get_line_export_accepts_three_positional_ids(self, monkeypatch):
+        """get_line_export keeps legacy positional-ID call compatibility."""
+        fake_client = MagicMock()
+        fake_client.do_request.return_value = MagicMock()
+        fake_client.process_result.return_value = '{"ok": true}'
+        monkeypatch.setattr(lines_module, "API_CLIENT", fake_client)
+
+        result = lines_module.get_line_export("date-1", "state-1", "line-1")
+
+        assert result == {"ok": True}
+
 
 class TestPolicyMenu:
     """Tests for policy_menu interactive selection."""
