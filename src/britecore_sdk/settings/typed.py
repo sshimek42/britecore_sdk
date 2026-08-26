@@ -32,23 +32,49 @@ def build_typed_settings(
     """Build a validated typed view of key SDK settings from a Dynaconf instance."""
     BaseModel, BaseSettings, _ValidationError = _imports()
 
-    class TypedSiteSettings(BaseModel):
-        base_url: str = ""
-        client_id: str = ""
-        client_secret: str = ""
-        api_key: str = ""
-        web_retry: int | None = None
-        web_timeout: int | None = None
-        web_timeout_long: int | None = None
+    TypedSiteSettings = type(
+        "TypedSiteSettings",
+        (BaseModel,),
+        {
+            "base_url": "",
+            "client_id": "",
+            "client_secret": "",
+            "api_key": "",
+            "web_retry": None,
+            "web_timeout": None,
+            "web_timeout_long": None,
+            "__annotations__": {
+                "base_url": str,
+                "client_id": str,
+                "client_secret": str,
+                "api_key": str,
+                "web_retry": int | None,
+                "web_timeout": int | None,
+                "web_timeout_long": int | None,
+            },
+        },
+    )
 
-    class TypedSDKSettings(BaseSettings):
-        target_site: str | None = None
-        default_web_retry: int | None = None
-        default_web_timeout: int | None = None
-        default_web_timeout_long: int | None = None
-        sites: dict[str, TypedSiteSettings]
+    TypedSDKSettings = type(
+        "TypedSDKSettings",
+        (BaseSettings,),
+        {
+            "target_site": None,
+            "default_web_retry": None,
+            "default_web_timeout": None,
+            "default_web_timeout_long": None,
+            "sites": {},
+            "__annotations__": {
+                "target_site": str | None,
+                "default_web_retry": int | None,
+                "default_web_timeout": int | None,
+                "default_web_timeout_long": int | None,
+                "sites": dict[str, Any],
+            },
+        },
+    )
 
-    result_sites: dict[str, TypedSiteSettings] = {}
+    result_sites: dict[str, Any] = {}
     for site_name in site_names or ():
         with dynaconf_settings.using_env(site_name):
             result_sites[str(site_name)] = TypedSiteSettings(

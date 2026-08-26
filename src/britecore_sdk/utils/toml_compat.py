@@ -30,7 +30,7 @@ class _TomlCompat:
             import tomli_w
         except ImportError:
             try:
-                import toml as legacy_toml  # type: ignore[import-untyped]
+                import toml as legacy_toml
             except ImportError as import_error:
                 raise RuntimeError(
                     "TOML writing support is unavailable. Install britecore_sdk dependencies "
@@ -80,7 +80,7 @@ class _TomlCompat:
             raise TypeError("Text stream destination must provide a binary buffer")
         except (ImportError, TypeError):
             try:
-                import toml as legacy_toml  # type: ignore[import-untyped]
+                import toml as legacy_toml
             except ImportError as import_error:
                 raise RuntimeError(
                     "TOML writing support is unavailable. Install britecore_sdk dependencies "
