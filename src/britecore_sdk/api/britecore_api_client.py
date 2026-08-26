@@ -591,6 +591,23 @@ class BritecoreAPIClient:
         target = header_name.strip().lower()
         return any(existing.strip().lower() == target for existing in headers)
 
+    @staticmethod
+    def raise_for_http_status(
+        response: urllib3.HTTPResponse | urllib3.BaseHTTPResponse,
+        endpoint: str | None = None,
+        client: "BritecoreAPIClient | None" = None,
+        request_id: str | None = None,
+        sanitized_body: Any | None = None,
+    ) -> None:
+        """Raise SDK exceptions for non-success HTTP statuses with endpoint context."""
+        BritecoreAPIClient._raise_for_http_status(
+            response=response,
+            endpoint=endpoint,
+            client=client,
+            request_id=request_id,
+            sanitized_body=sanitized_body,
+        )
+
     @classmethod
     def _raise_for_http_status(
         cls,

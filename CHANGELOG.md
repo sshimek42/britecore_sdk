@@ -19,6 +19,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.4] - 2026-08-26
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Corrected the report-download HTTP-status validation to use the supported public client API instead of a protected helper, avoiding the `PYL-W0212` lint warning while preserving the regression fix for 4xx/5xx error handling.
+- Kept the regression test coverage for the 500-error response case in `tests/unit/test_v2_reports_download_parsing.py`.
+
+### Deprecated
+
+---
+
 ## [2.4.3] - 2026-08-26
 
 ### Added

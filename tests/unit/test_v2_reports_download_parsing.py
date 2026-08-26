@@ -102,7 +102,7 @@ def test_download_report_file_raises_on_http_error() -> None:
 
     class FakeClient:
         @staticmethod
-        def _raise_for_http_status(*args, **kwargs):
+        def raise_for_http_status(*args, **kwargs):
             raise BritecoreError.ServerError(
                 "Error - 500 - Server Error",
                 http_status=500,

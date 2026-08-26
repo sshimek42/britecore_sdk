@@ -424,7 +424,7 @@ def download_report_file(
             endpoint="/api/v2/reports/download_report_file",
         )
 
-    API_CLIENT._raise_for_http_status(
+    API_CLIENT.raise_for_http_status(
         request_result,
         endpoint="/api/v2/reports/download_report_file",
         client=API_CLIENT,
