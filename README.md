@@ -17,6 +17,8 @@ A production-ready **Python SDK for the BriteCore Insurance API**.
 
 **Status:** Stable (v2.3.1+) | **License:** Apache-2.0 | **Python:** 3.11+
 
+> Documentation ownership: `britecore_sdk` is the canonical source for SDK installation, auth, configuration, API usage, examples, and troubleshooting. The `britecore_docs` repo is the ecosystem map for repo boundaries, architecture, and cross-project workflows.
+
 ---
 
 ## Quick Start
@@ -190,6 +192,8 @@ reference and workflow examples.
 
 ## Documentation
 
+This repo is the authoritative SDK documentation set. Use it for installation, auth, configuration, endpoint usage, examples, and troubleshooting. For ecosystem-level guidance and repo boundaries, see the `britecore_docs` hub.
+
 | Topic | Link |
 | --- | --- |
 | **Setup & examples** | [GETTING_STARTED.md](./GETTING_STARTED.md) |
@@ -204,6 +208,7 @@ reference and workflow examples.
 | **Code of Conduct** | [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) |
 | **Troubleshooting** | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) |
 | **Security policy** | [SECURITY.md](./SECURITY.md) |
+| **Ecosystem map** | [britecore_docs repo](https://github.com/sshimek42/britecore_docs) |
 
 ## Installation & Configuration
 

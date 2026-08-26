@@ -5,6 +5,8 @@ This site hosts generated API docs and key project guides.
 
 ## Quick Navigation
 
+This site is the canonical technical documentation for the SDK itself. If you need repo boundaries, ecosystem architecture, or cross-project workflow context, use the [`britecore_docs`](https://github.com/sshimek42/britecore_docs) hub instead.
+
 **New to the SDK?** Start here:
 1. [Getting Started](../../GETTING_STARTED.md) — Installation and first API call (5 min)
 2. [Examples Overview](examples) — Runnable code examples
@@ -17,6 +19,7 @@ This site hosts generated API docs and key project guides.
 - **"Something broke"** → [Troubleshooting](../../TROUBLESHOOTING.md)
 - **"I'm upgrading from v1"** → [Migration Guide](MIGRATION_v1_to_v2)
 - **"I need an endpoint reference"** → [API Reference](api_reference)
+- **"How does this fit in the wider BriteCore stack?"** → [britecore_docs](https://github.com/sshimek42/britecore_docs)
 
 ## Project Links
 
