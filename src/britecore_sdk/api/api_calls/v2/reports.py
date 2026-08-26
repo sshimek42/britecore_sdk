@@ -14,6 +14,7 @@ from britecore_sdk.api.api_calls import (
 from britecore_sdk.api.api_calls.v2._common import (
     build_payload as common_build_payload,
 )
+from britecore_sdk.exceptions import BritecoreError
 
 API_CLIENT: BritecoreAPIClient = api_client
 
@@ -417,7 +418,23 @@ def download_report_file(
         method="POST",
         **kwargs,
     )
-    raw_bytes = bytes(getattr(request_result, "data", b""))
+    if request_result is None:
+        raise BritecoreError.NoDataReturned(
+            "Error - No response",
+            endpoint="/api/v2/reports/download_report_file",
+        )
+
+    API_CLIENT._raise_for_http_status(
+        request_result,
+        endpoint="/api/v2/reports/download_report_file",
+        client=API_CLIENT,
+        request_id=(getattr(request_result, "headers", {}) or {}).get(
+            "X-SDK-Request-ID"
+        ),
+        sanitized_body=filtered_json,
+    )
+
+    raw_bytes = bytes(getattr(request_result, "data", b"") or b"")
     return parse_report_file_content(
         raw_bytes,
         content_type=_extract_content_type(request_result),

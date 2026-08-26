@@ -19,6 +19,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.3] - 2026-08-26
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Fixed a regression in `download_report_file(...)` in `src/britecore_sdk/api/api_calls/v2/reports.py` where HTTP 4xx/5xx responses were being treated as valid report payloads instead of raising the normal SDK exception flow.
+- Added a focused regression test in `tests/unit/test_v2_reports_download_parsing.py` covering the 500-error response case.
+
+### Deprecated
+
+---
+
 ## [2.4.2] - 2026-08-03
 
 ### Added

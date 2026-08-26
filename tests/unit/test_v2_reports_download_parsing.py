@@ -9,6 +9,7 @@ from zipfile import ZipFile
 import pytest
 
 from britecore_sdk.api.api_calls.v2 import reports
+from britecore_sdk.exceptions import BritecoreError
 
 
 def _zip_bytes(files: dict[str, bytes]) -> bytes:
@@ -89,6 +90,34 @@ def test_download_report_file_decoded_uses_content_type_header() -> None:
         json={"file_id": "F-1"},
         method="POST",
     )
+
+
+@pytest.mark.unit
+def test_download_report_file_raises_on_http_error() -> None:
+    response = MagicMock()
+    response.status = 500
+    response.reason = "Server Error"
+    response.data = b'{"success": false, "message": "bad"}'
+    response.headers = {"Content-Type": "application/json"}
+
+    class FakeClient:
+        @staticmethod
+        def _raise_for_http_status(*args, **kwargs):
+            raise BritecoreError.ServerError(
+                "Error - 500 - Server Error",
+                http_status=500,
+                endpoint="/api/v2/reports/download_report_file",
+            )
+
+        do_request = MagicMock(return_value=response)
+
+    original_client = reports.API_CLIENT
+    reports.API_CLIENT = FakeClient()
+    try:
+        with pytest.raises(BritecoreError.ServerError):
+            reports.download_report_file(file_id="F-2")
+    finally:
+        reports.API_CLIENT = original_client
 
 
 @pytest.mark.unit
