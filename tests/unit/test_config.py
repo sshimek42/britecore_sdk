@@ -1,9 +1,12 @@
 """Unit tests for configuration module."""
 
+from contextlib import nullcontext
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+from britecore_sdk.settings.typed import build_typed_settings
 
 
 class TestLoadClientSettings:
@@ -195,6 +198,29 @@ class TestConfigInitialization:
 
         assert result == expected
         assert mock_build.call_count == 1
+
+    def test_build_typed_settings_builds_site_and_sdk_models(self):
+        """Typed settings models should include site values and active SDK defaults."""
+        mock_settings = MagicMock()
+        mock_settings.using_env.return_value = nullcontext()
+        mock_settings.get.side_effect = lambda key, default=None: {
+            "target_site": "prod",
+            "base_url": "https://api.example.com",
+            "client_id": "client-id",
+            "client_secret": "client-secret",
+            "api_key": "api-key",
+            "web_retry": 4,
+            "web_timeout": 15,
+            "web_timeout_long": 45,
+        }.get(key, default)
+
+        result = build_typed_settings(mock_settings, site_names=["prod"])
+
+        assert result.target_site == "prod"
+        assert result.default_web_retry == 4
+        assert result.sites["prod"].base_url == "https://api.example.com"
+        assert result.sites["prod"].client_id == "client-id"
+        assert result.sites["prod"].api_key == "api-key"
 
 
 # ---------------------------------------------------------------------------

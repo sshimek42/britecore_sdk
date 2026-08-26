@@ -69,9 +69,28 @@ def test_load_from_text_stream() -> None:
     assert parsed["value"] == 1
 
 
+def test_load_from_binary_stream() -> None:
+    stream = BytesIO(b"value = 1")
+
+    parsed = toml.load(stream)
+
+    assert parsed["value"] == 1
+
+
 def test_dump_to_binary_stream_uses_tomli_w_path() -> None:
     stream = BytesIO()
 
+    toml.dump({"value": 1}, stream)
+
+    assert b"value = 1" in stream.getvalue()
+
+
+def test_dump_to_binary_stream_uses_legacy_fallback(
+    import_hook_factory,
+) -> None:
+    import_hook_factory(fail_tomli_w=True)
+
+    stream = BytesIO()
     toml.dump({"value": 1}, stream)
 
     assert b"value = 1" in stream.getvalue()
@@ -94,6 +113,15 @@ def test_dump_falls_back_to_legacy_for_text_stream_without_buffer(
     toml.dump({"value": 1}, stream)
 
     assert stream.getvalue() == "value = 1\n"
+
+
+def test_dumps_raises_runtime_error_when_no_writer_available(
+    import_hook_factory,
+) -> None:
+    import_hook_factory(fail_tomli_w=True, provide_legacy=False)
+
+    with pytest.raises(RuntimeError, match="TOML writing support is unavailable"):
+        toml.dumps({"value": 1})
 
 
 def test_dump_raises_runtime_error_when_no_writer_available(
