@@ -260,6 +260,31 @@ class TestRequestContextOnExceptions:
         exc = BritecoreError.RequestTimeoutError("timed out", sanitized_body={"a": 1})
         assert exc.sanitized_body == {"a": 1}
 
+    @pytest.mark.unit
+    def test_request_timeout_error_str_includes_endpoint(self):
+        exc = BritecoreError.RequestTimeoutError(
+            "timed out",
+            endpoint="/api/v2/policies/retrieve_policy",
+            request_id="to-endpoint",
+        )
+        rendered = str(exc)
+        assert "Endpoint:" in rendered
+        assert "/api/v2/policies/retrieve_policy" in rendered
+
+    @pytest.mark.unit
+    def test_read_only_violation_string_fields(self):
+        exc = BritecoreError.ReadOnlyViolation(
+            "write blocked",
+            endpoint="/api/v2/contacts/new_contact",
+            method="POST",
+            request_id="ro-1",
+        )
+        rendered = str(exc)
+        assert "Read-only policy violation" in rendered
+        assert "Method: POST" in rendered
+        assert "Endpoint: /api/v2/contacts/new_contact" in rendered
+        assert "Request-ID: ro-1" in rendered
+
     # ------------------------------------------------------------------
     # NoTokenReturned
     # ------------------------------------------------------------------

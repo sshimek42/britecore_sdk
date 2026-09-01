@@ -108,3 +108,54 @@ class TestPackageRootExports:
 
         assert expected_exports.issubset(set(package.__all__))
         assert expected_exports.issubset(set(dir(package)))
+
+    @pytest.mark.unit
+    def test_unknown_lazy_export_raises_attribute_error(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Accessing a non-exported symbol should raise AttributeError."""
+        package = _import_fresh_package(monkeypatch)
+        missing_export = "not_an_exported_symbol"
+
+        with pytest.raises(AttributeError):
+            _ = getattr(package, missing_export)
+
+    @pytest.mark.unit
+    def test_development_env_invokes_secret_warning_check(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Import path should call warn_if_secrets_in_settings in development mode."""
+        pytest.importorskip("britecore_sdk.utils.check_site_configs")
+        from unittest.mock import patch
+
+        monkeypatch.setenv("BRITECORE_ENV", "development")
+        package = _import_fresh_package(monkeypatch)
+
+        with pytest.MonkeyPatch.context() as reload_patch:
+            reload_patch.setenv("BRITECORE_ENV", "development")
+            with patch(
+                "britecore_sdk.utils.check_site_configs.warn_if_secrets_in_settings"
+            ) as warn_check:
+                importlib.reload(package)
+
+            assert warn_check.call_count == 1
+
+    @pytest.mark.unit
+    def test_development_env_warning_hook_failures_are_swallowed(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        """Development startup should not fail when secret warning checks raise."""
+        pytest.importorskip("britecore_sdk.utils.check_site_configs")
+        from unittest.mock import patch
+
+        monkeypatch.setenv("BRITECORE_ENV", "development")
+        package = _import_fresh_package(monkeypatch)
+
+        with patch(
+            "britecore_sdk.utils.check_site_configs.warn_if_secrets_in_settings",
+            side_effect=RuntimeError("boom"),
+        ):
+            importlib.reload(package)

@@ -1,5 +1,6 @@
 """Unit tests for configuration module."""
 
+import importlib
 from contextlib import nullcontext
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -47,6 +48,61 @@ class TestLoadClientSettings:
 
             # Verify it returns something (the merged result)
             assert result is not None
+
+    @pytest.mark.unit
+    def test_load_config_logs_hybrid_warning_when_env_keys_missing(self):
+        """load_config should warn when required credentials come from files, not env vars."""
+        from britecore_sdk.settings.config import LoadClientSettings
+
+        with (
+            patch("britecore_sdk.settings.config.settings") as mock_cfg,
+            patch("britecore_sdk.settings.config.LOGGER.warning") as mock_warning,
+            patch("britecore_sdk.settings.config.os.environ.get", return_value=None),
+        ):
+            mock_cfg.using_env.return_value.__enter__ = MagicMock(return_value=mock_cfg)
+            mock_cfg.using_env.return_value.__exit__ = MagicMock(return_value=False)
+
+            def _get(key, default=None):
+                values = {
+                    "base_url": "https://api.example.com",
+                    "client_id": "cid",
+                    "client_secret": "secret",
+                    "api_key": "key",
+                }
+                return values.get(key, default)
+
+            mock_cfg.get.side_effect = _get
+
+            loader = LoadClientSettings("test_site")
+            loader.load_config()
+
+            assert mock_warning.call_count == 1
+
+    @pytest.mark.unit
+    def test_load_config_wraps_unexpected_errors(self):
+        """load_config should wrap unexpected exceptions in ConfigurationError."""
+        from britecore_sdk.exceptions import BritecoreError
+        from britecore_sdk.settings.config import LoadClientSettings
+
+        with patch("britecore_sdk.settings.config.settings") as mock_cfg:
+            mock_cfg.using_env.side_effect = RuntimeError("bad cfg")
+            loader = LoadClientSettings("test_site")
+
+            with pytest.raises(BritecoreError.ConfigurationError):
+                loader.load_config()
+
+    @pytest.mark.unit
+    def test_load_config_returns_settings_when_target_site_missing(self):
+        """Defensive fallback returns global settings when target_site is unset."""
+        from britecore_sdk.settings import config as config_module
+
+        loader = config_module.LoadClientSettings.__new__(
+            config_module.LoadClientSettings
+        )
+        loader.target_site = None
+        loader._warned_hybrid_config = False
+
+        assert loader.load_config() is config_module.settings
 
 
 class TestGetTargetSite:
@@ -198,6 +254,40 @@ class TestConfigInitialization:
 
         assert result == expected
         assert mock_build.call_count == 1
+
+    @pytest.mark.unit
+    def test_non_default_env_triggers_validator_check_on_reload(self, monkeypatch):
+        """Reloading config with a non-default dynaconf env should call validate()."""
+        import britecore_sdk.settings.config as config_module
+
+        fake_settings = MagicMock()
+        fake_settings.validators = MagicMock()
+        fake_settings.get.return_value = None
+
+        monkeypatch.setenv("ENV_FOR_DYNACONF", "staging")
+        with patch("dynaconf.Dynaconf", return_value=fake_settings):
+            importlib.reload(config_module)
+
+        assert fake_settings.validators.validate.call_count == 1
+
+        monkeypatch.setenv("ENV_FOR_DYNACONF", "default")
+        importlib.reload(config_module)
+
+
+class TestDefaultsHelpers:
+    """Coverage tests for configuration defaults helper functions."""
+
+    @pytest.mark.unit
+    def test_get_default_returns_known_value(self):
+        from britecore_sdk.settings.defaults import get_default
+
+        assert get_default("write_policy") == "allow"
+
+    @pytest.mark.unit
+    def test_get_default_returns_fallback_for_unknown_key(self):
+        from britecore_sdk.settings.defaults import get_default
+
+        assert get_default("not_a_real_setting", default="fallback") == "fallback"
 
     def test_build_typed_settings_builds_site_and_sdk_models(self):
         """Typed settings models should include site values and active SDK defaults."""
