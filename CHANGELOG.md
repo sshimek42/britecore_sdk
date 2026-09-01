@@ -19,6 +19,34 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.5] - 2026-09-01
+
+### Added
+
+- Added configurable write-safety controls to the sync client request pipeline using middleware (`write_policy=allow|warn|block`), including `ReadOnlyViolation` for blocked write attempts.
+
+- Added `AuditMiddleware` support with config-driven enablement and optional callback/log-level tuning to emit structured request audit events.
+
+- Added a script-first `britecore_sdk.data_layer` module exposing standalone normalization helpers for contact, policy, and quote payload shaping without API transport setup.
+
+- Added a new normalization CLI command `britecore-normalize-json` (and `scripts/normalize_json.py` wrapper) for file-based payload normalization, including `--schema` introspection mode.
+
+### Changed
+
+- Integrated request/response/error middleware hooks into `BritecoreAPIClient.do_request(...)`, centralizing guardrails and observability behavior.
+
+- Extended configuration surfaces (`settings` loaders, defaults, sample settings) to include write-policy and audit middleware options.
+
+- Updated user-facing documentation across README/API/getting-started/configuration/observability guides to document write guard, audit middleware, and script-only data layer workflows.
+
+### Fixed
+
+- Added focused unit coverage for new exception formatting branches, lazy package export/error paths, and configuration loader branches that were previously under-covered in patch coverage checks.
+
+### Deprecated
+
+---
+
 ## [2.4.4] - 2026-08-26
 
 ### Added
