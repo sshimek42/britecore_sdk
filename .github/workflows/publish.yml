@@ -4,6 +4,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      release-tag:
+        description: "Release tag to publish (must match selected workflow ref, for example v2.4.5)"
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -15,7 +20,66 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate-source-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      checkout_ref: ${{ steps.validate.outputs.checkout_ref }}
+    steps:
+      - name: Validate event source and checkout ref
+        id: validate
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_RELEASE_TAG: ${{ github.event.inputs.release-tag }}
+        run: |
+          python - <<'PY'
+          import os
+          import re
+
+          event = os.environ.get("EVENT_NAME", "")
+          ref = os.environ.get("REF", "")
+          ref_name = os.environ.get("REF_NAME", "")
+          ref_type = os.environ.get("REF_TYPE", "")
+          release_tag = os.environ.get("RELEASE_TAG", "")
+          input_release_tag = os.environ.get("INPUT_RELEASE_TAG", "")
+
+          tag_pattern = r"^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
+
+          if event == "release":
+              if not release_tag:
+                  raise SystemExit("Release event missing release tag name.")
+              checkout_ref = release_tag
+          elif event == "workflow_dispatch":
+              if ref_type != "tag" or not ref.startswith("refs/tags/"):
+                  raise SystemExit(
+                      "workflow_dispatch must be run from a tag ref. In Actions, choose 'Use workflow from' and select a release tag (for example v2.4.5)."
+                  )
+              if not input_release_tag:
+                  raise SystemExit("workflow_dispatch input 'release-tag' is required.")
+              checkout_ref = ref.split("refs/tags/", 1)[1]
+              if input_release_tag != checkout_ref or input_release_tag != ref_name:
+                  raise SystemExit(
+                      f"Input release-tag '{input_release_tag}' must match selected ref tag '{checkout_ref}'."
+                  )
+          else:
+              raise SystemExit(f"Unsupported event '{event}' for publish workflow.")
+
+          if not re.fullmatch(tag_pattern, checkout_ref):
+              raise SystemExit(
+                  f"Invalid release tag '{checkout_ref}'. Expected SemVer tag format like v2.4.5 or v2.4.5-rc.1."
+              )
+
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
+              out.write(f"checkout_ref={checkout_ref}\n")
+          PY
+
   build:
+    needs: validate-source-ref
+    if: github.event_name == 'workflow_dispatch' || github.event.release.author.login == 'github-actions[bot]'
     runs-on: ubuntu-latest
     outputs:
       package_name: ${{ steps.package.outputs.name }}
@@ -24,7 +88,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name || github.ref }}
+          ref: ${{ needs.validate-source-ref.outputs.checkout_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v7

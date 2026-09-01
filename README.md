@@ -494,7 +494,7 @@ mypy src/britecore_sdk/api/britecore_api_client.py
 ### Release Publishing (GitHub Actions)
 
 - TestPyPI dry-run workflow: `.github/workflows/publish-testpypi.yml` (**manual trigger only** via `workflow_dispatch`)
-- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** after `.github/workflows/release.yml` completes successfully, and also **manually runnable** via `workflow_dispatch`)
+- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** for CI-created GitHub releases, and also **manually runnable** via `workflow_dispatch`)
 
 Both workflows use OIDC trusted publishing and include build + publish + install smoke tests. Depending on your GitHub environment protection rules, the publish job may still pause for environment approval even when the workflow itself was triggered automatically.
 
@@ -508,8 +508,9 @@ Both workflows use OIDC trusted publishing and include build + publish + install
    - Workflow: `.github/workflows/publish.yml`
    - Environment: `pypi`
 4. Run `Publish to TestPyPI` from the Actions tab before cutting a production release.
-5. Push a version tag (for example `v2.0.5`) to trigger `.github/workflows/release.yml`, which builds artifacts and creates the GitHub Release automatically.
-6. After `.github/workflows/release.yml` completes successfully, `.github/workflows/publish.yml` runs automatically and publishes to PyPI. You can also run `Publish to PyPI` manually from the Actions tab when needed.
+5. Push a SemVer tag (for example `v2.0.5` or `v2.0.5-rc.1`) to trigger `.github/workflows/release.yml`.
+6. `release.yml` validates that the tag format is valid and that the tag version matches `project.version` in `pyproject.toml` before running tests/build/release steps.
+7. After `.github/workflows/release.yml` completes and publishes the GitHub Release, `.github/workflows/publish.yml` runs automatically and publishes to PyPI. (Manual UI-created releases do not auto-publish; use `workflow_dispatch` for intentional manual publishing, select a release **tag** as the workflow ref, and provide the same value in the `release-tag` input.)
 
 ### Contributing
 

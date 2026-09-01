@@ -1,6 +1,6 @@
 # Contributing
 
-*Last updated: July 21, 2026*
+*Last updated: September 1, 2026*
 *Document type: Living contributor guide*
 
 For community contributors: workflow, setup, testing requirements, and coding conventions.
@@ -260,6 +260,17 @@ Quality gates run in CI:
 - `black --check src tests`
 - `mypy` for core client and key endpoint modules
 - `pytest tests/unit -m unit --cov ...`
+
+## Release checklist (maintainers)
+
+Use this checklist when cutting a release to keep Git tags, GitHub releases, and PyPI in sync.
+
+- [ ] Confirm `project.version` in `pyproject.toml` is the exact target version (for example `2.4.6`).
+- [ ] Confirm `CHANGELOG.md` has a matching section header `## [X.Y.Z] - YYYY-MM-DD`.
+- [ ] Push a SemVer tag in `vX.Y.Z` format (or prerelease like `vX.Y.Z-rc.1`).
+- [ ] Verify `.github/workflows/release.yml` passes (it validates tag format + tag/version parity before creating the GitHub release).
+- [ ] Verify `.github/workflows/publish.yml` runs after the CI-created release and publishes to PyPI.
+- [ ] If manual publish is required, run `Publish to PyPI` via `workflow_dispatch` from a tag ref and set `release-tag` to the same tag value.
 
 ### Documentation validation
 
