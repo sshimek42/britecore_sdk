@@ -12,6 +12,7 @@ This site is the canonical technical documentation for the SDK itself. If you ne
 2. [Examples Overview](examples) — Runnable code examples
 3. [Common Patterns](COMMON_PATTERNS) — Practical code patterns and recipes
 4. [Configuration](../../CONFIG_MANAGEMENT.md) — Setting up credentials and environments
+5. [Script-only data layer](SCRIPT_ONLY_DATA_LAYER) — Use models/normalizers without API calls
 
 **Looking for specific help?**
 - **"How do I...?"** → [Common Patterns](COMMON_PATTERNS)
@@ -48,6 +49,7 @@ Architecture roadmap <ARCHITECTURE_ROADMAP>
 CACHING_STRATEGY
 ASYNC_CACHING
 Optional extras <OPTIONAL_EXTRAS>
+Script-only data layer <SCRIPT_ONLY_DATA_LAYER>
 ```
 
 ```{toctree}

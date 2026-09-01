@@ -58,6 +58,10 @@ For developers and maintainers: understand how the SDK is structured, how reques
 ```text
 
 src/britecore_sdk/
+├── data_layer/
+│   ├── __init__.py    # Standalone exports for models + normalization helpers
+│   ├── normalization.py # Convenience shaping functions for one-off scripts
+│   └── README.md      # Minimal usage guide
 ├── models/
 │   ├── contact.py     # BritecoreContact class
 │   ├── policy.py      # BritecorePolicy class
@@ -114,6 +118,7 @@ src/britecore_sdk/api/
 ├── britecore_api_client.py              # Main sync API client
 ├── britecore_async_api_client.py        # Async facade with TTL cache
 ├── britecore_oauth_token_manager.py     # OAuth2 token handling
+├── middleware.py                         # Request/response middleware hooks + built-ins
 ├── request_cache.py                     # Thread-safe TTL response cache
 ├── types.py                             # Shared type definitions
 ├── api_calls/
@@ -173,7 +178,10 @@ response = API_CLIENT.do_request(
     # dry_run=True  ← synthetic success payload, no network call
 )
 
-# 3. Process response
+# 3. Middleware pipeline applies policies and observability hooks
+#    (for example: write guard, request auditing, header injection)
+
+# 4. Process response
 data = API_CLIENT.process_result(response)
 # Returns normalized payload from `data` (not the full envelope)
 
@@ -451,6 +459,7 @@ BritecoreError (namespace class)
     ├── RateLimitError          # HTTP 429 rate limit exceeded
     ├── ServerError             # HTTP 5xx server error
     ├── RequestTimeoutError     # Request exceeded configured timeout
+    ├── ReadOnlyViolation       # Write blocked by write_policy=block
     ├── ConfigurationError      # Missing base_url, api_key, etc.
     ├── InvalidPhoneNumber      # Phone validation failed
     ├── InvalidEmailAddress     # Email validation failed

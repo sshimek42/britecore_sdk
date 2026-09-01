@@ -40,6 +40,15 @@ if TYPE_CHECKING:
         DEFAULT_EMAIL_TYPE,
         DEFAULT_PHONE_TYPE,
     )
+    from britecore_sdk.data_layer import (
+        normalize_address,
+        normalize_contact_payload,
+        normalize_emails,
+        normalize_name,
+        normalize_phones,
+        normalize_policy_payload,
+        normalize_quote_payload,
+    )
     from britecore_sdk.exceptions import (
         AuthenticationError,
         BritecoreError,
@@ -106,6 +115,23 @@ _EXPORT_MAP: dict[str, tuple[str, str]] = {
         "britecore_sdk.validators",
         "normalize_business_name",
     ),
+    # Lightweight data-layer helpers
+    "normalize_name": ("britecore_sdk.data_layer", "normalize_name"),
+    "normalize_address": ("britecore_sdk.data_layer", "normalize_address"),
+    "normalize_phones": ("britecore_sdk.data_layer", "normalize_phones"),
+    "normalize_emails": ("britecore_sdk.data_layer", "normalize_emails"),
+    "normalize_contact_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_contact_payload",
+    ),
+    "normalize_policy_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_policy_payload",
+    ),
+    "normalize_quote_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_quote_payload",
+    ),
 }
 
 
@@ -147,6 +173,13 @@ __all__ = [
     "fix_suffix_capitalization",
     "fix_apostrophe_capitalization",
     "normalize_business_name",
+    "normalize_name",
+    "normalize_address",
+    "normalize_phones",
+    "normalize_emails",
+    "normalize_contact_payload",
+    "normalize_policy_payload",
+    "normalize_quote_payload",
     # Exceptions
     "BritecoreError",
     "AuthenticationError",

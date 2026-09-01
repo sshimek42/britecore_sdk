@@ -280,6 +280,63 @@ web_timeout_long = 50  # Timeout for long-running ops
 
 ---
 
+## Audit Middleware
+
+The SDK provides `AuditMiddleware` for structured request auditing, especially useful when
+using admin-scoped credentials.
+
+Default behavior:
+
+- Audits write-like operations only (`audit_only_writes = true`)
+- Logs structured event JSON to the `britecore_sdk` logger
+- Supports `audit_callback` for external sinks (SIEM, metrics, custom audit pipelines)
+
+Set `audit_only_writes = false` when you need full request audit trails (reads + writes).
+
+### Configuration keys
+
+```toml
+[default]
+enable_audit_middleware = true
+audit_only_writes = true
+audit_log_level = "info"      # info | debug
+write_allowlist = []
+write_denylist = []
+```
+
+### Event shape
+
+`AuditMiddleware` emits events like:
+
+```json
+{
+  "event": "sdk_request_audit",
+  "method": "POST",
+  "path": "/api/v2/contacts/new_contact",
+  "timestamp": 1756700000.123,
+  "write_operation": true
+}
+```
+
+### Callback integration example
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+def send_to_audit_sink(event: dict) -> None:
+    # Replace with your SIEM/event-bus publish logic.
+    print("AUDIT", event)
+
+client = BritecoreAPIClient("production").init_client(
+    enable_audit_middleware=True,
+    audit_only_writes=True,
+    audit_log_level="info",
+    audit_callback=send_to_audit_sink,
+)
+```
+
+---
+
 ## Async Cache Observability
 
 Monitor async cache hit/miss rates:

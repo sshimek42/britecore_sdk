@@ -132,13 +132,88 @@ logger.info("SDK logger is configured")
 - ✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
 - ✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
 - ✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
+- ✅ **Data normalization CLI** — `britecore-normalize-json` for script-first workflows
 - ✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
 - ✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses
 - ✅ **Batch operations** — workflow helpers for parallel quote/contact/policy/risk creation
+- ✅ **Write safety policies** — `write_policy=allow|warn|block` for read-only enforcement
+- ✅ **Request auditing** — Optional `AuditMiddleware` for structured write-event logs
 
 ---
 
 ## Migration Notes
+
+## Lightweight Data Layer for Scripts
+
+For one-off scripts that only need data shaping (no API transport), use `britecore_sdk.data_layer`.
+
+```python
+from britecore_sdk.data_layer import normalize_contact_payload
+
+payload = normalize_contact_payload(
+    name="acme llc",
+    address={
+        "address_line1": "123 Main St",
+        "address_city": "Madison",
+        "address_state": "WI",
+        "address_zip": "53703",
+    },
+    phone_numbers=[{"phone": "(920) 555-1234", "type": "mobile"}],
+    emails=[{"email": "TEAM@ACME.COM", "type": "work"}],
+)
+```
+
+Available helpers: `normalize_name`, `normalize_address`, `normalize_phones`,
+`normalize_emails`, `normalize_contact_payload`, `normalize_policy_payload`,
+and `normalize_quote_payload`.
+
+CLI option for file-based workflows:
+
+```powershell
+britecore-normalize-json --kind contact --input .\contact.raw.json --output .\contact.normalized.json --pretty
+britecore-normalize-json --schema --kind policy --pretty
+```
+
+---
+
+## Write Safety and Auditing
+
+The SDK now supports config-first write controls for admin API keys:
+
+- `write_policy="allow"` - no guard (backward-compatible default)
+- `write_policy="warn"` - emit a warning before write-like operations
+- `write_policy="block"` - raise `ReadOnlyViolation` before sending write-like operations
+
+You can set these globally per site in settings:
+
+```toml
+# ~/.britecore/settings.toml
+[default]
+write_policy = "warn"
+write_allowlist = []
+write_denylist = []
+enable_audit_middleware = true
+audit_only_writes = true
+audit_log_level = "info"
+```
+
+These are policy/behavior keys (not credentials), so keep them in `settings.toml`.
+
+You can also override behavior in code at initialization time:
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+client = BritecoreAPIClient("production").init_client(
+    write_policy="block",
+    enable_audit_middleware=True,
+    audit_only_writes=True,
+)
+```
+
+Write/audit controls are centralized in middleware and apply to all wrapper calls.
+
+---
 
 ### Batch result schema — `id`/`data` replaces legacy alias keys (v2.2+)
 
@@ -200,6 +275,8 @@ This repo is the authoritative SDK documentation set. Use it for installation, a
 | **API reference** | [API.md](./API.md) |
 | **Async & caching** | [docs/ASYNC_CACHING.md](./docs/ASYNC_CACHING.md) |
 | **Rate limiting** | [docs/RATE_LIMITING.md](./docs/RATE_LIMITING.md) |
+| **Observability & audit** | [docs/OBSERVABILITY.md](./docs/OBSERVABILITY.md) |
+| **One-off data shaping** | [examples/data_layer_quickstart.py](./examples/data_layer_quickstart.py) |
 | **Batch operations** | [docs/BATCH_QUOTE_CREATION.md](./docs/BATCH_QUOTE_CREATION.md) |
 | **Architecture** | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | **Reference projects** | [docs/REFERENCE_PROJECTS.md](./docs/REFERENCE_PROJECTS.md) |

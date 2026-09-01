@@ -10,6 +10,15 @@
 web_timeout = 30
 web_retry = 10
 web_timeout_long = 60
+# Optional SDK write safety policy: allow, warn, or block.
+write_policy = "allow"
+# Optional endpoint path fragment overrides for POST endpoints.
+write_allowlist = []
+write_denylist = []
+# Optional request auditing middleware controls.
+enable_audit_middleware = false
+audit_only_writes = true
+audit_log_level = "info"
 # Optionally set the default target site here so you don't have to pass it
 # explicitly in code or set the 'target_site' environment variable.
 # target_site = "example_site"

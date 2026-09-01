@@ -315,7 +315,7 @@ except RateLimitError as e:
 Available top-level aliases: `AuthenticationError`, `ConfigurationError`,
 `NotFoundError`, `RateLimitError`, `RequestTimeoutError`, `ServerError`,
 `ValidationError`. The full set (including `NoDataReturned`, `NoTokenReturned`,
-`BritecoreKeyError`, etc.) is available from `britecore_sdk.exceptions`.
+`BritecoreKeyError`, `ReadOnlyViolation`, etc.) is available from `britecore_sdk.exceptions`.
 
 ### Exception diagnostic fields
 
@@ -390,6 +390,48 @@ Notes:
 - For OAuth clients, dry-run skips token acquisition unless you explicitly pass headers.
 - Async wrappers support the same behavior via `init_async_api_client(client_dry_run=True)` or
   per-call `dry_run=True`; async dry-run also bypasses cache and in-flight dedupe.
+
+---
+
+## Middleware Configuration (Write Guard + Audit)
+
+`BritecoreAPIClient.init_client()` supports configuration-first middleware controls for
+admin-scoped credentials.
+
+Resolution order is config-first with explicit kwargs override (for one-off scripts/tests).
+
+```python
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+client = BritecoreAPIClient("production").init_client(
+    write_policy="warn",                  # allow | warn | block
+    write_allowlist=["/api/v2/quotes/retrieve_quote"],
+    write_denylist=["/api/v2/quotes/new_quote"],
+    enable_audit_middleware=True,
+    audit_only_writes=True,
+    audit_log_level="info",              # info | debug
+)
+```
+
+Behavior notes:
+
+- `write_policy="block"` raises `ReadOnlyViolation` before request transport.
+- `write_policy="warn"` emits `UserWarning` and continues.
+- Allow/deny lists are path-fragment overrides used for POST endpoints that may be read-like.
+- Audit middleware can emit structured log events and invoke `audit_callback` when supplied.
+
+Minimal callback example:
+
+```python
+def on_audit(event: dict) -> None:
+    print("AUDIT", event["method"], event["path"], event["write_operation"])
+
+client = BritecoreAPIClient("production").init_client(
+    write_policy="block",
+    enable_audit_middleware=True,
+    audit_callback=on_audit,
+)
+```
 
 ---
 

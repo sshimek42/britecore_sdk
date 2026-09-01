@@ -499,6 +499,41 @@ class BritecoreError:
                 parts.append(f"Endpoint: {self.endpoint}")
             return "\n".join(parts)
 
+    class ReadOnlyViolation(Base):
+        """Raised when a write operation is attempted in read-only mode."""
+
+        def __init__(
+            self,
+            message: str,
+            endpoint: str | None = None,
+            method: str | None = None,
+            *,
+            error_code: str | None = None,
+            request_id: str | None = None,
+            raw_payload: dict[str, Any] | None = None,
+            sanitized_body: Any | None = None,
+        ) -> None:
+            self.endpoint = endpoint
+            self.method = method
+            super().__init__(
+                message,
+                status_code=403,
+                error_code=error_code or "read_only_violation",
+                request_id=request_id,
+                raw_payload=raw_payload,
+                sanitized_body=sanitized_body,
+            )
+
+        def __str__(self) -> str:
+            parts = [f"Read-only policy violation - {self.message}"]
+            if self.method:
+                parts.append(f"Method: {self.method}")
+            if self.endpoint:
+                parts.append(f"Endpoint: {self.endpoint}")
+            if self.request_id:
+                parts.append(f"Request-ID: {self.request_id}")
+            return "\n".join(parts)
+
 
 # ---------------------------------------------------------------------------
 # Flat aliases — importable directly from britecore_sdk.exceptions
@@ -518,6 +553,7 @@ NotFoundError = BritecoreError.NotFoundError
 ConflictError = BritecoreError.ConflictError
 ConfigurationError = BritecoreError.ConfigurationError
 RequestTimeoutError = BritecoreError.RequestTimeoutError
+ReadOnlyViolation = BritecoreError.ReadOnlyViolation
 BritecoreKeyError = BritecoreError.BritecoreKeyError
 NoSiteError = BritecoreError.NoSiteError
 MissingParameter = BritecoreError.MissingParameter
@@ -540,6 +576,7 @@ __all__ = [
     "ConflictError",
     "ConfigurationError",
     "RequestTimeoutError",
+    "ReadOnlyViolation",
     "BritecoreKeyError",
     "NoSiteError",
     "MissingParameter",

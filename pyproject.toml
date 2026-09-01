@@ -38,6 +38,7 @@ britecore-quick-check = "britecore_sdk.cli.quick_check:main"
 britecore-config-wizard = "britecore_sdk.cli.config_wizard:main"
 britecore-check-config = "britecore_sdk.cli.check_config:main"
 britecore-healthcheck = "britecore_sdk.cli.healthcheck:main"
+britecore-normalize-json = "britecore_sdk.cli.normalize_json:main"
 
 [project.urls]
 Homepage = "https://github.com/sshimek42/britecore_sdk"

@@ -235,6 +235,16 @@ class LoadClientSettings:
                         client_id=settings.get("client_id", default=""),
                         client_secret=settings.get("client_secret", default=""),
                         api_key=settings.get("api_key", default=""),
+                        write_policy=settings.get("write_policy", default="allow"),
+                        write_allowlist=settings.get("write_allowlist", default=[]),
+                        write_denylist=settings.get("write_denylist", default=[]),
+                        enable_audit_middleware=settings.get(
+                            "enable_audit_middleware", default=False
+                        ),
+                        audit_only_writes=settings.get(
+                            "audit_only_writes", default=True
+                        ),
+                        audit_log_level=settings.get("audit_log_level", default="info"),
                     )
             except Exception as exc:
                 raise BritecoreError.ConfigurationError(

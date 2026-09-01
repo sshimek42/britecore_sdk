@@ -208,6 +208,10 @@ Edit `settings.toml` to override any default timeouts or site selection:
 web_timeout = 10          # Increase from default 5 seconds
 web_retry = 3             # Decrease from default 5 retries
 target_site = 'production'
+write_policy = "warn"    # allow | warn | block
+enable_audit_middleware = true
+audit_only_writes = true
+audit_log_level = "info" # info | debug
 ```
 
 ### 4. Verify Your Configuration
@@ -625,11 +629,20 @@ The SDK provides sensible defaults for optional configuration settings. These de
 
 ### Built-in Defaults
 
+`write_policy` and audit middleware keys are non-secret runtime behavior settings.
+Store them in `settings.toml` (not `.secrets.toml`).
+
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `web_timeout` | 5 seconds | Standard HTTP request timeout |
 | `web_retry` | 5 retries | Number of retries for failed requests (500, 502, 503, 504) |
 | `web_timeout_long` | 50 seconds | Timeout for long-running operations (calculated as 10x `web_timeout`) |
+| `write_policy` | `"allow"` | Write safety policy: `allow`, `warn`, or `block` |
+| `write_allowlist` | `[]` | Optional path fragments always treated as read-safe |
+| `write_denylist` | `[]` | Optional path fragments always treated as write operations |
+| `enable_audit_middleware` | `false` | Enable request audit middleware |
+| `audit_only_writes` | `true` | Audit only write-like requests |
+| `audit_log_level` | `"info"` | Audit event log level (`info` or `debug`) |
 
 ### Overriding Defaults
 
@@ -642,6 +655,10 @@ web_timeout = 10
 
 # Override the retry count
 web_retry = 3
+
+# Turn on warning-only write guard and audit logging
+write_policy = "warn"
+enable_audit_middleware = true
 ```
 
 **Note:** If you set `web_timeout`, `web_timeout_long` is automatically calculated as `web_timeout * 10` (unless you also override `web_timeout_long`).

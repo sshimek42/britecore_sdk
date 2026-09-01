@@ -30,18 +30,34 @@ Examples of different configuration approaches:
 python examples/configuration_examples.py
 ```
 
+### 3. **data_layer_quickstart.py** - One-Off Data Shaping (No API Calls)
+Use lightweight normalization helpers without initializing API clients:
+
+- Name, phone, and email normalization
+- Contact payload shaping for downstream tools
+
+```bash
+python examples/data_layer_quickstart.py
+```
+
+Command-line JSON normalization alternative:
+
+```bash
+britecore-normalize-json --kind contact --input ./contact.raw.json --output ./contact.normalized.json --pretty
+```
+
 ---
 
 ## Advanced Examples
 
-### 3. **advanced_error_handling.py** - Robust Error Handling
+### 4. **advanced_error_handling.py** - Robust Error Handling
 Comprehensive exception handling patterns:
 - Retry logic with exponential backoff
 - Fallback strategies
 - Error collection and reporting
 - Rate limit recovery
 
-### 4. **async_operations.py** - Async & Concurrent Processing
+### 5. **async_operations.py** - Async & Concurrent Processing
 Non-blocking API calls and batch operations:
 - Concurrent policy fetching with concurrency control
 - Batch quote creation with rate limiting
@@ -56,7 +72,7 @@ python examples/async_operations.py
 
 ## Domain-Specific Examples
 
-### 5. **basic_api_usage.py** - Core API Operations
+### 6. **basic_api_usage.py** - Core API Operations
 Fundamental API operations:
 - Retrieving policies and quotes
 - Creating contacts and policies
@@ -67,14 +83,14 @@ Run with:
 python examples/basic_api_usage.py --live-policy-number "POL001"
 ```
 
-### 6. **batch_quote_creation.py** - Batch Operations
+### 7. **batch_quote_creation.py** - Batch Operations
 Creating multiple quotes efficiently:
 - Parallel quote creation
 - Progress tracking
 - Error collection
 - Performance optimization
 
-### 7. **multi_tenancy_example.py** - Multi-Site Operations
+### 8. **multi_tenancy_example.py** - Multi-Site Operations
 Working with multiple BriteCore environments:
 - Switching between sites
 - Site isolation in scripts
@@ -87,20 +103,20 @@ export PROD_API_KEY=your-prod-key
 python examples/multi_tenancy_example.py
 ```
 
-### 8. **rate_limiting_example.py** - Rate Limit Handling
+### 9. **rate_limiting_example.py** - Rate Limit Handling
 Graceful rate limit management:
 - Detecting rate limits
 - Exponential backoff
 - Request queuing
 - Adaptive throttling
 
-### 9. **staged_workflow_creation.py** - Complex Workflows
+### 10. **staged_workflow_creation.py** - Complex Workflows
 Multi-step business processes:
 - Creating policies with relationships
 - Sequential operations with error recovery
 - Data transformation pipelines
 
-### 10. **stitched_line_extract.py** - Complex Data
+### 11. **stitched_line_extract.py** - Complex Data
 Working with complex nested structures:
 - Extracting line items
 - Data validation
@@ -184,6 +200,7 @@ exec(open('examples/basic_api_usage.py').read())
 | Multi-site | `multi_tenancy_example.py` | Multi-environment setup |
 | Complex workflows | `staged_workflow_creation.py` | Multi-step processes |
 | Configuration | `configuration_examples.py` | Setting up SDK |
+| Script-only data shaping | `data_layer_quickstart.py` | One-off normalization without API calls |
 
 ---
 
@@ -237,6 +254,7 @@ See: `rate_limiting_example.py` for backoff logic
 - **Rate Limiting:** [docs/RATE_LIMITING.md](../docs/RATE_LIMITING.md)
 - **Batch Operations:** [docs/BATCH_QUOTE_CREATION.md](../docs/BATCH_QUOTE_CREATION.md)
 - **Configuration:** [docs/CONFIGURATION.md](../docs/CONFIGURATION.md)
+- **Script-only Data Layer:** [docs/SCRIPT_ONLY_DATA_LAYER.md](../docs/SCRIPT_ONLY_DATA_LAYER.md)
 - **Multi-Tenancy:** [docs/MULTI_TENANCY.md](../docs/MULTI_TENANCY.md)
 - **Troubleshooting:** [TROUBLESHOOTING.md](../TROUBLESHOOTING.md)
 - **Migration v1→v2:** [docs/MIGRATION_v1_to_v2.md](../docs/MIGRATION_v1_to_v2.md)

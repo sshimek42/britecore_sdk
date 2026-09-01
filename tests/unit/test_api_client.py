@@ -118,7 +118,7 @@ class TestBritecoreAPIClientInit:
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
         with pytest.raises(ValueError):
-            BritecoreAPIClient(None)
+            BritecoreAPIClient("")
 
     @pytest.mark.unit
     def test_init_sets_timeouts(self, env_api_key, mock_settings):
@@ -154,6 +154,96 @@ class TestBritecoreAPIClientInit:
             client.init_client(client_dry_run=True)
 
             assert client.client_dry_run is True
+
+    @pytest.mark.unit
+    def test_init_client_write_policy_loads_from_settings(
+        self, env_api_key, mock_settings
+    ):
+        """init_client inherits write_policy from loaded site settings by default."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        mock_settings.write_policy = "block"
+        mock_settings.write_allowlist = ["/api/v2/quotes/retrieve_quote"]
+        mock_settings.write_denylist = ["/api/v2/quotes/new_quote"]
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+
+        assert client.write_policy == "block"
+
+    @pytest.mark.unit
+    def test_init_client_write_policy_kwarg_overrides_settings(
+        self, env_api_key, mock_settings
+    ):
+        """Explicit write_policy kwarg takes precedence over site settings."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        mock_settings.write_policy = "block"
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site").init_client(write_policy="warn")
+
+        assert client.write_policy == "warn"
+
+    @pytest.mark.unit
+    def test_init_client_audit_middleware_enabled_from_settings(
+        self, env_api_key, mock_settings
+    ):
+        """init_client registers audit middleware when enabled in settings."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        mock_settings.enable_audit_middleware = True
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+
+        assert any(
+            middleware.__class__.__name__ == "AuditMiddleware"
+            for middleware in client.middleware
+        )
+
+    @pytest.mark.unit
+    def test_init_client_audit_middleware_kwarg_overrides_settings(
+        self, env_api_key, mock_settings
+    ):
+        """Explicit enable_audit_middleware=False disables configured audit middleware."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        mock_settings.enable_audit_middleware = True
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site").init_client(
+                enable_audit_middleware=False
+            )
+
+        assert all(
+            middleware.__class__.__name__ != "AuditMiddleware"
+            for middleware in client.middleware
+        )
 
 
 class TestBritecoreAPIClientProcessResult:

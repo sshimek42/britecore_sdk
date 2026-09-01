@@ -38,6 +38,12 @@ def mock_settings():
     settings.web_timeout = 5
     settings.web_timeout_long = 50
     settings.web_retry = 5
+    settings.write_policy = "allow"
+    settings.write_allowlist = []
+    settings.write_denylist = []
+    settings.enable_audit_middleware = False
+    settings.audit_only_writes = True
+    settings.audit_log_level = "info"
     return settings
 
 
@@ -51,6 +57,12 @@ def mock_settings_oauth():
     settings.web_timeout = 5
     settings.web_timeout_long = 50
     settings.web_retry = 5
+    settings.write_policy = "allow"
+    settings.write_allowlist = []
+    settings.write_denylist = []
+    settings.enable_audit_middleware = False
+    settings.audit_only_writes = True
+    settings.audit_log_level = "info"
     return settings
 
 

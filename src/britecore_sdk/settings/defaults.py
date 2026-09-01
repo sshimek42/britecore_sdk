@@ -24,6 +24,12 @@ class ConfigDefaults(TypedDict, total=False):
     rate_limiter_burst_size: int
     rate_limiter_adaptive_backoff: bool
     rate_limiter_backoff_timeout_seconds: float
+    write_policy: str
+    write_allowlist: list[str]
+    write_denylist: list[str]
+    enable_audit_middleware: bool
+    audit_only_writes: bool
+    audit_log_level: str
 
 
 # Core defaults: used when settings.toml or environment does not provide values
@@ -35,6 +41,12 @@ DEFAULTS: ConfigDefaults = {
     "rate_limiter_burst_size": 20,  # Allow up to 20-request bursts
     "rate_limiter_adaptive_backoff": True,  # Automatically back off on 429
     "rate_limiter_backoff_timeout_seconds": 60.0,  # Back off for 60 seconds after 429
+    "write_policy": "allow",  # Backward-compatible default
+    "write_allowlist": [],  # Optional endpoint fragments treated as read-safe
+    "write_denylist": [],  # Optional endpoint fragments forced as writes
+    "enable_audit_middleware": False,  # Off by default; opt-in
+    "audit_only_writes": True,  # Audit write-like requests by default
+    "audit_log_level": "info",  # Audit events emitted at info by default
 }
 
 
@@ -49,7 +61,7 @@ def get_default(key: str, default: Any = None) -> Any:
     Returns:
         The default value, or the provided fallback, or None.
     """
-    return DEFAULTS.get(key, default)
+    return dict(DEFAULTS).get(key, default)
 
 
 def calculate_long_timeout(web_timeout: int) -> int:

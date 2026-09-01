@@ -256,6 +256,36 @@ logger.info("SDK logging is active")
 
 When debug logging is enabled, init emits either `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth`.
 
+### Write safety and audit controls (recommended for admin API keys)
+
+If your API key has broad permissions, configure a write policy to reduce accidental writes.
+
+```toml
+# ~/.britecore/settings.toml
+[default]
+write_policy = "warn"                 # allow | warn | block
+write_allowlist = []
+write_denylist = []
+enable_audit_middleware = true
+audit_only_writes = true
+audit_log_level = "info"
+```
+
+Runtime overrides are also supported when you need stricter behavior for one script:
+
+```python
+from britecore_sdk.api.api_calls import init_api_client
+
+client = init_api_client(
+    "production",
+    write_policy="block",
+    enable_audit_middleware=True,
+    audit_only_writes=True,
+)
+```
+
+`write_policy="block"` raises `ReadOnlyViolation` before any write-like request is sent.
+
 ## Smoke checks
 
 ```powershell
@@ -285,6 +315,28 @@ python -m britecore_sdk.utils.check_api_spec_sync
 ```
 
 ## First API call
+
+## One-off script mode (no API client)
+
+If you only need model shaping/normalization in small scripts, use the lightweight
+data layer directly.
+
+```python
+from britecore_sdk.data_layer import normalize_name, normalize_phones
+
+print(normalize_name("acme llc"))
+print(normalize_phones([{"phone": "(920) 555-1234", "type": "mobile"}]))
+```
+
+This path does not require `get_api_client()` or endpoint wrappers.
+Use `normalize_policy_payload(...)` and `normalize_quote_payload(...)` when you
+need script-friendly payload shaping for those entities.
+
+CLI alternative for JSON files:
+
+```powershell
+britecore-normalize-json --kind contact --input .\contact.raw.json --output .\contact.normalized.json --pretty
+```
 
 ```python
 from britecore_sdk.api.api_calls import get_api_client

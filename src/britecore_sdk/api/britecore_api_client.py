@@ -3,9 +3,19 @@
 import time
 import uuid
 from ast import literal_eval
+from collections.abc import Callable
 from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
-from typing import TYPE_CHECKING, Any, NotRequired, Self, TypedDict, Unpack
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    NotRequired,
+    Self,
+    TypedDict,
+    Unpack,
+    cast,
+)
 
 if TYPE_CHECKING:
     import types
@@ -20,6 +30,13 @@ from urllib3.exceptions import TimeoutError as urlTimeoutError
 from urllib3.util import Retry, Timeout, Url
 
 from britecore_sdk.api.britecore_oauth_token_manager import OAuthToken
+from britecore_sdk.api.middleware import (
+    AuditMiddleware,
+    Middleware,
+    RequestContext,
+    ResponseContext,
+    WriteGuardMiddleware,
+)
 from britecore_sdk.api.rate_limiter import RateLimiter
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import settings
@@ -82,6 +99,30 @@ class LoadClientSettings:
                 web_retry=settings.get("web_retry"),
                 web_timeout=settings.get("web_timeout"),
                 web_timeout_long=settings.get("web_timeout_long"),
+                write_policy=settings.get(
+                    "write_policy",
+                    default=DEFAULTS.get("write_policy", "allow"),
+                ),
+                write_allowlist=settings.get(
+                    "write_allowlist",
+                    default=DEFAULTS.get("write_allowlist", []),
+                ),
+                write_denylist=settings.get(
+                    "write_denylist",
+                    default=DEFAULTS.get("write_denylist", []),
+                ),
+                enable_audit_middleware=settings.get(
+                    "enable_audit_middleware",
+                    default=DEFAULTS.get("enable_audit_middleware", False),
+                ),
+                audit_only_writes=settings.get(
+                    "audit_only_writes",
+                    default=DEFAULTS.get("audit_only_writes", True),
+                ),
+                audit_log_level=settings.get(
+                    "audit_log_level",
+                    default=DEFAULTS.get("audit_log_level", "info"),
+                ),
             )
 
 
@@ -143,6 +184,8 @@ class BritecoreAPIClient:
         self.debug_include_request_body: bool = False
         self.target_site = target_site
         self.rate_limiter: RateLimiter | None = None
+        self.middleware: list[Middleware] = []
+        self.write_policy: Literal["allow", "warn", "block"] = "allow"
 
     def init_client(
         self,
@@ -158,6 +201,14 @@ class BritecoreAPIClient:
         rate_limiter_burst_size: int | None = None,
         rate_limiter_adaptive_backoff: bool | None = None,
         rate_limiter_backoff_timeout_seconds: float | None = None,
+        write_policy: str | None = None,
+        write_allowlist: list[str] | tuple[str, ...] | None = None,
+        write_denylist: list[str] | tuple[str, ...] | None = None,
+        write_warning_callback: Callable[[dict[str, Any]], None] | None = None,
+        enable_audit_middleware: bool | None = None,
+        audit_only_writes: bool | None = None,
+        audit_callback: Callable[[dict[str, Any]], None] | None = None,
+        audit_log_level: str | None = None,
     ) -> Self:
         """
         Initializes the Britecore API client with configuration settings and HTTP components.
@@ -233,6 +284,24 @@ class BritecoreAPIClient:
                 (default: True from settings). Only used if rate limiter is enabled.
             rate_limiter_backoff_timeout_seconds: Duration to back off after 429
                 (default: 60.0 seconds from settings). Only used if rate limiter is enabled.
+            write_policy: Write safety policy for SDK requests: ``allow``,
+                ``warn`` (emit warning before write-like requests), or ``block``
+                (raise ``ReadOnlyViolation`` before sending write-like requests).
+                When omitted, inherits site configuration (fallback: ``allow``).
+            write_allowlist: Optional endpoint path fragments that should always be
+                treated as read-only safe (useful for POST read endpoints). When
+                omitted, inherits site configuration.
+            write_denylist: Optional endpoint path fragments that should always be
+                treated as write operations. When omitted, inherits site configuration.
+            write_warning_callback: Optional callback invoked in ``warn`` mode with
+                a write event dictionary.
+            enable_audit_middleware: Enable request audit middleware. When omitted,
+                inherits site configuration (fallback: ``False``).
+            audit_only_writes: When audit middleware is enabled, audit only write-like
+                requests when ``True`` (default). When omitted, inherits site config.
+            audit_callback: Optional callback invoked with each audit event dictionary.
+            audit_log_level: Audit log level (``info`` or ``debug``). When omitted,
+                inherits site config (fallback: ``info``).
 
         Raises:
             BritecoreError.NoSiteError: If no target site has been specified.
@@ -261,6 +330,12 @@ class BritecoreAPIClient:
                 web_retry=None,
                 web_timeout=None,
                 web_timeout_long=None,
+                write_policy=DEFAULTS.get("write_policy", "allow"),
+                write_allowlist=list(DEFAULTS.get("write_allowlist", [])),
+                write_denylist=list(DEFAULTS.get("write_denylist", [])),
+                enable_audit_middleware=DEFAULTS.get("enable_audit_middleware", False),
+                audit_only_writes=DEFAULTS.get("audit_only_writes", True),
+                audit_log_level=DEFAULTS.get("audit_log_level", "info"),
             )
         else:
             try:
@@ -280,6 +355,72 @@ class BritecoreAPIClient:
 
         self.client_dry_run = client_dry_run
         self.debug_include_request_body = debug_include_request_body
+
+        configured_write_policy = getattr(
+            self.site_settings,
+            "write_policy",
+            DEFAULTS.get("write_policy", "allow"),
+        )
+        resolved_write_policy = (
+            configured_write_policy if write_policy is None else write_policy
+        )
+        self.write_policy = self._coerce_write_policy(
+            resolved_write_policy,
+            default=DEFAULTS.get("write_policy", "allow"),
+        )
+
+        configured_write_allowlist = getattr(
+            self.site_settings, "write_allowlist", None
+        )
+        configured_write_denylist = getattr(self.site_settings, "write_denylist", None)
+        resolved_write_allowlist = (
+            configured_write_allowlist if write_allowlist is None else write_allowlist
+        )
+        resolved_write_denylist = (
+            configured_write_denylist if write_denylist is None else write_denylist
+        )
+        normalized_write_allowlist = self._normalize_path_fragments(
+            resolved_write_allowlist
+        )
+        normalized_write_denylist = self._normalize_path_fragments(
+            resolved_write_denylist
+        )
+
+        configured_enable_audit_middleware = getattr(
+            self.site_settings,
+            "enable_audit_middleware",
+            DEFAULTS.get("enable_audit_middleware", False),
+        )
+        resolved_enable_audit_middleware = (
+            configured_enable_audit_middleware
+            if enable_audit_middleware is None
+            else enable_audit_middleware
+        )
+        normalized_enable_audit_middleware = bool(resolved_enable_audit_middleware)
+
+        configured_audit_only_writes = getattr(
+            self.site_settings,
+            "audit_only_writes",
+            DEFAULTS.get("audit_only_writes", True),
+        )
+        resolved_audit_only_writes = (
+            configured_audit_only_writes
+            if audit_only_writes is None
+            else audit_only_writes
+        )
+        normalized_audit_only_writes = bool(resolved_audit_only_writes)
+
+        configured_audit_log_level = getattr(
+            self.site_settings,
+            "audit_log_level",
+            DEFAULTS.get("audit_log_level", "info"),
+        )
+        resolved_audit_log_level = (
+            configured_audit_log_level if audit_log_level is None else audit_log_level
+        )
+        normalized_audit_log_level = self._normalize_audit_log_level(
+            resolved_audit_log_level
+        )
 
         self.enable_timers = True
         self.bad_url_error = "Invalid URL"
@@ -436,6 +577,39 @@ class BritecoreAPIClient:
         else:
             self.rate_limiter = None
 
+        # Replace existing write guard middleware so repeated init_client calls
+        # keep exactly one guard with the latest configuration.
+        self.middleware = [
+            middleware
+            for middleware in self.middleware
+            if not isinstance(middleware, WriteGuardMiddleware)
+        ]
+        if self.write_policy != "allow":
+            self.add_middleware(
+                WriteGuardMiddleware(
+                    policy=self.write_policy,
+                    allowlist=normalized_write_allowlist,
+                    denylist=normalized_write_denylist,
+                    warning_callback=write_warning_callback,
+                )
+            )
+
+        self.middleware = [
+            middleware
+            for middleware in self.middleware
+            if not isinstance(middleware, AuditMiddleware)
+        ]
+        if normalized_enable_audit_middleware:
+            self.add_middleware(
+                AuditMiddleware(
+                    audit_only_writes=normalized_audit_only_writes,
+                    allowlist=normalized_write_allowlist,
+                    denylist=normalized_write_denylist,
+                    audit_callback=audit_callback,
+                    log_level=normalized_audit_log_level,
+                )
+            )
+
         LOGGER.info(
             "BritecoreAPIClient initialized successfully for target_site=%r "
             "(auth=%s, rate_limiting=%s)",
@@ -480,6 +654,37 @@ class BritecoreAPIClient:
             f"initialized={initialized})"
         )
 
+    def add_middleware(self, middleware: Middleware) -> Self:
+        """Register middleware for request/response/error hooks."""
+        self.middleware.append(middleware)
+        return self
+
+    def clear_middleware(self) -> Self:
+        """Clear all registered middleware instances."""
+        self.middleware.clear()
+        return self
+
+    def _apply_request_middleware(self, ctx: RequestContext) -> RequestContext:
+        """Execute request hooks in registration order."""
+        for middleware in getattr(self, "middleware", []):
+            ctx = middleware.on_request(ctx)
+        return ctx
+
+    def _apply_response_middleware(self, ctx: ResponseContext) -> ResponseContext:
+        """Execute response hooks in registration order."""
+        for middleware in getattr(self, "middleware", []):
+            ctx = middleware.on_response(ctx)
+        return ctx
+
+    def _apply_error_middleware(
+        self, error: Exception, request_ctx: RequestContext
+    ) -> Exception:
+        """Execute error hooks in reverse order and return the final exception."""
+        transformed_error = error
+        for middleware in reversed(getattr(self, "middleware", [])):
+            transformed_error = middleware.on_error(transformed_error, request_ctx)
+        return transformed_error
+
     @staticmethod
     def _extract_error_message(raw_message: Any) -> str:
         """Normalize API error payloads into a readable message string."""
@@ -502,6 +707,53 @@ class BritecoreAPIClient:
                 if isinstance(value, int | float):
                     return value
         return None
+
+    @staticmethod
+    def _coerce_write_policy(
+        value: Any, default: str = "allow"
+    ) -> Literal["allow", "warn", "block"]:
+        """Normalize write policy values from config or kwargs."""
+        if not isinstance(value, str):
+            fallback = str(default).strip().lower()
+            if fallback in {"allow", "warn", "block"}:
+                return cast(Literal["allow", "warn", "block"], fallback)
+            return "allow"
+        normalized = value.strip().lower()
+        if normalized in {"allow", "warn", "block"}:
+            return cast(Literal["allow", "warn", "block"], normalized)
+
+        fallback = str(default).strip().lower()
+        if fallback in {"allow", "warn", "block"}:
+            return cast(Literal["allow", "warn", "block"], fallback)
+        return "allow"
+
+    @staticmethod
+    def _normalize_path_fragments(value: Any) -> list[str]:
+        """Normalize allowlist/denylist values into lowercase path fragments."""
+        if value is None:
+            return []
+        if isinstance(value, str):
+            candidate_values = [value]
+        elif isinstance(value, list | tuple | set):
+            candidate_values = list(value)
+        else:
+            return []
+
+        normalized_fragments: list[str] = []
+        for candidate in candidate_values:
+            if isinstance(candidate, str):
+                fragment = candidate.strip().lower()
+                if fragment:
+                    normalized_fragments.append(fragment)
+        return normalized_fragments
+
+    @staticmethod
+    def _normalize_audit_log_level(value: Any) -> Literal["debug", "info"]:
+        """Normalize audit middleware log level to info/debug."""
+        if not isinstance(value, str):
+            return "info"
+        normalized = value.strip().lower()
+        return "debug" if normalized == "debug" else "info"
 
     @staticmethod
     def _with_hint(message: str, hint: str) -> str:
@@ -911,25 +1163,9 @@ class BritecoreAPIClient:
 
         resolved_request_headers: dict[str, Any] = dict(request_headers or {})
         auth_mode = "api_key" if self.use_api_key else "oauth"
-        caller_supplied_authorization = self._has_header(
-            resolved_request_headers,
-            "Authorization",
-        )
-        if (
-            not effective_dry_run
-            and not self.use_api_key
-            and not caller_supplied_authorization
-        ):
-            token_manager = self.token_class
-            if token_manager is None:
-                raise BritecoreError.ConfigurationError(
-                    "OAuth token manager not initialized"
-                )
-            resolved_request_headers.update(token_manager.get_authorization_headers())
 
         if not self.base_url:
             raise BritecoreError.ConfigurationError("base_url not configured")
-        request_url: str = _full_url(self.base_url, path)
 
         # --- structured tracing -------------------------------------------------
         request_id: str = uuid.uuid4().hex[:8]
@@ -946,6 +1182,48 @@ class BritecoreAPIClient:
         request_body: dict[str, Any] = dict(json or {})
         if self.use_api_key:
             request_body.update({"api_key": self.site_settings.api_key})
+
+        request_ctx = RequestContext(
+            method=method.upper(),
+            path=path,
+            headers=resolved_request_headers,
+            body=request_body,
+            timeout=request_timeout,
+        )
+        try:
+            request_ctx = self._apply_request_middleware(request_ctx)
+        except Exception as middleware_request_error:
+            raise self._apply_error_middleware(
+                middleware_request_error, request_ctx
+            ) from middleware_request_error
+
+        method = request_ctx.method
+        path = request_ctx.path
+        resolved_request_headers = request_ctx.headers
+        request_body = dict(request_ctx.body or {})
+        if request_ctx.timeout is not None:
+            request_timeout = request_ctx.timeout
+
+        caller_supplied_authorization = self._has_header(
+            resolved_request_headers,
+            "Authorization",
+        )
+        if (
+            not effective_dry_run
+            and not self.use_api_key
+            and not caller_supplied_authorization
+        ):
+            token_manager = self.token_class
+            if token_manager is None:
+                auth_error = BritecoreError.ConfigurationError(
+                    "OAuth token manager not initialized"
+                )
+                raise self._apply_error_middleware(
+                    auth_error, request_ctx
+                ) from auth_error
+            resolved_request_headers.update(token_manager.get_authorization_headers())
+
+        request_url: str = _full_url(self.base_url, path)
 
         # Compute the body to attach to any exception raised during this request.
         # When debug_include_request_body is True (dev mode only) the unredacted
@@ -997,7 +1275,7 @@ class BritecoreAPIClient:
                 },
                 "message": "Dry run: request was not sent.",
             }
-            return urllib3.HTTPResponse(
+            dry_run_response = urllib3.HTTPResponse(
                 body=dumps(dry_run_envelope).encode("utf-8"),
                 status=200,
                 reason="DRY-RUN",
@@ -1008,6 +1286,21 @@ class BritecoreAPIClient:
                 },
                 preload_content=True,
             )
+            response_ctx = ResponseContext(
+                status_code=dry_run_response.status,
+                path=path,
+                method=method,
+                headers=dict(getattr(dry_run_response, "headers", {}) or {}),
+                body=getattr(dry_run_response, "data", None),
+                request_context=request_ctx,
+            )
+            try:
+                self._apply_response_middleware(response_ctx)
+            except Exception as middleware_response_error:
+                raise self._apply_error_middleware(
+                    middleware_response_error, request_ctx
+                ) from middleware_response_error
+            return dry_run_response
         # ------------------------------------------------------------------------
 
         try:
@@ -1043,11 +1336,14 @@ class BritecoreAPIClient:
                         request_id,
                         rate_limit_timeout,
                     )
-                    raise BritecoreError.RequestTimeoutError(
+                    timeout_exception = BritecoreError.RequestTimeoutError(
                         f"Rate limiter timeout: {rate_limit_timeout}",
                         timeout_seconds=self._timeout_seconds(request_timeout),
                         request_id=request_id,
                         sanitized_body=_error_body,
+                    )
+                    raise self._apply_error_middleware(
+                        timeout_exception, request_ctx
                     ) from rate_limit_timeout
 
             request_result: urllib3.BaseHTTPResponse = http_client.request(
@@ -1066,7 +1362,7 @@ class BritecoreAPIClient:
                 _elapsed_ms,
                 timeout_error,
             )
-            raise BritecoreError.RequestTimeoutError(
+            timeout_exception = BritecoreError.RequestTimeoutError(
                 self._with_hint(
                     str(timeout_error),
                     "Increase request_timeout or retry settings for slow endpoints.",
@@ -1074,6 +1370,9 @@ class BritecoreAPIClient:
                 timeout_seconds=self._timeout_seconds(request_timeout),
                 request_id=request_id,
                 sanitized_body=_error_body,
+            )
+            raise self._apply_error_middleware(
+                timeout_exception, request_ctx
             ) from timeout_error
         except (
             ProtocolError,
@@ -1087,19 +1386,23 @@ class BritecoreAPIClient:
                 _elapsed_ms,
                 request_error,
             )
-            raise BritecoreError.NoDataReturned(
+            request_exception = BritecoreError.NoDataReturned(
                 str(request_error),
                 request_id=request_id,
                 sanitized_body=_error_body,
+            )
+            raise self._apply_error_middleware(
+                request_exception, request_ctx
             ) from request_error
 
         if not request_result:
             LOGGER.error("[%s] ✗ no result object returned", request_id)
-            raise BritecoreError.NoDataReturned(
+            empty_result_exception = BritecoreError.NoDataReturned(
                 "Error getting request",
                 request_id=request_id,
                 sanitized_body=_error_body,
             )
+            raise self._apply_error_middleware(empty_result_exception, request_ctx)
 
         _elapsed_ms = (time.monotonic() - _start) * 1000
         LOGGER.debug(
@@ -1108,6 +1411,21 @@ class BritecoreAPIClient:
             request_result.status,
             _elapsed_ms,
         )
+
+        response_ctx = ResponseContext(
+            status_code=request_result.status,
+            path=path,
+            method=method,
+            headers=dict(getattr(request_result, "headers", {}) or {}),
+            body=getattr(request_result, "data", None),
+            request_context=request_ctx,
+        )
+        try:
+            self._apply_response_middleware(response_ctx)
+        except Exception as middleware_response_error:
+            raise self._apply_error_middleware(
+                middleware_response_error, request_ctx
+            ) from middleware_response_error
 
         return request_result
 

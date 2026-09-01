@@ -69,9 +69,73 @@ extensibility for logging, tracing, retry logic, header injection, and more.
 """
 
 import time
+import warnings
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any
+from json import dumps
+from typing import Any, Literal
+
+from britecore_sdk.exceptions import ReadOnlyViolation
+
+WRITE_METHODS = frozenset({"PUT", "PATCH", "DELETE"})
+WRITE_PATH_MARKERS = (
+    "/new_",
+    "/create_",
+    "/update_",
+    "/delete_",
+    "/remove_",
+    "/cancel_",
+    "/reinstate_",
+    "/add_",
+    "/submit_",
+    "/bind_",
+    "/issue_",
+)
+READ_PATH_MARKERS = (
+    "/retrieve_",
+    "/get_",
+    "/search_",
+    "/find_",
+    "/list_",
+)
+
+
+def _matches_any(path: str, patterns: list[str] | tuple[str, ...]) -> bool:
+    normalized_path = path.strip().lower()
+    return any(pattern in normalized_path for pattern in patterns)
+
+
+def classify_write_operation(
+    method: str,
+    path: str,
+    *,
+    allowlist: list[str] | tuple[str, ...] | None = None,
+    denylist: list[str] | tuple[str, ...] | None = None,
+) -> bool:
+    """Return True when the request looks like a mutating operation."""
+    normalized_method = method.strip().upper()
+    normalized_path = path.strip().lower()
+    normalized_allowlist = tuple(
+        entry.strip().lower() for entry in (allowlist or []) if entry
+    )
+    normalized_denylist = tuple(
+        entry.strip().lower() for entry in (denylist or []) if entry
+    )
+
+    if _matches_any(normalized_path, normalized_allowlist):
+        return False
+    if _matches_any(normalized_path, normalized_denylist):
+        return True
+
+    if normalized_method in WRITE_METHODS:
+        return True
+    if normalized_method != "POST":
+        return False
+
+    if _matches_any(normalized_path, READ_PATH_MARKERS):
+        return False
+    return _matches_any(normalized_path, WRITE_PATH_MARKERS)
 
 
 @dataclass
@@ -82,7 +146,7 @@ class RequestContext:
     path: str  # "/api/v2/quotes/get_quote"
     headers: dict[str, Any] = field(default_factory=dict)
     body: dict[str, Any] | None = None
-    timeout: float | None = None
+    timeout: Any | None = None
     timestamp: float = field(default_factory=time.time)
 
     # Middleware can attach arbitrary context
@@ -260,6 +324,135 @@ class TimeoutMiddleware(Middleware):
         return error
 
 
+class WriteGuardMiddleware(Middleware):
+    """Enforces read-only behavior by classifying and guarding write operations."""
+
+    def __init__(
+        self,
+        policy: Literal["allow", "warn", "block"] = "block",
+        *,
+        allowlist: list[str] | tuple[str, ...] | None = None,
+        denylist: list[str] | tuple[str, ...] | None = None,
+        warning_callback: Callable[[dict[str, Any]], None] | None = None,
+    ):
+        normalized_policy = policy.strip().lower()
+        if normalized_policy not in {"allow", "warn", "block"}:
+            raise ValueError("policy must be one of: allow, warn, block")
+
+        self.policy = normalized_policy
+        self.allowlist = [entry.strip().lower() for entry in (allowlist or []) if entry]
+        self.denylist = [entry.strip().lower() for entry in (denylist or []) if entry]
+        self.warning_callback = warning_callback
+
+    def is_write_operation(self, method: str, path: str) -> bool:
+        return classify_write_operation(
+            method,
+            path,
+            allowlist=self.allowlist,
+            denylist=self.denylist,
+        )
+
+    def on_request(self, ctx: RequestContext) -> RequestContext:
+        if self.policy == "allow":
+            return ctx
+
+        if not self.is_write_operation(ctx.method, ctx.path):
+            return ctx
+
+        event = {
+            "method": ctx.method,
+            "path": ctx.path,
+            "policy": self.policy,
+            "timestamp": ctx.timestamp,
+        }
+        ctx.extra["write_guard"] = event
+
+        message = (
+            f"Write operation attempted while write policy is '{self.policy}': "
+            f"{ctx.method} {ctx.path}"
+        )
+
+        if self.policy == "warn":
+            warnings.warn(message, UserWarning, stacklevel=3)
+            if self.warning_callback is not None:
+                self.warning_callback(event)
+            return ctx
+
+        raise ReadOnlyViolation(
+            message,
+            endpoint=ctx.path,
+            method=ctx.method,
+        )
+
+    def on_response(self, ctx: ResponseContext) -> ResponseContext:
+        return ctx
+
+    def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
+        return error
+
+
+class AuditMiddleware(Middleware):
+    """Emits structured audit events for request activity (writes by default)."""
+
+    def __init__(
+        self,
+        *,
+        audit_only_writes: bool = True,
+        allowlist: list[str] | tuple[str, ...] | None = None,
+        denylist: list[str] | tuple[str, ...] | None = None,
+        audit_callback: Callable[[dict[str, Any]], None] | None = None,
+        logger: Any | None = None,
+        log_level: Literal["debug", "info"] = "info",
+    ):
+        from britecore_sdk import logger as default_logger
+
+        self.audit_only_writes = audit_only_writes
+        self.allowlist = [entry.strip().lower() for entry in (allowlist or []) if entry]
+        self.denylist = [entry.strip().lower() for entry in (denylist or []) if entry]
+        self.audit_callback = audit_callback
+        self.logger = logger or default_logger
+        self.log_level = "debug" if log_level == "debug" else "info"
+
+    def _should_audit(self, method: str, path: str) -> bool:
+        if not self.audit_only_writes:
+            return True
+        return classify_write_operation(
+            method,
+            path,
+            allowlist=self.allowlist,
+            denylist=self.denylist,
+        )
+
+    def on_request(self, ctx: RequestContext) -> RequestContext:
+        if not self._should_audit(ctx.method, ctx.path):
+            return ctx
+
+        event = {
+            "event": "sdk_request_audit",
+            "method": ctx.method,
+            "path": ctx.path,
+            "timestamp": ctx.timestamp,
+            "write_operation": classify_write_operation(
+                ctx.method,
+                ctx.path,
+                allowlist=self.allowlist,
+                denylist=self.denylist,
+            ),
+        }
+        ctx.extra.setdefault("audit_events", []).append(event)
+
+        getattr(self.logger, self.log_level)("AUDIT %s", dumps(event, sort_keys=True))
+        if self.audit_callback is not None:
+            self.audit_callback(event)
+        return ctx
+
+    def on_response(self, ctx: ResponseContext) -> ResponseContext:
+        return ctx
+
+    def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
+        return error
+
+
 __all__ = [
     "Middleware",
     "NoOpMiddleware",
@@ -269,4 +462,7 @@ __all__ = [
     "LoggingMiddleware",
     "HeaderInjectionMiddleware",
     "TimeoutMiddleware",
+    "WriteGuardMiddleware",
+    "AuditMiddleware",
+    "classify_write_operation",
 ]
