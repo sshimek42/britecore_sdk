@@ -2,6 +2,7 @@ import logging
 from collections.abc import Mapping  # typing added
 from datetime import datetime, timedelta
 from json import loads
+from threading import RLock
 from types import MappingProxyType
 from typing import Any
 
@@ -49,6 +50,8 @@ class OAuthToken:
         self.url = Url(scheme=scheme, host=host, path="/api/auth/oauth2/token").url
         self.token: str = ""
         self.token_time: datetime = datetime(1970, 1, 1)
+        # Serialize refresh/check paths for safe multi-threaded access.
+        self._token_lock = RLock()
 
     def _is_token_expired(self) -> bool:
         """Check whether the current token is missing or past its refresh time."""
@@ -56,50 +59,51 @@ class OAuthToken:
 
     def _request_new_token(self) -> None:
         """Request and store a new OAuth2 token, exiting on fatal failure."""
-        http_request: dict[str, str] = {
-            "grant_type": "client_credentials",
-            "scope": self.scope,
-        }
-        http_header: dict[str, str] = urllib3.make_headers(
-            basic_auth=f"{self.client_id}:{self.client_secret}"
-        )
-        LOGGER.debug("Requesting token")
-        http_result: BaseHTTPResponse = http.request(
-            "POST",
-            self.url,
-            fields=http_request,
-            headers=http_header,
-            encode_multipart=False,
-        )
-        if http_result.status != 200 and not self.token:
-            raise BritecoreError.NoTokenReturned(
-                "Failed to retrieve OAuth token from endpoint"
+        with self._token_lock:
+            http_request: dict[str, str] = {
+                "grant_type": "client_credentials",
+                "scope": self.scope,
+            }
+            http_header: dict[str, str] = urllib3.make_headers(
+                basic_auth=f"{self.client_id}:{self.client_secret}"
             )
-        if http_result.status != 200:
-            LOGGER.warning(
-                "OAuth token refresh failed; continuing to use existing token"
+            LOGGER.debug("Requesting token")
+            http_result: BaseHTTPResponse = http.request(
+                "POST",
+                self.url,
+                fields=http_request,
+                headers=http_header,
+                encode_multipart=False,
             )
-            return
-        LOGGER.debug("Received token")
-        http_result_dict: Any = loads(http_result.data)
-        access_token = http_result_dict.get("access_token", "")
-        if not access_token:
-            if not self.token:
+            if http_result.status != 200 and not self.token:
                 raise BritecoreError.NoTokenReturned(
-                    "OAuth endpoint did not return an access token"
+                    "Failed to retrieve OAuth token from endpoint"
                 )
-            LOGGER.warning(
-                "OAuth token refresh response did not include an access token; "
-                "continuing to use existing token"
+            if http_result.status != 200:
+                LOGGER.warning(
+                    "OAuth token refresh failed; continuing to use existing token"
+                )
+                return
+            LOGGER.debug("Received token")
+            http_result_dict: Any = loads(http_result.data)
+            access_token = http_result_dict.get("access_token", "")
+            if not access_token:
+                if not self.token:
+                    raise BritecoreError.NoTokenReturned(
+                        "OAuth endpoint did not return an access token"
+                    )
+                LOGGER.warning(
+                    "OAuth token refresh response did not include an access token; "
+                    "continuing to use existing token"
+                )
+                return
+            self.token = access_token
+            expires_in: float = float(http_result_dict.get("expires_in", 0))
+            self.token_time = (
+                datetime.now()
+                + timedelta(seconds=expires_in)
+                - timedelta(seconds=TOKEN_SKEW_SECONDS)
             )
-            return
-        self.token = access_token
-        expires_in: float = float(http_result_dict.get("expires_in", 0))
-        self.token_time = (
-            datetime.now()
-            + timedelta(seconds=expires_in)
-            - timedelta(seconds=TOKEN_SKEW_SECONDS)
-        )
 
     def _build_auth_headers(self) -> Mapping[str, str]:
         """Build immutable authorization headers using the current token."""
@@ -111,6 +115,7 @@ class OAuthToken:
 
     def get_authorization_headers(self) -> Mapping[str, str]:
         """Return immutable headers containing a valid Bearer token."""
-        if self._is_token_expired():
-            self._request_new_token()
-        return self._build_auth_headers()
+        with self._token_lock:
+            if self._is_token_expired():
+                self._request_new_token()
+            return self._build_auth_headers()
