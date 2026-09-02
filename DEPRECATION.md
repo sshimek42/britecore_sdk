@@ -21,6 +21,23 @@ This policy ensures that:
 
 ---
 
+## Roadmap Relationship
+
+Deprecation planning spans three documents, each with a different purpose:
+
+- `DEPRECATION.md` (this file): policy, active deprecations, migration expectations,
+  and planned removal targets.
+- `IMPROVEMENT_ROADMAP.md`: forward-looking implementation sequence and timing.
+- `CHANGELOG.md`: release-facing record of announced deprecations and shipped changes.
+
+To avoid documentation drift:
+
+- Roadmap entries are planning intent and may be re-scoped.
+- Changelog entries should only include announced deprecations and landed work.
+- Removal version targets in `CHANGELOG.md` should match the active schedule in this document.
+
+---
+
 ## Active Deprecations (2.4.7 Planning)
 
 The following deprecations are planned to be announced during the `2.4.7` cycle.
