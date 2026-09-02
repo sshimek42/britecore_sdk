@@ -1,6 +1,6 @@
 # AGENTS Quickstart
 
-*Last updated: July 24, 2026*
+*Last updated: September 2, 2026*
 *Document type: Development workflow guide*
 
 Quick reference for SDK contributors: essential repository patterns and conventions.
@@ -24,7 +24,7 @@ For full guidance, see `AGENTS.md`.
 - Prefer imports from `models`/`validators`; `classes` import paths are removed.
 - Flat exception aliases: `from britecore_sdk import NotFoundError, AuthenticationError` etc. — use these in new example code.
 - `reset_api_client()` clears the module-level client — use in tests for isolation instead of patching globals.
-- CLI entry points registered in `pyproject.toml`: `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`.
+- CLI entry points registered in `pyproject.toml`: `britecore-quick-check`, `britecore-config-wizard`, `britecore-check-config`, `britecore-healthcheck`, `britecore-normalize-json`.
 - Tests are under `tests/` (not `src/`); run targeted pytest for changed modules, then focused import/smoke checks when config-sensitive paths are involved.
 
 ## Repo layout contract

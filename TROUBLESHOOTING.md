@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-*Last updated: July 22, 2026*
+*Last updated: September 2, 2026*
 *Document type: Living troubleshooting guide*
 
 For SDK users: diagnose and resolve common issues, understand error messages, and find workarounds.
@@ -728,6 +728,7 @@ if client.rate_limiter:
 ```
 
 **Prevention:**
+
 - Reduce request frequency
 - Use batch operations when possible
 - Implement request queuing
@@ -1118,6 +1119,7 @@ client = init_api_client("production").init_client()
 ```
 
 **Better Solution (Production):**
+
 - Get valid SSL certificate
 - Update CA bundle: `pip install --upgrade certifi`
 - Or export cert: `export SSL_CERT_FILE=/path/to/cert.pem`
@@ -1129,7 +1131,7 @@ client = init_api_client("production").init_client()
 - **API client initialization failures** usually indicate missing `target_site` or site config. The `api_client` proxy initializes lazily on first use. Use `get_api_client()` for explicit initialization or to force config reload. Use `init_api_client()` only for advanced/manual re-initialization scenarios.
 - **To swap sites or isolate tests,** call `reset_api_client()` before calling `init_api_client("new_site")`.
 - **To debug without sending a real request,** pass `dry_run=True` to any endpoint wrapper call, or initialize once with `init_api_client(client_dry_run=True)` for a whole scratch script/test flow.
-- **CLI commands** (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are available after `pip install`; fall back to `python -m britecore_sdk.utils.<module>` otherwise.
+- **CLI commands** (`britecore-quick-check`, `britecore-config-wizard`, `britecore-check-config`, `britecore-healthcheck`, `britecore-normalize-json`) are available after `pip install`; fall back to `python -m britecore_sdk.cli.<module>` for CLI modules otherwise.
 
 ---
 

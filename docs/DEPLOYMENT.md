@@ -1,6 +1,6 @@
 # Deployment & CI/CD Guide
 
-*Last updated: April 28, 2026*
+*Last updated: September 2, 2026*
 *Document type: Integration guide*
 
 This guide covers deploying `britecore_sdk` in containerized environments, CI/CD pipelines, serverless functions, and production services.
@@ -17,9 +17,10 @@ The SDK is optimized for deployment in:
 - **Long-running services** (Django, FastAPI, etc.)
 
 Key design decisions enabling this:
+
 - **No file I/O required** (inline credentials supported)
 - **Lazy initialization** (config loads on first request)
-- **Stateless** (no singletons after init)
+- **Explicit-client friendly** (module-level client fallback still exists for compatibility)
 - **Thread-safe** (urllib3 connection pooling)
 - **Lightweight** (minimal dependencies)
 

@@ -131,7 +131,7 @@ logger.info("SDK logger is configured")
 - ✅ **Production-ready** — Stable API, comprehensive tests, security-focused
 - ✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
 - ✅ **Flat exceptions** — `from britecore_sdk import NotFoundError, AuthenticationError`
-- ✅ **CLI commands** — `britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`
+- ✅ **CLI commands** — `britecore-quick-check`, `britecore-config-wizard`, `britecore-check-config`, `britecore-healthcheck`
 - ✅ **Data normalization CLI** — `britecore-normalize-json` for script-first workflows
 - ✅ **Debug dry-run** — per-call `dry_run=True` or client default `init_api_client(client_dry_run=True)`
 - ✅ **Rate limiting** — Optional token bucket with adaptive backoff on 429 responses

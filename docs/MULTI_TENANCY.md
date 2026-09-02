@@ -1,6 +1,6 @@
 # Multi-Tenancy Guide
 
-*Last updated: April 28, 2026*
+*Last updated: September 2, 2026*
 *Document type: Integration guide*
 
 This guide covers patterns for using the BriteCore SDK across multiple sites/tenants in a single application or service.
@@ -16,6 +16,10 @@ The SDK is designed to support multi-tenancy through:
 3. **`reset_api_client()` function** — Clear the module-level client (for site switching)
 4. **Explicit client instantiation** — Create independent `BritecoreAPIClient` instances per site
 5. **Thread-safe initialization** — Each site gets its own HTTP connection pool
+
+> **Direction of travel:** Explicit `client=` usage and scoped `use_api_client(...)`
+> are the recommended multi-site patterns. Module-level fallback/reset flows remain
+> available for compatibility but are tracked in the deprecation plan for `v3.0.0`.
 
 ---
 
@@ -47,11 +51,13 @@ api_client = get_api_client()  # Back to production
 ```
 
 **Pros:**
+
 - Simplest pattern
 - Reuses lazy initialization
 - Works for script-like operations
 
 **Cons:**
+
 - Environmental coupling (requires env var changes or file rewrites)
 - Not ideal for concurrent operations
 - Manual reset management
@@ -100,12 +106,14 @@ for site_name, creds in sites.items():
 ```
 
 **Pros:**
+
 - No config file coupling
 - Each client is independent
 - Clean separation per site
 - Easy to test
 
 **Cons:**
+
 - Credentials passed in code (use env vars or secure vaults)
 - Credentials not in config files
 
@@ -136,12 +144,14 @@ for site_name, (base_url, api_key) in sites.items():
 ```
 
 **Pros:**
+
 - Guaranteed resource cleanup
 - No connection leaks
 - Very testable
 - Clear site isolation
 
 **Cons:**
+
 - Slightly more verbose
 
 ---
@@ -204,12 +214,14 @@ def on_shutdown():
 ```
 
 **Pros:**
+
 - Efficient for long-running services
 - Reuses connections per site
 - Thread-safe
 - Explicit lifecycle control
 
 **Cons:**
+
 - Manual cleanup required
 - More complex
 
@@ -266,11 +278,13 @@ client = get_api_client()
 ```
 
 **Pros:**
+
 - Environment-specific configs version-controlled
 - Clean separation
 - Easy to deploy
 
 **Cons:**
+
 - Still requires file I/O and `reset_api_client()`
 - Not ideal for concurrent operations
 

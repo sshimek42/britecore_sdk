@@ -1,6 +1,6 @@
 # AGENTS.md
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Development workflow guide*
 
 For developers working on the SDK: understand repository structure, coding patterns, and architectural decisions.
@@ -184,4 +184,4 @@ git push --no-verify    # Skip pre-push hooks ONLY
 - Every outbound request carries an `X-SDK-Request-ID` header (short hex correlation ID). The same ID appears in `[req_id] → METHOD /path` debug log lines.
 - `process_result(...)` expects JSON responses shaped like `{success, data, message/messages}`; some supported v1 wrappers with no v2 equivalent may parse raw payloads directly.
 - Keep public exports updated via `__all__` in package `__init__.py` files when adding new top-level functionality.
-- CLI entry points (`britecore-healthcheck`, `britecore-check-config`, `britecore-run-checks`) are registered in `pyproject.toml [project.scripts]`; re-run `pip install -e .` after adding new ones.
+- CLI entry points (`britecore-quick-check`, `britecore-config-wizard`, `britecore-check-config`, `britecore-healthcheck`, `britecore-normalize-json`) are registered in `pyproject.toml [project.scripts]`; re-run `pip install -e .` after adding new ones.
