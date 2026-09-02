@@ -19,6 +19,30 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.6] - 2026-09-02
+
+### Added
+
+- Added first-class payload models for `BritecorePaymentMethod`, `BritecoreVehicle`, `BritecoreCoverage`, `BritecoreDriver`, and `BritecoreLineDefinition`.
+
+- Added claim mapper support for named insured handling as a contact-role mapping (`named_insured`) via `src/britecore_sdk/mappers/claims.py`.
+
+### Changed
+
+- Extended v2 wrappers and claim-related wrappers to accept model-like payload objects that expose `to_dict()`, including list payload coercion support where applicable.
+
+- Exposed new data-layer helpers for script-first payload normalization: `normalize_payment_method_payload`, `normalize_vehicle_payload`, `normalize_coverage_payload`, `normalize_driver_payload`, and `normalize_line_definition_payload`.
+
+### Fixed
+
+- Hardened `britecore-normalize-json` to avoid clear-text payload output to stdout; normalization mode now requires `--output` for payload writes while schema output remains stdout-safe.
+
+- Updated example scripts to avoid printing raw payload bodies and instead emit summary-safe output.
+
+### Deprecated
+
+---
+
 ## [2.4.5] - 2026-09-01
 
 ### Added
