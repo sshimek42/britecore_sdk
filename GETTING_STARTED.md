@@ -1,6 +1,6 @@
 # Getting Started
 
-*Last updated: July 22, 2026* (added "Getting credentials from BriteCore UI" section)
+*Last updated: September 2, 2026*
 *Document type: Living guide*
 
 Use this guide for the fastest path from clone to first successful API call.

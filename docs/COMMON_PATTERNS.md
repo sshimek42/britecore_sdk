@@ -1,9 +1,13 @@
 # Common BriteCore API Patterns
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Implementation guide*
 
 This guide demonstrates common patterns and recipes for using the BriteCore SDK effectively.
+
+> Migration note: Patterns that rely on implicit module-level client state remain supported,
+> but new code should prefer explicit `client=` passing or scoped `use_api_client(...)`
+> to align with the deprecation path toward `v3.0.0`.
 
 ## Pattern 1: Policy Lookup with Fallback
 

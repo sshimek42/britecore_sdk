@@ -1,6 +1,6 @@
 # API Reference
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Living reference guide*
 
 **BriteCore SDK** - API endpoint reference
@@ -608,7 +608,7 @@ For maintained runnable examples, see `examples/README.md` and
 
 ### About API Client Initialization
 
-The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit control over the shared lazy client. Use `init_api_client()` for advanced/manual initialization scenarios.
+The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. For new code, prefer explicit `client=` usage or `use_api_client(...)` scoped binding. The shared client fallback remains available for compatibility, and `init_api_client()` remains available for advanced/manual initialization scenarios.
 
 See [README.md](./README.md) for more examples and [CONTRIBUTING.md](./CONTRIBUTING.md) for adding new endpoints.
 
@@ -616,7 +616,7 @@ See [README.md](./README.md) for more examples and [CONTRIBUTING.md](./CONTRIBUT
 
 ## Documentation Freshness
 
-- Last verified: `2026-04-22`
+- Last verified: `2026-09-02`
 - Verified against: `api_specs/current/britecore.json`, `src/britecore_sdk/api/api_calls/v1/`, and `src/britecore_sdk/api/api_calls/v2/`
 - Known wrapper/spec drift is tracked in `tests/unit/test_api_spec_alignment.py` (`KNOWN_SPEC_GAPS`).
 - Use module-level docs in `src/britecore_sdk/api/api_calls/v1/` and `src/britecore_sdk/api/api_calls/v2/` as the source of truth for current wrapper names.

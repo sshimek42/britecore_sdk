@@ -1,6 +1,6 @@
 # Observability & Monitoring Guide
 
-*Last updated: April 28, 2026*
+*Last updated: September 2, 2026*
 *Document type: Integration guide*
 
 This guide covers logging, tracing, correlation IDs, and monitoring patterns for the BriteCore SDK.
@@ -86,11 +86,13 @@ X-SDK-Request-ID: a1b2c3d4
 ```
 
 This ID appears in:
+
 - Request debug logs: `[req_id: a1b2c3d4] → GET ...`
 - Response debug logs: `[req_id: a1b2c3d4] ← 200 OK`
 - SDK error messages
 
 Use the correlation ID to:
+
 - Track a request through server logs
 - Link SDK requests to BriteCore API access logs
 - Debug multi-step workflows
