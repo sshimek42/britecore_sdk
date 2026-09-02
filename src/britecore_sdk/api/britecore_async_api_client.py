@@ -17,6 +17,56 @@ from britecore_sdk.exceptions import BritecoreError
 _AsyncTransport = Literal["threaded", "httpx"]
 
 
+def _has_header_case_insensitive(headers: dict[str, Any], header_name: str) -> bool:
+    """Return True when a header exists using case-insensitive matching."""
+    target = header_name.strip().lower()
+    return any(str(existing).strip().lower() == target for existing in headers)
+
+
+def _timeout_seconds(request_timeout: Any) -> int | float | None:
+    """Extract a numeric timeout value from urllib3 timeout objects or scalars."""
+    if isinstance(request_timeout, int | float):
+        return request_timeout
+    if isinstance(request_timeout, Timeout):
+        for attr in ("total", "connect_timeout", "read_timeout"):
+            value = getattr(request_timeout, attr, None)
+            if isinstance(value, int | float):
+                return value
+    return None
+
+
+def _sanitize_body_for_errors(body: Any) -> Any:
+    """Return request body with sensitive fields redacted for safe exception context."""
+    sensitive_markers = (
+        "authorization",
+        "token",
+        "secret",
+        "password",
+        "api-key",
+        "apikey",
+        "api_key",
+        "key",
+    )
+
+    if isinstance(body, dict):
+        redacted: dict[str, Any] = {}
+        for key, value in body.items():
+            normalized_key = str(key).strip().lower()
+            if any(marker in normalized_key for marker in sensitive_markers):
+                redacted[key] = "***redacted***"
+            else:
+                redacted[key] = _sanitize_body_for_errors(value)
+        return redacted
+
+    if isinstance(body, list):
+        return [_sanitize_body_for_errors(item) for item in body]
+
+    if isinstance(body, tuple):
+        return [_sanitize_body_for_errors(item) for item in body]
+
+    return body
+
+
 class _AsyncInitClientParams(TypedDict):
     """Typed parameters for async client initialization."""
 
@@ -261,7 +311,7 @@ class AsyncBritecoreAPIClient:
             raise BritecoreError.ConfigurationError("base_url not configured")
 
         resolved_headers: dict[str, Any] = dict(request_headers or {})
-        caller_supplied_authorization = BritecoreAPIClient._has_header(
+        caller_supplied_authorization = _has_header_case_insensitive(
             resolved_headers,
             "Authorization",
         )
@@ -282,7 +332,7 @@ class AsyncBritecoreAPIClient:
             if api_key:
                 request_body["api_key"] = api_key
 
-        timeout_seconds = BritecoreAPIClient._timeout_seconds(request_timeout)
+        timeout_seconds = _timeout_seconds(request_timeout)
         if timeout_seconds is None:
             timeout_seconds = client.web_timeout
 
@@ -305,13 +355,13 @@ class AsyncBritecoreAPIClient:
                 str(timeout_error),
                 timeout_seconds=timeout_seconds,
                 request_id=request_id,
-                sanitized_body=BritecoreAPIClient._sanitize_dry_run_body(request_body),
+                sanitized_body=_sanitize_body_for_errors(request_body),
             ) from timeout_error
         except httpx.HTTPError as request_error:
             raise BritecoreError.NoDataReturned(
                 str(request_error),
                 request_id=request_id,
-                sanitized_body=BritecoreAPIClient._sanitize_dry_run_body(request_body),
+                sanitized_body=_sanitize_body_for_errors(request_body),
             ) from request_error
 
         response_headers = dict(response.headers)

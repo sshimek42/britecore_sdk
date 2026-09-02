@@ -211,9 +211,11 @@ else {
         $pipLicensesAvailable = $true
     }
     catch {
-        Write-Host "  [INFO] pip-licenses not installed. Attempting install..." -ForegroundColor Cyan
-        & python -m pip install --quiet pip-licenses
-        $pipLicensesAvailable = $true
+        Write-Fail "pip-licenses is required for dependency license audit but is not installed."
+        Write-Host "  Install with one of:" -ForegroundColor Cyan
+        Write-Host '    python -m pip install -e ".[build]"' -ForegroundColor Cyan
+        Write-Host "    python -m pip install pip-licenses" -ForegroundColor Cyan
+        Write-Host "  Or skip this check explicitly: .\scripts\release_compliance_check.ps1 -SkipDependencyLicenses" -ForegroundColor Cyan
     }
 
     if ($pipLicensesAvailable) {

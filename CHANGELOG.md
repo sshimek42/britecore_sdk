@@ -29,6 +29,26 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.4.8] - 2026-09-02
+
+### Changed
+
+- Collapsed nested settings context management in `LoadClientSettings.load_config()` and removed minor style warnings surfaced during the post-release review pass.
+
+- Added a dedicated `build` optional dependency extra (`build`, `twine`, `pip-licenses`) and included it in the `dev` extra so local release/compliance tooling is installed deterministically.
+
+- Updated `scripts/release_compliance_check.ps1` to stop auto-installing `pip-licenses`; the script now emits explicit setup guidance or allows an intentional `-SkipDependencyLicenses` opt-out.
+
+### Fixed
+
+- Removed protected-member access from `AsyncBritecoreAPIClient` by replacing cross-class helper calls with module-local header, timeout, and body-sanitization helpers.
+
+- Expanded async-client unit coverage for response snapshot/restore behavior, cache short-circuit branches, non-2xx cache skips, and async workflow helper delegation paths.
+
+### Deprecated
+
+---
+
 ## [2.4.7] - 2026-09-02
 
 ### Changed

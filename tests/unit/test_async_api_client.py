@@ -371,6 +371,95 @@ class TestAsyncBritecoreAPIClient:
         mock_request.assert_called_once()
 
     @pytest.mark.unit
+    def test_snapshot_response_for_cache_none(self):
+        """Snapshot helper should return None when no response exists."""
+        assert AsyncBritecoreAPIClient._snapshot_response_for_cache(None) is None
+
+    @pytest.mark.unit
+    def test_restore_response_from_cache_none(self):
+        """Restore helper should return None for empty cached values."""
+        assert AsyncBritecoreAPIClient._restore_response_from_cache(None) is None
+
+    @pytest.mark.unit
+    def test_restore_response_from_cache_passthrough_non_snapshot(self):
+        """Restore helper should passthrough values not marked as cache snapshots."""
+        raw_value = {"plain": True}
+        restored = AsyncBritecoreAPIClient._restore_response_from_cache(raw_value)
+        assert restored is raw_value
+
+    @pytest.mark.unit
+    def test_restore_response_from_cache_returns_http_response(self):
+        """Restore helper should rebuild a fresh urllib3 HTTPResponse from snapshot data."""
+        cached_value = {
+            "_cached_http_response": True,
+            "status": 204,
+            "reason": "No Content",
+            "headers": {"X-SDK-Request-ID": "abc123"},
+            "body": b"",
+        }
+        restored = AsyncBritecoreAPIClient._restore_response_from_cache(cached_value)
+        assert restored is not None
+        assert getattr(restored, "status", None) == 204
+        assert getattr(restored, "reason", None) == "No Content"
+
+    @pytest.mark.unit
+    def test_request_with_optional_dedupe_returns_cached_value_before_task(self):
+        """In-flight dedupe path should return cached value when available."""
+        adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
+
+        async def run_once():
+            return await adapter._request_with_optional_dedupe(
+                path="/api/v2/test",
+                json={"x": 1},
+                request_timeout=None,
+                request_retries=None,
+                request_headers=None,
+                method="POST",
+                rate_limiter_bypass=False,
+                dry_run=False,
+                dry_run_include_sensitive_headers=False,
+                dedupe_in_flight=True,
+                cache_bypass=False,
+                cache_enabled=True,
+                cache_key="k1",
+            )
+
+        with (
+            patch.object(
+                adapter._cache, "get", return_value={"cached": True}
+            ) as mock_get,
+            patch.object(adapter, "_perform_request", new=AsyncMock()) as mock_perform,
+        ):
+            result = asyncio.run(run_once())
+
+        assert result == {"cached": True}
+        mock_get.assert_called_once_with("k1")
+        mock_perform.assert_not_awaited()
+
+    @pytest.mark.unit
+    def test_cache_response_on_success_skips_non_2xx(self):
+        """Cache writer should skip invalidation/writes when response is not HTTP-success."""
+        adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
+        response = _make_response(status=500)
+
+        with (
+            patch.object(adapter._cache, "invalidate_namespaces") as mock_invalidate,
+            patch.object(adapter._cache, "set") as mock_set,
+        ):
+            adapter._cache_response_on_success(
+                response=response,
+                cache_enabled=True,
+                cache_bypass=False,
+                cache_key="k2",
+                cache_ttl_seconds=60,
+                cache_namespace="policies",
+                cache_invalidate_on_success=["policies"],
+            )
+
+        mock_invalidate.assert_not_called()
+        mock_set.assert_not_called()
+
+    @pytest.mark.unit
     def test_cached_response_is_immutable_snapshot(self):
         """Mutating a live response should not mutate future cache hits."""
         adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
@@ -618,3 +707,50 @@ class TestAsyncBritecoreAPIClient:
         result = asyncio.run(adapter.aprocess_result(mock_http_response))
 
         assert result["id"] == "test_id"
+
+    @pytest.mark.unit
+    def test_acreate_contacts_batch_delegates_to_workflow_module(self):
+        """acreate_contacts_batch should delegate to async workflow helper."""
+        expected = {"total": 1, "succeeded": 1, "failed": 0, "results": []}
+        mocked_helper = AsyncMock(return_value=expected)
+        module = SimpleNamespace(acreate_contacts_batch=mocked_helper)
+
+        with patch("importlib.import_module", return_value=module):
+            result = asyncio.run(
+                AsyncBritecoreAPIClient.acreate_contacts_batch([{"name": "A"}])
+            )
+
+        assert result == expected
+        mocked_helper.assert_awaited_once()
+
+    @pytest.mark.unit
+    def test_acreate_policies_batch_delegates_to_workflow_module(self):
+        """acreate_policies_batch should delegate to async workflow helper."""
+        expected = {"total": 1, "succeeded": 1, "failed": 0, "results": []}
+        mocked_helper = AsyncMock(return_value=expected)
+        module = SimpleNamespace(acreate_policies_batch=mocked_helper)
+
+        with patch("importlib.import_module", return_value=module):
+            result = asyncio.run(
+                AsyncBritecoreAPIClient.acreate_policies_batch(
+                    [{"policy_number": "P1"}]
+                )
+            )
+
+        assert result == expected
+        mocked_helper.assert_awaited_once()
+
+    @pytest.mark.unit
+    def test_acreate_risks_batch_delegates_to_workflow_module(self):
+        """acreate_risks_batch should delegate to async workflow helper."""
+        expected = {"total": 1, "succeeded": 1, "failed": 0, "results": []}
+        mocked_helper = AsyncMock(return_value=expected)
+        module = SimpleNamespace(acreate_risks_batch=mocked_helper)
+
+        with patch("importlib.import_module", return_value=module):
+            result = asyncio.run(
+                AsyncBritecoreAPIClient.acreate_risks_batch([{"revision_id": "R1"}])
+            )
+
+        assert result == expected
+        mocked_helper.assert_awaited_once()
