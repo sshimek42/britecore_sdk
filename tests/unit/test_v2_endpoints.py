@@ -5,6 +5,7 @@ wrapper functions, covering happy path and error scenarios.
 """
 
 import importlib
+from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -205,6 +206,20 @@ CLAIMS_ENDPOINT_CASES = [
         {"claim_id": "CLM-9", "claim": {"status": "closed"}},
         {"claim_id": "CLM-9", "claim": {"status": "closed"}},
         "/api/v2/claims/update_claim",
+    ),
+    (
+        "get_claim_change_logs",
+        {
+            "transaction": "claim_payment",
+            "from_date_time": "2026-01-01 00:00:00",
+            "to_date_time": "2026-01-31 23:59:59",
+        },
+        {
+            "transaction": "claim_payment",
+            "from_date_time": "2026-01-01 00:00:00",
+            "to_date_time": "2026-01-31 23:59:59",
+        },
+        "/api/v2/claims/get_claim_change_logs",
     ),
 ]
 
@@ -1285,6 +1300,46 @@ class TestClaimsEndpoints:
         mock_process_result.assert_called_once_with(
             mock_response,
             endpoint=expected_path,
+        )
+
+    @pytest.mark.unit
+    def test_get_claim_change_logs_accepts_datetime_inputs(
+        self,
+        env_api_key,
+        mock_settings,
+    ):
+        """get_claim_change_logs should format datetime objects for payload fields."""
+        module = importlib.import_module("britecore_sdk.api.api_calls.v2.claims")
+        client = _get_initialized_client(mock_settings)
+        mock_response = _make_response(b'{"success": true, "data": {"ok": true}}')
+
+        with (
+            patch.object(
+                client, "do_request", return_value=mock_response
+            ) as mock_do_request,
+            patch.object(
+                client, "process_result", return_value={"ok": True}
+            ) as mock_process_result,
+        ):
+            result = module.get_claim_change_logs(
+                transaction="status",
+                from_date_time=datetime(2026, 1, 1, 0, 0, 0),
+                to_date_time=datetime(2026, 1, 31, 23, 59, 59),
+            )
+
+        assert result == {"ok": True}
+        mock_do_request.assert_called_once_with(
+            path="/api/v2/claims/get_claim_change_logs",
+            json={
+                "transaction": "status",
+                "from_date_time": "2026-01-01 00:00:00",
+                "to_date_time": "2026-01-31 23:59:59",
+            },
+            method="POST",
+        )
+        mock_process_result.assert_called_once_with(
+            mock_response,
+            endpoint="/api/v2/claims/get_claim_change_logs",
         )
 
 

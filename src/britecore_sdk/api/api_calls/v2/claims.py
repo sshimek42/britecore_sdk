@@ -4,6 +4,7 @@ This module provides the SDK wrapper for retrieving claim details from the
 BriteCore v2 claims API.
 """
 
+from datetime import datetime
 from typing import Any, Unpack
 
 from britecore_sdk.api.api_calls import (
@@ -14,6 +15,15 @@ from britecore_sdk.api.api_calls import (
 from britecore_sdk.api.api_calls.v2._common import build_payload
 
 API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _format_claim_change_log_datetime(value: datetime | str | None) -> str | None:
+    """Normalize optional datetime values to API string format."""
+    if value is None:
+        return None
+    if isinstance(value, datetime):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
+    return value
 
 
 def get_claim(
@@ -366,24 +376,30 @@ def get_all_claim_transactions(
 
 def get_claim_change_logs(
     transaction: str | None = None,
-    standard_error: str | None = None,
-    to_date_time: str | None = None,
-    Raises: str | None = None,
-    from_date_time: str | None = None,
-    field: str | None = None,
+    from_date_time: datetime | str | None = None,
+    to_date_time: datetime | str | None = None,
     **kwargs: Unpack[RequestParameters],
 ) -> Any:
-    """Get Claim Change Logs.
+    """Get claim change logs filtered by transaction and datetime range.
 
     POST /api/v2/claims/get_claim_change_logs
+
+    Args:
+        transaction: Transaction filter option. Supported options include
+            ``loss_reserve``, ``claim_payment``, ``status``, ``loss_address``,
+            ``policy``, ``claimant``, ``loss_cause``, ``adjuster``,
+            ``date_reported``, ``loss_date``, ``adjustment_reserve``,
+            ``coverage``, ``legal_reserve``, ``active``, ``named_insured``, and
+            ``agent``.
+        from_date_time: Optional start datetime filter. Use ``YYYY-MM-DD HH:MM:SS``.
+            ``datetime`` inputs are formatted automatically.
+        to_date_time: Optional end datetime filter. Use ``YYYY-MM-DD HH:MM:SS``.
+            ``datetime`` inputs are formatted automatically.
     """
     request_json: dict[str, Any] = {
         "transaction": transaction,
-        "standard_error": standard_error,
-        "to_date_time": to_date_time,
-        "Raises": Raises,
-        "from_date_time": from_date_time,
-        "------": field,
+        "from_date_time": _format_claim_change_log_datetime(from_date_time),
+        "to_date_time": _format_claim_change_log_datetime(to_date_time),
     }
     filtered_json = {k: v for k, v in request_json.items() if v is not None}
     request_result = API_CLIENT.do_request(
