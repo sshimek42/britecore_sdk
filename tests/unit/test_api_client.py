@@ -245,6 +245,93 @@ class TestBritecoreAPIClientInit:
             for middleware in client.middleware
         )
 
+    @pytest.mark.unit
+    def test_init_client_preserves_custom_write_guard_subclass(
+        self, env_api_key, mock_settings
+    ):
+        """Repeated init_client should not remove user custom guard subclasses."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.middleware import (
+            RequestContext,
+            ResponseContext,
+            WriteGuardMiddleware,
+        )
+
+        class CustomWriteGuard(WriteGuardMiddleware):
+            def on_request(self, ctx: RequestContext) -> RequestContext:
+                return ctx
+
+            def on_response(self, ctx: ResponseContext) -> ResponseContext:
+                return ctx
+
+            def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
+                return error
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site")
+            client.add_middleware(CustomWriteGuard(policy="allow"))
+
+            client.init_client(write_policy="warn")
+            client.init_client(write_policy="block")
+
+        custom_guards = [
+            m for m in client.middleware if isinstance(m, CustomWriteGuard)
+        ]
+        managed_guards = [
+            m for m in client.middleware if type(m).__name__ == "WriteGuardMiddleware"
+        ]
+        assert len(custom_guards) == 1
+        assert len(managed_guards) == 1
+        assert managed_guards[0].policy == "block"
+
+    @pytest.mark.unit
+    def test_init_client_preserves_custom_audit_subclass(
+        self, env_api_key, mock_settings
+    ):
+        """Repeated init_client should not remove user custom audit subclasses."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+        from britecore_sdk.api.middleware import (
+            AuditMiddleware,
+            RequestContext,
+            ResponseContext,
+        )
+
+        class CustomAudit(AuditMiddleware):
+            def on_request(self, ctx: RequestContext) -> RequestContext:
+                return ctx
+
+            def on_response(self, ctx: ResponseContext) -> ResponseContext:
+                return ctx
+
+            def on_error(self, error: Exception, ctx: RequestContext) -> Exception:
+                return error
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site")
+            client.add_middleware(CustomAudit())
+
+            client.init_client(enable_audit_middleware=True)
+            client.init_client(enable_audit_middleware=True)
+
+        custom_audits = [m for m in client.middleware if isinstance(m, CustomAudit)]
+        managed_audits = [
+            m for m in client.middleware if type(m).__name__ == "AuditMiddleware"
+        ]
+        assert len(custom_audits) == 1
+        assert len(managed_audits) == 1
+
 
 class TestBritecoreAPIClientProcessResult:
     """Tests for process_result method."""

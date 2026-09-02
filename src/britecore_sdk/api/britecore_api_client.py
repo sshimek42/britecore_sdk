@@ -151,8 +151,8 @@ class BritecoreAPIClient:
     configuration settings, handle authentication using either API keys or
     OAuth tokens, and execute HTTP requests to Britecore API endpoints.
 
-    All state is instance-level; multiple clients can coexist in the same
-    process without interfering with each other.
+    Client-facing runtime state is instance-level; multiple clients can coexist
+    in the same process without interfering with each other.
     """
 
     def __init__(self, target_site: str) -> None:
@@ -577,12 +577,11 @@ class BritecoreAPIClient:
         else:
             self.rate_limiter = None
 
-        # Replace existing write guard middleware so repeated init_client calls
-        # keep exactly one guard with the latest configuration.
+        # Replace only SDK-managed guard instances so custom subclasses remain.
         self.middleware = [
             middleware
             for middleware in self.middleware
-            if not isinstance(middleware, WriteGuardMiddleware)
+            if type(middleware) is not WriteGuardMiddleware
         ]
         if self.write_policy != "allow":
             self.add_middleware(
@@ -597,7 +596,7 @@ class BritecoreAPIClient:
         self.middleware = [
             middleware
             for middleware in self.middleware
-            if not isinstance(middleware, AuditMiddleware)
+            if type(middleware) is not AuditMiddleware
         ]
         if normalized_enable_audit_middleware:
             self.add_middleware(
