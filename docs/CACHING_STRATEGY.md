@@ -11,6 +11,7 @@ The SDK includes an optional response caching layer that stores API responses in
 ### ✅ Good Use Cases
 
 1. **Read-only operations**
+
    ```python
    # Perfect for caching - policy data changes infrequently
    from britecore_sdk.api.api_calls import get_async_api_client
@@ -21,13 +22,18 @@ The SDK includes an optional response caching layer that stores API responses in
    ```
 
 2. **Reference data lookups**
+
    ```python
+   from britecore_sdk.api.api_calls import get_api_client
+
    # Cache policy types, rating factors, etc.
    # These rarely change during a session
-   result = retrieve_policy_types(cache_ttl=7200)  # 2 hours
+   client = get_api_client()
+   result = retrieve_policy_types(client=client, cache_ttl=7200)  # 2 hours
    ```
 
 3. **Batch operations with repeated lookups**
+
    ```python
    # When processing a list of policies, avoid re-fetching the same data
    client = get_api_client()
@@ -35,6 +41,7 @@ The SDK includes an optional response caching layer that stores API responses in
    ```
 
 4. **Development and testing**
+
    ```python
    # Speed up test runs by caching fixture data
    @pytest.fixture
@@ -46,12 +53,14 @@ The SDK includes an optional response caching layer that stores API responses in
 ### ❌ Poor Use Cases
 
 1. **Mutable operations** - Don't cache write operations
+
    ```python
    # WRONG - never cache create/update/delete
    result = create_policy(..., cache_ttl=3600)  # ❌ BAD
    ```
 
 2. **Time-sensitive data**
+
    ```python
    # WRONG - quote availability changes frequently
    quote = create_quote(..., cache_ttl=3600)  # ❌ BAD
@@ -59,6 +68,7 @@ The SDK includes an optional response caching layer that stores API responses in
    ```
 
 3. **Real-time integrations**
+
    ```python
    # WRONG - when you need real-time data
    policy = retrieve_policy(..., cache_ttl=3600)  # ❌ BAD
@@ -66,6 +76,7 @@ The SDK includes an optional response caching layer that stores API responses in
    ```
 
 4. **Operations with side effects**
+
    ```python
    # WRONG - operations that update related data
    risk = create_risk(..., cache_ttl=3600)  # ❌ BAD
@@ -79,22 +90,28 @@ Cache control on individual requests:
 
 ```python
 from britecore_sdk.api.api_calls.v2 import policies
+from britecore_sdk.api.api_calls import get_api_client
+
+client = get_api_client()
 
 # Cache for 1 hour
 result = policies.retrieve_policy(
     policy_number="POL-123",
+    client=client,
     cache_ttl=3600,
 )
 
 # No caching (always fresh)
 result = policies.retrieve_policy(
     policy_number="POL-123",
+    client=client,
     cache_ttl=0,
 )
 
 # Use default TTL from settings
 result = policies.retrieve_policy(
     policy_number="POL-123",
+    client=client,
     # cache_ttl parameter omitted uses configured default
 )
 ```
@@ -129,6 +146,7 @@ async_client._default_cache_ttl_seconds = 300
 ### Key Generation
 
 Cache keys are based on:
+
 - HTTP method (GET, POST, etc.)
 - Request path
 - Query parameters
@@ -152,12 +170,14 @@ assert policy1 == policy2
 Caches are invalidated by:
 
 1. **TTL expiration** - Response expires after configured TTL
+
    ```python
    result = retrieve_policy(..., cache_ttl=300)  # 5 minute TTL
    # After 5 minutes, this request will hit the API again
    ```
 
 2. **Manual invalidation**
+
    ```python
    client = get_async_api_client()
    # Clear entire cache
@@ -168,6 +188,7 @@ Caches are invalidated by:
    ```
 
 3. **Cache overflow** - Oldest entries evicted when max_size reached
+
    ```python
    # If cache holds 1000 responses and you add the 1001st,
    # the oldest entry is evicted
@@ -212,6 +233,7 @@ Cache reads transparently:
 
 ```python
 from britecore_sdk.api.api_calls import get_async_api_client
+from britecore_sdk.api.api_calls.v2 import contacts
 from britecore_sdk.api.response_helpers import paginate
 
 async def list_all_contacts(page_size=100):
@@ -219,13 +241,13 @@ async def list_all_contacts(page_size=100):
     client = get_async_api_client()
 
     # Each page is cached independently
-    for contact in paginate(
+    for contact_record in paginate(
         client.get_client(),
-        contact.list_contacts,
+        contacts.list_contacts,
         page_size=page_size,
         cache_ttl=300,
     ):
-        yield contact
+        yield contact_record
 ```
 
 ### Strategy 2: Write-Through Cache
@@ -233,6 +255,7 @@ async def list_all_contacts(page_size=100):
 Clear cache after writes:
 
 ```python
+from britecore_sdk.api.api_calls import get_async_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
 async def update_policy(policy_id, updates):
@@ -304,6 +327,9 @@ updated = policies.update_policy(
 **Solution:** Adjust TTL or clear cache after writes
 
 ```python
+from britecore_sdk.api.api_calls import get_async_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
 # Option 1: Use shorter TTL
 result = retrieve_policy(..., cache_ttl=60)  # 1 minute instead of 1 hour
 

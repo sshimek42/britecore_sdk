@@ -16,7 +16,7 @@ constructor kwarg:
 | Mode | Value | Behavior | Extra required |
 | --- | --- | --- | --- |
 | Threaded (default) | `"threaded"` | Wraps sync urllib3 client in `asyncio.to_thread` | None |
-| Native async | `"httpx"` | Uses `httpx.AsyncClient` for true non-blocking I/O | `britecore_sdk[async-http]` |
+| Native async | `"httpx"` | Uses a shared `httpx.AsyncClient` instance for true non-blocking I/O | `britecore_sdk[async-http]` |
 
 ### Threaded transport (default)
 
@@ -41,6 +41,18 @@ pip install britecore_sdk[async-http]
 from britecore_sdk.api import AsyncBritecoreAPIClient
 
 client = AsyncBritecoreAPIClient(target_site="prod", async_transport="httpx")
+```
+
+When the SDK creates the native client for you, close it explicitly:
+
+```python
+from britecore_sdk.api import AsyncBritecoreAPIClient
+
+async with AsyncBritecoreAPIClient(
+    target_site="prod",
+    async_transport="httpx",
+) as client:
+    ...
 ```
 
 You can inject a pre-built `httpx.AsyncClient` for connection pool sharing or testing:
@@ -68,7 +80,7 @@ Read wrappers in async `v2` enable caching by default:
 - Contacts (`aget_contact`, `afind_contact_by_params`): namespace `contacts`, TTL `60` seconds
 - Policies (`aretrieve_policy`, `aretrieve_policy_snapshot`, etc.): namespace `policies`, TTL `60` seconds
 
-Mutation wrappers invalidate related read namespaces on successful (`HTTP 200`) responses:
+Mutation wrappers invalidate related read namespaces on successful (`HTTP 2xx`) responses:
 
 - Quote mutations invalidate `quotes`
 - Contact mutations invalidate `contacts`
@@ -194,5 +206,5 @@ print(removed)
 ## Notes
 
 - Authorization headers are excluded from cache key generation.
-- Cache writes happen only on successful (`HTTP 200`) responses.
+- Cache writes happen only on successful (`HTTP 2xx`) responses.
 - `cache_bypass=True` also bypasses in-flight dedupe for that request.

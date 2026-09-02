@@ -11,21 +11,39 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Planned for `2.4.7`: add an error-hint layer that attaches actionable remediation guidance to common configuration/authentication failures.
+- Planned for `2.5.x`: add a lightweight `britecore-quick-check` CLI mode set (`--syntax`, `--connectivity`, `--full`) for one-command environment readiness checks.
 
-- Planned for `2.4.7`: add a lightweight `britecore-quick-check` CLI mode set (`--syntax`, `--connectivity`, `--full`) for one-command environment readiness checks.
+- Planned for `2.5.x`: add response helper utilities for common API payload patterns (data extraction, pagination envelopes, and batch result normalization).
 
-- Planned for `2.4.7`: add response helper utilities for common API payload patterns (data extraction, pagination envelopes, and batch result normalization).
+- Planned for `2.5.x`: expand structured logging categories to make auth, HTTP, rate-limit, cache, and configuration events easier to filter in production logs.
 
 ### Changed
 
-- Planned for `2.4.7`: expand structured logging categories to make auth, HTTP, rate-limit, cache, and configuration events easier to filter in production logs.
-
-- Planned for `2.4.7`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
+- Planned for `2.5.x`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
 
 ### Fixed
 
-- Planned for `2.4.7`: remove remaining high-confidence `type: ignore` suppressions by tightening type signatures and overload coverage in shared API entry points.
+- Planned for `2.5.x`: reduce remaining high-confidence `type: ignore` suppressions by tightening type signatures and overload coverage in shared API entry points.
+
+### Deprecated
+
+---
+
+## [2.4.7] - 2026-09-02
+
+### Changed
+
+- Hardened auth configuration resolution in `BritecoreAPIClient.init_client(...)` to reject ambiguous credential sets (mixed API key + OAuth inputs) and partial OAuth credentials instead of silently falling back to API-key mode.
+
+- Made retry-method behavior explicit by constraining status retries to idempotent-safe HTTP methods (`GET`, `HEAD`, `OPTIONS`, `PUT`, `DELETE`, `TRACE`) and documenting this as the default policy for POST-heavy SDK flows.
+
+- Generalized HTTP success handling from strict `200` to `2xx` for response validation and async cache success detection.
+
+- Hardened response parsing to safely handle non-dict JSON payloads and plain dict payloads that omit the legacy `{"success": ..., "data": ...}` envelope.
+
+- Updated native async `httpx` transport lifecycle to reuse one lazily-created client per SDK instance (instead of per-request create/close churn) and added explicit async close/context-manager support.
+
+- Cached async responses are now stored as immutable snapshots and restored as fresh response objects to prevent shared mutable-response side effects across cache hits.
 
 ### Deprecated
 
@@ -235,32 +253,32 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- **Optional native async HTTP transport** — `AsyncBritecoreAPIClient` now accepts
+- **Optional native async HTTP transport** â€” `AsyncBritecoreAPIClient` now accepts
   `async_transport="httpx"` (default: `"threaded"`). When set to `"httpx"`, requests
   are executed natively via `httpx.AsyncClient` instead of wrapping the sync client in
   `asyncio.to_thread`. An optional `httpx_client` kwarg allows injecting a pre-built
   client (e.g., for shared connection pools or testing). Install the new optional extra
   to enable: `pip install britecore_sdk[async-http]`.
 
-- **Optional pydantic-validated settings view** — `get_typed_settings(site_names=[...])`
+- **Optional pydantic-validated settings view** â€” `get_typed_settings(site_names=[...])`
   is now exported from `britecore_sdk.settings`. It returns a strongly-typed pydantic
   model built from the live Dynaconf config, providing IDE autocompletion and runtime
   field validation without changing SDK initialization behavior. Requires:
   `pip install britecore_sdk[typed-config]`.
 
-- **New `toml_compat` wrapper** (`britecore_sdk.utils.toml_compat`) — thin adapter that
+- **New `toml_compat` wrapper** (`britecore_sdk.utils.toml_compat`) â€” thin adapter that
   exposes a `toml`-like API (`load` / `dump` / `loads` / `dumps`) backed by stdlib
   `tomllib` for parsing and `tomli-w` for serialization. Internal SDK utilities now use
   this wrapper, removing the dependency on the untyped `toml` package.
 
 - **New optional dependency extras** in `pyproject.toml`:
-  - `britecore_sdk[async-http]` — pulls in `httpx` for native async transport.
-  - `britecore_sdk[typed-config]` — pulls in `pydantic` and `pydantic-settings`.
-  - `britecore_sdk[all]` — now includes both new extras in addition to `interactive`.
+  - `britecore_sdk[async-http]` â€” pulls in `httpx` for native async transport.
+  - `britecore_sdk[typed-config]` â€” pulls in `pydantic` and `pydantic-settings`.
+  - `britecore_sdk[all]` â€” now includes both new extras in addition to `interactive`.
 
 ### Changed
 
-- **Removed `typing-extensions` from core runtime dependencies** — the project targets
+- **Removed `typing-extensions` from core runtime dependencies** â€” the project targets
   Python `>=3.11`, where `TypedDict` is part of stdlib `typing`. The only consumer
   (`api/types.py`) now imports from `typing` directly.
 
@@ -271,7 +289,7 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Migration notes
 
-**`toml` → `tomli-w` (write path)**
+**`toml` â†’ `tomli-w` (write path)**
 
 No action required for most consumers. The internal TOML I/O used by config utilities
 is fully backward-compatible. If you import `toml` from `check_site_configs.py` or
@@ -359,10 +377,10 @@ print(typed.sites["prod"].base_url)
 - **85 new always-on tests** replacing the fully-skipped `test_workflows_integration.py`
   template suite across 10 test classes:
   - `TestPhoneValidatorProperties` (15): format normalization, sentinel rejection (`"0"`, `"-"`),
-    all type-map entries (`mobile→Cell`, `business→Work`, `office→Work`, `cellular→Cell`),
+    all type-map entries (`mobileâ†’Cell`, `businessâ†’Work`, `officeâ†’Work`, `cellularâ†’Cell`),
     multi-entry list processing
   - `TestEmailValidatorProperties` (12): lowercase normalization, `validate_email()`, type-map
-    entries (`home→Personal`, `business→Work`), `InvalidEmailAddress` guard, silent empty-entry skip
+    entries (`homeâ†’Personal`, `businessâ†’Work`), `InvalidEmailAddress` guard, silent empty-entry skip
   - `TestNameValidatorProperties` (6): apostrophe lowercasing, suffix handling (IV, III, Jr)
   - `TestBritecoreQuoteModel` (6): `to_dict()` field completeness, auto-generated description,
     explicit description preservation, inspection date include/exclude, `underwriting_questions` reset
@@ -381,11 +399,11 @@ print(typed.sites["prod"].base_url)
 ### Fixed
 
 - **`test_live_create_quote_round_trip`**: replaced unconditional `pytest.skip()` with a real
-  `create_full_quote` → `get_quote` round-trip test, gated on the new
+  `create_full_quote` â†’ `get_quote` round-trip test, gated on the new
   `BRITECORE_SANDBOX_POLICY_TYPE_ID` env var; preserves skip behaviour when the variable is absent
 - **`test_interactive_menu_module_can_be_imported`**: removed catch-all `try/except pytest.skip()`;
   the module uses a lazy proxy (`_LazyAPIClient`) that never requires config at import time
-- **black ↔ ruff-format formatting cycle** on `test_endpoints.py`: extracted long assertion
+- **black â†” ruff-format formatting cycle** on `test_endpoints.py`: extracted long assertion
   message into a local variable so the statement fits on one line and both formatters agree
 - **`post_probe_report.json` / `post_probe_report.md`**: fixed missing end-of-file newline and
   mixed Windows/Unix line endings
@@ -396,11 +414,11 @@ print(typed.sites["prod"].base_url)
 
 ### Fixed
 
-- **Critical docstring gaps** — Added missing module-level docstring to `src/britecore_sdk/api/api_calls/v1/contacts.py`
+- **Critical docstring gaps** â€” Added missing module-level docstring to `src/britecore_sdk/api/api_calls/v1/contacts.py`
 - **Documentation quality improvements**:
   - Expanded `src/britecore_sdk/settings/config.py` module docstring from 2 words to comprehensive 18-line documentation explaining the layered configuration system
   - Corrected and expanded `src/britecore_sdk/models/quote.py` module docstring (was incorrectly labeled as "policy model")
-- **API reference generation** — Ensures all module-level docstrings are present and properly formatted for Sphinx autodoc and IDE tooltips
+- **API reference generation** â€” Ensures all module-level docstrings are present and properly formatted for Sphinx autodoc and IDE tooltips
 
 ### Verified
 
@@ -421,7 +439,7 @@ print(typed.sites["prod"].base_url)
   `--use-spec-empty-properties`, `--print-selected-paths`, `--export-selected-paths`, and
   `--log-level` flags.  Outputs structured JSON and Markdown reports.
 - **Probe regression test generator** (`generate_probe_regression_tests.py`): Script that reads
-  `post_probe_report.json` and produces `tests/unit/test_probe_endpoint_regression.py` — 209
+  `post_probe_report.json` and produces `tests/unit/test_probe_endpoint_regression.py` â€” 209
   parametrized tests that verify every probe-confirmed wrapper routes to the correct API path.
   Re-run after future probe runs to keep the suite current.
 - **Probe endpoint regression tests** (`tests/unit/test_probe_endpoint_regression.py`): 209
@@ -454,77 +472,77 @@ print(typed.sites["prod"].base_url)
 
 ### Fixed
 
-- `britecore_sdk.api.iterators`: replaced invalid `yield from` inside async generators with explicit `for … yield` to resolve `SyntaxError` that prevented import.
+- `britecore_sdk.api.iterators`: replaced invalid `yield from` inside async generators with explicit `for â€¦ yield` to resolve `SyntaxError` that prevented import.
 
-### v2.0.0 Release (✅ COMPLETE - 6/6 Phases)
+### v2.0.0 Release (âœ… COMPLETE - 6/6 Phases)
 
-**Phase 1: Client Lifecycle Redesign (✅ Complete)**
+**Phase 1: Client Lifecycle Redesign (âœ… Complete)**
 
 - **Explicit client parameter** now available on all endpoint wrappers for v2.0.0 pattern
 - Added `resolve_client()` and `aresolve_client()` helpers
 
-**Phase 2: Typed Response Models (✅ Complete)**
+**Phase 2: Typed Response Models (âœ… Complete)**
 
 - New `britecore_sdk.api.responses` module with typed dataclasses:
-  - `ResponseEnvelope` — Wraps API response metadata
-  - `QuoteResponse`, `PolicyResponse`, `ContactResponse` — Domain models
-  - `ListResponse` — Generic list wrapper with pagination
-  - `BatchOperationResponse` — Batch operation results
+  - `ResponseEnvelope` â€” Wraps API response metadata
+  - `QuoteResponse`, `PolicyResponse`, `ContactResponse` â€” Domain models
+  - `ListResponse` â€” Generic list wrapper with pagination
+  - `BatchOperationResponse` â€” Batch operation results
 - All response models include `.from_api()` factory pattern
 - Replaces `Any` returns with type-safe models in endpoint wrappers
 - Full IDE autocomplete support
 - Raw API payload accessible via `.raw_data` field
 
-**Phase 3: Standardized Error Model (✅ Complete)**
+**Phase 3: Standardized Error Model (âœ… Complete)**
 
 - All exceptions now include structured metadata:
-  - `status_code` — HTTP status code (e.g., 404, 500)
-  - `error_code` — BriteCore error code (e.g., "quote_not_found")
-  - `request_id` — Request correlation ID for debugging
-  - `detail` — Alias for human-readable message
-  - `raw_payload` — Full server response dict
+  - `status_code` â€” HTTP status code (e.g., 404, 500)
+  - `error_code` â€” BriteCore error code (e.g., "quote_not_found")
+  - `request_id` â€” Request correlation ID for debugging
+  - `detail` â€” Alias for human-readable message
+  - `raw_payload` â€” Full server response dict
 - `ValidationError` now includes `.validation_errors` dict with field-level errors
 - Enhanced exception types:
-  - `AuthenticationError` — status 401/403, code "authentication_failed"
-  - `NotFoundError` — includes all metadata
-  - `RateLimitError` — includes retry_after field
-  - `ServerError` — status 500+, code "server_error"
-  - `RequestTimeoutError` — status 408, code "request_timeout"
-- Backwards compatible — existing exception patterns still work
+  - `AuthenticationError` â€” status 401/403, code "authentication_failed"
+  - `NotFoundError` â€” includes all metadata
+  - `RateLimitError` â€” includes retry_after field
+  - `ServerError` â€” status 500+, code "server_error"
+  - `RequestTimeoutError` â€” status 408, code "request_timeout"
+- Backwards compatible â€” existing exception patterns still work
 
-**Phase 4: Transport Middleware System (✅ Complete)**
+**Phase 4: Transport Middleware System (âœ… Complete)**
 
 - New `britecore_sdk.api.middleware` module:
   - `Middleware` base class with `on_request()`, `on_response()`, `on_error()` hooks
   - `RequestContext` and `ResponseContext` for middleware data flow
   - Built-in middleware:
-    - `RequestIdMiddleware` — Automatic X-Request-ID header
-    - `LoggingMiddleware` — Request/response logging
-    - `HeaderInjectionMiddleware` — Custom header injection
-    - `TimeoutMiddleware` — Global timeout configuration
+    - `RequestIdMiddleware` â€” Automatic X-Request-ID header
+    - `LoggingMiddleware` â€” Request/response logging
+    - `HeaderInjectionMiddleware` â€” Custom header injection
+    - `TimeoutMiddleware` â€” Global timeout configuration
 - Client methods: `add_middleware()`, `remove_middleware()`
 - Middleware chain executed in registration order
 - Extensible for custom logging, tracing (OpenTelemetry), retry logic, etc.
 
-**Phase 5: Pagination Iterators (✅ Complete)**
+**Phase 5: Pagination Iterators (âœ… Complete)**
 
 - New `britecore_sdk.api.iterators` module:
-  - `iter_quotes()`, `aiter_quotes()` — Iterate quotes with auto-pagination
-  - `iter_policies()`, `aiter_policies()` — Iterate policies
-  - `iter_contacts()`, `aiter_contacts()` — Iterate contacts
+  - `iter_quotes()`, `aiter_quotes()` â€” Iterate quotes with auto-pagination
+  - `iter_policies()`, `aiter_policies()` â€” Iterate policies
+  - `iter_contacts()`, `aiter_contacts()` â€” Iterate contacts
 - Automatic page management (no manual page/limit plumbing)
 - Lazy-loading: pages fetched on-demand
 - Pythonic async/await support
 - Works seamlessly with typed response models
 
-**Phase 6: Legacy Cleanup (✅ Complete)**
+**Phase 6: Legacy Cleanup (âœ… Complete)**
 
 - Enhanced `britecore_sdk.classes.__init__.py` with comprehensive deprecation guidance
 - New `britecore_sdk.api._compat` module for migration helpers:
-  - `get_v2_path()` — Get a direct v2 import path when one exists for a selected wrapper
-  - `V1_TO_V2_ROUTING` — Mapping dictionary for selected wrapper-path cleanup cases
-  - `import_v1_class_with_warning()` — Load compatibility class aliases with guidance
-  - `use_implicit_client_with_warning()` — Guide implicit client users
+  - `get_v2_path()` â€” Get a direct v2 import path when one exists for a selected wrapper
+  - `V1_TO_V2_ROUTING` â€” Mapping dictionary for selected wrapper-path cleanup cases
+  - `import_v1_class_with_warning()` â€” Load compatibility class aliases with guidance
+  - `use_implicit_client_with_warning()` â€” Guide implicit client users
 - Archived v2.0.0 adoption notes: `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md`
   - Historical examples for explicit clients, pagination, error handling, testing, and multi-site usage
   - Adoption checklist for optional modernization work
@@ -547,19 +565,19 @@ print(typed.sites["prod"].base_url)
 
 ### Deprecated
 
-- Implicit module-level client usage (legacy pattern) — Use explicit `client=` parameter
-- Manual pagination loop pattern — Use `iter_*()` iterators instead
-- Raw dict returns — Use typed response models for better type safety
-- `britecore_sdk.classes` module — Import from `models` and `validators` instead
+- Implicit module-level client usage (legacy pattern) â€” Use explicit `client=` parameter
+- Manual pagination loop pattern â€” Use `iter_*()` iterators instead
+- Raw dict returns â€” Use typed response models for better type safety
+- `britecore_sdk.classes` module â€” Import from `models` and `validators` instead
 
 ### Documentation
 
-- `V2_ROADMAP.md` — Complete 6-phase roadmap with acceptance criteria
-- `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` — Phase 1 client lifecycle design notes
-- `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
-- `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md` — **Phase 6 archived adoption notes with historical examples and support guidance**
-- `V2-PROGRESS-REPORT.md` — v2.0.0 beta readiness status and metrics
-- `docs/migrations/PHASES2-5-FEATURES.md` — Phases 2-5 comprehensive guide
+- `V2_ROADMAP.md` â€” Complete 6-phase roadmap with acceptance criteria
+- `docs/migrations/PHASE1-CLIENT-LIFECYCLE.md` â€” Phase 1 client lifecycle design notes
+- `docs/migrations/PHASES2-5-FEATURES.md` â€” Phases 2-5 comprehensive guide
+- `docs/migrations/V2.0.0-COMPLETE-MIGRATION.md` â€” **Phase 6 archived adoption notes with historical examples and support guidance**
+- `V2-PROGRESS-REPORT.md` â€” v2.0.0 beta readiness status and metrics
+- `docs/migrations/PHASES2-5-FEATURES.md` â€” Phases 2-5 comprehensive guide
 - Module docstrings updated with examples for all new features
 
 ## [1.5.3] - 2026-07-17
@@ -590,14 +608,14 @@ print(typed.sites["prod"].base_url)
 
 - **mypy / DeepSource Python analyzer findings** (6 files, 12 errors):
   - `utils/_config_common.py`: removed stale `# type: ignore[import-untyped]` for
-    `toml` — the package now ships type stubs.
+    `toml` â€” the package now ships type stubs.
   - `api/api_calls/__init__.py`: replaced stale `type: ignore[assignment]` comments
     with proper `cast(str, ...)` where `target_site`'s `str | None | object` union
     was not narrowed, and direct assignment where `isinstance` already narrowed it;
     removed unused `type: ignore[arg-type]` on `init_client` call.
   - `api/api_calls/v2/contacts.py` + `async_contacts.py`: corrected return type of
     `new_contact` / `anew_contact` from `tuple[str | None, str | None]` to
-    `tuple[Any, str | None]` — the first element is the raw `process_result()` /
+    `tuple[Any, str | None]` â€” the first element is the raw `process_result()` /
     `aprocess_result()` payload, which is typed `Any`.
   - `utils/config_manager.py`: added explicit `value: Any` annotation in the
     JSON-parse helper to allow mixed `bool | None | str | Any` assignments without
@@ -605,31 +623,31 @@ print(typed.sites["prod"].base_url)
   - `api/workflows/async_staged_creation.py`: removed stale
     `type: ignore[assignment]` on `asyncio.gather(..., return_exceptions=True)` call.
 
-- **BAN-B310 (#215)** — `utils/check_api_spec_sync.py`: added URL scheme validation
+- **BAN-B310 (#215)** â€” `utils/check_api_spec_sync.py`: added URL scheme validation
   (`http`/`https` only) before calling `urlopen`, eliminating the `ftp://` /
   `file://` attack surface; simplified except clause to `(OSError, ...)`.
 
-- **PYL-W0404 (#216)** — 295 occurrences across 71 files: removed redundant inline
+- **PYL-W0404 (#216)** â€” 295 occurrences across 71 files: removed redundant inline
   `from britecore_sdk.api.api_calls import api_client as _api_client` inside every
   autogenerated function body; all calls now use the module-level `API_CLIENT` alias.
   Added the missing `API_CLIENT: BritecoreAPIClient = api_client` alias to 55
   additional files that only declared `RequestParameters`.
 
-- **PYL-R1705 (#217)** — `utils/interactive_menu.py`: removed unnecessary `else`
+- **PYL-R1705 (#217)** â€” `utils/interactive_menu.py`: removed unnecessary `else`
   clause after a `return` statement.
 
-- **PYL-W0714 (#218)** — `utils/check_api_spec_sync.py`: collapsed
-  `except (URLError, TimeoutError, OSError, ...)` to `except (OSError, ...)` —
+- **PYL-W0714 (#218)** â€” `utils/check_api_spec_sync.py`: collapsed
+  `except (URLError, TimeoutError, OSError, ...)` to `except (OSError, ...)` â€”
   `URLError` and `TimeoutError` are both subclasses of `OSError`.
 
-- **PYL-W0622 (#219)** — 12 occurrences across 11 files: renamed parameters that
+- **PYL-W0622 (#219)** â€” 12 occurrences across 11 files: renamed parameters that
   shadowed Python builtins (JSON request keys are unchanged for API compatibility):
-  - `id` → `entity_id` (`notes.retrieve_notes`)
-  - `id` → `quote_id` (`quotes.get_quote`, `async_quotes.aget_quote`)
-  - `id` → `document_id` (`search.add_to_index`, `search.remove_from_index`)
-  - `id` → `id_`, `all` → `all_`, `zip` → `zip_code` (contacts, v1/contacts,
+  - `id` â†’ `entity_id` (`notes.retrieve_notes`)
+  - `id` â†’ `quote_id` (`quotes.get_quote`, `async_quotes.aget_quote`)
+  - `id` â†’ `document_id` (`search.add_to_index`, `search.remove_from_index`)
+  - `id` â†’ `id_`, `all` â†’ `all_`, `zip` â†’ `zip_code` (contacts, v1/contacts,
     custom_data, quote, settings autogenerated wrappers)
-  - `type` → `exposure_type` (`claim_exposures.get_broken_limits`),
+  - `type` â†’ `exposure_type` (`claim_exposures.get_broken_limits`),
     `description_type` (`policies.store_revision_description`)
 
 ---
@@ -659,7 +677,7 @@ print(typed.sites["prod"].base_url)
 
 ---
 
-## [1.4.0] — 2026-04-30
+## [1.4.0] â€” 2026-04-30
 
 ### Added
 
@@ -691,7 +709,7 @@ print(typed.sites["prod"].base_url)
 
 ---
 
-## [1.3.1] — 2026-04-29
+## [1.3.1] â€” 2026-04-29
 
 ### Added
 
@@ -712,11 +730,11 @@ print(typed.sites["prod"].base_url)
 
 ---
 
-## [1.3.0] — 2026-04-28
+## [1.3.0] â€” 2026-04-28
 
 ### Added
 
-- **Client-side token bucket rate limiter** — optional rate limiting integrated into
+- **Client-side token bucket rate limiter** â€” optional rate limiting integrated into
   `BritecoreAPIClient` to throttle requests at configurable rates (default: 10 req/s,
   20-request burst):
   - Per-client instance (independent limits per site/environment).
@@ -727,7 +745,7 @@ print(typed.sites["prod"].base_url)
   - Full unit test coverage and `docs/RATE_LIMITING.md` guide.
   - Examples in `examples/rate_limiting_example.py`.
 
-- **Batch quote creation functions** — high-throughput quote generation:
+- **Batch quote creation functions** â€” high-throughput quote generation:
   - Sync: `create_full_quotes_batch(quotes, max_workers=5, fail_fast=False)`.
   - Async: `acreate_full_quotes_batch(quotes, max_concurrent=5, fail_fast=False)`.
   - Configurable parallelism and fail-fast mode.
@@ -735,7 +753,7 @@ print(typed.sites["prod"].base_url)
   - Full unit test coverage and `docs/BATCH_QUOTE_CREATION.md` guide.
   - Examples in `examples/batch_quote_creation.py`.
 
-- **Comprehensive error logging** — `BritecoreAPIClient.init_client()` now logs:
+- **Comprehensive error logging** â€” `BritecoreAPIClient.init_client()` now logs:
   - ERROR level for all configuration validation failures (missing base_url, api_key, OAuth errors, rate limiter config errors).
   - INFO level on successful initialization showing auth mode and rate limiting status.
   - DEBUG level throughout configuration discovery and authentication selection.
@@ -756,7 +774,7 @@ print(typed.sites["prod"].base_url)
 
 ---
 
-## [1.1.2] — 2026-04-27
+## [1.1.2] â€” 2026-04-27
 
 ### Added
 
@@ -767,19 +785,19 @@ print(typed.sites["prod"].base_url)
   diagnostics JSON/table behavior (`tests/unit/test_package_exports.py`,
   `tests/unit/test_base_logger.py`, `tests/utils/test_check_site_configs.py`).
 - **10 quality-of-life enhancements** to the SDK core:
-  1. `BritecoreAPIClient` context manager (`__enter__`/`__exit__`) — auto-closes
+  1. `BritecoreAPIClient` context manager (`__enter__`/`__exit__`) â€” auto-closes
      the `urllib3.PoolManager` on exit (`with BritecoreAPIClient("site").init_client() as client:`).
-  2. `reset_api_client()` in `api.api_calls` — clears module-level client for
+  2. `reset_api_client()` in `api.api_calls` â€” clears module-level client for
      test isolation or multi-site swapping.
-  3. `BritecoreAPIClient.__repr__` — shows `site`, `base_url`, `auth` mode,
+  3. `BritecoreAPIClient.__repr__` â€” shows `site`, `base_url`, `auth` mode,
      and `initialized` state for easy REPL/log debugging.
-  4. `HealthcheckResult.__bool__` — enables `if result:` / `if not result:`
+  4. `HealthcheckResult.__bool__` â€” enables `if result:` / `if not result:`
      idioms without accessing `.ok`.
   5. Flat exception aliases exported from `britecore_sdk.exceptions` (e.g.
      `from britecore_sdk import NotFoundError`) and from the top-level package
      (`AuthenticationError`, `ConfigurationError`, `NotFoundError`,
      `RateLimitError`, `RequestTimeoutError`, `ServerError`, `ValidationError`).
-  6. Dry-run improvements — per-call `dry_run=True` and client-level
+  6. Dry-run improvements â€” per-call `dry_run=True` and client-level
      `init_api_client(client_dry_run=True)` / `init_client(client_dry_run=True)`
      now return a synthetic successful payload without sending, include redacted
      request headers by default, and skip OAuth token acquisition unless caller
@@ -787,28 +805,28 @@ print(typed.sites["prod"].base_url)
      Async parity is now included via `init_async_api_client(client_dry_run=True)`
      and async wrapper/request support, with async dry-run bypassing cache reads,
      cache writes, and in-flight dedupe.
-  7. `X-SDK-Request-ID` header — every outbound request carries a short
-     correlation ID (already visible in `[req_id] → METHOD /path` debug logs)
+  7. `X-SDK-Request-ID` header â€” every outbound request carries a short
+     correlation ID (already visible in `[req_id] â†’ METHOD /path` debug logs)
      and now also propagates it as an HTTP header to the server.
-  8. `zip_code_lookup.load_zip_codes` — documented thread-pool safety for use
+  8. `zip_code_lookup.load_zip_codes` â€” documented thread-pool safety for use
      with `AsyncBritecoreAPIClient` (call via `run_in_executor`).
-  9. CLI entry points registered in `pyproject.toml` — `britecore-healthcheck`,
+  9. CLI entry points registered in `pyproject.toml` â€” `britecore-healthcheck`,
      `britecore-check-config`, and `britecore-run-checks` are now installable
      shell commands.
-  10. `BritecoreAPIClient.init_client()` returns `Self` — enables one-liner
+  10. `BritecoreAPIClient.init_client()` returns `Self` â€” enables one-liner
       fluent initialization (`client = BritecoreAPIClient("site").init_client()`).
-- `tests/unit/test_api_spec_alignment.py` — validates wrapper paths against
+- `tests/unit/test_api_spec_alignment.py` â€” validates wrapper paths against
   the canonical `api_specs/current/britecore.json` specification.
-- `tests/unit/test_v1_endpoint_routing.py` — unit tests for v1 custom_ui,
+- `tests/unit/test_v1_endpoint_routing.py` â€” unit tests for v1 custom_ui,
   payments, and printing endpoints.
-- `tests/unit/test_zip_code_lookup.py` — tests for US zip code lookup utility.
-- `examples/basic_api_usage.py` — runnable example demonstrating OAuth and
+- `tests/unit/test_zip_code_lookup.py` â€” tests for US zip code lookup utility.
+- `examples/basic_api_usage.py` â€” runnable example demonstrating OAuth and
   API key initialization flows.
 
 ### Removed
 
 - Removed `utils/britecore_odbc.py` (pyodbc wrapper) and `utils/britecore_selenium.py`
-  (Selenium wrapper) — database connectivity and browser automation are out of scope
+  (Selenium wrapper) â€” database connectivity and browser automation are out of scope
   for an API client library. Consumers requiring these capabilities should use
   `pyodbc` and `selenium` directly.
 - Removed `utils/check_odbc_settings.py` helper script (no longer needed).
@@ -823,8 +841,8 @@ print(typed.sites["prod"].base_url)
 ### Changed
 
 - **Configuration loading and init ergonomics:**
-  - Layered file discovery is now explicit and documented: SDK defaults →
-    `~/.britecore` → CWD (`britecore.toml`, `.britecore_secrets.toml`) →
+  - Layered file discovery is now explicit and documented: SDK defaults â†’
+    `~/.britecore` â†’ CWD (`britecore.toml`, `.britecore_secrets.toml`) â†’
     `BRITECORE_SDK_SETTINGS_FILE`, with `BRITECORE_SDK_*` env vars highest.
   - `init_api_client(...)`, `init_async_api_client(...)`, and
     `BritecoreAPIClient.init_client(...)` support explicit inline credentials
@@ -843,7 +861,7 @@ print(typed.sites["prod"].base_url)
   - Converted logging f-strings to lazy `%s` formatting in API modules,
     validators, and utilities (DeepSource PYL-W1203).
   - Collapsed nested `with` statements in tests (PTC-W0062).
-  - Removed Python built-in shadowing (`type` → `note_type`, `type` →
+  - Removed Python built-in shadowing (`type` â†’ `note_type`, `type` â†’
     `payment_method_type`) and standardized wrapper kwargs.
 - **Documentation polish:**
   - Added `api_specs/README.md` and normalized checked-in API spec layout to
@@ -873,7 +891,7 @@ print(typed.sites["prod"].base_url)
 
 ### Fixed
 
-- Removed `"settings/*.toml"` from `pyproject.toml` package-data — those files
+- Removed `"settings/*.toml"` from `pyproject.toml` package-data â€” those files
   are in `.gitignore` and must not be bundled with the distributed package.
   Tests that assumed SDK defaults always exist are now CI-safe (they check for
   file presence before asserting, so they pass both locally and in CI).
@@ -889,13 +907,13 @@ print(typed.sites["prod"].base_url)
 
 ---
 
-## [1.1.0] — 2026-04-06
+## [1.1.0] â€” 2026-04-06
 
 ### Added
 
-- `src/britecore_sdk/py.typed` marker (PEP 561) — downstream mypy users
+- `src/britecore_sdk/py.typed` marker (PEP 561) â€” downstream mypy users
   now get inline type information automatically.
-- `src/britecore_sdk/api/types.py` — shared `TypedDict` response shapes
+- `src/britecore_sdk/api/types.py` â€” shared `TypedDict` response shapes
   (`BritecoreResponse`, `PolicyData`, `ContactData`, `QuoteData`,
   `InvoiceData`, `RevisionData`, `AddressData`, `PhoneData`, `EmailData`).
 - `get_api_client` and `get_async_api_client` are now exported from the
@@ -906,16 +924,16 @@ print(typed.sites["prod"].base_url)
   `attachments` (11), `custom_ui` (4), `dashboards` (8), `data` (2),
   `errors` (1), `intacct` (5), `nightly_jobs` (4), `notifications` (2),
   `printing` (5), `return_premium` (1), `search` (2), `settings` (11),
-  `signatures` (6), `uploads` (1), `vendors` (16) — **374/374 endpoints
+  `signatures` (6), `uploads` (1), `vendors` (16) â€” **374/374 endpoints
   now covered**.
-- `tests/unit/test_v2_new_endpoints.py` — parametrized unit tests for all
+- `tests/unit/test_v2_new_endpoints.py` â€” parametrized unit tests for all
   newly implemented domain modules.
-- `tests/unit/test_logging_tokens.py` — regression tests that assert no
+- `tests/unit/test_logging_tokens.py` â€” regression tests that assert no
   SCLogging color-format tokens remain in the source tree and that
   runtime log output is plain text.
-- CI workflow (`.github/workflows/ci.yml`) now covers Python 3.11–3.14,
+- CI workflow (`.github/workflows/ci.yml`) now covers Python 3.11â€“3.14,
   runs ruff, black, mypy, and pytest with a 60% coverage gate.
-- `docs/MAP_FILES.md` — policy and sample structures for sensitive
+- `docs/MAP_FILES.md` â€” policy and sample structures for sensitive
   `*_map.py` files that must not be committed to version control.
 - `maps/__init__.py` map export pattern: `britecore_sdk.maps`
   re-exports `agency`, `policy_map`, `britecore_policy_type_map`,
@@ -933,7 +951,7 @@ print(typed.sites["prod"].base_url)
   is gone; `get_logger()` now returns a standard `logging.Logger` directly.
   `britecore_odbc` and `britecore_selenium` have been updated to use the
   package-level logger instead.
-- SCLogging color-format escape tokens (e.g. `%f.yellow%…%f%`) removed from
+- SCLogging color-format escape tokens (e.g. `%f.yellow%â€¦%f%`) removed from
   all log-message strings across `contacts`, `async_contacts`, `deliverables`,
   `insured`, `lines`, `policies`, `async_policies`, `v1/printing`, and
   `address_validator`. Log output is now plain text and compatible with any
@@ -947,7 +965,7 @@ print(typed.sites["prod"].base_url)
   project floor and CI verification range.
 - `__version__` is now resolved at runtime via `importlib.metadata` so
   `pyproject.toml` remains the single source of truth.
-- `vendors.get_wtw_score`: renamed parameter `property` → `property_descriptor`
+- `vendors.get_wtw_score`: renamed parameter `property` â†’ `property_descriptor`
   to avoid shadowing the Python built-in. The JSON request key remains
   `"property"` for API compatibility.
 - CI coverage threshold raised from 25 % to 60 %.
@@ -959,7 +977,7 @@ print(typed.sites["prod"].base_url)
 
 ---
 
-## [1.0.0] — 2026-03-26
+## [1.0.0] â€” 2026-03-26
 
 ### Added
 

@@ -400,10 +400,22 @@ Utility-specific validation boundaries:
 
 ```python
 
-if client_id and client_secret:
+has_api_key = bool(api_key)
+has_client_id = bool(client_id)
+has_client_secret = bool(client_secret)
+
+if has_api_key and (has_client_id or has_client_secret):
+    raise ConfigurationError("Provide either api_key or client_id/client_secret, not both.")
+
+if has_client_id != has_client_secret:
+    raise ConfigurationError("OAuth requires both client_id and client_secret.")
+
+if has_api_key:
+    use_api_key()
+elif has_client_id and has_client_secret:
     use_oauth2()
 else:
-    use_api_key()
+    raise ConfigurationError("No authentication credentials configured.")
 
 ```
 
@@ -809,6 +821,7 @@ logger.error("Errors with context")
 
 ## Future Enhancements
 
+0. **Core Client Decomposition Track** - Incrementally extract independently testable responsibilities from `britecore_api_client.py` (config resolution, transport execution, auth/header assembly, response parsing) without changing public wrapper APIs.
 1. **Metrics / Tracing** - Built-in instrumentation hooks (request ID, latency, retry count)
 2. **Retry Strategies** - Per-error-type retry configuration
 3. **SDK Code Generation** - Regenerate endpoint wrappers from `api_specs/current/britecore.json`

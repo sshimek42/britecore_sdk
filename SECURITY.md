@@ -1,6 +1,6 @@
 # Security Policy
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Governance policy*
 
 For security researchers and maintainers: report vulnerabilities safely, understand patching timelines, and security best practices.
@@ -67,7 +67,8 @@ Security patches are provided for:
 
 | Version | Status | Support Ends |
 | --- | --- | --- |
-| 1.x | Active | March 2027 (12 months from 1.0.0 release) |
+| 2.x | Active | Until next major release (`v3.0.0`) |
+| 1.x | Maintenance | Critical fixes only (maintainers' discretion) |
 | 0.x | Deprecated | No new patches |
 
 - **Active versions** — All security patches
@@ -126,7 +127,7 @@ Security patches are provided for:
 
 ## Known Vulnerabilities
 
-As of July 21, 2026: **No known vulnerabilities are currently tracked for supported releases.**
+As of September 2, 2026: **No known vulnerabilities are currently tracked for supported releases.**
 
 Security fixes and advisories are communicated through repository release notes.
 
@@ -161,5 +162,5 @@ For security concerns or questions about this policy:
 
 ---
 
-**Last reviewed:** July 21, 2026
+**Last reviewed:** September 2, 2026
 **Next review:** October 2026 (after first public release)
