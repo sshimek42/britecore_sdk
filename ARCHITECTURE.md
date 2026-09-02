@@ -1,6 +1,6 @@
 # System Architecture
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Living design reference*
 
 **BriteCore SDK** - Technical design and component overview
@@ -336,12 +336,12 @@ src/britecore_sdk/
 
 ```python
 
-# Dynaconf resolves layered sources (highest to lowest priority)
-# 1. Environment variables (BRITECORE_SDK_*)
-# 2. Explicit settings file path from BRITECORE_SDK_SETTINGS_FILE
+# Dynaconf resolves layered sources (lowest to highest priority)
+# 1. SDK package defaults (src/britecore_sdk/settings/settings.toml, .secrets.toml)
+# 2. User-level files (~/.britecore/settings.toml, ~/.britecore/.secrets.toml)
 # 3. Project-local files (./britecore.toml, ./.britecore_secrets.toml)
-# 4. User-level files (~/.britecore/settings.toml, ~/.britecore/.secrets.toml)
-# 5. SDK package defaults (src/britecore_sdk/settings/settings.toml, .secrets.toml)
+# 4. Explicit settings file path from BRITECORE_SDK_SETTINGS_FILE
+# 5. Environment variables (BRITECORE_SDK_*)
 
 from britecore_sdk.api.britecore_api_client import LoadClientSettings
 
@@ -416,12 +416,16 @@ else:
 **Solution:** Lazy proxy pattern
 
 ```python
-# Recommended: Use the lazy-initialized client (auto-loads config on first use)
-from britecore_sdk.api.api_calls import get_api_client
+# Preferred for new code: explicit client construction
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-client = get_api_client()
-# Now safe to import without config; initializes on first method call
+client = BritecoreAPIClient("production").init_client()
+# Lazy shared-client fallback via get_api_client() remains for compatibility
 ```
+
+> Deprecation direction: implicit wrapper-client fallback is tracked for
+> removal in `v3.0.0`. Prefer explicit `client=` passing or scoped
+> `use_api_client(...)` bindings for forward compatibility.
 
 ---
 
@@ -506,11 +510,11 @@ from britecore_sdk.exceptions import BritecoreError
 BritecoreError.NoDataReturned("Policy not found")
 
 # Caller handles specific types:
-from britecore_sdk.api.api_calls import get_api_client
+from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 
-client = get_api_client()
+client = BritecoreAPIClient("production").init_client()
 try:
-    policy = policies.retrieve_policy(policy_number="POL001")
+    policy = policies.retrieve_policy(policy_number="POL001", client=client)
 except BritecoreError.NotFoundError:
     logger.warning("Policy not found")
 except BritecoreError.AuthenticationError:
@@ -813,7 +817,7 @@ logger.error("Errors with context")
 
 ## Documentation Freshness
 
-- Last verified: `2026-04-28`
+- Last verified: `2026-09-02`
 - Verified against: `src/britecore_sdk/` directory structure and `exceptions.py`
 
 ---

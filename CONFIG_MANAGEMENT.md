@@ -1,15 +1,18 @@
 # Configuration Management Guide
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Living guide*
 
 For SDK operators and administrators: manage site configurations, validate credentials, and safely store secrets using the SDK's config utilities.
 
 > **Note:** This file is the canonical configuration reference for the repository.
 > Link to `CONFIG_MANAGEMENT.md` from other docs instead of duplicating large setup blocks.
-
 > **Note:** Hostnames under `example.com` in this document are placeholders.
 > Replace them with your real BriteCore API host values.
+> **Deprecation direction:** implicit wrapper-client fallback and global
+> lifecycle helpers remain supported for compatibility, but new integrations
+> should prefer explicit client construction and explicit `client=` passing.
+> See `DEPRECATION.md` and `CHANGELOG.md` (`Unreleased`) for the `v3.0.0` plan.
 
 ## Overview
 
@@ -133,6 +136,7 @@ client = init_api_client(
 ```
 
 When `base_url` is provided:
+
 - `target_site` defaults to `"explicit"` if omitted.
 - `LoadClientSettings` (file-based lookup) is **not** called.
 - Missing credentials are treated as empty strings — auth mode is selected as usual

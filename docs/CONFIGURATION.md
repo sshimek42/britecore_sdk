@@ -1,6 +1,6 @@
 ﻿# Configuration Guide
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Living guide*
 
 This guide explains how to configure `britecore_sdk` for your environment.
@@ -117,10 +117,10 @@ api_key = "your_real_api_key"
 
 ## Loading Configuration
 
-### Automatic (Recommended)
+### Automatic (Compatibility Pattern)
 
 ```python
-# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+# Compatibility path: lazy shared-client fallback
 from britecore_sdk.api.api_calls import get_api_client
 
 client = get_api_client()
@@ -132,7 +132,7 @@ client = get_api_client()
 2. Dynaconf resolves layered files (SDK defaults, user-level, project-local, explicit file)
 3. `BRITECORE_SDK_*` environment variables override file values
 
-### Via `get_api_client()` (Lazy, Recommended)
+### Via `get_api_client()` (Lazy, Compatibility)
 
 ```python
 from britecore_sdk.api.api_calls import get_api_client
@@ -143,6 +143,9 @@ client = get_api_client()
 
 Requires `target_site` to be set in `settings.toml`, as an environment variable, or passed
 explicitly to `init_api_client()` before calling `get_api_client()`.
+
+For new code, prefer explicit client construction and `client=` parameter passing
+to wrappers. The lazy shared-client pattern remains available for compatibility.
 
 ## Environment Variables
 
@@ -230,7 +233,9 @@ menu so line/date/state selection still works.
 
 ## Validation
 
-When you call `client.init_client()`, Dynaconf validates required keys. This is only needed for advanced/manual scenarios. For most use cases, prefer `get_api_client()`.
+When you call `client.init_client()`, Dynaconf validates required keys. For new code,
+prefer explicit client construction plus `client=` wrapper calls; the lazy shared-client
+path remains supported for compatibility.
 
 You can also validate all configured site sections directly:
 
