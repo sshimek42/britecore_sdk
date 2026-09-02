@@ -29,11 +29,11 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Deprecated
 
-- Planned for `2.4.7`: implicit wrapper client fallback (calling wrappers without explicit `client=` and relying on module-level client state). Use explicit `client=` or `use_api_client(...)`. Planned removal in `v3.0.0`.
+- Implicit wrapper client fallback (calling wrappers without explicit `client=` and relying on module-level client state) is deprecated; use explicit `client=` or `use_api_client(...)`. Planned removal in `v3.0.0`.
 
-- Planned for `2.4.7`: global client lifecycle helpers as the primary usage pattern (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`) in favor of explicit client construction and scoped client passing. Planned removal in `v3.0.0`.
+- Global lifecycle helpers as the primary usage pattern (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`) are deprecated in favor of explicit client construction and scoped client passing. Planned removal in `v3.0.0`.
 
-- Planned for `2.4.7`: legacy batch result alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`) in favor of canonical `id`/`data` keys. Planned removal in `v3.0.0`.
+- Legacy batch result alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`) are deprecated in favor of canonical `id`/`data` keys. Planned removal in `v3.0.0`.
 
 ---
 
