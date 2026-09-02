@@ -1,6 +1,6 @@
 # Deprecation Policy
 
-*Last updated: July 21, 2026*
+*Last updated: September 2, 2026*
 *Document type: Governance policy*
 
 For SDK users and maintainers: understand deprecation timelines, version support, and breaking change policies.
@@ -18,6 +18,27 @@ This policy ensures that:
 - Gradual, non-breaking deprecation paths are offered
 - Users have clear migration guidance
 - Library stability is maintained between major versions
+
+---
+
+## Active Deprecations (2.4.7 Planning)
+
+The following deprecations are planned to be announced during the `2.4.7` cycle.
+All are scheduled for removal in the next major release (`v3.0.0`) unless a
+security or correctness issue requires earlier action.
+
+| Surface | Status | Replacement | Planned Removal |
+|--------|--------|-------------|-----------------|
+| Implicit wrapper client fallback (`resolve_client()` / `get_api_client()` path when `client=` is omitted) | Planned announcement in `2.4.7` | Pass explicit `client=` to wrappers, or use scoped `use_api_client(...)` | `v3.0.0` |
+| Global lifecycle helpers as primary app pattern (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`) | Planned announcement in `2.4.7` | Construct explicit client instances and pass them per call/workflow | `v3.0.0` |
+| Legacy batch alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`) | Planned announcement in `2.4.7` | Canonical batch keys `id` and `data` | `v3.0.0` |
+
+Implementation notes for maintainers:
+
+- `2.4.7`: add changelog + docs notices and warning-capable code paths.
+- `2.5.x`: enable `DeprecationWarning` by default on deprecated runtime paths.
+- `2.6.x`: offer strict-mode toggle that converts warnings to errors for migration testing.
+- `3.0.0`: remove deprecated paths and aliases; publish a migration guide under `docs/migrations/`.
 
 ---
 
