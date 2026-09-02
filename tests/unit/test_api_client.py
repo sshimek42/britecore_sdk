@@ -547,6 +547,37 @@ class TestBritecoreAPIClientProcessResult:
                 client.process_result(mock_http_response_error)
 
     @pytest.mark.unit
+    def test_process_result_error_generic_non_2xx_status(self):
+        """Test process_result raises generic NoDataReturned for uncategorized non-2xx errors."""
+        from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        response = MagicMock()
+        response.status = 302
+        response.reason = "Found"
+        response.data = b'{"success": false, "message": "Redirected"}'
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            with pytest.raises(BritecoreError.NoDataReturned, match="302"):
+                client.process_result(response)
+
+    @pytest.mark.unit
     def test_process_result_error_success_false(self):
         """Test process_result raises error when success is false."""
         from unittest.mock import patch

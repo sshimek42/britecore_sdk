@@ -1,12 +1,14 @@
 """Unit tests for async API client caching support."""
 
 import asyncio
+import builtins
 import time
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from urllib3.util import Timeout
 
 from britecore_sdk.api import (
     AsyncBritecoreAPIClient,
@@ -17,7 +19,13 @@ from britecore_sdk.api.britecore_api_client import (
     BritecoreAPIClient,
     RequestParameters,
 )
+from britecore_sdk.api.britecore_async_api_client import (
+    _has_header_case_insensitive,
+    _sanitize_body_for_errors,
+    _timeout_seconds,
+)
 from britecore_sdk.api.request_cache import _canonicalize
+from britecore_sdk.exceptions import BritecoreError
 
 
 def _make_response(
@@ -137,6 +145,50 @@ class TestRequestCacheHelpers:
         assert cache.get("fresh") == "ok"
 
 
+class TestAsyncTransportHelpers:
+    """Tests for helper behavior used by the native async transport."""
+
+    @pytest.mark.unit
+    def test_has_header_case_insensitive_matches_ignoring_case_and_whitespace(self):
+        """Authorization header detection should not depend on casing or padding."""
+        headers = {" authorization ": "Bearer token", "X-Test": "1"}
+
+        assert _has_header_case_insensitive(headers, "Authorization") is True
+        assert _has_header_case_insensitive(headers, "authorization") is True
+        assert _has_header_case_insensitive(headers, "X-Missing") is False
+
+    @pytest.mark.unit
+    def test_timeout_seconds_handles_scalars_timeout_objects_and_unknown_values(self):
+        """Timeout helper should normalize numbers and urllib3 Timeout instances."""
+        assert _timeout_seconds(7) == 7
+        assert _timeout_seconds(2.5) == 2.5
+        assert _timeout_seconds(Timeout(total=9)) == 9
+        assert _timeout_seconds(Timeout(total=None, connect=4, read=6)) == 4
+        assert _timeout_seconds(object()) is None
+
+    @pytest.mark.unit
+    def test_sanitize_body_for_errors_redacts_nested_sensitive_values(self):
+        """Sensitive keys should be redacted recursively across dict/list/tuple payloads."""
+        body = {
+            "api_key": "top-secret",
+            "nested": {
+                "token": "abc123",
+                "safe": [{"password": "hidden"}, {"value": 5}],
+                "tuple_data": ("keep", {"authorization": "Bearer x"}),
+            },
+        }
+
+        sanitized = _sanitize_body_for_errors(body)
+
+        assert sanitized["api_key"] == "***redacted***"
+        assert sanitized["nested"]["token"] == "***redacted***"
+        assert sanitized["nested"]["safe"][0]["password"] == "***redacted***"
+        assert sanitized["nested"]["safe"][1]["value"] == 5
+        assert sanitized["nested"]["tuple_data"][0] == "keep"
+        assert sanitized["nested"]["tuple_data"][1]["authorization"] == "***redacted***"
+        assert _sanitize_body_for_errors("plain") == "plain"
+
+
 class TestAsyncBritecoreAPIClient:
     """Tests for async request execution and caching."""
 
@@ -172,6 +224,32 @@ class TestAsyncBritecoreAPIClient:
 
         assert isinstance(client, BritecoreAPIClient)
         mock_init.assert_called_once_with(client, client_dry_run=True)
+
+    @pytest.mark.unit
+    def test_aget_client_forwards_explicit_credentials_to_sync_client(self):
+        """Explicit async constructor credentials should be passed to sync init_client."""
+        with patch.object(
+            BritecoreAPIClient, "init_client", autospec=True
+        ) as mock_init:
+            adapter = AsyncBritecoreAPIClient(
+                target_site="test_site",
+                client_dry_run=True,
+                base_url="https://api.example.com",
+                api_key="api-key",
+                client_id="client-id",
+                client_secret="client-secret",
+            )
+            client = asyncio.run(adapter.aget_client())
+
+        assert isinstance(client, BritecoreAPIClient)
+        mock_init.assert_called_once_with(
+            client,
+            client_dry_run=True,
+            base_url="https://api.example.com",
+            api_key="api-key",
+            client_id="client-id",
+            client_secret="client-secret",
+        )
 
     @pytest.mark.unit
     def test_constructor_rejects_unknown_async_transport(self):
@@ -307,6 +385,53 @@ class TestAsyncBritecoreAPIClient:
 
         assert len(created_clients) == 1
         assert created_clients[0].closed is True
+
+    @pytest.mark.unit
+    def test_async_context_manager_closes_owned_httpx_client_on_exit(self):
+        """Async context-manager exit should delegate cleanup to aclose()."""
+
+        class _ClosableAsyncClient:
+            def __init__(self):
+                self.closed = False
+
+            async def aclose(self):
+                self.closed = True
+
+        closable_client = _ClosableAsyncClient()
+        adapter = AsyncBritecoreAPIClient(async_transport="httpx")
+        adapter._httpx_client = closable_client
+
+        async def run_context() -> AsyncBritecoreAPIClient:
+            async with adapter as entered:
+                return entered
+
+        entered = asyncio.run(run_context())
+
+        assert entered is adapter
+        assert closable_client.closed is True
+        assert adapter._httpx_client is None
+
+    @pytest.mark.unit
+    def test_aclose_is_noop_for_injected_httpx_client(self):
+        """Cleanup should not close an httpx client owned by the caller."""
+
+        class _InjectedAsyncClient:
+            def __init__(self):
+                self.closed = False
+
+            async def aclose(self):
+                self.closed = True
+
+        injected_client = _InjectedAsyncClient()
+        adapter = AsyncBritecoreAPIClient(
+            async_transport="httpx",
+            httpx_client=injected_client,
+        )
+
+        asyncio.run(adapter.aclose())
+
+        assert injected_client.closed is False
+        assert adapter._httpx_client is injected_client
 
     @pytest.mark.unit
     def test_ado_request_returns_cached_response_on_second_call(self):
@@ -458,6 +583,24 @@ class TestAsyncBritecoreAPIClient:
 
         mock_invalidate.assert_not_called()
         mock_set.assert_not_called()
+
+    @pytest.mark.unit
+    def test_clear_cache_and_invalidate_delegate_to_request_cache(self):
+        """Cache convenience methods should forward to the underlying RequestCache."""
+        adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
+
+        with (
+            patch.object(adapter._cache, "clear") as mock_clear,
+            patch.object(
+                adapter._cache, "invalidate_namespaces", return_value=2
+            ) as mock_invalidate,
+        ):
+            adapter.clear_cache()
+            invalidated = adapter.invalidate_cache_namespaces(["policies", "quotes"])
+
+        mock_clear.assert_called_once_with()
+        mock_invalidate.assert_called_once_with(["policies", "quotes"])
+        assert invalidated == 2
 
     @pytest.mark.unit
     def test_cached_response_is_immutable_snapshot(self):
@@ -700,6 +843,281 @@ class TestAsyncBritecoreAPIClient:
         assert payload["auth_skipped"] is True
 
     @pytest.mark.unit
+    def test_import_httpx_raises_clear_error_when_dependency_is_missing(self):
+        """Optional dependency failures should surface as SDK configuration errors."""
+        original_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == "httpx":
+                raise ImportError("missing httpx")
+            return original_import(name, *args, **kwargs)
+
+        with patch("builtins.__import__", side_effect=fake_import):
+            with pytest.raises(
+                BritecoreError.ConfigurationError, match="httpx transport"
+            ):
+                AsyncBritecoreAPIClient._import_httpx()
+
+    @pytest.mark.unit
+    def test_import_httpx_returns_imported_module_when_available(self):
+        """Lazy importer should return the resolved httpx module on success."""
+        fake_httpx = SimpleNamespace(AsyncClient=object)
+        original_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == "httpx":
+                return fake_httpx
+            return original_import(name, *args, **kwargs)
+
+        with patch("builtins.__import__", side_effect=fake_import):
+            imported = AsyncBritecoreAPIClient._import_httpx()
+
+        assert imported is fake_httpx
+
+    @pytest.mark.unit
+    def test_httpx_transport_dry_run_delegates_to_sync_client(self):
+        """Native async transport should still defer to sync dry-run behavior."""
+        response = _make_response()
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with (
+            patch.object(client, "do_request", return_value=response) as mock_request,
+            patch.object(adapter, "_import_httpx") as mock_import,
+        ):
+            result = asyncio.run(
+                adapter._perform_request_httpx(
+                    path="/api/v2/test",
+                    json={"value": 1},
+                    request_timeout=None,
+                    request_retries=None,
+                    request_headers=None,
+                    method="POST",
+                    rate_limiter_bypass=False,
+                    dry_run=True,
+                    dry_run_include_sensitive_headers=False,
+                )
+            )
+
+        assert result is response
+        mock_request.assert_called_once()
+        mock_import.assert_not_called()
+
+    @pytest.mark.unit
+    def test_httpx_transport_requires_base_url(self):
+        """Live httpx transport should fail fast when base_url is missing."""
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = None
+        client.use_api_key = True
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with pytest.raises(
+            BritecoreError.ConfigurationError, match="base_url not configured"
+        ):
+            asyncio.run(
+                adapter._perform_request_httpx(
+                    path="/api/v2/test",
+                    json={"value": 1},
+                    request_timeout=None,
+                    request_retries=None,
+                    request_headers=None,
+                    method="POST",
+                    rate_limiter_bypass=False,
+                    dry_run=False,
+                    dry_run_include_sensitive_headers=False,
+                )
+            )
+
+    @pytest.mark.unit
+    def test_httpx_transport_requires_oauth_token_manager_when_no_auth_header(self):
+        """OAuth httpx mode should require a token manager when caller omits auth headers."""
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = False
+        client.token_class = None
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with pytest.raises(
+            BritecoreError.ConfigurationError,
+            match="OAuth token manager not initialized",
+        ):
+            asyncio.run(
+                adapter._perform_request_httpx(
+                    path="/api/v2/test",
+                    json={"value": 1},
+                    request_timeout=None,
+                    request_retries=None,
+                    request_headers={},
+                    method="POST",
+                    rate_limiter_bypass=False,
+                    dry_run=False,
+                    dry_run_include_sensitive_headers=False,
+                )
+            )
+
+    @pytest.mark.unit
+    def test_httpx_transport_acquires_rate_limiter_before_request(self):
+        """Rate limiter should be consulted before issuing a live httpx request."""
+
+        class _FakeAsyncClient:
+            async def request(self, **_kwargs):
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true, "data": {"id": "ok"}}',
+                )
+
+        class _FakeHttpx:
+            TimeoutException = Exception
+            HTTPError = Exception
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="secret")
+        client.rate_limiter = MagicMock()
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with (
+            patch.object(adapter, "_import_httpx", return_value=_FakeHttpx),
+            patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_FakeAsyncClient()),
+            ),
+        ):
+            response = asyncio.run(
+                adapter._perform_request_httpx(
+                    path="/api/v2/test",
+                    json={"value": 1},
+                    request_timeout=Timeout(total=7),
+                    request_retries=None,
+                    request_headers=None,
+                    method="POST",
+                    rate_limiter_bypass=False,
+                    dry_run=False,
+                    dry_run_include_sensitive_headers=False,
+                )
+            )
+
+        assert getattr(response, "status", None) == 200
+        client.rate_limiter.acquire.assert_called_once_with(timeout=7)
+
+    @pytest.mark.unit
+    def test_httpx_transport_timeout_error_redacts_sensitive_body(self):
+        """Timeout errors should include a redacted copy of the request payload."""
+
+        class _FakeTimeoutError(Exception):
+            pass
+
+        class _FakeHttpx:
+            TimeoutException = _FakeTimeoutError
+            HTTPError = Exception
+
+        class _TimeoutingAsyncClient:
+            async def request(self, **_kwargs):
+                raise _FakeTimeoutError("too slow")
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="site-key")
+        client.rate_limiter = None
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with (
+            patch.object(adapter, "_import_httpx", return_value=_FakeHttpx),
+            patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_TimeoutingAsyncClient()),
+            ),
+        ):
+            with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+                asyncio.run(
+                    adapter._perform_request_httpx(
+                        path="/api/v2/test",
+                        json={"password": "secret", "nested": {"token": "abc"}},
+                        request_timeout=Timeout(total=5),
+                        request_retries=None,
+                        request_headers=None,
+                        method="POST",
+                        rate_limiter_bypass=False,
+                        dry_run=False,
+                        dry_run_include_sensitive_headers=False,
+                    )
+                )
+
+        assert exc_info.value.timeout_seconds == 5
+        assert exc_info.value.sanitized_body == {
+            "password": "***redacted***",
+            "nested": {"token": "***redacted***"},
+            "api_key": "***redacted***",
+        }
+
+    @pytest.mark.unit
+    def test_httpx_transport_http_error_redacts_sensitive_body(self):
+        """Non-timeout httpx errors should raise NoDataReturned with redacted context."""
+
+        class _FakeTimeoutError(Exception):
+            pass
+
+        class _FakeHTTPError(Exception):
+            pass
+
+        class _FakeHttpx:
+            TimeoutException = _FakeTimeoutError
+            HTTPError = _FakeHTTPError
+
+        class _FailingAsyncClient:
+            async def request(self, **_kwargs):
+                raise _FakeHTTPError("network boom")
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = False
+        client.token_class = SimpleNamespace(
+            get_authorization_headers=lambda: {"Authorization": "Bearer token"}
+        )
+        client.rate_limiter = None
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with (
+            patch.object(adapter, "_import_httpx", return_value=_FakeHttpx),
+            patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_FailingAsyncClient()),
+            ),
+        ):
+            with pytest.raises(BritecoreError.NoDataReturned) as exc_info:
+                asyncio.run(
+                    adapter._perform_request_httpx(
+                        path="/api/v2/test",
+                        json={"secret_answer": "42", "payload": [1, 2, 3]},
+                        request_timeout=Timeout(total=3),
+                        request_retries=None,
+                        request_headers=None,
+                        method="POST",
+                        rate_limiter_bypass=False,
+                        dry_run=False,
+                        dry_run_include_sensitive_headers=False,
+                    )
+                )
+
+        assert exc_info.value.sanitized_body == {
+            "secret_answer": "***redacted***",
+            "payload": [1, 2, 3],
+        }
+
+    @pytest.mark.unit
     def test_aprocess_result_uses_sync_result_processing(self, mock_http_response):
         """aprocess_result should mirror the sync client's result processing."""
         adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
@@ -750,6 +1168,23 @@ class TestAsyncBritecoreAPIClient:
         with patch("importlib.import_module", return_value=module):
             result = asyncio.run(
                 AsyncBritecoreAPIClient.acreate_risks_batch([{"revision_id": "R1"}])
+            )
+
+        assert result == expected
+        mocked_helper.assert_awaited_once()
+
+    @pytest.mark.unit
+    def test_acreate_full_quotes_batch_delegates_to_workflow_module(self):
+        """acreate_full_quotes_batch should delegate to async workflow helper."""
+        expected = {"total": 1, "succeeded": 1, "failed": 0, "results": []}
+        mocked_helper = AsyncMock(return_value=expected)
+        module = SimpleNamespace(acreate_full_quotes_batch=mocked_helper)
+
+        with patch("importlib.import_module", return_value=module):
+            result = asyncio.run(
+                AsyncBritecoreAPIClient.acreate_full_quotes_batch(
+                    [{"quote_number": "Q1"}]
+                )
             )
 
         assert result == expected
