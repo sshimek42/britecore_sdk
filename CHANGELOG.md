@@ -11,9 +11,15 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Placeholder: upcoming additions for `2.4.7`.
+
 ### Changed
 
+- Placeholder: upcoming behavioral/documentation changes for `2.4.7`.
+
 ### Fixed
+
+- Placeholder: upcoming bug fixes for `2.4.7`.
 
 ### Deprecated
 
