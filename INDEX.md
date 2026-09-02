@@ -10,8 +10,8 @@
 
 ### For Executives/Managers
 
-1. DELIVERY_REPORT.md — Start here for overview
-2. IMPROVEMENTS_SUMMARY.md — For quick reference
+1. archived_sessions/DELIVERY_REPORT_2026-07-20.md — Start here for overview
+2. archived_sessions/IMPROVEMENTS_SUMMARY_2026-07-20.md — For quick reference
 3. IMPROVEMENT_ROADMAP.md (Priority 1-2 sections only)
 
 **Time to read:** 10-15 minutes
@@ -20,8 +20,8 @@
 
 ### For Developers/Implementers
 
-1. DELIVERY_REPORT.md — Project overview
-2. ERROR_HINTS_IMPLEMENTATION.md — Learn from working example
+1. archived_sessions/DELIVERY_REPORT_2026-07-20.md — Project overview
+2. docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md — Learn from working example
 3. IMPROVEMENT_ROADMAP.md — Detailed implementation guide
 4. src/britecore_sdk/utils/error_hints.py — Review code
 
@@ -32,7 +32,7 @@
 ### For Architects/Technical Leads
 
 1. IMPROVEMENT_ROADMAP.md — Complete strategic plan
-2. ERROR_HINTS_IMPLEMENTATION.md — Implementation pattern
+2. docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md — Implementation pattern
 3. AGENTS.md — Project conventions (existing)
 4. ARCHITECTURE.md — System design (existing)
 
@@ -69,7 +69,7 @@
 - Success Metrics — Tracking progress
 - Next Steps for Developers — Ready-to-implement checklist
 
-#### IMPROVEMENTS_SUMMARY.md (10 KB)
+#### archived_sessions/IMPROVEMENTS_SUMMARY_2026-07-20.md (10 KB)
 
 **What:** Executive summary and quick reference
 
@@ -89,7 +89,7 @@
 - Getting Started
 - Success Criteria
 
-#### DELIVERY_REPORT.md (12 KB)
+#### archived_sessions/DELIVERY_REPORT_2026-07-20.md (12 KB)
 
 **What:** Complete delivery overview and project status
 
@@ -111,7 +111,7 @@
 
 ### Implementation Example Documents
 
-#### ERROR_HINTS_IMPLEMENTATION.md (15 KB)
+#### docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md (15 KB)
 
 **What:** Complete walkthrough of the first implemented improvement
 
@@ -177,15 +177,15 @@
 
 ### "I want to understand what was improved"
 
-→ Read **DELIVERY_REPORT.md** (5 min)
+→ Read **archived_sessions/DELIVERY_REPORT_2026-07-20.md** (5 min)
 
 ### "I want to see a working example"
 
-→ Review **ERROR_HINTS_IMPLEMENTATION.md** (15 min)
+→ Review **docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md** (15 min)
 
 ### "I want to implement the next improvement"
 
-→ Study **ERROR_HINTS_IMPLEMENTATION.md** + pick item from **IMPROVEMENT_ROADMAP.md** (30 min)
+→ Study **docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md** + pick item from **IMPROVEMENT_ROADMAP.md** (30 min)
 
 ### "I want to plan resource allocation"
 
@@ -193,7 +193,7 @@
 
 ### "I need to brief executives"
 
-→ Use **IMPROVEMENTS_SUMMARY.md** + **Statistics section** (5 min)
+→ Use **archived_sessions/IMPROVEMENTS_SUMMARY_2026-07-20.md** + **Statistics section** (5 min)
 
 ### "I want to understand all improvements"
 
@@ -201,7 +201,7 @@
 
 ### "I want to learn the implementation pattern"
 
-→ Study **ERROR_HINTS_IMPLEMENTATION.md** + examine `error_hints.py` (45 min)
+→ Study **docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md** + examine `error_hints.py` (45 min)
 
 ### "I need to identify the easiest win"
 
@@ -261,14 +261,14 @@ Use this to track implementation progress:
 
 ### Strategic Planning
 
-- [ ] Read DELIVERY_REPORT.md
+- [ ] Read archived_sessions/DELIVERY_REPORT_2026-07-20.md
 - [ ] Review IMPROVEMENT_ROADMAP.md
 - [ ] Prioritize improvements with team
 - [ ] Allocate resources
 
 ### Week 1: Priority 1 Improvements
 
-- [x] Error Hints (DONE - see ERROR_HINTS_IMPLEMENTATION.md)
+- [x] Error Hints (DONE - see docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md)
 - [ ] Type Hint Resolution
 - [ ] Structured Logging
 
@@ -281,7 +281,7 @@ Use this to track implementation progress:
 ### Each Implementation
 
 - [ ] Read implementation section in IMPROVEMENT_ROADMAP.md
-- [ ] Study ERROR_HINTS_IMPLEMENTATION.md as pattern
+- [ ] Study docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md as pattern
 - [ ] Create issue with effort estimate
 - [ ] Implement feature
 - [ ] Write tests
@@ -309,9 +309,9 @@ These documents provide context and guidance:
 ### New (This Delivery)
 
 - IMPROVEMENT_ROADMAP.md — Strategic plan
-- ERROR_HINTS_IMPLEMENTATION.md — Implementation example
-- IMPROVEMENTS_SUMMARY.md — Quick reference
-- DELIVERY_REPORT.md — Project status
+- docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md — Implementation example
+- archived_sessions/IMPROVEMENTS_SUMMARY_2026-07-20.md — Quick reference
+- archived_sessions/DELIVERY_REPORT_2026-07-20.md — Project status
 - **INDEX.md** — Navigation guide (this file)
 
 ---
@@ -320,19 +320,19 @@ These documents provide context and guidance:
 
 ### If you have 5 minutes
 
-1. Read: DELIVERY_REPORT.md
+1. Read: archived_sessions/DELIVERY_REPORT_2026-07-20.md
 2. Action: Show team the summary statistics
 
 ### If you have 15 minutes
 
-1. Read: DELIVERY_REPORT.md (5 min)
-2. Read: IMPROVEMENTS_SUMMARY.md (10 min)
+1. Read: archived_sessions/DELIVERY_REPORT_2026-07-20.md (5 min)
+2. Read: archived_sessions/IMPROVEMENTS_SUMMARY_2026-07-20.md (10 min)
 3. Action: Decide which Priority 1 item to implement next
 
 ### If you have 45 minutes
 
-1. Read: DELIVERY_REPORT.md (5 min)
-2. Review: ERROR_HINTS_IMPLEMENTATION.md (15 min)
+1. Read: archived_sessions/DELIVERY_REPORT_2026-07-20.md (5 min)
+2. Review: docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md (15 min)
 3. Study: IMPROVEMENT_ROADMAP.md Priority 1-2 (25 min)
 4. Action: Assign first implementation task
 
@@ -361,7 +361,7 @@ A: No, use the "Quick Navigation by Use Case" section above
 
 **Q: How do I implement the next one?**
 
-A: Follow the pattern shown in ERROR_HINTS_IMPLEMENTATION.md
+A: Follow the pattern shown in docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md
 
 **Q: Are these backward compatible?**
 
@@ -377,9 +377,9 @@ A: Yes, most are independent - see IMPROVEMENT_ROADMAP.md
 
 | Document | Size | Read Time | Depth |
 |----------|------|-----------|-------|
-| DELIVERY_REPORT.md | 12 KB | 5-10 min | Overview |
-| IMPROVEMENTS_SUMMARY.md | 10 KB | 5-10 min | Summary |
-| ERROR_HINTS_IMPLEMENTATION.md | 15 KB | 15-20 min | Detailed |
+| archived_sessions/DELIVERY_REPORT_2026-07-20.md | 12 KB | 5-10 min | Overview |
+| archived_sessions/IMPROVEMENTS_SUMMARY_2026-07-20.md | 10 KB | 5-10 min | Summary |
+| docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md | 15 KB | 15-20 min | Detailed |
 | IMPROVEMENT_ROADMAP.md | 35 KB | 30-60 min | Comprehensive |
 | INDEX.md | 10 KB | 5 min | Navigation |
 
@@ -404,10 +404,10 @@ Total read time: 60-115 minutes (depending on depth desired)
 Choose one:
 
 1. **Read the summary** (15 min)
-   → DELIVERY_REPORT.md
+   → archived_sessions/DELIVERY_REPORT_2026-07-20.md
 
 2. **Learn the pattern** (45 min)
-   → ERROR_HINTS_IMPLEMENTATION.md
+   → docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md
 
 3. **Plan all improvements** (90 min)
    → IMPROVEMENT_ROADMAP.md

@@ -12,7 +12,7 @@
 
 - [x] **1.2 Enhanced Error Messages with Hints** (2-3 hours)
   - Already completed in previous work
-  - See: ERROR_HINTS_IMPLEMENTATION.md
+  - See: docs/examples/FIRST_IMPLEMENTATION_EXAMPLE.md
   - 50+ error types with contextual hints
 
 - [x] **1.3 Structured Logging Levels** (1-2 hours)
@@ -260,7 +260,7 @@ python scripts/check_coverage_threshold.py 75
 
 1. **Review Documentation**
    - Start with: IMPLEMENTATION_SUMMARY.md
-   - Then: DELIVERY_REPORT.md
+   - Then: archived_sessions/DELIVERY_REPORT_2026-07-20.md
    - Finally: Pick specific improvements to learn
 
 2. **Try New CLI Tools**
