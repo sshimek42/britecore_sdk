@@ -6,6 +6,7 @@ from ast import literal_eval
 from collections.abc import Callable
 from json import JSONDecodeError, dumps, loads
 from logging import Logger, getLogger
+from threading import RLock
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -43,6 +44,7 @@ from britecore_sdk.settings import settings
 from britecore_sdk.settings.defaults import DEFAULTS, calculate_long_timeout
 
 LOGGER: Logger = getLogger("britecore_sdk")
+_SETTINGS_ENV_LOCK = RLock()
 
 
 class LoadClientSettings:
@@ -90,40 +92,41 @@ class LoadClientSettings:
 
         target_site: str = self.target_site
 
-        with settings.using_env(target_site):
-            return SimpleNamespace(
-                base_url=settings.get("base_url", default=""),
-                client_id=settings.get("client_id", default=""),
-                client_secret=settings.get("client_secret", default=""),
-                api_key=settings.get("api_key", default=""),
-                web_retry=settings.get("web_retry"),
-                web_timeout=settings.get("web_timeout"),
-                web_timeout_long=settings.get("web_timeout_long"),
-                write_policy=settings.get(
-                    "write_policy",
-                    default=DEFAULTS.get("write_policy", "allow"),
-                ),
-                write_allowlist=settings.get(
-                    "write_allowlist",
-                    default=DEFAULTS.get("write_allowlist", []),
-                ),
-                write_denylist=settings.get(
-                    "write_denylist",
-                    default=DEFAULTS.get("write_denylist", []),
-                ),
-                enable_audit_middleware=settings.get(
-                    "enable_audit_middleware",
-                    default=DEFAULTS.get("enable_audit_middleware", False),
-                ),
-                audit_only_writes=settings.get(
-                    "audit_only_writes",
-                    default=DEFAULTS.get("audit_only_writes", True),
-                ),
-                audit_log_level=settings.get(
-                    "audit_log_level",
-                    default=DEFAULTS.get("audit_log_level", "info"),
-                ),
-            )
+        with _SETTINGS_ENV_LOCK:
+            with settings.using_env(target_site):
+                return SimpleNamespace(
+                    base_url=settings.get("base_url", default=""),
+                    client_id=settings.get("client_id", default=""),
+                    client_secret=settings.get("client_secret", default=""),
+                    api_key=settings.get("api_key", default=""),
+                    web_retry=settings.get("web_retry"),
+                    web_timeout=settings.get("web_timeout"),
+                    web_timeout_long=settings.get("web_timeout_long"),
+                    write_policy=settings.get(
+                        "write_policy",
+                        default=DEFAULTS.get("write_policy", "allow"),
+                    ),
+                    write_allowlist=settings.get(
+                        "write_allowlist",
+                        default=DEFAULTS.get("write_allowlist", []),
+                    ),
+                    write_denylist=settings.get(
+                        "write_denylist",
+                        default=DEFAULTS.get("write_denylist", []),
+                    ),
+                    enable_audit_middleware=settings.get(
+                        "enable_audit_middleware",
+                        default=DEFAULTS.get("enable_audit_middleware", False),
+                    ),
+                    audit_only_writes=settings.get(
+                        "audit_only_writes",
+                        default=DEFAULTS.get("audit_only_writes", True),
+                    ),
+                    audit_log_level=settings.get(
+                        "audit_log_level",
+                        default=DEFAULTS.get("audit_log_level", "info"),
+                    ),
+                )
 
 
 def _full_url(host: str, path: str) -> str:

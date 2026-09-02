@@ -21,6 +21,7 @@ Functions:
 import logging
 import os
 from pathlib import Path
+from threading import RLock
 from typing import Any
 
 from dynaconf import Dynaconf, Validator
@@ -28,6 +29,7 @@ from dynaconf import Dynaconf, Validator
 from britecore_sdk.exceptions import BritecoreError
 
 LOGGER = logging.getLogger(__name__)
+_SETTINGS_ENV_LOCK = RLock()
 
 
 def _discover_settings_files() -> list[Path]:
@@ -196,56 +198,59 @@ class LoadClientSettings:
 
         if target_site:
             try:
-                with settings.using_env(target_site):
-                    # --- Begin hybrid config warning logic ---
-                    # Only warn once per process
-                    if not self._warned_hybrid_config:
-                        required_keys = [
-                            "base_url",
-                            "client_id",
-                            "client_secret",
-                            "api_key",
-                        ]
-                        missing_env_keys = []
-                        for key in required_keys:
-                            # required_keys contains lowercase names (e.g. "base_url").
-                            # Dynaconf reads BRITECORE_SDK_BASE_URL for key "base_url",
-                            # so we uppercase the key to form the expected env var name.
-                            env_key = f"BRITECORE_SDK_{key.upper()}"
-                            env_val = os.environ.get(env_key)
-                            config_val = settings.get(key, default=None)
-                            if not env_val and config_val:
-                                missing_env_keys.append(key)
-                        if missing_env_keys:
-                            LOGGER.warning(
-                                (
-                                    "Hybrid config: The following required keys were missing "
-                                    "from environment variables and loaded from config files "
-                                    "instead: %s. This means a mix of env and config file "
-                                    "values is being used. For full environment-only config, "
-                                    "set all required keys as BRITECORE_SDK_* environment "
-                                    "variables (e.g., BRITECORE_SDK_BASE_URL)."
-                                ),
-                                ", ".join(missing_env_keys),
-                            )
-                        self._warned_hybrid_config = True
-                    # --- End hybrid config warning logic ---
-                    return SimpleNamespace(
-                        base_url=settings.get("base_url", default=""),
-                        client_id=settings.get("client_id", default=""),
-                        client_secret=settings.get("client_secret", default=""),
-                        api_key=settings.get("api_key", default=""),
-                        write_policy=settings.get("write_policy", default="allow"),
-                        write_allowlist=settings.get("write_allowlist", default=[]),
-                        write_denylist=settings.get("write_denylist", default=[]),
-                        enable_audit_middleware=settings.get(
-                            "enable_audit_middleware", default=False
-                        ),
-                        audit_only_writes=settings.get(
-                            "audit_only_writes", default=True
-                        ),
-                        audit_log_level=settings.get("audit_log_level", default="info"),
-                    )
+                with _SETTINGS_ENV_LOCK:
+                    with settings.using_env(target_site):
+                        # --- Begin hybrid config warning logic ---
+                        # Only warn once per process
+                        if not self._warned_hybrid_config:
+                            required_keys = [
+                                "base_url",
+                                "client_id",
+                                "client_secret",
+                                "api_key",
+                            ]
+                            missing_env_keys = []
+                            for key in required_keys:
+                                # required_keys contains lowercase names (e.g. "base_url").
+                                # Dynaconf reads BRITECORE_SDK_BASE_URL for key "base_url",
+                                # so we uppercase the key to form the expected env var name.
+                                env_key = f"BRITECORE_SDK_{key.upper()}"
+                                env_val = os.environ.get(env_key)
+                                config_val = settings.get(key, default=None)
+                                if not env_val and config_val:
+                                    missing_env_keys.append(key)
+                            if missing_env_keys:
+                                LOGGER.warning(
+                                    (
+                                        "Hybrid config: The following required keys were missing "
+                                        "from environment variables and loaded from config files "
+                                        "instead: %s. This means a mix of env and config file "
+                                        "values is being used. For full environment-only config, "
+                                        "set all required keys as BRITECORE_SDK_* environment "
+                                        "variables (e.g., BRITECORE_SDK_BASE_URL)."
+                                    ),
+                                    ", ".join(missing_env_keys),
+                                )
+                            self._warned_hybrid_config = True
+                        # --- End hybrid config warning logic ---
+                        return SimpleNamespace(
+                            base_url=settings.get("base_url", default=""),
+                            client_id=settings.get("client_id", default=""),
+                            client_secret=settings.get("client_secret", default=""),
+                            api_key=settings.get("api_key", default=""),
+                            write_policy=settings.get("write_policy", default="allow"),
+                            write_allowlist=settings.get("write_allowlist", default=[]),
+                            write_denylist=settings.get("write_denylist", default=[]),
+                            enable_audit_middleware=settings.get(
+                                "enable_audit_middleware", default=False
+                            ),
+                            audit_only_writes=settings.get(
+                                "audit_only_writes", default=True
+                            ),
+                            audit_log_level=settings.get(
+                                "audit_log_level", default="info"
+                            ),
+                        )
             except Exception as exc:
                 raise BritecoreError.ConfigurationError(
                     f"Failed to load configuration for target_site '{target_site}': {exc}"

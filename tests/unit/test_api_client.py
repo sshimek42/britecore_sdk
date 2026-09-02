@@ -1,6 +1,9 @@
 """Unit tests for API client and lazy initialization."""
 
 import logging
+from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier, Lock
+from time import sleep
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -331,6 +334,70 @@ class TestBritecoreAPIClientInit:
         ]
         assert len(custom_audits) == 1
         assert len(managed_audits) == 1
+
+    @pytest.mark.unit
+    def test_load_client_settings_serializes_using_env_access(self):
+        """LoadClientSettings should avoid concurrent settings.using_env overlaps."""
+        from britecore_sdk.api.britecore_api_client import LoadClientSettings
+
+        class _GuardedSettings:
+            def __init__(self) -> None:
+                self._active = False
+                self._state_lock = Lock()
+                self.enter_count = 0
+
+            def using_env(self, target_site: str):
+                parent = self
+
+                class _Ctx:
+                    def __enter__(self):
+                        with parent._state_lock:
+                            if parent._active:
+                                raise RuntimeError("concurrent using_env access")
+                            parent._active = True
+                            parent.enter_count += 1
+                        sleep(0.01)
+                        return parent
+
+                    def __exit__(self, exc_type, exc_val, exc_tb):
+                        with parent._state_lock:
+                            parent._active = False
+                        return False
+
+                return _Ctx()
+
+            def get(self, key, default=None):
+                values = {
+                    "base_url": "https://api.example.com",
+                    "client_id": "",
+                    "client_secret": "",
+                    "api_key": "test-key",
+                    "web_retry": 3,
+                    "web_timeout": 30,
+                    "web_timeout_long": 300,
+                    "write_policy": "allow",
+                    "write_allowlist": [],
+                    "write_denylist": [],
+                    "enable_audit_middleware": False,
+                    "audit_only_writes": True,
+                    "audit_log_level": "info",
+                }
+                return values.get(key, default)
+
+        guarded_settings = _GuardedSettings()
+        barrier = Barrier(6)
+
+        def _worker(_: int) -> str:
+            barrier.wait()
+            loaded = LoadClientSettings("test_site").load_config()
+            return loaded.base_url
+
+        with patch("britecore_sdk.api.britecore_api_client.settings", guarded_settings):
+            with ThreadPoolExecutor(max_workers=6) as pool:
+                results = list(pool.map(_worker, range(6)))
+
+        assert results == ["https://api.example.com"] * 6
+        assert guarded_settings.enter_count == 6
 
 
 class TestBritecoreAPIClientProcessResult:
