@@ -92,6 +92,7 @@ class TestPackageRootExports:
         package = _import_fresh_package(monkeypatch)
 
         expected_exports = {
+            "BritecoreClaim",
             "BritecoreContact",
             "BritecorePolicy",
             "AddressValidator",

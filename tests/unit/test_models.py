@@ -2,7 +2,12 @@
 
 import pytest
 
-from britecore_sdk.models import BritecoreContact, BritecorePolicy, BritecoreQuote
+from britecore_sdk.models import (
+    BritecoreClaim,
+    BritecoreContact,
+    BritecorePolicy,
+    BritecoreQuote,
+)
 
 
 class TestBritecoreContact:
@@ -220,3 +225,65 @@ class TestBritecoreQuote:
 
         assert "next_inspection_date" not in result
         assert "previous_inspection_date" not in result
+
+
+class TestBritecoreClaim:
+    """Tests for BritecoreClaim model."""
+
+    @pytest.mark.unit
+    def test_claim_init(self):
+        """Test creating a claim."""
+        claim = BritecoreClaim(
+            claim_number="CLM001",
+            policy_number="POL001",
+        )
+
+        assert claim.claim_number == "CLM001"
+        assert claim.policy_number == "POL001"
+
+    @pytest.mark.unit
+    def test_claim_defaults(self):
+        """Test claim default values."""
+        claim = BritecoreClaim(
+            claim_number="CLM001",
+            policy_number="POL001",
+        )
+
+        assert claim.claim_number_origin == "manual"
+        assert claim.claimant_ids == []
+        assert claim.system_tags == {}
+
+    @pytest.mark.unit
+    def test_claim_to_dict_filters_empty_optionals(self):
+        """Test that empty optional fields are removed from claim payload."""
+        claim = BritecoreClaim(
+            claim_number="CLM001",
+            policy_number="POL001",
+        )
+
+        result = claim.to_dict()
+
+        assert result["claim_number"] == "CLM001"
+        assert result["policy_number"] == "POL001"
+        assert result["claim_number_origin"] == "manual"
+        assert "claimant_ids" not in result
+        assert "system_tags" not in result
+
+    @pytest.mark.unit
+    def test_claim_to_dict_includes_set_optionals(self):
+        """Test that provided optional fields are retained in claim payload."""
+        claim = BritecoreClaim(
+            claim_number="CLM001",
+            policy_number="POL001",
+            status="Open",
+            claim_id="abc123",
+            claimant_ids=["contact_1"],
+            system_tags={"source": "sdk"},
+        )
+
+        result = claim.to_dict()
+
+        assert result["claim_id"] == "abc123"
+        assert result["status"] == "Open"
+        assert result["claimant_ids"] == ["contact_1"]
+        assert result["system_tags"] == {"source": "sdk"}
