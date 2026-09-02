@@ -126,7 +126,7 @@ logger.info("SDK logger is configured")
 - ✅ **Flexible auth** — Automatic API key or OAuth2 token management
 - ✅ **Type hints** — Full PEP 561 type information for IDE support
 - ✅ **Validators** — Email, phone, address, and name validation utilities
-- ✅ **Models** — Domain classes for Contact, Policy, and Quote payloads
+- ✅ **Models** — Domain classes for Contact, Policy, Quote, Claim, Vehicle, Driver, Coverage, Payment Method, and Line Definition payloads
 - ✅ **Config-first** — Dynaconf-based environment and secrets management
 - ✅ **Production-ready** — Stable API, comprehensive tests, security-focused
 - ✅ **Context manager** — `with BritecoreAPIClient("site").init_client() as client:`
@@ -165,7 +165,12 @@ payload = normalize_contact_payload(
 
 Available helpers: `normalize_name`, `normalize_address`, `normalize_phones`,
 `normalize_emails`, `normalize_contact_payload`, `normalize_policy_payload`,
-and `normalize_quote_payload`.
+`normalize_quote_payload`, `normalize_payment_method_payload`,
+`normalize_vehicle_payload`, `normalize_coverage_payload`,
+`normalize_driver_payload`, and `normalize_line_definition_payload`.
+
+For a local-only walkthrough of model construction and payload shaping, see
+[`examples/model_payload_workflow.py`](./examples/model_payload_workflow.py).
 
 CLI option for file-based workflows:
 
@@ -376,7 +381,7 @@ Validation rule: each site needs `base_url` and either a full OAuth pair
 
 ### Utilities
 
-- **Models:** `BritecoreContact`, `BritecorePolicy`, `BritecoreQuote` with type hints
+- **Models:** `BritecoreContact`, `BritecorePolicy`, `BritecoreQuote`, `BritecoreClaim`, `BritecorePaymentMethod`, `BritecoreVehicle`, `BritecoreCoverage`, `BritecoreDriver`, and `BritecoreLineDefinition`
 - **Validators:** Email, phone, address, and name validation
 - **Auth:** Automatic OAuth2 or API key selection based on config
 - **Config:** Dynaconf-based environment/secrets management

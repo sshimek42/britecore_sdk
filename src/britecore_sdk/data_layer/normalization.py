@@ -7,7 +7,15 @@ normalization logic without touching request/auth layers.
 import datetime as dt
 from typing import Literal
 
-from britecore_sdk.models import BritecoreContact, BritecoreQuote
+from britecore_sdk.models import (
+    BritecoreContact,
+    BritecoreCoverage,
+    BritecoreDriver,
+    BritecoreLineDefinition,
+    BritecorePaymentMethod,
+    BritecoreQuote,
+    BritecoreVehicle,
+)
 from britecore_sdk.validators import (
     AddressValidator,
     EmailValidator,
@@ -60,6 +68,30 @@ def normalize_contact_payload(
         contact_id=contact_id,
         contact_type=contact_type,
     ).process_contact()
+
+
+def normalize_named_insured_payload(
+    *,
+    contact: BritecoreContact | dict,
+    role: str = "Named Insured",
+    is_primary: bool | None = None,
+) -> dict:
+    """Map a contact object/dict to a named-insured payload shape."""
+    contact_payload = (
+        contact.process_contact()
+        if isinstance(contact, BritecoreContact)
+        else dict(contact)
+    )
+    named_insured = dict(contact_payload)
+
+    # create_named_insured accepts an existing contact via contact_id.
+    if "contact_id" not in named_insured and named_insured.get("id") is not None:
+        named_insured["contact_id"] = named_insured["id"]
+
+    named_insured["role"] = role
+    if is_primary is not None:
+        named_insured["is_primary"] = is_primary
+    return named_insured
 
 
 def _to_iso_date(value: dt.datetime | dt.date | str | None) -> str | None:
@@ -156,3 +188,167 @@ def normalize_quote_payload(
         previous_inspection_date=_to_iso_date(previous_inspection_date),
     )
     return quote.to_dict()
+
+
+def normalize_payment_method_payload(
+    *,
+    contact_id: str,
+    method: str,
+    account_name: str,
+    name_on_account: str,
+    masked_number: str,
+    id: str | None = None,
+    account_type: str | None = None,
+    masked_routing: str | None = None,
+    expire_date: str | None = None,
+    address_line1: str | None = None,
+    address_line2: str | None = None,
+    address_city: str | None = None,
+    address_state: str | None = None,
+    address_zip: str | None = None,
+    primary_account: bool = False,
+    active: bool = True,
+    metadata: dict | None = None,
+) -> dict:
+    """Build a payment-method payload using model defaults."""
+    return BritecorePaymentMethod(
+        id=id,
+        contact_id=contact_id,
+        method=method,
+        account_type=account_type,
+        account_name=account_name,
+        name_on_account=name_on_account,
+        masked_number=masked_number,
+        masked_routing=masked_routing,
+        expire_date=expire_date,
+        address_line1=address_line1,
+        address_line2=address_line2,
+        address_city=address_city,
+        address_state=address_state,
+        address_zip=address_zip,
+        primary_account=primary_account,
+        active=active,
+        metadata=metadata or {},
+    ).to_dict()
+
+
+def normalize_vehicle_payload(
+    *,
+    quote_id: str,
+    vehicle_year: int,
+    vehicle_make: str,
+    vehicle_model: str,
+    vehicle_type: str,
+    vehicle_number: int,
+    address_line1: str,
+    address_city: str,
+    address_state: str,
+    address_zip: str,
+    address_county: str,
+    id: str | None = None,
+    address_line2: str | None = None,
+    cost_new: float | int | None = None,
+    included_in_policy: bool = True,
+    deleted: bool = False,
+) -> dict:
+    """Build a vehicle payload using model defaults."""
+    return BritecoreVehicle(
+        id=id,
+        quote_id=quote_id,
+        vehicle_year=vehicle_year,
+        vehicle_make=vehicle_make,
+        vehicle_model=vehicle_model,
+        vehicle_type=vehicle_type,
+        vehicle_number=vehicle_number,
+        address_line1=address_line1,
+        address_line2=address_line2,
+        address_city=address_city,
+        address_state=address_state,
+        address_zip=address_zip,
+        address_county=address_county,
+        cost_new=cost_new,
+        included_in_policy=included_in_policy,
+        deleted=deleted,
+    ).to_dict()
+
+
+def normalize_coverage_payload(
+    *,
+    name: str,
+    coverage_type: str,
+    id: str | None = None,
+    description: str | None = None,
+    limit_amount: float | int | None = None,
+    deductible_amount: float | int | None = None,
+    annual_premium: float | int | None = None,
+    sub_line_id: str | None = None,
+    policy_type_item_id: str | None = None,
+    system_tags: dict | None = None,
+) -> dict:
+    """Build a coverage payload using model defaults."""
+    return BritecoreCoverage(
+        id=id,
+        name=name,
+        description=description,
+        coverage_type=coverage_type,
+        limit_amount=limit_amount,
+        deductible_amount=deductible_amount,
+        annual_premium=annual_premium,
+        sub_line_id=sub_line_id,
+        policy_type_item_id=policy_type_item_id,
+        system_tags=system_tags or {},
+    ).to_dict()
+
+
+def normalize_driver_payload(
+    *,
+    quote_id: str,
+    name: str,
+    date_of_birth: str,
+    license_state: str,
+    license_number: str,
+    id: str | None = None,
+    gender: str | None = None,
+    license_class: str | None = None,
+    marital_status: str | None = None,
+    occupation: str | None = None,
+    years_driving_experience: int | None = None,
+) -> dict:
+    """Build a driver payload using model defaults."""
+    return BritecoreDriver(
+        id=id,
+        quote_id=quote_id,
+        name=name,
+        date_of_birth=date_of_birth,
+        gender=gender,
+        license_state=license_state,
+        license_number=license_number,
+        license_class=license_class,
+        marital_status=marital_status,
+        occupation=occupation,
+        years_driving_experience=years_driving_experience,
+    ).to_dict()
+
+
+def normalize_line_definition_payload(
+    *,
+    location_id: str,
+    effective_date_id: str,
+    name: str,
+    policy_types: list[str] | None = None,
+    id: str | None = None,
+    description: str | None = None,
+    line: dict | None = None,
+    system_tags: dict | None = None,
+) -> dict:
+    """Build a line-definition payload using model defaults."""
+    return BritecoreLineDefinition(
+        id=id,
+        location_id=location_id,
+        effective_date_id=effective_date_id,
+        name=name,
+        description=description,
+        policy_types=policy_types or [],
+        line=line,
+        system_tags=system_tags or {},
+    ).to_dict()

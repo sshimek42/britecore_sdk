@@ -5,6 +5,8 @@ listing, uploads, moves, renames, and removals in the BriteCore v2
 attachments API.
 """
 
+from __future__ import annotations
+
 from typing import Any, Unpack
 
 from britecore_sdk.api.api_calls import (
@@ -15,6 +17,15 @@ from britecore_sdk.api.api_calls import (
 from britecore_sdk.api.api_calls.v2._common import build_payload, post
 
 API_CLIENT: BritecoreAPIClient = api_client
+
+
+def _coerce_attachment_payload(attachment: Any | None) -> Any | None:
+    """Accept model instances and convert them to request-safe dict payloads."""
+    if attachment is None:
+        return None
+    if hasattr(attachment, "to_dict") and callable(attachment.to_dict):
+        return attachment.to_dict()
+    return attachment
 
 
 def create_folder_in_user_folder(
@@ -277,7 +288,7 @@ def edit_attachment(
     """
     return post(
         "/api/v2/attachments/edit_attachment",
-        build_payload(attachment=attachment),
+        build_payload(attachment=_coerce_attachment_payload(attachment)),
         **kwargs,
     )
 

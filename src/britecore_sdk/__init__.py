@@ -43,11 +43,17 @@ if TYPE_CHECKING:
     from britecore_sdk.data_layer import (
         normalize_address,
         normalize_contact_payload,
+        normalize_coverage_payload,
+        normalize_driver_payload,
         normalize_emails,
+        normalize_line_definition_payload,
         normalize_name,
+        normalize_named_insured_payload,
+        normalize_payment_method_payload,
         normalize_phones,
         normalize_policy_payload,
         normalize_quote_payload,
+        normalize_vehicle_payload,
     )
     from britecore_sdk.exceptions import (
         AuthenticationError,
@@ -60,7 +66,16 @@ if TYPE_CHECKING:
         ValidationError,
     )
     from britecore_sdk.maps import get_common_regexes, load_regexes
-    from britecore_sdk.models import BritecoreClaim, BritecoreContact, BritecorePolicy
+    from britecore_sdk.models import (
+        BritecoreClaim,
+        BritecoreContact,
+        BritecoreCoverage,
+        BritecoreDriver,
+        BritecoreLineDefinition,
+        BritecorePaymentMethod,
+        BritecorePolicy,
+        BritecoreVehicle,
+    )
     from britecore_sdk.validators import (
         AddressValidator,
         EmailValidator,
@@ -99,7 +114,12 @@ _EXPORT_MAP: dict[str, tuple[str, str]] = {
     "get_common_regexes": ("britecore_sdk.maps", "get_common_regexes"),
     "BritecoreContact": ("britecore_sdk.models", "BritecoreContact"),
     "BritecoreClaim": ("britecore_sdk.models", "BritecoreClaim"),
+    "BritecoreCoverage": ("britecore_sdk.models", "BritecoreCoverage"),
+    "BritecoreDriver": ("britecore_sdk.models", "BritecoreDriver"),
+    "BritecoreLineDefinition": ("britecore_sdk.models", "BritecoreLineDefinition"),
+    "BritecorePaymentMethod": ("britecore_sdk.models", "BritecorePaymentMethod"),
     "BritecorePolicy": ("britecore_sdk.models", "BritecorePolicy"),
+    "BritecoreVehicle": ("britecore_sdk.models", "BritecoreVehicle"),
     "AddressValidator": ("britecore_sdk.validators", "AddressValidator"),
     "EmailValidator": ("britecore_sdk.validators", "EmailValidator"),
     "NameValidator": ("britecore_sdk.validators", "NameValidator"),
@@ -125,6 +145,10 @@ _EXPORT_MAP: dict[str, tuple[str, str]] = {
         "britecore_sdk.data_layer",
         "normalize_contact_payload",
     ),
+    "normalize_named_insured_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_named_insured_payload",
+    ),
     "normalize_policy_payload": (
         "britecore_sdk.data_layer",
         "normalize_policy_payload",
@@ -132,6 +156,26 @@ _EXPORT_MAP: dict[str, tuple[str, str]] = {
     "normalize_quote_payload": (
         "britecore_sdk.data_layer",
         "normalize_quote_payload",
+    ),
+    "normalize_payment_method_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_payment_method_payload",
+    ),
+    "normalize_vehicle_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_vehicle_payload",
+    ),
+    "normalize_coverage_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_coverage_payload",
+    ),
+    "normalize_driver_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_driver_payload",
+    ),
+    "normalize_line_definition_payload": (
+        "britecore_sdk.data_layer",
+        "normalize_line_definition_payload",
     ),
 }
 
@@ -166,7 +210,12 @@ __all__ = [
     # Models
     "BritecoreContact",
     "BritecoreClaim",
+    "BritecoreCoverage",
+    "BritecoreDriver",
+    "BritecoreLineDefinition",
+    "BritecorePaymentMethod",
     "BritecorePolicy",
+    "BritecoreVehicle",
     # Validators
     "AddressValidator",
     "EmailValidator",
@@ -180,8 +229,14 @@ __all__ = [
     "normalize_phones",
     "normalize_emails",
     "normalize_contact_payload",
+    "normalize_named_insured_payload",
     "normalize_policy_payload",
     "normalize_quote_payload",
+    "normalize_payment_method_payload",
+    "normalize_vehicle_payload",
+    "normalize_coverage_payload",
+    "normalize_driver_payload",
+    "normalize_line_definition_payload",
     # Exceptions
     "BritecoreError",
     "AuthenticationError",
