@@ -11,17 +11,25 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- Placeholder: upcoming additions for `2.4.7`.
+- Planned for `2.4.7`: add an error-hint layer that attaches actionable remediation guidance to common configuration/authentication failures.
+
+- Planned for `2.4.7`: add a lightweight `britecore-quick-check` CLI mode set (`--syntax`, `--connectivity`, `--full`) for one-command environment readiness checks.
+
+- Planned for `2.4.7`: add response helper utilities for common API payload patterns (data extraction, pagination envelopes, and batch result normalization).
 
 ### Changed
 
-- Placeholder: upcoming behavioral/documentation changes for `2.4.7`.
+- Planned for `2.4.7`: expand structured logging categories to make auth, HTTP, rate-limit, cache, and configuration events easier to filter in production logs.
+
+- Planned for `2.4.7`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
 
 ### Fixed
 
-- Placeholder: upcoming bug fixes for `2.4.7`.
+- Planned for `2.4.7`: remove remaining high-confidence `type: ignore` suppressions by tightening type signatures and overload coverage in shared API entry points.
 
 ### Deprecated
+
+- Planned for `2.4.7`: begin formal deprecation messaging for legacy batch result alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`) in favor of canonical `id`/`data` keys.
 
 ---
 
