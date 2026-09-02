@@ -80,6 +80,8 @@ class AsyncBritecoreAPIClient:
         self._default_cache_ttl_seconds = default_cache_ttl_seconds
         self._async_transport: _AsyncTransport = async_transport
         self._httpx_client = httpx_client
+        self._owns_httpx_client = httpx_client is None
+        self._httpx_client_lock = asyncio.Lock()
         self._client_dry_run = (
             getattr(client, "client_dry_run", False)
             if client_dry_run is None
@@ -93,6 +95,37 @@ class AsyncBritecoreAPIClient:
         self._client_init_lock = asyncio.Lock()
         self._inflight_lock = asyncio.Lock()
         self._inflight_requests: dict[str, asyncio.Task[Any]] = {}
+
+    async def __aenter__(self) -> AsyncBritecoreAPIClient:
+        """Support async context-manager usage."""
+        return self
+
+    async def __aexit__(self, exc_type: Any, exc: Any, exc_tb: Any) -> None:
+        """Close owned async transport resources when leaving a context manager."""
+        await self.aclose()
+
+    async def aclose(self) -> None:
+        """Close the SDK-owned httpx client when native async transport is in use."""
+        if not self._owns_httpx_client:
+            return
+        async with self._httpx_client_lock:
+            current_httpx_client = self._httpx_client
+            if current_httpx_client is not None:
+                await current_httpx_client.aclose()
+                self._httpx_client = None
+
+    async def _get_or_create_httpx_client(
+        self, timeout_seconds: int | float | None
+    ) -> Any:
+        """Return a shared native-async httpx client for request execution."""
+        if self._httpx_client is not None:
+            return self._httpx_client
+
+        async with self._httpx_client_lock:
+            if self._httpx_client is None:
+                httpx = self._import_httpx()
+                self._httpx_client = httpx.AsyncClient(timeout=timeout_seconds)
+            return self._httpx_client
 
     async def aget_client(self) -> BritecoreAPIClient:
         """Return the configured sync client, initializing it lazily if necessary."""
@@ -259,9 +292,7 @@ class AsyncBritecoreAPIClient:
 
         url = _full_url(client.base_url, path)
         httpx = self._import_httpx()
-
-        own_client = self._httpx_client is None
-        async_client = self._httpx_client or httpx.AsyncClient(timeout=timeout_seconds)
+        async_client = await self._get_or_create_httpx_client(timeout_seconds)
         try:
             response = await async_client.request(
                 method=method,
@@ -282,9 +313,6 @@ class AsyncBritecoreAPIClient:
                 request_id=request_id,
                 sanitized_body=BritecoreAPIClient._sanitize_dry_run_body(request_body),
             ) from request_error
-        finally:
-            if own_client:
-                await async_client.aclose()
 
         response_headers = dict(response.headers)
         response_headers.setdefault("X-SDK-Request-ID", request_id)
@@ -319,11 +347,48 @@ class AsyncBritecoreAPIClient:
         )
 
     @staticmethod
+    def _snapshot_response_for_cache(
+        response: BaseHTTPResponse | None,
+    ) -> dict[str, Any] | None:
+        """Create an immutable snapshot of a response for cache storage."""
+        if response is None:
+            return None
+        response_data = getattr(response, "data", b"")
+        body_bytes = bytes(response_data or b"")
+        return {
+            "_cached_http_response": True,
+            "status": int(getattr(response, "status", 0) or 0),
+            "reason": str(getattr(response, "reason", "") or ""),
+            "headers": dict(getattr(response, "headers", {}) or {}),
+            "body": body_bytes,
+        }
+
+    @staticmethod
+    def _restore_response_from_cache(cached_value: Any) -> BaseHTTPResponse | None:
+        """Restore an immutable cache snapshot as a fresh HTTPResponse instance."""
+        if cached_value is None:
+            return None
+        if not isinstance(cached_value, dict) or not cached_value.get(
+            "_cached_http_response"
+        ):
+            return cached_value
+        return urllib3.HTTPResponse(
+            body=bytes(cached_value.get("body", b"")),
+            status=int(cached_value.get("status", 0)),
+            reason=str(cached_value.get("reason", "")),
+            headers=dict(cached_value.get("headers", {}) or {}),
+            preload_content=True,
+        )
+
+    @staticmethod
     def _is_success_response(
         response: BaseHTTPResponse | None,
     ) -> bool:
         """Return True when the HTTP response is cacheable as a success."""
-        return response is not None and getattr(response, "status", None) == 200
+        status_code = (
+            getattr(response, "status", None) if response is not None else None
+        )
+        return isinstance(status_code, int) and 200 <= status_code < 300
 
     async def _request_with_optional_dedupe(
         self,
@@ -363,7 +428,7 @@ class AsyncBritecoreAPIClient:
             if cache_enabled:
                 cached_response = self._cache.get(cache_key)
                 if cached_response is not None:
-                    return cached_response
+                    return self._restore_response_from_cache(cached_response)
 
             inflight_task = self._inflight_requests.get(cache_key)
             if inflight_task is None:
@@ -412,9 +477,10 @@ class AsyncBritecoreAPIClient:
 
         if cache_enabled and not cache_bypass and cache_key:
             ttl_seconds = cache_ttl_seconds or self._default_cache_ttl_seconds
+            cache_value = self._snapshot_response_for_cache(response)
             self._cache.set(
                 cache_key,
-                response,
+                cache_value,
                 ttl_seconds=ttl_seconds,
                 namespace=cache_namespace or "",
             )
@@ -458,7 +524,7 @@ class AsyncBritecoreAPIClient:
         if cache_enabled and not cache_bypass and cache_key:
             cached_response = self._cache.get(cache_key)
             if cached_response is not None:
-                return cached_response
+                return self._restore_response_from_cache(cached_response)
         response = await self._request_with_optional_dedupe(
             path=path,
             json=json,

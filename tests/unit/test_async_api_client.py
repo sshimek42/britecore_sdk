@@ -3,6 +3,7 @@
 import asyncio
 import time
 from datetime import UTC, datetime, timedelta
+from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -21,9 +22,10 @@ from britecore_sdk.api.request_cache import _canonicalize
 
 def _make_response(
     payload: bytes = b'{"success": true, "data": {"id": "1"}}',
+    status: int = 200,
 ) -> MagicMock:
     response = MagicMock()
-    response.status = 200
+    response.status = status
     response.reason = "OK"
     response.data = payload
     return response
@@ -207,6 +209,106 @@ class TestAsyncBritecoreAPIClient:
         mock_sync_request.assert_not_called()
 
     @pytest.mark.unit
+    def test_httpx_transport_reuses_single_client_when_not_injected(self):
+        """Native async mode should lazily create one httpx client and reuse it."""
+
+        class _FakeAsyncClient:
+            def __init__(self, timeout=None):
+                self.timeout = timeout
+                self.request_calls = 0
+                self.closed = False
+
+            async def request(self, **_kwargs):
+                self.request_calls += 1
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true, "data": {"id": "ok"}}',
+                )
+
+            async def aclose(self):
+                self.closed = True
+
+        created_clients: list[_FakeAsyncClient] = []
+
+        class _FakeHttpx:
+            TimeoutException = Exception
+            HTTPError = Exception
+
+            @staticmethod
+            def AsyncClient(timeout=None):
+                client = _FakeAsyncClient(timeout=timeout)
+                created_clients.append(client)
+                return client
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="k")
+        client.rate_limiter = None
+
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with patch.object(adapter, "_import_httpx", return_value=_FakeHttpx):
+            first = asyncio.run(adapter.ado_request("/api/v2/test", cache_bypass=True))
+            second = asyncio.run(adapter.ado_request("/api/v2/test", cache_bypass=True))
+
+        assert first is not None
+        assert second is not None
+        assert len(created_clients) == 1
+        assert created_clients[0].request_calls == 2
+
+    @pytest.mark.unit
+    def test_httpx_transport_aclose_closes_owned_client(self):
+        """aclose() should close the lazily-created native async client."""
+
+        class _FakeAsyncClient:
+            def __init__(self, timeout=None):
+                self.timeout = timeout
+                self.closed = False
+
+            async def request(self, **_kwargs):
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true, "data": {"id": "ok"}}',
+                )
+
+            async def aclose(self):
+                self.closed = True
+
+        created_clients: list[_FakeAsyncClient] = []
+
+        class _FakeHttpx:
+            TimeoutException = Exception
+            HTTPError = Exception
+
+            @staticmethod
+            def AsyncClient(timeout=None):
+                client = _FakeAsyncClient(timeout=timeout)
+                created_clients.append(client)
+                return client
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="k")
+        client.rate_limiter = None
+
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with patch.object(adapter, "_import_httpx", return_value=_FakeHttpx):
+            _ = asyncio.run(adapter.ado_request("/api/v2/test", cache_bypass=True))
+            asyncio.run(adapter.aclose())
+
+        assert len(created_clients) == 1
+        assert created_clients[0].closed is True
+
+    @pytest.mark.unit
     def test_ado_request_returns_cached_response_on_second_call(self):
         """Repeated identical requests should hit the in-memory cache."""
         response = _make_response()
@@ -233,8 +335,67 @@ class TestAsyncBritecoreAPIClient:
             )
 
         assert first is response
-        assert second is response
+        assert second is not response
+        assert getattr(second, "status", None) == 200
         mock_request.assert_called_once()
+
+    @pytest.mark.unit
+    def test_ado_request_caches_201_response_as_success(self):
+        """2xx responses (for example 201) should be eligible for cache writes."""
+        response = _make_response(status=201)
+        adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
+
+        with patch.object(
+            BritecoreAPIClient, "do_request", return_value=response
+        ) as mock_request:
+            first = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/create",
+                    json={"policy_number": "POL-123"},
+                    cache_enabled=True,
+                    cache_namespace="policies",
+                )
+            )
+            second = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/create",
+                    json={"policy_number": "POL-123"},
+                    cache_enabled=True,
+                    cache_namespace="policies",
+                )
+            )
+
+        assert first is response
+        assert second is not response
+        assert getattr(second, "status", None) == 201
+        mock_request.assert_called_once()
+
+    @pytest.mark.unit
+    def test_cached_response_is_immutable_snapshot(self):
+        """Mutating a live response should not mutate future cache hits."""
+        adapter = AsyncBritecoreAPIClient(client=BritecoreAPIClient("test_site"))
+        response = _make_response()
+
+        with patch.object(BritecoreAPIClient, "do_request", return_value=response):
+            first = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/retrieve",
+                    json={"policy_id": "123"},
+                    cache_enabled=True,
+                    cache_namespace="policies",
+                )
+            )
+            first.status = 599
+            second = asyncio.run(
+                adapter.ado_request(
+                    "/api/v2/policies/retrieve",
+                    json={"policy_id": "123"},
+                    cache_enabled=True,
+                    cache_namespace="policies",
+                )
+            )
+
+        assert getattr(second, "status", None) == 200
 
     @pytest.mark.unit
     def test_ado_request_inherits_client_dry_run_and_bypasses_cache(self):
@@ -340,7 +501,8 @@ class TestAsyncBritecoreAPIClient:
 
         assert cached is first_response
         assert bypassed is second_response
-        assert cached_again is first_response
+        assert cached_again is not first_response
+        assert getattr(cached_again, "status", None) == 200
         assert mock_request.call_count == 2
 
     @pytest.mark.unit

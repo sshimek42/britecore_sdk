@@ -54,6 +54,7 @@ def mock_settings_oauth():
     settings.base_url = "https://api.example.com"
     settings.client_id = "test_client_id"
     settings.client_secret = "test_client_secret"
+    settings.api_key = ""
     settings.web_timeout = 5
     settings.web_timeout_long = 50
     settings.web_retry = 5

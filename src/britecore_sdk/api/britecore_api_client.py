@@ -45,6 +45,7 @@ from britecore_sdk.settings.defaults import DEFAULTS, calculate_long_timeout
 
 LOGGER: Logger = getLogger("britecore_sdk")
 _SETTINGS_ENV_LOCK = RLock()
+_RETRY_ALLOWED_METHODS = frozenset({"DELETE", "GET", "HEAD", "OPTIONS", "PUT", "TRACE"})
 
 
 class LoadClientSettings:
@@ -466,15 +467,31 @@ class BritecoreAPIClient:
         retries: Retry = Retry(
             total=self.web_retry,
             status_forcelist=frozenset({502, 503, 504, 500}),
+            allowed_methods=_RETRY_ALLOWED_METHODS,
             backoff_factor=0.5,
         )
         self.http = urllib3.PoolManager(
             retries=retries, timeout=timeout, maxsize=5, num_pools=5
         )
 
-        self.use_api_key = (
-            self.site_settings.client_id == "" or self.site_settings.client_secret == ""
+        resolved_api_key = self._normalize_credential_value(self.site_settings.api_key)
+        resolved_client_id = self._normalize_credential_value(
+            self.site_settings.client_id
         )
+        resolved_client_secret = self._normalize_credential_value(
+            self.site_settings.client_secret
+        )
+
+        self.site_settings.api_key = resolved_api_key
+        self.site_settings.client_id = resolved_client_id
+        self.site_settings.client_secret = resolved_client_secret
+
+        auth_mode = self._resolve_auth_mode(
+            api_key=resolved_api_key,
+            client_id=resolved_client_id,
+            client_secret=resolved_client_secret,
+        )
+        self.use_api_key = auth_mode == "api_key"
 
         if self.use_api_key:
             LOGGER.debug("Auth mode selected during init_client: api_key")
@@ -758,6 +775,51 @@ class BritecoreAPIClient:
         return "debug" if normalized == "debug" else "info"
 
     @staticmethod
+    def _normalize_credential_value(value: Any) -> str:
+        """Normalize credential-like config values into trimmed strings."""
+        if value is None:
+            return ""
+        return str(value).strip()
+
+    @classmethod
+    def _resolve_auth_mode(
+        cls,
+        *,
+        api_key: Any,
+        client_id: Any,
+        client_secret: Any,
+    ) -> Literal["api_key", "oauth"]:
+        """Resolve auth mode and reject ambiguous or partial credential sets."""
+        normalized_api_key = cls._normalize_credential_value(api_key)
+        normalized_client_id = cls._normalize_credential_value(client_id)
+        normalized_client_secret = cls._normalize_credential_value(client_secret)
+
+        has_api_key = bool(normalized_api_key)
+        has_client_id = bool(normalized_client_id)
+        has_client_secret = bool(normalized_client_secret)
+
+        if has_api_key and (has_client_id or has_client_secret):
+            raise BritecoreError.ConfigurationError(
+                "Ambiguous authentication configuration: provide either api_key or "
+                "client_id/client_secret, not both."
+            )
+
+        if has_client_id != has_client_secret:
+            raise BritecoreError.ConfigurationError(
+                "Invalid OAuth configuration: both client_id and client_secret are required."
+            )
+
+        if has_client_id and has_client_secret:
+            return "oauth"
+        if has_api_key:
+            return "api_key"
+
+        raise BritecoreError.ConfigurationError(
+            "No authentication credentials configured. Provide api_key or "
+            "client_id/client_secret."
+        )
+
+    @staticmethod
     def _with_hint(message: str, hint: str) -> str:
         """Append a short, actionable hint to an error message."""
         return f"{message}\nHint: {hint}"
@@ -965,7 +1027,7 @@ class BritecoreAPIClient:
                 sanitized_body=sanitized_body,
             )
 
-        if response.status != 200:
+        if not (200 <= int(response.status) < 300):
             LOGGER.error("Error - %s - %s", response.status, response.reason)
             raise BritecoreError.NoDataReturned(
                 cls._with_hint(
@@ -1009,22 +1071,37 @@ class BritecoreAPIClient:
         request_id: str | None = None,
     ) -> Any:
         """Validate API success flag and return normalized data payload."""
-        result = json_result.get("success")
-        message = cls._extract_error_message(
-            json_result.get("message", json_result.get("messages", "Unknown error"))
+        if isinstance(json_result, dict):
+            if "success" in json_result:
+                result = json_result.get("success")
+                message = cls._extract_error_message(
+                    json_result.get(
+                        "message", json_result.get("messages", "Unknown error")
+                    )
+                )
+
+                if not result:
+                    LOGGER.error("Error - %s", message)
+                    raise BritecoreError.NoDataReturned(
+                        cls._with_hint(
+                            f"Error - {message}",
+                            "Inspect API response payload and required request parameters.",
+                        ),
+                        request_id=request_id,
+                    )
+
+                return json_result.get("data")
+
+            # Some endpoints return plain JSON objects without a success envelope.
+            if "data" in json_result:
+                return json_result.get("data")
+            return json_result
+
+        LOGGER.warning(
+            "Response payload is %s, not a JSON object with success envelope",
+            type(json_result).__name__,
         )
-
-        if not result:
-            LOGGER.error("Error - %s", message)
-            raise BritecoreError.NoDataReturned(
-                cls._with_hint(
-                    f"Error - {message}",
-                    "Inspect API response payload and required request parameters.",
-                ),
-                request_id=request_id,
-            )
-
-        return json_result.get("data")
+        return json_result
 
     def process_result(
         self,

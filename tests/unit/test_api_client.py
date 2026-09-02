@@ -142,6 +142,29 @@ class TestBritecoreAPIClientInit:
             assert client.web_timeout_long == 50
 
     @pytest.mark.unit
+    def test_init_retry_policy_uses_explicit_idempotent_methods(
+        self, env_api_key, mock_settings
+    ):
+        """Retry config should be explicit and avoid POST status retries by default."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site")
+            client.init_client()
+
+            retries = client.http.connection_pool_kw["retries"]
+            assert retries is not None
+            assert retries.allowed_methods is not None
+            assert "POST" not in retries.allowed_methods
+            assert "GET" in retries.allowed_methods
+
+    @pytest.mark.unit
     def test_init_client_can_enable_client_dry_run(self, env_api_key, mock_settings):
         """Test that init_client stores a client-level dry-run setting."""
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
@@ -157,6 +180,46 @@ class TestBritecoreAPIClientInit:
             client.init_client(client_dry_run=True)
 
             assert client.client_dry_run is True
+
+    @pytest.mark.unit
+    def test_init_rejects_mixed_api_key_and_oauth_credentials(
+        self, env_api_key, mock_settings_oauth
+    ):
+        """Client init should fail when API key and OAuth credentials are both present."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        mock_settings_oauth.api_key = "also-present"
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings_oauth
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site")
+            with pytest.raises(BritecoreError.ConfigurationError):
+                client.init_client()
+
+    @pytest.mark.unit
+    def test_init_rejects_partial_oauth_credentials(self, env_api_key, mock_settings):
+        """Client init should fail when only one OAuth credential is configured."""
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        mock_settings.api_key = ""
+        mock_settings.client_id = "client-only"
+        mock_settings.client_secret = ""
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_loader:
+            mock_loader_instance = MagicMock()
+            mock_loader_instance.load_config.return_value = mock_settings
+            mock_loader.return_value = mock_loader_instance
+
+            client = BritecoreAPIClient("test_site")
+            with pytest.raises(BritecoreError.ConfigurationError):
+                client.init_client()
 
     @pytest.mark.unit
     def test_init_client_write_policy_loads_from_settings(
@@ -512,6 +575,105 @@ class TestBritecoreAPIClientProcessResult:
             client = BritecoreAPIClient("test_site").init_client()
             with pytest.raises(BritecoreError.NoDataReturned):
                 client.process_result(response)
+
+    @pytest.mark.unit
+    def test_process_result_accepts_201_created_status(self):
+        """Test process_result accepts successful 2xx responses beyond 200."""
+        from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        response = MagicMock()
+        response.status = 201
+        response.reason = "Created"
+        response.data = b'{"success": true, "data": {"id": "created-id"}}'
+        response.headers = {}
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            result = client.process_result(response)
+
+            assert result == {"id": "created-id"}
+
+    @pytest.mark.unit
+    def test_process_result_accepts_non_dict_json_payload(self):
+        """Test process_result returns non-dict JSON payloads without attribute errors."""
+        from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        response = MagicMock()
+        response.status = 200
+        response.reason = "OK"
+        response.data = b'["alpha", "beta"]'
+        response.headers = {}
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            result = client.process_result(response)
+
+            assert result == ["alpha", "beta"]
+
+    @pytest.mark.unit
+    def test_process_result_returns_plain_dict_when_success_envelope_missing(self):
+        """Test process_result returns plain dict payload when no success/data envelope is present."""
+        from unittest.mock import patch
+
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        response = MagicMock()
+        response.status = 200
+        response.reason = "OK"
+        response.data = b'{"id": "raw-id", "state": "bound"}'
+        response.headers = {}
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.LoadClientSettings"
+        ) as mock_settings:
+            mock_instance = MagicMock()
+            mock_instance.load_config.return_value = MagicMock(
+                base_url="https://api.example.com",
+                client_id="",
+                client_secret="",
+                api_key="test-key",
+                web_timeout=30,
+                web_timeout_long=300,
+                web_retry=5,
+            )
+            mock_settings.return_value = mock_instance
+
+            client = BritecoreAPIClient("test_site").init_client()
+            result = client.process_result(response)
+
+            assert result == {"id": "raw-id", "state": "bound"}
 
     @pytest.mark.unit
     def test_process_result_accepts_single_quoted_payload(self):

@@ -736,7 +736,7 @@ class TestInitClientConfigErrors:
             base_url="example.com",
             client_id="client",
             client_secret="secret",
-            api_key="key",
+            api_key="",
             web_retry=3,
             web_timeout=5,
             web_timeout_long=50,
