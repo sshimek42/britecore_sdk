@@ -25,14 +25,14 @@ def find_policy(policy_number=None, policy_id=None):
     # Try by policy number first (more common)
     if policy_number:
         try:
-            return policies.retrieve_policy(policy_number=policy_number)
+            return policies.retrieve_policy(policy_number=policy_number, client=client)
         except NotFoundError:
             pass
 
     # Try by policy ID
     if policy_id:
         try:
-            return policies.retrieve_policy(policy_id=policy_id)
+            return policies.retrieve_policy(policy_id=policy_id, client=client)
         except NotFoundError:
             pass
 
@@ -45,11 +45,13 @@ Import multiple contacts efficiently with error handling:
 
 ```python
 from britecore_sdk.models import BritecoreContact
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import contacts
 from britecore_sdk.exceptions import ValidationError, BritecoreError
 
 def import_contacts_bulk(contact_list):
     """Import a list of contact dictionaries with validation."""
+    client = get_api_client()
     results = {
         "total": len(contact_list),
         "succeeded": 0,
@@ -64,7 +66,7 @@ def import_contacts_bulk(contact_list):
             validated = contact.process_contact()
 
             # Create the contact
-            result = contacts.new_contact(contact=validated)
+            result = contacts.new_contact(contact=validated, client=client)
             results["succeeded"] += 1
 
         except ValidationError as e:
@@ -91,12 +93,14 @@ Handle rate limiting gracefully when processing many items:
 
 ```python
 import time
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 from britecore_sdk.exceptions import RateLimitError
 from britecore_sdk.api.rate_limiter import RateLimiter
 
 def process_policies_with_rate_limiting(policy_numbers, delay_ms=100):
     """Process policies with built-in rate limiting."""
+    client = get_api_client()
     rate_limiter = RateLimiter(
         requests_per_second=10,  # Adjust to API limits
         burst_size=5,
@@ -108,7 +112,7 @@ def process_policies_with_rate_limiting(policy_numbers, delay_ms=100):
         rate_limiter.acquire()
 
         try:
-            policy = policies.retrieve_policy(policy_number=policy_num)
+            policy = policies.retrieve_policy(policy_number=policy_num, client=client)
             results.append(policy)
 
         except RateLimitError:
@@ -117,7 +121,7 @@ def process_policies_with_rate_limiting(policy_numbers, delay_ms=100):
             while True:
                 time.sleep(wait_time)
                 try:
-                    policy = policies.retrieve_policy(policy_number=policy_num)
+                    policy = policies.retrieve_policy(policy_number=policy_num, client=client)
                     results.append(policy)
                     break
                 except RateLimitError:
@@ -137,7 +141,14 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 def preview_policy_lookup(policy_number):
     """Preview a request with RequestParameters dry_run=True."""
-    preview = policies.retrieve_policy(policy_number=policy_number, dry_run=True)
+    from britecore_sdk.api.api_calls import get_api_client
+
+    client = get_api_client()
+    preview = policies.retrieve_policy(
+        policy_number=policy_number,
+        client=client,
+        dry_run=True,
+    )
     return {
         "request_id": preview.get("request_id"),
         "url": preview.get("url"),
@@ -181,12 +192,15 @@ from britecore_sdk.exceptions import BritecoreError
 
 def create_policies_with_tracking(policy_list, show_progress=True):
     """Create multiple policies with progress tracking."""
+    from britecore_sdk.api.api_calls import get_api_client
+
+    client = get_api_client()
     total = len(policy_list)
     results = []
 
     for idx, policy_data in enumerate(policy_list, 1):
         try:
-            result = policies.create_policy(**policy_data)
+            result = policies.create_policy(client=client, **policy_data)
             results.append(result)
 
             if show_progress:
@@ -210,6 +224,9 @@ from britecore_sdk.exceptions import BritecoreError
 
 def update_expired_policies(policy_list, new_expiration_date):
     """Update expiration date for policies that match criteria."""
+    from britecore_sdk.api.api_calls import get_api_client
+
+    client = get_api_client()
     updated = []
     skipped = []
 
@@ -222,6 +239,7 @@ def update_expired_policies(policy_list, new_expiration_date):
                 result = policies.update_policy(
                     policy_id=policy["policy_id"],
                     expiration_date=new_expiration_date,
+                    client=client,
                 )
                 updated.append(result)
             except BritecoreError.Base as e:
@@ -238,16 +256,18 @@ Implement retry logic for transient failures:
 
 ```python
 import time
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import quotes
 from britecore_sdk.exceptions import BritecoreError, RequestTimeoutError
 
 def create_quote_with_retry(quote_data, max_retries=3, backoff_factor=2):
     """Create a quote with automatic retry on failure."""
+    client = get_api_client()
     last_error = None
 
     for attempt in range(max_retries):
         try:
-            quote = quotes.create_quote(**quote_data)
+            quote = quotes.create_quote(client=client, **quote_data)
             if attempt > 0:
                 print(f"Quote created on retry {attempt + 1}")
             return quote
@@ -279,10 +299,13 @@ Transform API responses into usable formats:
 ```python
 from britecore_sdk.api.api_calls.v2 import policies
 from britecore_sdk.api.response_helpers import extract_data, transform_response
+from britecore_sdk.api.api_calls import get_api_client
+
+client = get_api_client()
 
 def get_policy_summary(policy_number):
     """Get a simplified policy summary."""
-    response = policies.retrieve_policy(policy_number=policy_number)
+    response = policies.retrieve_policy(policy_number=policy_number, client=client)
 
     # Extract just the data
     data = extract_data(response)
@@ -299,7 +322,7 @@ def get_policy_ids(policy_numbers):
     """Get policy IDs for a list of policy numbers."""
     return [
         transform_response(
-            policies.retrieve_policy(policy_number=pn),
+            policies.retrieve_policy(policy_number=pn, client=client),
             lambda d: d.get("policy_id"),
         )
         for pn in policy_numbers
@@ -312,16 +335,18 @@ Process multiple operations concurrently:
 
 ```python
 import asyncio
-from britecore_sdk.api.api_calls import get_async_api_client
+from britecore_sdk.api.api_calls import get_async_api_client, init_async_api_client
 from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
 
 async def fetch_policies_concurrently(policy_numbers, max_concurrent=5):
     """Fetch multiple policies concurrently."""
+    init_async_api_client("your_site")
+    client = get_async_api_client()
     semaphore = asyncio.Semaphore(max_concurrent)
 
     async def fetch_one(policy_number):
         async with semaphore:
-            return await aretrieve_policy(policy_number=policy_number)
+            return await aretrieve_policy(policy_number=policy_number, client=client)
 
     tasks = [fetch_one(pn) for pn in policy_numbers]
     results = await asyncio.gather(*tasks, return_exceptions=True)
@@ -354,9 +379,9 @@ def api_context(environment):
         yield client
 
 # Usage:
-with api_context("production"):
+with api_context("production") as client:
     from britecore_sdk.api.api_calls.v2 import policies
-    prod_policy = policies.retrieve_policy(policy_number="PROD-001")
+    prod_policy = policies.retrieve_policy(policy_number="PROD-001", client=client)
 
 # Automatically switched back to previous client or None after block
 ```

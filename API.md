@@ -48,7 +48,7 @@ from britecore_sdk.api.api_calls.v2 import policies, contacts, quotes
 
 # Compatibility path: lazy shared-client fallback
 client = get_api_client()
-result = policies.retrieve_policy(policy_number="POL-001")
+result = policies.retrieve_policy(policy_number="POL-001", client=client)
 ```
 
 > For new integrations, prefer explicit client construction plus `client=`
@@ -63,7 +63,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 # init_client() returns Self, so construction + init can be one line
 with BritecoreAPIClient("your_site").init_client() as client:
-    result = policies.retrieve_policy(policy_number="POL-001")
+    result = policies.retrieve_policy(policy_number="POL-001", client=client)
 # PoolManager closed automatically
 
 # Inspect the client at any time
@@ -81,10 +81,10 @@ prod_client = init_api_client("production", base_url="api.prod.example.com", api
 staging_client = init_api_client("staging", base_url="api.staging.example.com", api_key="...")
 
 with use_api_client(prod_client):
-    prod_policy = policies.retrieve_policy(policy_number="POL-001")
+    prod_policy = policies.retrieve_policy(policy_number="POL-001", client=prod_client)
 
 with use_api_client(staging_client):
-    staging_policy = policies.retrieve_policy(policy_number="POL-001")
+    staging_policy = policies.retrieve_policy(policy_number="POL-001", client=staging_client)
 ```
 
 Domain modules are importable from `britecore_sdk.api.api_calls.v2`.
@@ -143,6 +143,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 client = get_api_client()
 response = policies.retrieve_policy(
     policy_number="POL001",
+    client=client,
     request_timeout=5,        # seconds
     request_retries=3,        # number of retries
     # ... endpoint-specific params ...
@@ -228,20 +229,21 @@ from britecore_sdk.api.api_calls.v2 import (
     lines,
 )
 
-init_api_client("your_site")
-policy = policies.retrieve_policy(policy_number="POL001")
-policy_terms = policies.retrieve_policy_terms(policy_number="POL001")
+client = init_api_client("your_site")
+policy = policies.retrieve_policy(policy_number="POL001", client=client)
+policy_terms = policies.retrieve_policy_terms(policy_number="POL001", client=client)
 
 contact_data, contact_id = contacts.new_contact(
     name="Jane Doe",
     address=[{"address_line1": "123 Main", "address_city": "Madison", "address_state": "WI", "address_zip": "53703"}],
+    client=client,
 )
 
-quote_data, quote_id = quotes.create_full_quote(quote_json={"policy_number": "POL001"})
-report = reports.retrieve_report(report_id="report_uuid")
+quote_data, quote_id = quotes.create_full_quote(quote_json={"policy_number": "POL001"}, client=client)
+report = reports.retrieve_report(report_id="report_uuid", client=client)
 
-payment_methods = payments.retrieve_payment_methods(contact_ids=[contact_id])
-policy_types = lines.list_policy_types(location_id="loc_uuid", effective_date_id="eff_uuid")
+payment_methods = payments.retrieve_payment_methods(contact_ids=[contact_id], client=client)
+policy_types = lines.list_policy_types(location_id="loc_uuid", effective_date_id="eff_uuid", client=client)
 ```
 
 ---
@@ -287,7 +289,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 try:
-    policy = policies.retrieve_policy(policy_number="INVALID")
+    policy = policies.retrieve_policy(policy_number="INVALID", client=client)
 except BritecoreError.NotFoundError as e:
     print(f"Not found: {e}")
 except BritecoreError.AuthenticationError as e:
@@ -304,10 +306,13 @@ except Exception as e:
 
 ```python
 from britecore_sdk import NotFoundError, AuthenticationError, RateLimitError
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
+client = get_api_client()
+
 try:
-    policy = policies.retrieve_policy(policy_number="INVALID")
+    policy = policies.retrieve_policy(policy_number="INVALID", client=client)
 except NotFoundError as e:
     print(f"Not found: {e}")
 except AuthenticationError as e:
@@ -333,10 +338,13 @@ diagnostic fields:
 
 ```python
 from britecore_sdk import ValidationError
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
+client = get_api_client()
+
 try:
-    policies.retrieve_policy(policy_number="INVALID")
+    policies.retrieve_policy(policy_number="INVALID", client=client)
 except ValidationError as exc:
     print(f"Validation error: {exc}")
     print(f"Correlation ID: {exc.request_id}")
@@ -361,7 +369,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
 # Inspect what would be sent — no network call made
-preview = policies.retrieve_policy(policy_number="POL001", dry_run=True)
+preview = policies.retrieve_policy(policy_number="POL001", client=client, dry_run=True)
 print(preview["dry_run"])
 print(preview["headers"])
 # INFO [abc12345] DRY-RUN POST https://...  body={"policy_number": "POL001"}  headers={...}
@@ -373,13 +381,13 @@ Client-level default dry-run is also supported:
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
-init_api_client(client_dry_run=True)
+client = init_api_client(client_dry_run=True)
 
 # Inherits dry-run from the initialized client.
-preview = policies.retrieve_policy(policy_number="POL001")
+preview = policies.retrieve_policy(policy_number="POL001", client=client)
 
 # Override for one request if needed.
-live_result = policies.retrieve_policy(policy_number="POL001", dry_run=False)
+live_result = policies.retrieve_policy(policy_number="POL001", client=client, dry_run=False)
 ```
 
 Notes:
@@ -455,7 +463,7 @@ retry_delay = 5  # seconds
 
 for attempt in range(max_retries):
     try:
-        policy = policies.retrieve_policy(policy_number="POL001")
+        policy = policies.retrieve_policy(policy_number="POL001", client=client)
         break
     except BritecoreError.RateLimitError as e:
         if attempt < max_retries - 1:
@@ -475,8 +483,8 @@ from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import accounting
 
 client = get_api_client()
-page_1 = accounting.get_invoices(policy_id="uuid", page_number=1, page_size=25)
-page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25)
+page_1 = accounting.get_invoices(policy_id="uuid", page_number=1, page_size=25, client=client)
+page_2 = accounting.get_invoices(policy_id="uuid", page_number=2, page_size=25, client=client)
 ```
 
 ---
@@ -492,6 +500,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 client = get_api_client()
 risks = policies.retrieve_risks(
     revision_id="revision_uuid",
+    client=client,
     page=0,
     page_size=25,
     order_by="name",
@@ -554,6 +563,7 @@ response, revision_id = policies.create_policy(
     policy_number=api_payload.get("policy_number", "POL001"),
     policy_type_id=api_payload.get("policy_type_id"),
     inception_date=api_payload.get("effective_date"),
+    client=client,
 )
 ```
 
@@ -578,6 +588,7 @@ contact_data, contact_id = contacts.new_contact(
     address=[{"address_line1": "123 Main", "address_city": "Madison", "address_state": "WI", "address_zip": "53703"}],
     email=[{"email": email, "type": "home"}],
     phone=[{"phone": phone, "type": "mobile"}],
+    client=client,
 )
 ```
 
@@ -595,7 +606,7 @@ from britecore_sdk.api.api_calls.v2 import reports
 client = get_api_client()
 report_id = "report_uuid"
 for _ in range(60):
-    status = reports.retrieve_report(report_id=report_id)
+    status = reports.retrieve_report(report_id=report_id, client=client)
     if status.get("status") in {"completed", "failed"}:
         break
     time.sleep(5)

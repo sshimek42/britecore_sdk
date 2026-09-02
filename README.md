@@ -76,7 +76,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 client = get_api_client()
 
 # Retrieve a policy
-result = policies.retrieve_policy(policy_number="POL001")
+result = policies.retrieve_policy(policy_number="POL001", client=client)
 print(result)
 ```
 
@@ -409,10 +409,13 @@ The `v2` package exports async-aware wrappers (e.g., `aget_quote`, `aget_contact
 
 ```python
 import asyncio
+from britecore_sdk.api.api_calls import get_async_api_client, init_async_api_client
 from britecore_sdk.api.api_calls.v2 import async_policies
 
 async def main():
-    policy = await async_policies.aretrieve_policy(policy_number="POL001")
+    init_async_api_client("production")
+    client = get_async_api_client()
+    policy = await async_policies.aretrieve_policy(policy_number="POL001", client=client)
     print(policy)
 
 asyncio.run(main())

@@ -85,25 +85,30 @@ from britecore_sdk.api.api_calls.v2 import (
     aget_quote,
     aretrieve_policy,
 )
+from britecore_sdk.api.api_calls import get_async_api_client, init_async_api_client
 
 
 async def main() -> None:
+    init_async_api_client("your_site")
+    client = get_async_api_client()
+
     # Cached read (first call live, second call cached).
-    quote_1 = await aget_quote("quote_123")
-    quote_2 = await aget_quote("quote_123")
+    quote_1 = await aget_quote("quote_123", client=client)
+    quote_2 = await aget_quote("quote_123", client=client)
 
     # Cached read with per-call TTL override.
-    contact = await aget_contact("contact_123", cache_ttl_seconds=180)
+    contact = await aget_contact("contact_123", client=client, cache_ttl_seconds=180)
 
     # Cached read with in-flight de-duplication enabled (default True).
     policy = await aretrieve_policy(
         policy_number="POL001",
+        client=client,
         revision_state="active",
         dedupe_in_flight=True,
     )
 
     # Mutation invalidates quote namespace on success.
-    _, created_quote_id = await acreate_full_quote({"quote": {"name": "Example"}})
+    _, created_quote_id = await acreate_full_quote({"quote": {"name": "Example"}}, client=client)
 
     print(quote_1, quote_2, contact, policy, created_quote_id)
 
@@ -128,10 +133,15 @@ All async wrappers accept these optional kwargs:
 Example overrides:
 
 ```python
-fresh_quote = await aget_quote("quote_123", cache_bypass=True)
+from britecore_sdk.api.api_calls import get_async_api_client
+
+client = get_async_api_client()
+
+fresh_quote = await aget_quote("quote_123", client=client, cache_bypass=True)
 
 policy = await aretrieve_policy(
     policy_id="uuid",
+    client=client,
     cache_enabled=True,
     cache_ttl_seconds=300,
     cache_key_parts=["tenant:acme", "view:summary"],
@@ -145,13 +155,14 @@ Async clients support the same client-level dry-run default as the sync client:
 ```python
 import asyncio
 
-from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls import get_async_api_client, init_async_api_client
 from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
 
 
 async def main() -> None:
     init_async_api_client(client_dry_run=True)
-    preview = await aretrieve_policy(policy_number="POL001")
+    client = get_async_api_client()
+    preview = await aretrieve_policy(policy_number="POL001", client=client)
     print(preview["dry_run"])
     print(preview["auth_skipped"])
 

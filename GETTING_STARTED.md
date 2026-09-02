@@ -202,7 +202,7 @@ with BritecoreAPIClient("production").init_client(
     base_url="https://api.britecore.example.com",
     api_key="your-api-key"
 ) as client:
-    result = policies.retrieve_policy(policy_number="POL001")
+    result = policies.retrieve_policy(policy_number="POL001", client=client)
     print(result)
 # urllib3 PoolManager auto-closed on exit
 ```
@@ -345,7 +345,7 @@ from britecore_sdk.api.api_calls.v2 import policies
 # Compatibility path: lazy shared-client fallback
 client = get_api_client()
 
-result = policies.retrieve_policy(policy_number="POL001")
+result = policies.retrieve_policy(policy_number="POL001", client=client)
 print(result)
 ```
 
@@ -360,7 +360,7 @@ from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
 from britecore_sdk.api.api_calls.v2 import policies
 
 with BritecoreAPIClient("your_site").init_client() as client:
-    result = policies.retrieve_policy(policy_number="POL001")
+    result = policies.retrieve_policy(policy_number="POL001", client=client)
     print(result)
 # urllib3 PoolManager closed automatically on exit
 ```
@@ -369,10 +369,13 @@ with BritecoreAPIClient("your_site").init_client() as client:
 
 ```python
 from britecore_sdk import NotFoundError, AuthenticationError, RateLimitError
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
+client = get_api_client()
+
 try:
-    result = policies.retrieve_policy(policy_number="POL001")
+    result = policies.retrieve_policy(policy_number="POL001", client=client)
 except NotFoundError as e:
     print(f"Policy not found: {e}")
 except AuthenticationError as e:
@@ -387,9 +390,9 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 # Inherit dry-run for all requests made through this client.
 # For OAuth sites, this skips token acquisition unless you explicitly pass headers.
-init_api_client(client_dry_run=True)
+client = init_api_client(client_dry_run=True)
 
-result = policies.retrieve_policy(policy_number="POL001")
+result = policies.retrieve_policy(policy_number="POL001", client=client)
 print(result["dry_run"])        # True
 print(result["auth_skipped"])   # True for OAuth dry-run without caller auth headers
 print(result["headers"])        # Redacted by default
@@ -405,13 +408,14 @@ For exact behavior, supported cache kwargs, and invalidation examples, use
 ```python
 import asyncio
 
-from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls import get_async_api_client, init_async_api_client
 from britecore_sdk.api.api_calls.v2 import aget_quote
 
 async def main() -> None:
     # Explicitly initialize the shared async client for your configured site (rarely needed; see docs for lazy pattern).
     init_async_api_client("your_site")
-    quote = await aget_quote("quote_123")
+    client = get_async_api_client()
+    quote = await aget_quote("quote_123", client=client)
     print(quote)
 
 asyncio.run(main())
@@ -422,12 +426,13 @@ Async dry-run flow testing is also supported:
 ```python
 import asyncio
 
-from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls import get_async_api_client, init_async_api_client
 from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
 
 async def main() -> None:
     init_async_api_client(client_dry_run=True)
-    preview = await aretrieve_policy(policy_number="POL001")
+    client = get_async_api_client()
+    preview = await aretrieve_policy(policy_number="POL001", client=client)
     print(preview["dry_run"])
     print(preview["auth_skipped"])
 

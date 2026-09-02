@@ -302,7 +302,7 @@ from britecore_sdk.exceptions import BritecoreError
 
 client = get_api_client()
 try:
-    policy = policies.retrieve_policy(policy_number="INVALID")
+    policy = policies.retrieve_policy(policy_number="INVALID", client=client)
 except BritecoreError.NotFoundError as e:
     print(f"Not found: {e}")
 except BritecoreError.ValidationError as e:
@@ -523,6 +523,7 @@ client = get_api_client()
 # Use longer timeout
 policy = policies.retrieve_policy(
     policy_number="POL001",
+    client=client,
     request_timeout=Timeout(total=30)  # 30 seconds
 )
 ```
@@ -544,6 +545,7 @@ client = get_api_client()
 # Configure retries
 policy = policies.retrieve_policy(
     policy_number="POL001",
+    client=client,
     request_retries=Retry(
         total=5,
         backoff_factor=1,
@@ -594,7 +596,7 @@ from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
 client = get_api_client()
-policy = policies.retrieve_policy(policy_number="POL001")
+policy = policies.retrieve_policy(policy_number="POL001", client=client)
 # Check console for debug output including X-SDK-Request-ID correlation IDs
 ```
 
@@ -611,10 +613,10 @@ from britecore_sdk.api.api_calls.v2 import policies
 
 # Set client-level dry-run once for a scratch script / test flow.
 # For OAuth sites, this skips token acquisition unless you pass headers explicitly.
-init_api_client(client_dry_run=True)
+client = init_api_client(client_dry_run=True)
 
 # Logs full URL, headers, and body; no network call made.
-preview = policies.retrieve_policy(policy_number="POL001")
+preview = policies.retrieve_policy(policy_number="POL001", client=client)
 print(preview["auth_skipped"])
 
 # Sensitive request-body fields (for example api_key/token/secret/password-like keys)
@@ -700,13 +702,16 @@ Some features in britecore_sdk rely on map files (such as policy, field, or agen
 
 ```python
 import time
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.exceptions import RateLimitError
 from britecore_sdk.api.api_calls.v2 import policies
+
+client = get_api_client()
 
 # Option 1: Automatic retry with exponential backoff
 for attempt in range(3):
     try:
-        policy = policies.retrieve_policy(policy_number="POL-123")
+        policy = policies.retrieve_policy(policy_number="POL-123", client=client)
         break
     except RateLimitError:
         wait_time = 2 ** attempt
@@ -1068,7 +1073,7 @@ client = get_api_client()
 
 # Make request with dry_run to see details without sending
 from britecore_sdk.api.api_calls.v2 import policies
-policy = policies.retrieve_policy(policy_number="POL-123", dry_run=True)
+policy = policies.retrieve_policy(policy_number="POL-123", client=client, dry_run=True)
 # This logs request details without sending
 ```
 
@@ -1090,10 +1095,10 @@ sandbox_client = init_api_client("sandbox").init_client()
 # Use in context managers
 with use_api_client(prod_client):
     from britecore_sdk.api.api_calls.v2 import policies
-    prod_policy = policies.retrieve_policy(policy_number="POL-123")
+    prod_policy = policies.retrieve_policy(policy_number="POL-123", client=prod_client)
 
 with use_api_client(sandbox_client):
-    sandbox_policy = policies.retrieve_policy(policy_number="TEST-POL-123")
+    sandbox_policy = policies.retrieve_policy(policy_number="TEST-POL-123", client=sandbox_client)
 ```
 
 ---
@@ -1145,7 +1150,8 @@ client = init_api_client("production").init_client()
 - **API Reference:** [API.md](./API.md)
 - **Architecture:** [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
-- **Migration v1→v2:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
+- **Historical SDK v1->v2 note:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
+- **Current deprecation policy:** [DEPRECATION.md](./DEPRECATION.md)
 
 ### Code Examples
 
@@ -1228,7 +1234,8 @@ When reporting an issue, include:
    from britecore_sdk.api.api_calls import get_api_client
    from britecore_sdk.api.api_calls.v2 import policies
 
-   policy = policies.retrieve_policy(policy_number="POL-001")
+   client = get_api_client()
+   policy = policies.retrieve_policy(policy_number="POL-001", client=client)
    print(policy)
    ```
 
@@ -1280,8 +1287,8 @@ client = get_api_client()
 from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
-init_api_client(client_dry_run=True)
-result = policies.retrieve_policy(policy_number="POL-123")
+client = init_api_client(client_dry_run=True)
+result = policies.retrieve_policy(policy_number="POL-123", client=client)
 print(result["dry_run"])  # True
 ```
 
@@ -1346,12 +1353,12 @@ from britecore_sdk.api.api_calls import init_api_client, use_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
 # Prod context
-with use_api_client(init_api_client("production").init_client()):
-    prod_policy = policies.retrieve_policy(policy_number="POL-123")
+with use_api_client(init_api_client("production").init_client()) as prod_client:
+    prod_policy = policies.retrieve_policy(policy_number="POL-123", client=prod_client)
 
 # Staging context
-with use_api_client(init_api_client("staging").init_client()):
-    staging_policy = policies.retrieve_policy(policy_number="POL-456")
+with use_api_client(init_api_client("staging").init_client()) as staging_client:
+    staging_policy = policies.retrieve_policy(policy_number="POL-456", client=staging_client)
 ```
 
 ---
@@ -1411,8 +1418,10 @@ contact = BritecoreContact(**contact_data)
 validated = contact.process_contact()
 
 # Now send to API
+from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import contacts
-result = contacts.new_contact(contact=validated)
+client = get_api_client()
+result = contacts.new_contact(contact=validated, client=client)
 ```
 
 ---
@@ -1447,16 +1456,16 @@ pip install -e ".[dev]"
 
 ---
 
-### I'm upgrading from v1 to v2 - what changed?
+### I need SDK lifecycle migration guidance - where is it?
 
-**See:** [docs/MIGRATION_v1_to_v2.md](./docs/MIGRATION_v1_to_v2.md)
+**See:** [DEPRECATION.md](./DEPRECATION.md) and [CHANGELOG.md](./CHANGELOG.md)
 
 **Quick checklist:**
 
-- [ ] Update package: `pip install --upgrade britecore-sdk`
-- [ ] Update imports: `v1` → `v2` endpoints
-- [ ] Update exceptions: `BritecoreError.NotFoundError` → `NotFoundError`
-- [ ] Use lazy client: `get_api_client()` instead of `API_CLIENT`
+- [ ] Update package: `pip install --upgrade britecore_sdk`
+- [ ] Review `CHANGELOG.md` for behavior and contract changes
+- [ ] Review `DEPRECATION.md` for active deprecations and removal targets
+- [ ] Prefer explicit `client=` wrapper usage for new code paths
 - [ ] Test configuration: Run `britecore-healthcheck`
 
 ---
@@ -1467,8 +1476,11 @@ pip install -e ".[dev]"
 
 ```python
 # Instead of sequential loop:
+from britecore_sdk.api.api_calls import get_api_client
+
+client = get_api_client()
 for policy_id in policy_ids:
-    policy = policies.retrieve_policy(policy_id=policy_id)
+    policy = policies.retrieve_policy(policy_id=policy_id, client=client)
 
 # Use async:
 import asyncio
@@ -1481,8 +1493,11 @@ results = asyncio.run(fetch_concurrent(policy_ids))
 ```python
 from britecore_sdk.api.api_calls.v2 import policies
 
+from britecore_sdk.api.api_calls import get_api_client
+
+client = get_api_client()
 # Cache results for 1 hour
-policy = policies.retrieve_policy(policy_number="POL-123", cache_ttl=3600)
+policy = policies.retrieve_policy(policy_number="POL-123", client=client, cache_ttl=3600)
 ```
 
 **3. Batch operations:**
@@ -1504,9 +1519,9 @@ from britecore_sdk.api.api_calls import init_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
 # Enable dry-run
-init_api_client("production", client_dry_run=True)
+client = init_api_client("production", client_dry_run=True)
 
 # All calls are logged but not sent
-result = policies.retrieve_policy(policy_number="POL-123")
+result = policies.retrieve_policy(policy_number="POL-123", client=client)
 print(result["dry_run"])  # True
 ```
