@@ -227,10 +227,11 @@ class TestInitApiClientFallback:
 
         module = importlib.reload(api_calls_module)
         monkeypatch.delenv("target_site", raising=False)
-        monkeypatch.setattr(module, "get_target_site", lambda: None)
+        monkeypatch.setitem(module.__dict__, "get_target_site", lambda: None)
 
-        with pytest.raises(module.BritecoreError.ConfigurationError):
-            module.init_api_client(None)
+        with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+            with pytest.raises(module.BritecoreError.ConfigurationError):
+                module.init_api_client(None)
 
     @pytest.mark.unit
     def test_uses_settings_toml_fallback(self, monkeypatch):
@@ -241,13 +242,14 @@ class TestInitApiClientFallback:
 
         module = importlib.reload(api_calls_module)
         monkeypatch.delenv("target_site", raising=False)
-        monkeypatch.setattr(module, "get_target_site", lambda: "toml_site")
+        monkeypatch.setitem(module.__dict__, "get_target_site", lambda: "toml_site")
 
         fake_client = MagicMock()
         fake_ctor = MagicMock(return_value=fake_client)
-        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+        monkeypatch.setitem(module.__dict__, "BritecoreAPIClient", fake_ctor)
 
-        result = module.init_api_client()
+        with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+            result = module.init_api_client()
 
         fake_ctor.assert_called_once_with("toml_site")
         fake_client.init_client.assert_called_once()
@@ -261,13 +263,14 @@ class TestInitApiClientFallback:
         import britecore_sdk.api.api_calls as api_calls_module
 
         module = importlib.reload(api_calls_module)
-        monkeypatch.setattr(module, "get_target_site", lambda: "toml_site")
+        monkeypatch.setitem(module.__dict__, "get_target_site", lambda: "toml_site")
 
         fake_client = MagicMock()
         fake_ctor = MagicMock(return_value=fake_client)
-        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+        monkeypatch.setitem(module.__dict__, "BritecoreAPIClient", fake_ctor)
 
-        module.init_api_client(target_site="explicit_site")
+        with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+            module.init_api_client(target_site="explicit_site")
 
         fake_ctor.assert_called_once_with("explicit_site")
 
@@ -559,9 +562,12 @@ class TestExplicitCredentials:
 
         fake_client = MagicMock()
         fake_ctor = MagicMock(return_value=fake_client)
-        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+        monkeypatch.setitem(module.__dict__, "BritecoreAPIClient", fake_ctor)
 
-        result = module.init_api_client(base_url="https://api.example.com", api_key="k")
+        with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+            result = module.init_api_client(
+                base_url="https://api.example.com", api_key="k"
+            )
 
         fake_ctor.assert_called_once_with("explicit")
         fake_client.init_client.assert_called_once_with(
@@ -585,13 +591,14 @@ class TestExplicitCredentials:
 
         fake_client = MagicMock()
         fake_ctor = MagicMock(return_value=fake_client)
-        monkeypatch.setattr(module, "BritecoreAPIClient", fake_ctor)
+        monkeypatch.setitem(module.__dict__, "BritecoreAPIClient", fake_ctor)
 
-        module.init_api_client(
-            "production",
-            base_url="https://prod.example.com",
-            api_key="prod-key",
-        )
+        with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+            module.init_api_client(
+                "production",
+                base_url="https://prod.example.com",
+                api_key="prod-key",
+            )
 
         fake_ctor.assert_called_once_with("production")
 
@@ -603,7 +610,8 @@ class TestExplicitCredentials:
         import britecore_sdk.api.api_calls as api_calls_module
 
         module = importlib.reload(api_calls_module)
-        monkeypatch.setattr(module, "get_target_site", lambda: None)
+        monkeypatch.setitem(module.__dict__, "get_target_site", lambda: None)
 
-        with pytest.raises(module.BritecoreError.ConfigurationError):
-            module.init_api_client()
+        with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+            with pytest.raises(module.BritecoreError.ConfigurationError):
+                module.init_api_client()

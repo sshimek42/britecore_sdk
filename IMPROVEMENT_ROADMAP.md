@@ -1,12 +1,12 @@
 # BriteCore SDK Improvement Roadmap
 
 *Last updated: September 2, 2026*
-*Status: Active roadmap aligned to `v2.4.6` and `v3.0.0` deprecation planning*
+*Status: Active roadmap aligned to `v2.4.8` and `v3.0.0` deprecation planning*
 *Audience: Maintainers and contributors*
 
 ## Executive Summary
 
-`britecore_sdk` is stable and release-ready at `v2.4.6`. The near-term roadmap focuses on developer experience and migration safety: ship `2.4.7` improvements, introduce runtime deprecation signaling in `2.5.x`, provide strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
+`britecore_sdk` is stable and release-ready at `v2.4.8`. The near-term roadmap now shifts from the completed `2.4.x` hardening work into migration safety: introduce runtime deprecation signaling in `2.5.x`, provide strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
 
 This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For deprecation policy and removal commitments, use `DEPRECATION.md`.
 
@@ -47,11 +47,12 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 - Global lifecycle helpers as the primary app pattern.
 - Legacy batch alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`).
 
-### Phase B: `2.5.x` (4 to 6 weeks after `2.4.7`)
+### Phase B: `2.5.x` (active)
 
 **Goal:** Start migration enablement for `v3.0.0`.
 
 - Emit `DeprecationWarning` on deprecated runtime paths by default.
+  - Status: started for legacy global lifecycle helpers and implicit wrapper fallback paths.
 - Publish migration guidance for explicit client usage patterns.
 - Expand troubleshooting docs for deprecation-related diagnostics.
 - Add tests that assert warning behavior and migration-safe alternatives.
@@ -98,6 +99,6 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 
 ## Contribution Guidance
 
-- For immediate contributions, prioritize `2.4.7` items.
+- For immediate contributions, prioritize `2.5.x` migration-warning and guidance items.
 - For migration-focused work, coordinate changes under `2.5.x` and `2.6.x` phases.
 - Before implementing deprecation-affecting changes, ensure `CHANGELOG.md` and `DEPRECATION.md` remain synchronized.

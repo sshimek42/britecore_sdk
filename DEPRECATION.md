@@ -38,23 +38,24 @@ To avoid documentation drift:
 
 ---
 
-## Active Deprecations (2.4.7 Planning)
+## Active Deprecations (`2.5.x` Migration Enablement)
 
-The following deprecations are announced in `CHANGELOG.md` under `Unreleased`
-for the `2.4.7` cycle.
+The following deprecations were announced during the `2.4.x` cycle and are now
+entering active runtime-warning enablement in `2.5.x`.
 All are scheduled for removal in the next major release (`v3.0.0`) unless a
 security or correctness issue requires earlier action.
 
 | Surface | Status | Replacement | Planned Removal |
 |--------|--------|-------------|-----------------|
-| Implicit wrapper client fallback (`resolve_client()` / `get_api_client()` path when `client=` is omitted) | Announced in `Unreleased` (`2.4.7` cycle) | Pass explicit `client=` to wrappers, or use scoped `use_api_client(...)` | `v3.0.0` |
-| Global lifecycle helpers as primary app pattern (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`) | Announced in `Unreleased` (`2.4.7` cycle) | Construct explicit client instances and pass them per call/workflow | `v3.0.0` |
+| Implicit wrapper client fallback (`resolve_client()` / `get_api_client()` path when `client=` is omitted) | Announced in `2.4.x`; runtime `DeprecationWarning` started in `2.5.x` | Pass explicit `client=` to wrappers, or use scoped `use_api_client(...)` | `v3.0.0` |
+| Global lifecycle helpers as primary app pattern (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`) | Announced in `2.4.x`; runtime `DeprecationWarning` started in `2.5.x` | Construct explicit client instances and pass them per call/workflow | `v3.0.0` |
 | Legacy batch alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`) | Announced in `Unreleased` (`2.4.7` cycle) | Canonical batch keys `id` and `data` | `v3.0.0` |
 
 Implementation notes for maintainers:
 
 - `2.4.7`: add changelog + docs notices and warning-capable code paths.
-- `2.5.x`: enable `DeprecationWarning` by default on deprecated runtime paths.
+- `2.5.x`: enable `DeprecationWarning` on deprecated runtime paths.
+  - Started for global lifecycle helpers and implicit wrapper fallback paths.
 - `2.6.x`: offer strict-mode toggle that converts warnings to errors for migration testing.
 - `3.0.0`: remove deprecated paths and aliases; publish a migration guide under `docs/migrations/`.
 

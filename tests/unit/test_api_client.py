@@ -70,7 +70,8 @@ class TestLazyAPIClientInitialization:
 
             from britecore_sdk.api.api_calls import api_client, init_api_client
 
-            init_api_client(target_site="test_site")
+            with pytest.warns(DeprecationWarning, match=r"init_api_client\(\)"):
+                init_api_client(target_site="test_site")
             # Access an attribute on the proxy (should trigger init)
             assert hasattr(api_client, "base_url")
 

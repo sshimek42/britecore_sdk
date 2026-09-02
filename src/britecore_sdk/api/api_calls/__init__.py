@@ -1,3 +1,4 @@
+import warnings
 from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import NotRequired, TypedDict, cast
@@ -38,6 +39,33 @@ class AsyncInitClientParams(TypedDict):
 
 
 _TARGET_SITE_UNSET = object()
+_DEPRECATION_REMOVAL_VERSION = "v3.0.0"
+_INIT_API_CLIENT_DEPRECATION = (
+    "init_api_client() is deprecated as a primary application pattern and will be "
+    f"removed in {_DEPRECATION_REMOVAL_VERSION}. Create a BritecoreAPIClient(...)."
+    "init_client() instance explicitly and pass client=... to wrappers or workflows."
+)
+_INIT_ASYNC_API_CLIENT_DEPRECATION = (
+    "init_async_api_client() is deprecated as a primary application pattern and will "
+    f"be removed in {_DEPRECATION_REMOVAL_VERSION}. Create an "
+    "AsyncBritecoreAPIClient(...) explicitly and pass client=... to async wrappers "
+    "or workflows."
+)
+_RESET_API_CLIENT_DEPRECATION = (
+    f"reset_api_client() is deprecated and will be removed in {_DEPRECATION_REMOVAL_VERSION}. "
+    "Prefer explicit client instances or scoped use_api_client(...) binding instead of "
+    "resetting module-level state."
+)
+_IMPLICIT_SYNC_CLIENT_FALLBACK_DEPRECATION = (
+    "Implicit wrapper client fallback without explicit client= is deprecated and will "
+    f"be removed in {_DEPRECATION_REMOVAL_VERSION}. Pass client=... explicitly, or "
+    "use use_api_client(...) for scoped sync wrapper calls."
+)
+_IMPLICIT_ASYNC_CLIENT_FALLBACK_DEPRECATION = (
+    "Implicit async wrapper client fallback without explicit client= is deprecated and "
+    f"will be removed in {_DEPRECATION_REMOVAL_VERSION}. Pass client=... explicitly "
+    "to async wrappers or workflows."
+)
 _context_api_client: ContextVar[BritecoreAPIClient | None] = ContextVar(
     "_context_api_client", default=None
 )
@@ -46,6 +74,11 @@ _context_api_client: ContextVar[BritecoreAPIClient | None] = ContextVar(
 def _set_module_client_state(name: str, client: object) -> None:
     """Set module-level client state without using global statements."""
     globals()[name] = client
+
+
+def _warn_deprecated_runtime_path(message: str, *, stacklevel: int) -> None:
+    """Emit a deprecation warning for legacy runtime patterns retained for compatibility."""
+    warnings.warn(message, DeprecationWarning, stacklevel=stacklevel)
 
 
 def init_api_client(
@@ -117,6 +150,8 @@ def init_api_client(
         BritecoreAPIClient: A configured and initialized Britecore API client instance.
 
     """
+    _warn_deprecated_runtime_path(_INIT_API_CLIENT_DEPRECATION, stacklevel=2)
+
     if base_url is not None:
         # Explicit-credential mode: target_site is optional
         if (
@@ -206,6 +241,8 @@ def init_async_api_client(
         client_id: Explicit OAuth client ID (used only when ``base_url`` is given).
         client_secret: Explicit OAuth client secret (used only when ``base_url`` is given).
     """
+    _warn_deprecated_runtime_path(_INIT_ASYNC_API_CLIENT_DEPRECATION, stacklevel=2)
+
     if base_url is not None:
         if (
             target_site is _TARGET_SITE_UNSET
@@ -258,6 +295,7 @@ def reset_api_client() -> None:
         reset_api_client()
         client_b = init_api_client("site_b")
     """
+    _warn_deprecated_runtime_path(_RESET_API_CLIENT_DEPRECATION, stacklevel=2)
     _set_module_client_state("_api_client", None)
     _set_module_client_state("_async_api_client", None)
 
@@ -365,6 +403,11 @@ def resolve_client(
     """
     if client is not None:
         return client
+    if _context_api_client.get() is None:
+        _warn_deprecated_runtime_path(
+            _IMPLICIT_SYNC_CLIENT_FALLBACK_DEPRECATION,
+            stacklevel=3,
+        )
     return get_api_client()
 
 
@@ -389,6 +432,10 @@ def aresolve_client(
     """
     if client is not None:
         return client
+    _warn_deprecated_runtime_path(
+        _IMPLICIT_ASYNC_CLIENT_FALLBACK_DEPRECATION,
+        stacklevel=3,
+    )
     return get_async_api_client()
 
 
