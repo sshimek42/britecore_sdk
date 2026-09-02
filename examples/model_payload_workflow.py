@@ -6,8 +6,6 @@ payload shaping through `to_dict()` and `britecore_sdk.data_layer` helpers.
 
 from __future__ import annotations
 
-from pprint import pprint
-
 from britecore_sdk.data_layer import (
     normalize_coverage_payload,
     normalize_driver_payload,
@@ -22,6 +20,12 @@ from britecore_sdk.models import (
     BritecorePaymentMethod,
     BritecoreVehicle,
 )
+
+
+def _payload_summary(name: str, payload: dict) -> str:
+    """Return a non-sensitive summary line for an example payload."""
+    keys = sorted(payload.keys())
+    return f"- {name}: normalized payload created (keys={keys}, fields={len(keys)})"
 
 
 def run_model_examples() -> None:
@@ -63,55 +67,72 @@ def run_model_examples() -> None:
     )
 
     print("Model -> to_dict payloads")
-    pprint(vehicle.to_dict())
-    pprint(driver.to_dict())
-    pprint(coverage.to_dict())
-    pprint(payment_method.to_dict())
-    pprint(line_definition.to_dict())
+    print(_payload_summary("vehicle", vehicle.to_dict()))
+    print(_payload_summary("driver", driver.to_dict()))
+    print(_payload_summary("coverage", coverage.to_dict()))
+    print(_payload_summary("payment_method", payment_method.to_dict()))
+    print(_payload_summary("line_definition", line_definition.to_dict()))
 
 
 def run_data_layer_examples() -> None:
     """Demonstrate payload shaping through standalone data_layer helpers."""
     print("\nData-layer normalize_*_payload helpers")
-    pprint(
-        normalize_vehicle_payload(
-            quote_id="quote-1",
-            vehicle_year=2025,
-            vehicle_make="Ford",
-            vehicle_model="F-150",
-            vehicle_type="Truck",
-            vehicle_number=1,
-            address_line1="123 Main St",
-            address_city="Madison",
-            address_state="WI",
-            address_zip="53703",
-            address_county="Dane",
+    print(
+        _payload_summary(
+            "vehicle",
+            normalize_vehicle_payload(
+                quote_id="quote-1",
+                vehicle_year=2025,
+                vehicle_make="Ford",
+                vehicle_model="F-150",
+                vehicle_type="Truck",
+                vehicle_number=1,
+                address_line1="123 Main St",
+                address_city="Madison",
+                address_state="WI",
+                address_zip="53703",
+                address_county="Dane",
+            ),
         )
     )
-    pprint(
-        normalize_driver_payload(
-            quote_id="quote-1",
-            name="Jane Doe",
-            date_of_birth="1990-05-01",
-            license_state="WI",
-            license_number="X1234567",
+    print(
+        _payload_summary(
+            "driver",
+            normalize_driver_payload(
+                quote_id="quote-1",
+                name="Jane Doe",
+                date_of_birth="1990-05-01",
+                license_state="WI",
+                license_number="X1234567",
+            ),
         )
     )
-    pprint(normalize_coverage_payload(name="Liability", coverage_type="auto"))
-    pprint(
-        normalize_payment_method_payload(
-            contact_id="contact-1",
-            method="ACH",
-            account_name="Primary Account",
-            name_on_account="Jane Doe",
-            masked_number="****1234",
+    print(
+        _payload_summary(
+            "coverage",
+            normalize_coverage_payload(name="Liability", coverage_type="auto"),
         )
     )
-    pprint(
-        normalize_line_definition_payload(
-            location_id="state-wi",
-            effective_date_id="eff-1",
-            name="Personal Auto",
+    print(
+        _payload_summary(
+            "payment_method",
+            normalize_payment_method_payload(
+                contact_id="contact-1",
+                method="ACH",
+                account_name="Primary Account",
+                name_on_account="Jane Doe",
+                masked_number="****1234",
+            ),
+        )
+    )
+    print(
+        _payload_summary(
+            "line_definition",
+            normalize_line_definition_payload(
+                location_id="state-wi",
+                effective_date_id="eff-1",
+                name="Personal Auto",
+            ),
         )
     )
 

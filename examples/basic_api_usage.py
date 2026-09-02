@@ -9,12 +9,19 @@ This script is safe by default:
 from __future__ import annotations
 
 import argparse
-from pprint import pprint
 
 import britecore_sdk
 from britecore_sdk.models.contact import BritecoreContact
 from britecore_sdk.validators.email_validator import EmailValidator
 from britecore_sdk.validators.name_validator import NameValidator
+
+
+def _payload_summary(name: str, payload: object) -> str:
+    """Return a non-sensitive summary for dict-like API/example payloads."""
+    if isinstance(payload, dict):
+        keys = sorted(payload.keys())
+        return f"{name}: payload available (keys={keys}, fields={len(keys)})"
+    return f"{name}: payload available (type={type(payload).__name__})"
 
 
 def run_local_demo() -> None:
@@ -41,8 +48,7 @@ def run_local_demo() -> None:
     print("\nLocal normalization demo:")
     print(f"- NameValidator: {normalized_name}")
     print(f"- EmailValidator: {normalized_email}")
-    print("- BritecoreContact payload:")
-    pprint(contact_payload)
+    print(f"- {_payload_summary('BritecoreContact', contact_payload)}")
 
 
 def run_live_policy_lookup(policy_number: str) -> None:
@@ -64,9 +70,11 @@ def run_live_policy_lookup(policy_number: str) -> None:
             for key in ("id", "policy_number", "status")
             if key in result
         }
-        pprint(preview if preview else result)
+        print(
+            _payload_summary("retrieve_policy_preview", preview if preview else result)
+        )
     else:
-        pprint(result)
+        print(_payload_summary("retrieve_policy_preview", result))
 
 
 def run_dry_run_policy_lookup(policy_number: str) -> None:
@@ -84,7 +92,7 @@ def run_dry_run_policy_lookup(policy_number: str) -> None:
     init_api_client(client_dry_run=True)
     result = policies.retrieve_policy(policy_number=policy_number)
     print("Dry-run preview:")
-    pprint(result)
+    print(_payload_summary("dry_run_retrieve_policy", result))
 
 
 def build_parser() -> argparse.ArgumentParser:

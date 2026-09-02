@@ -9,7 +9,7 @@ from britecore_sdk.cli.normalize_json import main
 
 @pytest.mark.unit
 def test_normalize_json_cli_contact_stdout(tmp_path, capsys):
-    """CLI prints normalized contact payload to stdout."""
+    """CLI refuses printing normalized contact payloads to stdout."""
     input_path = tmp_path / "contact.json"
     input_path.write_text(
         json.dumps(
@@ -30,11 +30,9 @@ def test_normalize_json_cli_contact_stdout(tmp_path, capsys):
 
     exit_code = main(["--kind", "contact", "--input", str(input_path)])
 
-    assert exit_code == 0
-    stdout = capsys.readouterr().out
-    normalized = json.loads(stdout)
-    assert normalized["name"] == "acme LLC"
-    assert normalized["phones"] == [{"phone": "1-920-555-1234", "type": "Cell"}]
+    assert exit_code == 1
+    stderr = capsys.readouterr().err
+    assert "Refusing to print normalized payload data to stdout" in stderr
 
 
 @pytest.mark.unit
@@ -84,6 +82,32 @@ def test_normalize_json_cli_invalid_json_returns_error(tmp_path, capsys):
     assert exit_code == 1
     stderr = capsys.readouterr().err
     assert "Invalid JSON" in stderr
+
+
+@pytest.mark.unit
+def test_normalize_json_cli_requires_output_for_payload_mode(tmp_path, capsys):
+    """Payload normalization mode requires --output to avoid sensitive stdout logs."""
+    input_path = tmp_path / "contact.json"
+    input_path.write_text(
+        json.dumps(
+            {
+                "name": "acme llc",
+                "address": {
+                    "address_line1": "123 Main St",
+                    "address_city": "Madison",
+                    "address_state": "WI",
+                    "address_zip": "53703",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    exit_code = main(["--kind", "contact", "--input", str(input_path)])
+
+    assert exit_code == 1
+    stderr = capsys.readouterr().err
+    assert "Provide --output" in stderr
 
 
 @pytest.mark.unit

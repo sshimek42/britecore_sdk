@@ -138,7 +138,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--output",
-        help="Optional path to write normalized JSON. Prints to stdout when omitted.",
+        help="Path to write normalized JSON payload output.",
     )
     parser.add_argument(
         "--pretty",
@@ -178,15 +178,28 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Normalization error: {exc}", file=sys.stderr)
             return 1
 
+    if args.schema:
+        if args.pretty:
+            output_json = json.dumps(result, indent=2, sort_keys=True)
+        else:
+            output_json = json.dumps(result, separators=(",", ":"), sort_keys=True)
+        print(output_json)
+        return 0
+
+    if not args.output:
+        print(
+            "Refusing to print normalized payload data to stdout. "
+            "Provide --output to write the normalized JSON to a file.",
+            file=sys.stderr,
+        )
+        return 1
+
     if args.pretty:
         output_json = json.dumps(result, indent=2, sort_keys=True)
     else:
         output_json = json.dumps(result, separators=(",", ":"), sort_keys=True)
 
-    if args.output:
-        Path(args.output).write_text(output_json + "\n", encoding="utf-8")
-    else:
-        print(output_json)
+    Path(args.output).write_text(output_json + "\n", encoding="utf-8")
 
     return 0
 

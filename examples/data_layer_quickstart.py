@@ -9,6 +9,12 @@ from britecore_sdk.data_layer import (
 )
 
 
+def _payload_summary(name: str, payload: dict) -> str:
+    """Return a non-sensitive summary for example output."""
+    keys = sorted(payload.keys())
+    return f"{name}: normalized payload created (keys={keys}, fields={len(keys)})"
+
+
 def main() -> None:
     contact_payload = normalize_contact_payload(
         name="acme llc",
@@ -37,9 +43,9 @@ def main() -> None:
         risks=["risk-1"],
     )
 
-    print("contact", contact_payload)
-    print("policy", policy_payload)
-    print("quote", quote_payload)
+    print(_payload_summary("contact", contact_payload))
+    print(_payload_summary("policy", policy_payload))
+    print(_payload_summary("quote", quote_payload))
 
 
 if __name__ == "__main__":
