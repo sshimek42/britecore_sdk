@@ -88,6 +88,11 @@ See [examples/basic_api_usage.py](examples/basic_api_usage.py) for more detailed
 
 The `api_client` proxy (from `api.api_calls`) initializes lazily on first use, avoiding import-time failures if config is missing. Use `get_api_client()` for explicit control over the shared lazy client. Use `init_api_client()` for advanced/manual initialization scenarios (for example explicit credentials or multi-site binding).
 
+> **Deprecation direction:** implicit wrapper-client fallback remains supported for
+> compatibility, but new integrations should prefer explicit `client=` passing or
+> scoped `use_api_client(...)` usage. See `DEPRECATION.md` for the planned `v3.0.0`
+> removal timeline.
+
 If you need to verify selected auth mode during initialization, enable SDK debug logging before client init. The client emits `Auth mode selected during init_client: api_key` or `Auth mode selected during init_client: oauth` at debug level.
 
 Pattern A (app-owned logging, preferred for host apps):

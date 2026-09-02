@@ -46,10 +46,14 @@ from britecore_sdk.api.api_calls import get_api_client
 # Import the domain module (recommended)
 from britecore_sdk.api.api_calls.v2 import policies, contacts, quotes
 
-# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+# Compatibility path: lazy shared-client fallback
 client = get_api_client()
 result = policies.retrieve_policy(policy_number="POL-001")
 ```
+
+> For new integrations, prefer explicit client construction plus `client=`
+> wrapper arguments (or scoped `use_api_client(...)`). The lazy shared-client
+> pattern remains for compatibility and is part of the `v3.0.0` deprecation path.
 
 ### Fluent one-liner + context manager
 

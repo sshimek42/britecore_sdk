@@ -342,12 +342,16 @@ britecore-normalize-json --kind contact --input .\contact.raw.json --output .\co
 from britecore_sdk.api.api_calls import get_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
-# Recommended: Use the lazy-initialized client (auto-loads config on first use)
+# Compatibility path: lazy shared-client fallback
 client = get_api_client()
 
 result = policies.retrieve_policy(policy_number="POL001")
 print(result)
 ```
+
+> For new code, prefer explicit client construction and `client=` wrapper
+> arguments. Implicit shared-client fallback is maintained for compatibility and
+> is tracked in the `v3.0.0` deprecation plan.
 
 ### Alternative: fluent one-liner + context manager
 
