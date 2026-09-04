@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Check out the Dependabot branch so we can push lockfile updates.
           ref: ${{ github.head_ref }}
