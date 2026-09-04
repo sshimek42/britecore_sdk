@@ -6,6 +6,13 @@ name: Docs
   pull_request:
     branches: [master, main, develop]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-docs:
     runs-on: ubuntu-latest
@@ -31,12 +38,23 @@ jobs:
         run: |
           python -m sphinx -b dummy docs docs/_build/dummy
 
+      - name: Validate documentation links
+        run: |
+          python -m sphinx -b linkcheck docs docs/_build/linkcheck
+
       - name: Upload docs build artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: docs-dummy-build
           path: docs/_build/dummy
+
+      - name: Upload linkcheck report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docs-linkcheck
+          path: docs/_build/linkcheck
 
       - name: Trigger Read the Docs build
         if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && env.READTHEDOCS_BUILD_HOOK_URL != ''

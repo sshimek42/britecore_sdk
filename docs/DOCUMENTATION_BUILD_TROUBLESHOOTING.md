@@ -15,6 +15,9 @@ Before pushing documentation changes:
 # Install dev dependencies
 pip install -e ".[dev]"
 
+# One-command docs QA (strict HTML + linkcheck)
+python scripts/docs_qa.py
+
 # Test 1: Run full pre-commit suite (runs locally before commits)
 pre-commit run --all-files
 
@@ -26,6 +29,9 @@ pymarkdown --config .pymarkdown scan README.md GETTING_STARTED.md
 
 # Test 4: Quick validation of key files
 python src/britecore_sdk/utils/check_markdown_structure.py
+
+# Test 5: Validate links across all documentation pages
+python -m sphinx -b linkcheck ./docs ./docs/_build/linkcheck
 ```
 
 If all tests pass, your changes are ready to commit and push.

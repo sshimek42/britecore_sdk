@@ -11,6 +11,12 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- Added `CODEOWNERS` and a dedicated `Release Smoke` GitHub Actions workflow to enforce lightweight pre-release checks (unit marker suite, integration marker suite, package build, and release compliance script).
+
+- Added a path-filtered `Docs Only PR Checks` GitHub Actions workflow (`.github/workflows/docs-only.yml`) to run focused docs QA for docs/root-markdown PRs.
+
+- Added `docs/RELEASE_HOTFIX_TEMPLATE.md` for emergency break-glass patch release records (incident context, tagged commit traceability, validation evidence, rollback plan, and follow-up PR tracking).
+
 - Planned for `2.5.x`: add a lightweight `britecore-quick-check` CLI mode set (`--syntax`, `--connectivity`, `--full`) for one-command environment readiness checks.
 
 - Planned for `2.5.x`: add response helper utilities for common API payload patterns (data extraction, pagination envelopes, and batch result normalization).
@@ -18,6 +24,12 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Planned for `2.5.x`: expand structured logging categories to make auth, HTTP, rate-limit, cache, and configuration events easier to filter in production logs.
 
 ### Changed
+
+- Updated `docs/RELEASE_OPERATIONS_CHECKLIST.md` and pull request template release gates so release PRs explicitly confirm docs checklist completion and release operations sign-off.
+
+- Tightened release governance policy across `CONTRIBUTING.md`, `docs/RELEASE_OPERATIONS_CHECKLIST.md`, and `.github/workflows/release-smoke.yml` so patch/minor/major releases must come from merged PRs by default, with emergency patch no-PR flow only when an annotated tag message includes `[break-glass]` and a follow-up PR is recorded.
+
+- Added branch-protection admin runbook guidance (`Settings -> Branches`) in `docs/RELEASE_OPERATIONS_CHECKLIST.md` and mirrored workflow-name/required-check drift reminders in `AGENTS.md` and `AGENTS.quickstart.md`.
 
 - Planned for `2.5.x`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
 
