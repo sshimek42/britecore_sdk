@@ -25,10 +25,10 @@
 ## Release PR checklist (required when cutting a release)
 
 - [ ] Not a release PR, or I selected the release type below:
-  - [ ] Patch (`vX.Y.Z+1`)
-  - [ ] Minor (`vX.Y+1.0`)
-  - [ ] Major (`vX+1.0.0`)
-  - [ ] Prerelease (`-rc`, `-beta`, etc.)
+  - [ ] Patch (for example, `v1.2.4`)
+  - [ ] Minor (for example, `v1.3.0`)
+  - [ ] Major (for example, `v2.0.0`)
+  - [ ] Prerelease (for example, `v1.2.4-rc.1`, `v1.2.4-beta.1`, etc.)
 - [ ] Not a release PR, or I completed `docs/DOCUMENTATION_RELEASE_CHECKLIST.md`
 - [ ] Not a release PR, or I completed `docs/RELEASE_OPERATIONS_CHECKLIST.md`
 - [ ] Not a release PR, or tag/version/changelog are aligned (`vX.Y.Z`, `pyproject.toml`, `CHANGELOG.md`)

@@ -112,26 +112,34 @@ jobs:
             });
 
             const pulls = response.data || [];
-            core.info(`Release type: ${releaseType}; previous tag: ${previousTag}; break-glass marker: ${breakGlass}; associated PR count: ${pulls.length}`);
+            const mergedPulls = pulls.filter(pr => Boolean(pr.merged_at));
+            core.info(`Release type: ${releaseType}; previous tag: ${previousTag}; break-glass marker: ${breakGlass}; associated PR count: ${pulls.length}; merged PR count: ${mergedPulls.length}`);
 
-            if (['major', 'minor', 'prerelease'].includes(releaseType) && pulls.length === 0) {
-              core.setFailed(`Release policy violation: ${releaseType} tags must point to a commit associated with a merged PR.`);
+            if (['major', 'minor', 'prerelease'].includes(releaseType) && mergedPulls.length === 0) {
+              core.setFailed(`Release policy violation: ${releaseType} tags must point to a commit associated with at least one merged PR.`);
               return;
             }
 
-            if (releaseType === 'patch' && pulls.length === 0 && !breakGlass) {
-              core.setFailed('Release policy violation: patch tags without associated PR require an annotated tag message containing [break-glass].');
+            if (releaseType === 'patch' && mergedPulls.length === 0 && !breakGlass) {
+              if (pulls.length > 0) {
+                core.setFailed('Release policy violation: patch tags with only open/unmerged PR associations still require a merged PR or an annotated tag message containing [break-glass].');
+              } else {
+                core.setFailed('Release policy violation: patch tags without a merged PR association require an annotated tag message containing [break-glass].');
+              }
               return;
             }
 
-            if (releaseType === 'patch' && pulls.length === 0 && breakGlass) {
-              core.warning('Emergency break-glass patch tag detected without associated PR. Open a follow-up PR immediately for auditability.');
+            if (releaseType === 'patch' && mergedPulls.length === 0 && breakGlass) {
+              core.warning('Emergency break-glass patch tag detected without a merged PR association. Open a follow-up PR immediately for auditability.');
               return;
             }
 
-            if (pulls.length > 0) {
+            if (mergedPulls.length > 0) {
+              const refs = mergedPulls.map(pr => `#${pr.number}`).join(', ');
+              core.notice(`Tag commit is associated with merged PR(s): ${refs}`);
+            } else if (pulls.length > 0) {
               const refs = pulls.map(pr => `#${pr.number}`).join(', ');
-              core.notice(`Tag commit is associated with PR(s): ${refs}`);
+              core.notice(`Tag commit is associated with open/unmerged PR(s): ${refs}`);
             }
 
 

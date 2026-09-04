@@ -18,7 +18,7 @@ This checklist is intentionally complementary to:
 
 ## PR Policy by Release Type
 
-- **Major (`X+1.0.0`), minor (`X.Y+1.0`), and patch (`X.Y.Z+1`) releases:** require a merged PR before tagging.
+- **Major, minor, and patch releases:** require a merged PR before tagging. Use concrete tag examples such as `v2.0.0` (major), `v1.3.0` (minor), and `v1.2.4` (patch).
 - **Break-glass patch exception:** direct patch tag is only for urgent production incidents.
 - **Explicit break-glass marker:** use an **annotated tag** with `[break-glass]` in the tag message for no-PR emergency patch releases.
 - **Audit trail requirement:** record incident context using `docs/RELEASE_HOTFIX_TEMPLATE.md` and open a follow-up PR for auditability.

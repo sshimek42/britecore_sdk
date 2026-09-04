@@ -426,5 +426,5 @@ logging.getLogger("britecore_sdk").setLevel(logging.WARNING)  # See backoff mess
 ## See Also
 
 - [BriteCore API guide](./API.md) for authentication modes and endpoint conventions
-- [Configuration Management](../CONFIG_MANAGEMENT.md) for settings file hierarchy
+- [Configuration Management](./CONFIG_MANAGEMENT.md) for settings file hierarchy
 - [Troubleshooting](../TROUBLESHOOTING.md) for common issues
