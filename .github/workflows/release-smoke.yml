@@ -1,0 +1,153 @@
+name: Release Smoke
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: release-smoke-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-smoke:
+    name: Release smoke checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Determine release bump type
+        id: release_type
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          import subprocess
+
+          tag = os.environ.get("GITHUB_REF_NAME", "")
+          semver = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)$", tag)
+
+          if not semver:
+              release_type = "prerelease"
+              previous_tag = "none"
+          else:
+              current = tuple(int(x) for x in semver.groups())
+              tags = subprocess.check_output(["git", "tag", "--list", "v*.*.*"], text=True).splitlines()
+              versions = []
+              for item in tags:
+                  m = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)$", item.strip())
+                  if m and item.strip() != tag:
+                      versions.append((tuple(int(x) for x in m.groups()), item.strip()))
+
+              previous = [v for v in versions if v[0] < current]
+              if not previous:
+                  release_type = "major"
+                  previous_tag = "none"
+              else:
+                  prev_version, prev_tag = max(previous, key=lambda t: t[0])
+                  previous_tag = prev_tag
+                  if current[0] > prev_version[0]:
+                      release_type = "major"
+                  elif current[1] > prev_version[1]:
+                      release_type = "minor"
+                  elif current[2] > prev_version[2]:
+                      release_type = "patch"
+                  else:
+                      release_type = "unknown"
+
+          tag_contents = ""
+          try:
+              tag_contents = subprocess.check_output(
+                  ["git", "for-each-ref", f"refs/tags/{tag}", "--format=%(contents)"],
+                  text=True,
+              ).strip()
+          except Exception:
+              tag_contents = ""
+
+          break_glass = bool(re.search(r"\[break-glass\]", tag_contents, flags=re.IGNORECASE))
+
+          print(f"release_type={release_type}")
+          print(f"previous_tag={previous_tag}")
+          print(f"break_glass={str(break_glass).lower()}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as fh:
+              fh.write(f"release_type={release_type}\n")
+              fh.write(f"previous_tag={previous_tag}\n")
+              fh.write(f"break_glass={str(break_glass).lower()}\n")
+          PY
+
+      - name: Enforce PR policy for release tags
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const releaseType = `${{ steps.release_type.outputs.release_type }}`;
+            const previousTag = `${{ steps.release_type.outputs.previous_tag }}`;
+            const breakGlass = `${{ steps.release_type.outputs.break_glass }}` === 'true';
+            const { owner, repo } = context.repo;
+            const commit_sha = context.sha;
+
+            const response = await github.request('GET /repos/{owner}/{repo}/commits/{commit_sha}/pulls', {
+              owner,
+              repo,
+              commit_sha,
+              mediaType: { previews: ['groot'] }
+            });
+
+            const pulls = response.data || [];
+            core.info(`Release type: ${releaseType}; previous tag: ${previousTag}; break-glass marker: ${breakGlass}; associated PR count: ${pulls.length}`);
+
+            if (['major', 'minor', 'prerelease'].includes(releaseType) && pulls.length === 0) {
+              core.setFailed(`Release policy violation: ${releaseType} tags must point to a commit associated with a merged PR.`);
+              return;
+            }
+
+            if (releaseType === 'patch' && pulls.length === 0 && !breakGlass) {
+              core.setFailed('Release policy violation: patch tags without associated PR require an annotated tag message containing [break-glass].');
+              return;
+            }
+
+            if (releaseType === 'patch' && pulls.length === 0 && breakGlass) {
+              core.warning('Emergency break-glass patch tag detected without associated PR. Open a follow-up PR immediately for auditability.');
+              return;
+            }
+
+            if (pulls.length > 0) {
+              const refs = pulls.map(pr => `#${pr.number}`).join(', ');
+              core.notice(`Tag commit is associated with PR(s): ${refs}`);
+            }
+
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Unit tests (release smoke)
+        run: python -m pytest tests/unit -m unit -v --no-cov
+
+      - name: Integration tests (release smoke)
+        run: python -m pytest tests/integration -m integration -v --no-cov
+
+      - name: Build distribution
+        run: python -m build
+
+      - name: Release compliance check
+        run: pwsh -File ./scripts/release_compliance_check.ps1

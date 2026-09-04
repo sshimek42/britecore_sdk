@@ -20,6 +20,8 @@ The SDK is designed to support multi-tenancy through:
 > **Direction of travel:** Explicit `client=` usage and scoped `use_api_client(...)`
 > are the recommended multi-site patterns. Module-level fallback/reset flows remain
 > available for compatibility but are tracked in the deprecation plan for `v3.0.0`.
+> Where a wrapper does not yet expose a `client=` argument directly, use
+> `use_api_client(...)` to scope calls to the intended client.
 
 ---
 
@@ -64,13 +66,13 @@ api_client = get_api_client()  # Back to production
 
 ---
 
-## Pattern 2: Explicit Inline Credentials + `use_api_client` (Recommended)
+## Pattern 2: Explicit Inline Credentials + Scoped `use_api_client` (Recommended)
 
 Pass credentials directly to `init_api_client()` — each call creates a new configured client. Best for concurrent multi-site operations.
 
 ```python
 from britecore_sdk.api.api_calls import init_api_client, use_api_client
-from britecore_sdk.api.api_calls.v2 import policies, contacts
+from britecore_sdk.api.api_calls.v2 import policies
 
 # Function to get a client for any site
 def get_site_client(site_name: str, base_url: str, api_key: str):
@@ -125,6 +127,7 @@ Use `BritecoreAPIClient` context manager for guaranteed resource cleanup. Best f
 
 ```python
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.api.api_calls import use_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 
 sites = {
@@ -138,7 +141,8 @@ for site_name, (base_url, api_key) in sites.items():
         base_url=base_url,
         api_key=api_key
     ) as client:
-        result = policies.retrieve_policy(policy_number="POL001")
+        with use_api_client(client):
+            result = policies.retrieve_policy(policy_number="POL001")
         print(f"{site_name} (via context manager): {result}")
     # urllib3 PoolManager auto-closed on exit
 ```
@@ -162,6 +166,7 @@ For background services/workers, maintain a registry of pre-initialized clients.
 
 ```python
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+from britecore_sdk.api.api_calls import use_api_client
 from britecore_sdk.api.api_calls.v2 import policies
 import threading
 from typing import Dict
@@ -205,7 +210,8 @@ registry = SiteClientRegistry()
 def process_policy_updates(site_name: str, base_url: str, api_key: str):
     """Background worker that periodically calls an API."""
     client = registry.get_or_create(site_name, base_url, api_key)
-    result = policies.retrieve_policy(policy_number="POL001")
+    with use_api_client(client):
+        result = policies.retrieve_policy(policy_number="POL001")
     print(f"Processed: {result['data']['policy_number']}")
 
 # Cleanup on shutdown
@@ -295,12 +301,18 @@ client = get_api_client()
 ### 1. Use Explicit Credentials for Independent Sites
 
 ```python
-# ✅ Good: Each site is independent
+# ✅ Good: Each site is independent and scoped per call
+from britecore_sdk.api.api_calls import init_api_client, use_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
 prod_client = init_api_client("prod", base_url="...", api_key="...")
 staging_client = init_api_client("staging", base_url="...", api_key="...")
 
-result1 = policies.retrieve_policy(policy_number="POL001")  # Uses prod_client
-result2 = policies.retrieve_policy(policy_number="POL002")  # Uses staging_client
+with use_api_client(prod_client):
+    result1 = policies.retrieve_policy(policy_number="POL001")
+
+with use_api_client(staging_client):
+    result2 = policies.retrieve_policy(policy_number="POL002")
 ```
 
 ### 2. Store Credentials in Environment Variables or Secure Vaults
@@ -319,8 +331,11 @@ prod_client = init_api_client(
 
 ```python
 # ✅ Good: Guaranteed cleanup
+from britecore_sdk.api.api_calls import use_api_client
+
 with BritecoreAPIClient("prod").init_client(...) as client:
-    result = policies.retrieve_policy(...)
+    with use_api_client(client):
+        result = policies.retrieve_policy(...)
 # Pool closed, no leaks
 
 # ❌ Avoid: Manual cleanup
@@ -352,7 +367,8 @@ logger = logging.getLogger(__name__)
 for site_name, creds in sites.items():
     client = init_api_client(site_name, ...)
     logger.info(f"Processing site: {site_name}", extra={"site": site_name})
-    result = policies.retrieve_policy(...)
+    with use_api_client(client):
+        result = policies.retrieve_policy(...)
     logger.info(f"Result for {site_name}: {result['data']}", extra={"site": site_name})
 ```
 
@@ -360,20 +376,24 @@ for site_name, creds in sites.items():
 
 ## Concurrent Multi-Tenancy with Async
 
-For concurrent operations across sites, use async wrappers with independent clients:
+For concurrent operations across sites, use independent `AsyncBritecoreAPIClient` instances per site:
 
 ```python
 import asyncio
 from britecore_sdk.api.britecore_async_api_client import AsyncBritecoreAPIClient
-from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
 
 async def fetch_policy_for_site(site_name: str, base_url: str, api_key: str, policy_num: str):
     """Fetch a policy from one site (concurrent-safe)."""
-    async with AsyncBritecoreAPIClient(site_name).init_client(
+    async with AsyncBritecoreAPIClient(
+        target_site=site_name,
         base_url=base_url,
-        api_key=api_key
+        api_key=api_key,
     ) as client:
-        result = await aretrieve_policy(policy_number=policy_num)
+        request_result = await client.ado_request(
+            path="/api/v2/policies/retrieve_policy",
+            json={"policy_number": policy_num},
+        )
+        result = await client.aprocess_result(request_result)
         return site_name, result
 
 async def main():
@@ -401,7 +421,7 @@ asyncio.run(main())
 
 ```python
 import pytest
-from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls import init_api_client, use_api_client
 
 @pytest.fixture
 def prod_client():
@@ -428,8 +448,11 @@ def test_policy_lookup_across_sites(prod_client, staging_client):
     from britecore_sdk.api.api_calls.v2 import policies
 
     # Dry-run calls — no network, just payload shapes
-    prod_result = policies.retrieve_policy(policy_number="POL001")
-    staging_result = policies.retrieve_policy(policy_number="POL001")
+    with use_api_client(prod_client):
+        prod_result = policies.retrieve_policy(policy_number="POL001")
+
+    with use_api_client(staging_client):
+        staging_result = policies.retrieve_policy(policy_number="POL001")
 
     assert prod_result["dry_run"] is True
     assert staging_result["dry_run"] is True
@@ -471,8 +494,11 @@ reset_api_client()  # Clear before switching sites
 
 ```python
 # Use context manager for cleanup
+from britecore_sdk.api.api_calls import use_api_client
+
 with BritecoreAPIClient("site").init_client(...) as client:
-    result = policies.retrieve_policy(...)
+    with use_api_client(client):
+        result = policies.retrieve_policy(...)
 # Cleanup happens automatically
 ```
 
@@ -482,13 +508,17 @@ with BritecoreAPIClient("site").init_client(...) as client:
 
 **Solution:**
 
-```python
+```toml
 # Ensure target_site matches a section in settings.toml / .secrets.toml
-[staging]  # This is the section name
+[staging]
 base_url = "..."
 api_key = "..."
+```
 
-# Set target_site to match
+```python
+import os
+
+# Set target_site to match the settings section name
 os.environ["target_site"] = "staging"
 ```
 
@@ -496,6 +526,6 @@ os.environ["target_site"] = "staging"
 
 ## See Also
 
-- [CONFIG_MANAGEMENT.md](../CONFIG_MANAGEMENT.md) — Configuration file hierarchy
-- [docs/OBSERVABILITY.md](OBSERVABILITY.md) — Logging across multiple sites
-- [GETTING_STARTED.md](../GETTING_STARTED.md) — Initial setup
+- [CONFIG_MANAGEMENT.md](./CONFIG_MANAGEMENT.md) — Configuration file hierarchy
+- [OBSERVABILITY.md](./OBSERVABILITY.md) — Logging across multiple sites
+- [GETTING_STARTED.md](./GETTING_STARTED.md) — Initial setup

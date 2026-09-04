@@ -265,12 +265,35 @@ Quality gates run in CI:
 
 Use this checklist when cutting a release to keep Git tags, GitHub releases, and PyPI in sync.
 
+- **PR governance by release type:**
+  - **Major, minor, and patch releases:** must be cut from a merged pull request (no direct tag from an unreviewed commit).
+  - **Emergency patch exception (break-glass only):** if an urgent production incident requires direct tagging, use an **annotated tag** with `[break-glass]` in the tag message and open a follow-up PR immediately to capture the diff and rationale.
+
 - [ ] Confirm `project.version` in `pyproject.toml` is the exact target version (for example `2.4.6`).
 - [ ] Confirm `CHANGELOG.md` has a matching section header `## [X.Y.Z] - YYYY-MM-DD`.
+- [ ] Complete `docs/DOCUMENTATION_RELEASE_CHECKLIST.md` (docs version mentions, release notes links, and cross-doc links).
+- [ ] Complete `docs/RELEASE_OPERATIONS_CHECKLIST.md` (compatibility, runtime checks, packaging, security/compliance).
+- [ ] If break-glass patch process is used, complete `docs/RELEASE_HOTFIX_TEMPLATE.md` and link it in the follow-up PR.
 - [ ] Push a SemVer tag in `vX.Y.Z` format (or prerelease like `vX.Y.Z-rc.1`).
 - [ ] Verify `.github/workflows/release.yml` passes (it validates tag format + tag/version parity before creating the GitHub release).
 - [ ] Verify `.github/workflows/publish.yml` runs after the CI-created release and publishes to PyPI.
 - [ ] If manual publish is required, run `Publish to PyPI` via `workflow_dispatch` from a tag ref and set `release-tag` to the same tag value.
+
+### Recommended branch protection settings (`main`)
+
+Configure GitHub branch protection so repository settings match the release policy above:
+
+- [ ] Require a pull request before merging.
+- [ ] Require at least 1 approving review.
+- [ ] Require status checks to pass before merging.
+- [ ] Include these required checks: `build-docs`, `Docs-only QA`, `Release smoke checks`, `test (3.11, false)`, `quality (3.11)`, and `lint`.
+- [ ] Dismiss stale PR approvals when new commits are pushed.
+- [ ] Require branches to be up to date before merging.
+- [ ] Restrict who can push to matching branches (or disable direct pushes).
+- [ ] Do not allow force pushes.
+- [ ] Do not allow deletions.
+
+> **Tip:** For emergency patch releases, use the documented break-glass tag process, then merge the follow-up PR to `main` as soon as possible.
 
 ### Documentation validation
 

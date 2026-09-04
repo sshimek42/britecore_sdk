@@ -1,6 +1,6 @@
 # AGENTS Quickstart
 
-*Last updated: September 2, 2026*
+*Last updated: September 4, 2026*
 *Document type: Development workflow guide*
 
 Quick reference for SDK contributors: essential repository patterns and conventions.
@@ -32,3 +32,7 @@ For full guidance, see `AGENTS.md`.
 - Edit authored code in `src/britecore_sdk/` and tests in `tests/`; avoid direct edits in generated paths like `build/`, `dist/`, `.venv/`, `htmlcov/`, and `docs/_build/`.
 - Keep root docs as canonical when mirrored by docs includes (currently `PYTHON_COMPATIBILITY.md` and `UNIMPLEMENTED_API_STUBS.md`), and let `docs/*.md` include those files.
 - Keep dependency/version definitions in `pyproject.toml` as the single source of truth.
+- For docs-related changes, run `python scripts/docs_qa.py` before handoff so strict build and linkcheck both pass.
+- For release PRs, complete `docs/DOCUMENTATION_RELEASE_CHECKLIST.md` and include sign-off details in the PR notes.
+- For release PRs, also complete `docs/RELEASE_OPERATIONS_CHECKLIST.md` for non-doc release validation.
+- When renaming workflows in `.github/workflows/`, call out branch-protection required-check name updates in PR notes (see `docs/RELEASE_OPERATIONS_CHECKLIST.md`).

@@ -1,0 +1,13 @@
+# Default owner for repository changes
+* @sshimek42
+
+# Release-critical metadata and automation
+/pyproject.toml @sshimek42
+/CHANGELOG.md @sshimek42
+/.github/workflows/* @sshimek42
+/scripts/release_compliance_check.ps1 @sshimek42
+
+# Documentation governance and release checklists
+/docs/** @sshimek42
+/AGENTS.md @sshimek42
+/AGENTS.quickstart.md @sshimek42

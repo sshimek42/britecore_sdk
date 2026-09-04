@@ -297,6 +297,24 @@ This repo is the authoritative SDK documentation set. Use it for installation, a
 | **Security policy** | [SECURITY.md](./SECURITY.md) |
 | **Ecosystem map** | [britecore_docs repo](https://github.com/sshimek42/britecore_docs) |
 
+### Docs QA before PRs
+
+Before opening a docs-heavy PR, run the one-command docs QA script:
+
+```bash
+python scripts/docs_qa.py
+```
+
+Equivalent manual commands (if you want to run each step separately):
+
+```bash
+python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
+python -m sphinx -b linkcheck ./docs ./docs/_build/linkcheck
+```
+
+For common failures and fixes, see
+[docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md](./docs/DOCUMENTATION_BUILD_TROUBLESHOOTING.md).
+
 ## Installation & Configuration
 
 ### Requirements

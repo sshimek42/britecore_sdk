@@ -25,6 +25,13 @@ on:
   schedule:
     - cron: '0 6 * * 1'
 
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     if: github.event_name != 'schedule' && !(github.event_name == 'workflow_dispatch' && inputs.run-weekly == true)

@@ -1,0 +1,53 @@
+name: Docs Only PR Checks
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-only-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-only-checks:
+    name: Docs-only QA
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect docs-impacting changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            docs:
+              - 'docs/**'
+              - '*.md'
+              - 'scripts/docs_qa.py'
+              - 'pyproject.toml'
+
+      - name: Set up Python
+        if: steps.changes.outputs.docs == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install docs dependencies
+        if: steps.changes.outputs.docs == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[docs]"
+
+      - name: Run strict docs QA
+        if: steps.changes.outputs.docs == 'true'
+        run: python scripts/docs_qa.py
+
+      - name: Skip docs QA when no docs-impacting files changed
+        if: steps.changes.outputs.docs != 'true'
+        run: echo "No docs-impacting file changes detected; docs-only QA skipped."

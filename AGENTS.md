@@ -1,6 +1,6 @@
 # AGENTS.md
 
-*Last updated: September 2, 2026*
+*Last updated: September 4, 2026*
 *Document type: Development workflow guide*
 
 For developers working on the SDK: understand repository structure, coding patterns, and architectural decisions.
@@ -91,6 +91,25 @@ python -m sphinx -W --keep-going -b html .\docs .\docs\_build\html-strict
 ```bash
 python -m sphinx -W --keep-going -b html ./docs ./docs/_build/html-strict
 ```
+
+- When documentation changes are part of a PR, run the full docs QA flow (strict build + linkcheck)
+  before handoff:
+
+```powershell
+python scripts\docs_qa.py
+```
+
+```bash
+python scripts/docs_qa.py
+```
+
+- For release-related PRs, complete and reference `docs/DOCUMENTATION_RELEASE_CHECKLIST.md`
+  (version mentions, cross-doc links, and release-doc sign-offs).
+- For release-related PRs, also complete `docs/RELEASE_OPERATIONS_CHECKLIST.md`
+  (API compatibility, runtime checks, packaging, and compliance gates).
+- When changing workflow names under `.github/workflows/`, flag potential branch-protection drift and
+  call out required-check name updates in your PR notes (see branch protection runbook in
+  `docs/RELEASE_OPERATIONS_CHECKLIST.md`).
 
 ## Logging
 
