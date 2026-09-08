@@ -45,6 +45,8 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 - Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
 
+- Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
+
 ### Fixed
 
 - Planned for `2.5.x`: reduce remaining high-confidence `type: ignore` suppressions by tightening type signatures and overload coverage in shared API entry points.
