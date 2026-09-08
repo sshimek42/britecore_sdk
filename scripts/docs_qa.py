@@ -16,7 +16,7 @@ def _run(cmd: list[str], cwd: Path) -> None:
 
 
 def main() -> int:
-    """Parse CLI args and run strict docs checks, returning process exit code."""
+    """Parse CLI options and run strict docs build checks."""
     parser = argparse.ArgumentParser(
         description="Run documentation QA checks used before PRs.",
     )
