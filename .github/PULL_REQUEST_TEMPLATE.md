@@ -40,7 +40,18 @@
 - [ ] Not applicable, or this PR is the required follow-up PR after a break-glass patch release
 - [ ] Not applicable, or incident/ticket is linked in the PR description
 - [ ] Not applicable, or completed hotfix record is linked: `docs/RELEASE_HOTFIX_TEMPLATE.md`
+- [ ] Not applicable, or `docs/HOTFIX_CONTINGENCY_2_4_x.md` was followed for patch prep/validation
 - [ ] Not applicable, or tag message included `[break-glass]` and the tag is referenced here
+
+## `release/2.4.x` patch PR checklist (required for `2.4.x` hotfixes)
+
+- [ ] Not applicable, or base branch is `release/2.4.x`
+- [ ] Not applicable, or only required hotfix commits were cherry-picked
+- [ ] Not applicable, or `pyproject.toml` version was bumped (for example `2.4.9`)
+- [ ] Not applicable, or `CHANGELOG.md` includes the matching `2.4.x` patch entry
+- [ ] Not applicable, or unit tests for touched behavior pass locally
+- [ ] Not applicable, or package build smoke check passes (`python -m build`)
+- [ ] Not applicable, or rollback plan is described in PR notes
 
 ## Testing notes
 

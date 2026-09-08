@@ -1,6 +1,6 @@
 # Solo Maintainer Merge Procedure
 
-*Last updated: September 4, 2026*
+*Last updated: September 8, 2026*
 *Document type: Operational runbook*
 
 Use this guide when you are the only maintainer on the repository and a pull request is otherwise ready to merge, but branch protection still requires an approval from another reviewer.
@@ -38,15 +38,21 @@ If you prefer a reusable wrapper, run:
 python scripts/check_pr_human_reviewers.py OWNER REPO PR_NUMBER --count
 ```
 
+The helper now computes this count from a single API snapshot to avoid race conditions between separate list/count calls.
+
 If you are the only human maintainer and you want the helper to submit the approval for you, run:
 
 ```powershell
 python scripts/check_pr_human_reviewers.py OWNER REPO PR_NUMBER --approve-if-solo-human
 ```
 
+Approval preflight behavior is based on each reviewer's latest review state (for example, `APPROVED` or `CHANGES_REQUESTED`) rather than mixed historical rows.
+
 Use this as a preflight check: if the PR has only one human reviewer available and you are operating as the sole maintainer, proceed with the temporary approval relaxation steps below for the merge window only.
 
 > **Note:** GitHub blocks self-approval on your own pull request. For self-authored branches, use the temporary approval-relaxation path below or merge with admin privileges after the checks are green.
+
+> **Note:** If the helper encounters malformed `gh` JSON output, it exits with a clear error instead of continuing with partial data.
 
 ---
 
