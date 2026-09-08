@@ -1,6 +1,6 @@
 # Release Operations Checklist
 
-*Last updated: September 4, 2026*
+*Last updated: September 8, 2026*
 *Document type: Integration guide*
 
 Use this checklist for each release candidate and final release to reduce non-doc regressions in packaging, runtime behavior, and release automation.
@@ -27,21 +27,29 @@ This checklist is intentionally complementary to:
 
 ## GitHub Admin Runbook: Branch Protection
 
-Use this when configuring or auditing protection for the default branch (`master` in this repo at time of writing; use `main` if renamed).
+Use this when configuring or auditing protection for the default branch (`master` in this repo at time of writing; use `main` if renamed) and the maintained release branches (`release/2.4.x`, `release/2.5.x`).
 
 1. Open repository settings: **Settings -> Branches -> Add branch protection rule**.
-2. Set branch name pattern to the default branch (`master` currently).
-3. Enable and save the following controls:
+2. Set branch name pattern to one of the managed branches listed below.
+3. Enable and save the baseline controls for each branch:
    - **Require a pull request before merging**
-   - **Require approvals** (minimum: 1)
-   - **Dismiss stale pull request approvals when new commits are pushed**
    - **Require status checks to pass before merging**
    - **Require branches to be up to date before merging**
-   - **Restrict who can push to matching branches** (or disable direct pushes)
    - **Do not allow force pushes**
    - **Do not allow deletions**
+4. Confirm direct pushes are disabled (or restricted to explicit release maintainers).
 
-Recommended required checks (current status context names):
+### Baseline Rule Matrix
+
+| Branch pattern | Required approvals | Stale approval dismissal | Conversation resolution | Notes |
+| --- | --- | --- | --- | --- |
+| `master` (or `main`) | 1+ | Enabled | Enabled | Default branch baseline. |
+| `release/2.4.x` | 1+ | Enabled | Enabled | Maintenance/hotfix lane; optimize for controlled and fast patch response. |
+| `release/2.5.x` | 2+ (recommended) | Enabled | Enabled | Active development lane; prefer stronger review depth. |
+
+### Required Status Checks (Recommended)
+
+Set required checks using current workflow status names:
 
 - `build-docs`
 - `Docs-only QA`
@@ -51,6 +59,76 @@ Recommended required checks (current status context names):
 - `lint`
 
 > **Note:** Keep check names in sync with workflow names in `.github/workflows/` when workflows are renamed.
+
+### Branch-Specific Guidance
+
+- **`release/2.4.x`:** restrict merge permissions to release maintainers; treat as patch-only line and avoid batching unrelated changes.
+- **`release/2.5.x`:** require full CI gate parity with default branch and use CODEOWNERS review where applicable.
+- **Emergency exception path:** if an incident requires a break-glass tag without PR merge, complete `docs/RELEASE_HOTFIX_TEMPLATE.md` and `docs/HOTFIX_CONTINGENCY_2_4_x.md` immediately after the release.
+
+### Copy/Paste PR Description: Release Branch Protection Rollout
+
+Use this when opening the governance PR that applies or audits branch protection for `release/2.4.x` and `release/2.5.x`.
+
+```markdown
+## Summary
+
+Apply and verify branch protection for release maintenance branches.
+
+- Target branches: `release/2.4.x`, `release/2.5.x`
+- Goal: enforce PR-only merges, required checks, and deletion/force-push safeguards.
+
+## Scope
+
+- [ ] Configure `release/2.4.x` branch protection rule
+- [ ] Configure `release/2.5.x` branch protection rule
+- [ ] Verify required status checks map to active workflow names
+- [ ] Document any temporary exceptions
+
+## GitHub UI Checklist (`release/2.4.x`)
+
+- [ ] Require a pull request before merging
+- [ ] Require at least 1 approval
+- [ ] Dismiss stale approvals when new commits are pushed
+- [ ] Require conversation resolution before merging
+- [ ] Require status checks to pass before merging
+- [ ] Require branches to be up to date before merging
+- [ ] Restrict who can push (release maintainers only)
+- [ ] Do not allow force pushes
+- [ ] Do not allow deletions
+
+## GitHub UI Checklist (`release/2.5.x`)
+
+- [ ] Require a pull request before merging
+- [ ] Require at least 2 approvals (or 1 if team policy exception)
+- [ ] Dismiss stale approvals when new commits are pushed
+- [ ] Require conversation resolution before merging
+- [ ] Require status checks to pass before merging
+- [ ] Require branches to be up to date before merging
+- [ ] Restrict who can push (release maintainers only)
+- [ ] Do not allow force pushes
+- [ ] Do not allow deletions
+
+## Required Checks
+
+- [ ] `build-docs`
+- [ ] `Docs-only QA`
+- [ ] `Release smoke checks`
+- [ ] `test (3.11, false)`
+- [ ] `quality (3.11)`
+- [ ] `lint`
+
+## Validation Evidence
+
+- [ ] Screenshot or exported rule summary for `release/2.4.x`
+- [ ] Screenshot or exported rule summary for `release/2.5.x`
+- [ ] One PR merge test confirms rules apply as expected
+
+## Notes
+
+- Link runbook: `docs/RELEASE_OPERATIONS_CHECKLIST.md`
+- Link patch runbook: `docs/HOTFIX_CONTINGENCY_2_4_x.md`
+```
 
 ---
 
@@ -159,6 +237,7 @@ Release operations checklist sign-off for vX.Y.Z
 - [CONTRIBUTING.md](../CONTRIBUTING.md)
 - [DOCUMENTATION_RELEASE_CHECKLIST](./DOCUMENTATION_RELEASE_CHECKLIST.md)
 - [RELEASE_HOTFIX_TEMPLATE](./RELEASE_HOTFIX_TEMPLATE.md)
+- [HOTFIX_CONTINGENCY_2_4_x](./HOTFIX_CONTINGENCY_2_4_x.md)
 - [DEPRECATION.md](../DEPRECATION.md)
 - [SECURITY.md](../SECURITY.md)
 - [STABILITY.md](../STABILITY.md)

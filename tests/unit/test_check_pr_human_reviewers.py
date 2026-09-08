@@ -17,24 +17,16 @@ def test_summarize_reviews_counts_unique_humans_and_approvals() -> None:
             if (
                 "--jq" in cmd
                 and cmd[-1]
-                == '.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}'
+                == '[.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}]'
             ):
                 return CompletedProcess(
                     cmd,
                     0,
-                    stdout=(
-                        '{"reviewer":"alice","state":"APPROVED"}\n'
-                        '{"reviewer":"alice","state":"COMMENTED"}\n'
-                        '{"reviewer":"bob","state":"COMMENTED"}\n'
-                    ),
+                    stdout='[{"reviewer":"alice","state":"COMMENTED"},'
+                    '{"reviewer":"alice","state":"APPROVED"},'
+                    '{"reviewer":"bob","state":"COMMENTED"}]\n',
                     stderr="",
                 )
-            if (
-                "--jq" in cmd
-                and cmd[-1]
-                == '[.[] | select(.user.type == "User") | .user.login] | unique | length'
-            ):
-                return CompletedProcess(cmd, 0, stdout="2\n", stderr="")
         if cmd[:3] == ["gh", "pr", "view"]:
             return CompletedProcess(cmd, 0, stdout="bob\n", stderr="")
         raise AssertionError(f"Unexpected command: {cmd!r}")
@@ -57,15 +49,9 @@ def test_main_auto_approves_when_no_human_reviewers_are_present() -> None:
             if (
                 "--jq" in cmd
                 and cmd[-1]
-                == '.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}'
+                == '[.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}]'
             ):
-                return CompletedProcess(cmd, 0, stdout="", stderr="")
-            if (
-                "--jq" in cmd
-                and cmd[-1]
-                == '[.[] | select(.user.type == "User") | .user.login] | unique | length'
-            ):
-                return CompletedProcess(cmd, 0, stdout="0\n", stderr="")
+                return CompletedProcess(cmd, 0, stdout="[]\n", stderr="")
         if cmd[:3] == ["gh", "api", "user"]:
             return CompletedProcess(cmd, 0, stdout="alice\n", stderr="")
         if cmd[:3] == ["gh", "pr", "view"]:
@@ -91,23 +77,15 @@ def test_main_refuses_auto_approval_when_multiple_humans_are_present() -> None:
             if (
                 "--jq" in cmd
                 and cmd[-1]
-                == '.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}'
+                == '[.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}]'
             ):
                 return CompletedProcess(
                     cmd,
                     0,
-                    stdout=(
-                        '{"reviewer":"alice","state":"COMMENTED"}\n'
-                        '{"reviewer":"bob","state":"APPROVED"}\n'
-                    ),
+                    stdout='[{"reviewer":"alice","state":"COMMENTED"},'
+                    '{"reviewer":"bob","state":"APPROVED"}]\n',
                     stderr="",
                 )
-            if (
-                "--jq" in cmd
-                and cmd[-1]
-                == '[.[] | select(.user.type == "User") | .user.login] | unique | length'
-            ):
-                return CompletedProcess(cmd, 0, stdout="2\n", stderr="")
         if cmd[:3] == ["gh", "api", "user"]:
             return CompletedProcess(cmd, 0, stdout="alice\n", stderr="")
         if cmd[:3] == ["gh", "pr", "view"]:
@@ -131,15 +109,9 @@ def test_main_skips_auto_approval_for_self_authored_pr() -> None:
             if (
                 "--jq" in cmd
                 and cmd[-1]
-                == '.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}'
+                == '[.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}]'
             ):
-                return CompletedProcess(cmd, 0, stdout="", stderr="")
-            if (
-                "--jq" in cmd
-                and cmd[-1]
-                == '[.[] | select(.user.type == "User") | .user.login] | unique | length'
-            ):
-                return CompletedProcess(cmd, 0, stdout="0\n", stderr="")
+                return CompletedProcess(cmd, 0, stdout="[]\n", stderr="")
         if cmd[:3] == ["gh", "api", "user"]:
             return CompletedProcess(cmd, 0, stdout="alice\n", stderr="")
         if cmd[:3] == ["gh", "pr", "view"]:
@@ -151,3 +123,26 @@ def test_main_skips_auto_approval_for_self_authored_pr() -> None:
 
     assert exit_code == 2
     assert not any(cmd[:3] == ["gh", "pr", "review"] for cmd in commands)
+
+
+@pytest.mark.unit
+def test_parse_args_rejects_non_positive_pr_number() -> None:
+    with pytest.raises(SystemExit):
+        reviewers.parse_args(["acme", "widget", "0"])
+
+
+@pytest.mark.unit
+def test_main_returns_2_for_malformed_review_json(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    def fake_run(cmd, check, capture_output, text):
+        if cmd[:3] == ["gh", "api", "repos/acme/widget/pulls/42/reviews"]:
+            return CompletedProcess(cmd, 0, stdout="{bad-json", stderr="")
+        raise AssertionError(f"Unexpected command: {cmd!r}")
+
+    with patch.object(reviewers.subprocess, "run", side_effect=fake_run):
+        exit_code = reviewers.main(["acme", "widget", "42", "--count"])
+
+    captured = capsys.readouterr()
+    assert exit_code == 2
+    assert "error:" in captured.err
