@@ -52,10 +52,15 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 **Goal:** Start migration enablement for `v3.0.0`.
 
 - Emit `DeprecationWarning` on deprecated runtime paths by default.
-  - Status: started for legacy global lifecycle helpers and implicit wrapper fallback paths.
+- Status: started for legacy global lifecycle helpers, implicit wrapper fallback paths, and legacy batch alias key output when `include_legacy_keys=True`.
 - Publish migration guidance for explicit client usage patterns.
 - Expand troubleshooting docs for deprecation-related diagnostics.
+- Status: initial migration guide published (`docs/MIGRATION_2_4_to_2_5.md`) and troubleshooting deprecation section expanded.
 - Add tests that assert warning behavior and migration-safe alternatives.
+- Status: response helper utilities landed for extraction/pagination/batch normalization under `britecore_sdk.api.response_helpers`.
+- Status: structured logging expansion now covers auth token lifecycle, HTTP request lifecycle, config discovery/load paths, cache lifecycle, and rate-limit state events tagged by category.
+- Status: async transport structured logging added for native httpx requests, cache operations, in-flight deduplication, and rate limiting in `AsyncBritecoreAPIClient`.
+- Status: observability documentation expanded with structured logging categories, event examples, and production monitoring patterns in `docs/OBSERVABILITY.md`.
 
 ### Phase C: `2.6.x` (8 to 10 weeks after `2.5.x`)
 

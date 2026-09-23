@@ -1,5 +1,6 @@
 """Wrapper for BriteCore API calls"""
 
+import logging
 import time
 import uuid
 from ast import literal_eval
@@ -39,6 +40,7 @@ from britecore_sdk.api.middleware import (
     WriteGuardMiddleware,
 )
 from britecore_sdk.api.rate_limiter import RateLimiter
+from britecore_sdk.base_logger import LogCategory, log_with_category
 from britecore_sdk.exceptions import BritecoreError
 from britecore_sdk.settings import settings
 from britecore_sdk.settings.defaults import DEFAULTS, calculate_long_timeout
@@ -1254,6 +1256,18 @@ class BritecoreAPIClient:
             method,
             path,
         )
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "HTTP request start",
+            LogCategory.HTTP,
+            event="http_request_start",
+            request_id=request_id,
+            method=method,
+            path=path,
+            auth_mode=auth_mode,
+            dry_run=effective_dry_run,
+        )
         # Attach correlation ID to outbound headers so it appears in server logs
         resolved_request_headers["X-SDK-Request-ID"] = request_id
 
@@ -1403,12 +1417,29 @@ class BritecoreAPIClient:
                         timeout=self._timeout_seconds(request_timeout)
                     )
                     if rate_limit_delay > 0.001:  # Log only significant delays
+                        log_with_category(
+                            LOGGER,
+                            logging.DEBUG,
+                            "Rate limiter delayed outbound request",
+                            LogCategory.RATE_LIMIT,
+                            event="http_request_rate_limited",
+                            request_id=request_id,
+                            delay_seconds=round(rate_limit_delay, 6),
+                        )
                         LOGGER.debug(
                             "[%s] Rate limited: delayed %.3fs",
                             request_id,
                             rate_limit_delay,
                         )
                 except TimeoutError as rate_limit_timeout:
+                    log_with_category(
+                        LOGGER,
+                        logging.ERROR,
+                        "Rate limiter timeout before request dispatch",
+                        LogCategory.RATE_LIMIT,
+                        event="http_request_rate_limiter_timeout",
+                        request_id=request_id,
+                    )
                     LOGGER.error(
                         "[%s] Rate limiter timeout: %s",
                         request_id,
@@ -1434,6 +1465,15 @@ class BritecoreAPIClient:
             )
         except urlTimeoutError as timeout_error:
             _elapsed_ms = (time.monotonic() - _start) * 1000
+            log_with_category(
+                LOGGER,
+                logging.ERROR,
+                "HTTP request timeout",
+                LogCategory.HTTP,
+                event="http_request_timeout",
+                request_id=request_id,
+                elapsed_ms=round(_elapsed_ms, 3),
+            )
             LOGGER.error(
                 "[%s] ✗ timeout after %.1fms — %s",
                 request_id,
@@ -1458,6 +1498,16 @@ class BritecoreAPIClient:
             RequestError,
         ) as request_error:
             _elapsed_ms = (time.monotonic() - _start) * 1000
+            log_with_category(
+                LOGGER,
+                logging.ERROR,
+                "HTTP request transport error",
+                LogCategory.HTTP,
+                event="http_request_error",
+                request_id=request_id,
+                elapsed_ms=round(_elapsed_ms, 3),
+                error_type=type(request_error).__name__,
+            )
             LOGGER.error(
                 "[%s] ✗ request error after %.1fms — %s",
                 request_id,
@@ -1483,6 +1533,16 @@ class BritecoreAPIClient:
             raise self._apply_error_middleware(empty_result_exception, request_ctx)
 
         _elapsed_ms = (time.monotonic() - _start) * 1000
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "HTTP request completed",
+            LogCategory.HTTP,
+            event="http_request_complete",
+            request_id=request_id,
+            status_code=getattr(request_result, "status", None),
+            elapsed_ms=round(_elapsed_ms, 3),
+        )
         LOGGER.debug(
             "[%s] ← HTTP %s  %.1fms",
             request_id,

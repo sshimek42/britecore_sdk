@@ -1460,6 +1460,8 @@ pip install -e ".[dev]"
 
 **See:** [DEPRECATION.md](./DEPRECATION.md) and [CHANGELOG.md](./CHANGELOG.md)
 
+**Primary migration guide:** [docs/MIGRATION_2_4_to_2_5.md](./docs/MIGRATION_2_4_to_2_5.md)
+
 **Quick checklist:**
 
 - [ ] Update package: `pip install --upgrade britecore_sdk`
@@ -1467,6 +1469,50 @@ pip install -e ".[dev]"
 - [ ] Review `DEPRECATION.md` for active deprecations and removal targets
 - [ ] Prefer explicit `client=` wrapper usage for new code paths
 - [ ] Test configuration: Run `britecore-healthcheck`
+
+---
+
+### I'm seeing `DeprecationWarning` in `2.5.x` - what should I change?
+
+`2.5.x` emits runtime `DeprecationWarning` for migration-signaling paths that remain backwards compatible in this major version.
+
+**Current warning surfaces:**
+
+- Implicit wrapper fallback when `client=` is omitted
+- Global lifecycle helpers used as a primary app pattern (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`)
+- Legacy batch alias keys (`quote_id`/`quote_data`, `contact_id`/`contact_data`) when `include_legacy_keys=True`
+
+**Recommended fixes:**
+
+1. Create explicit client instances at startup and pass `client=` to wrappers/workflows.
+2. For sync transitional migration, use `use_api_client(...)` scope instead of module-global lifecycle resets.
+3. Update batch result consumers to canonical `id`/`data` keys and set `include_legacy_keys=False`.
+
+**Fail fast in CI to catch migration gaps:**
+
+```bash
+pytest -W error::DeprecationWarning
+```
+
+**Temporarily surface all warnings locally while migrating:**
+
+```bash
+pytest -W always::DeprecationWarning
+```
+
+**If you must suppress warnings temporarily (short-term only):**
+
+```python
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    category=DeprecationWarning,
+    module=r"britecore_sdk\.api\.workflows",
+)
+```
+
+Long-term recommendation: remove suppressions and migrate usage before `v3.0.0` removals.
 
 ---
 

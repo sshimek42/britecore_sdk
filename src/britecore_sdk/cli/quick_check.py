@@ -129,17 +129,18 @@ Examples:
         """,
     )
 
-    parser.add_argument(
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
         "--syntax",
         action="store_true",
         help="Check configuration syntax only (no API calls)",
     )
-    parser.add_argument(
+    mode_group.add_argument(
         "--connectivity",
         action="store_true",
         help="Check connectivity to API endpoint",
     )
-    parser.add_argument(
+    mode_group.add_argument(
         "--full",
         action="store_true",
         help="Full health check including authentication (default if no options given)",

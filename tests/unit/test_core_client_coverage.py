@@ -121,6 +121,25 @@ class TestProcessResultStatusCodes:
         assert exc_info.value.retry_after == 30
 
     @pytest.mark.unit
+    def test_429_with_invalid_retry_after_records_none_on_rate_limiter(self):
+        client = self._make_minimal_client()
+        client.rate_limiter = MagicMock()
+
+        resp = _make_response(
+            b"",
+            status=429,
+            reason="Too Many Requests",
+            headers={"Retry-After": "soon"},
+        )
+        with pytest.raises(BritecoreError.RateLimitError) as exc_info:
+            client.process_result(resp)
+
+        assert exc_info.value.retry_after is None
+        client.rate_limiter.record_rate_limit_response.assert_called_once_with(
+            retry_after=None
+        )
+
+    @pytest.mark.unit
     def test_500_raises_server_error(self):
         client = self._make_minimal_client()
 
@@ -544,6 +563,47 @@ class TestDoRequestExceptionMapping:
         result = client.do_request(path="/api/v2/test", json={"x": 1})
         assert result is response
 
+    @pytest.mark.unit
+    def test_do_request_rate_limiter_significant_delay_emits_event(
+        self, env_api_key, mock_settings
+    ):
+        """Significant limiter delays should emit structured rate-limited request events."""
+        client = self._initialized_client(mock_settings)
+        client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.return_value = 0.01
+        mock_resp = _make_response()
+
+        with (
+            patch.object(client.http, "request", return_value=mock_resp),
+            patch(
+                "britecore_sdk.api.britecore_api_client.log_with_category"
+            ) as mock_log,
+        ):
+            result = client.do_request("/api/v2/test", request_timeout=Timeout(total=5))
+
+        assert result is mock_resp
+        client.rate_limiter.acquire.assert_called_once_with(timeout=5)
+        events = [call.kwargs.get("event") for call in mock_log.call_args_list]
+        assert "http_request_rate_limited" in events
+
+    @pytest.mark.unit
+    def test_do_request_rate_limiter_timeout_raises_request_timeout_error(
+        self, env_api_key, mock_settings
+    ):
+        """Limiter timeout should map to RequestTimeoutError before outbound dispatch."""
+        client = self._initialized_client(mock_settings)
+        client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.side_effect = TimeoutError("busy")
+
+        with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+            client.do_request(
+                "/api/v2/test",
+                json={"password": "secret"},
+                request_timeout=Timeout(total=5),
+            )
+
+        assert exc_info.value.timeout_seconds == 5
+
 
 # ---------------------------------------------------------------------------
 # New exception types — standalone unit tests
@@ -846,6 +906,13 @@ class TestInstanceIsolation:
 
 class TestBritecoreAPIClientAdditional:
     """Additional targeted tests for BritecoreAPIClient uncovered logic."""
+
+    @pytest.mark.unit
+    def test_timeout_seconds_returns_none_when_timeout_has_no_numeric_values(self):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        timeout = Timeout(total=None, connect=None, read=None)
+        assert BritecoreAPIClient._timeout_seconds(timeout) is None
 
     @pytest.mark.unit
     def test_init_missing_api_key_and_oauth(self):

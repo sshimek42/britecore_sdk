@@ -850,6 +850,52 @@ class TestRequestContextAttachedToExceptions:
         # In debug mode the api_key is NOT redacted
         assert body.get("api_key") == "test-key"
 
+    @pytest.mark.unit
+    def test_do_request_emits_structured_http_start_and_complete_events(self):
+        """Successful do_request emits start/complete HTTP structured events."""
+        from unittest.mock import MagicMock, patch
+
+        client = self._make_client()
+        mock_http = MagicMock()
+        mock_response = MagicMock()
+        mock_response.status = 200
+        mock_response.headers = {}
+        mock_response.data = b"{}"
+        mock_http.request.return_value = mock_response
+        client.http = mock_http
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.log_with_category"
+        ) as mock_log:
+            client.do_request("/api/v2/policies", json={"policy_number": "P123"})
+
+        events = [call.kwargs.get("event") for call in mock_log.call_args_list]
+        assert "http_request_start" in events
+        assert "http_request_complete" in events
+
+    @pytest.mark.unit
+    def test_do_request_timeout_emits_structured_http_timeout_event(self):
+        """Timeout path emits a structured http_request_timeout event."""
+        from unittest.mock import MagicMock, patch
+
+        from urllib3.exceptions import TimeoutError as urlTimeoutError
+
+        from britecore_sdk.exceptions import BritecoreError
+
+        client = self._make_client()
+        mock_http = MagicMock()
+        mock_http.request.side_effect = urlTimeoutError("timed out")
+        client.http = mock_http
+
+        with patch(
+            "britecore_sdk.api.britecore_api_client.log_with_category"
+        ) as mock_log:
+            with pytest.raises(BritecoreError.RequestTimeoutError):
+                client.do_request("/api/v2/policies", json={"policy_number": "P123"})
+
+        events = [call.kwargs.get("event") for call in mock_log.call_args_list]
+        assert "http_request_timeout" in events
+
     # ------------------------------------------------------------------
     # process_result: request_id extracted from dry-run response headers
     # ------------------------------------------------------------------

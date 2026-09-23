@@ -18,6 +18,7 @@ This site is the canonical technical documentation for the SDK itself. If you ne
 - **"How do I...?"** → [Common Patterns](COMMON_PATTERNS)
 - **"How do I configure...?"** → [Configuration](../../CONFIG_MANAGEMENT.md)
 - **"Something broke"** → [Troubleshooting](../../TROUBLESHOOTING.md)
+- **"I'm seeing DeprecationWarning messages"** → [2.5.x migration guide](MIGRATION_2_4_to_2_5)
 - **"I'm upgrading from v1"** → [Migration Guide](MIGRATION_v1_to_v2)
 - **"I need an endpoint reference"** → [API Reference](api_reference)
 - **"How does this fit in the wider BriteCore stack?"** → [britecore_docs](https://github.com/sshimek42/britecore_docs)
@@ -86,6 +87,7 @@ DOCUMENTATION_BUILD_TROUBLESHOOTING
 DOCUMENTATION_RELEASE_CHECKLIST
 RELEASE_OPERATIONS_CHECKLIST
 RELEASE_HOTFIX_TEMPLATE
+HOTFIX_CONTINGENCY_2_4_x
 SOLO_MAINTAINER_MERGE_PROCEDURE
 ```
 
@@ -101,6 +103,7 @@ Developer workflow <AGENTS>
 :maxdepth: 1
 :caption: Reference & Migration
 
+MIGRATION_2_4_to_2_5
 MIGRATION_v1_to_v2
 POST_PROBING
 ENDPOINT_VERIFICATION_2026-04-28

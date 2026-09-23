@@ -39,6 +39,23 @@ class ReviewSummary:
     rows: list[ReviewRow]
     count: int
     approvals: int
+    latest_state_by_reviewer: dict[str, str]
+
+
+def _positive_int(value: str) -> int:
+    """Argparse type for strictly positive integers."""
+    parsed = int(value)
+    if parsed <= 0:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return parsed
+
+
+def _non_negative_int(value: str) -> int:
+    """Argparse type for integers >= 0."""
+    parsed = int(value)
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be >= 0")
+    return parsed
 
 
 def _run_gh_api(owner: str, repo: str, pr_number: int, jq_expr: str) -> str:
@@ -62,14 +79,39 @@ def _run_gh_command(cmd: list[str]) -> str:
 
 
 def _parse_review_rows(output: str) -> list[ReviewRow]:
-    """Parse newline-delimited JSON review rows from gh api output."""
+    """Parse review rows from gh api output (JSON array or NDJSON)."""
     rows: list[ReviewRow] = []
     if not output:
         return rows
 
-    for line in output.splitlines():
-        payload = json.loads(line)
-        rows.append(ReviewRow(reviewer=payload["reviewer"], state=payload["state"]))
+    def _coerce_row(payload: object, *, source: str) -> ReviewRow:
+        if not isinstance(payload, dict):
+            raise ValueError(f"invalid review row from {source}: expected object")
+        reviewer = payload.get("reviewer")
+        state = payload.get("state")
+        if not isinstance(reviewer, str) or not reviewer:
+            raise ValueError(f"invalid review row from {source}: missing reviewer")
+        if not isinstance(state, str) or not state:
+            raise ValueError(f"invalid review row from {source}: missing state")
+        return ReviewRow(reviewer=reviewer, state=state)
+
+    # Prefer array output for consistency, but keep NDJSON compatibility.
+    try:
+        parsed = json.loads(output)
+    except json.JSONDecodeError:
+        parsed = None
+
+    if isinstance(parsed, list):
+        return [_coerce_row(payload, source="json-array") for payload in parsed]
+
+    for idx, line in enumerate(output.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"invalid review JSON on line {idx}: {exc.msg}") from exc
+        rows.append(_coerce_row(payload, source=f"line {idx}"))
 
     return rows
 
@@ -77,16 +119,25 @@ def _parse_review_rows(output: str) -> list[ReviewRow]:
 def summarize_reviews(owner: str, repo: str, pr_number: int) -> ReviewSummary:
     """Return human-review rows and the unique human-reviewer count."""
     list_expr = (
-        '.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}'
+        '[.[] | select(.user.type == "User") | {reviewer: .user.login, state: .state}]'
     )
-    count_expr = '[.[] | select(.user.type == "User") | .user.login] | unique | length'
 
     output = _run_gh_api(owner, repo, pr_number, list_expr)
     rows = _parse_review_rows(output)
-    count_text = _run_gh_api(owner, repo, pr_number, count_expr)
-    count = int(count_text or "0")
-    approvals = sum(1 for row in rows if row.state == "APPROVED")
-    return ReviewSummary(rows=rows, count=count, approvals=approvals)
+    latest_state_by_reviewer: dict[str, str] = {}
+    for row in rows:
+        latest_state_by_reviewer[row.reviewer] = row.state
+
+    count = len(latest_state_by_reviewer)
+    approvals = sum(
+        1 for state in latest_state_by_reviewer.values() if state == "APPROVED"
+    )
+    return ReviewSummary(
+        rows=rows,
+        count=count,
+        approvals=approvals,
+        latest_state_by_reviewer=latest_state_by_reviewer,
+    )
 
 
 def _current_user_login() -> str:
@@ -112,19 +163,23 @@ def _pr_author_login(owner: str, repo: str, pr_number: int) -> str:
     )
 
 
-def approve_if_solo_human(owner: str, repo: str, pr_number: int) -> bool:
+def approve_if_solo_human(
+    owner: str,
+    repo: str,
+    pr_number: int,
+    summary: ReviewSummary | None = None,
+) -> bool:
     """Approve the PR if there are no other human reviewers to defer to."""
-    summary = summarize_reviews(owner, repo, pr_number)
+    if summary is None:
+        summary = summarize_reviews(owner, repo, pr_number)
     current_login = _current_user_login()
     author_login = _pr_author_login(owner, repo, pr_number)
-    human_reviewers = {row.reviewer for row in summary.rows}
+    human_reviewers = set(summary.latest_state_by_reviewer)
 
     if current_login == author_login:
         raise ValueError("GitHub blocks self-approval on your own pull request")
 
-    if current_login in {
-        row.reviewer for row in summary.rows if row.state == "APPROVED"
-    }:
+    if summary.latest_state_by_reviewer.get(current_login) == "APPROVED":
         return True
 
     if human_reviewers and human_reviewers != {current_login}:
@@ -143,7 +198,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("owner", help="Repository owner/org login.")
     parser.add_argument("repo", help="Repository name.")
-    parser.add_argument("pr_number", type=int, help="Pull request number.")
+    parser.add_argument("pr_number", type=_positive_int, help="Pull request number.")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument(
         "--count",
@@ -157,7 +212,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--max-human-reviewers",
-        type=int,
+        type=_non_negative_int,
         default=None,
         help="Fail with exit code 1 if the unique human-reviewer count exceeds this limit.",
     )
@@ -178,6 +233,9 @@ def main(argv: list[str] | None = None) -> int:
         if stderr:
             print(stderr, file=sys.stderr)
         return exc.returncode or 1
+    except ValueError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
 
     if (
         args.max_human_reviewers is not None
@@ -191,7 +249,12 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.approve_if_solo_human:
         try:
-            approved = approve_if_solo_human(args.owner, args.repo, args.pr_number)
+            approved = approve_if_solo_human(
+                args.owner,
+                args.repo,
+                args.pr_number,
+                summary=summary,
+            )
         except FileNotFoundError:
             print("error: gh is not installed or not on PATH", file=sys.stderr)
             return 127
