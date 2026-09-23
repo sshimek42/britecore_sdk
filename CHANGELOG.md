@@ -29,6 +29,20 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [2.5.1] - 2026-09-23
+
+### Fixed
+
+- Hardened `scripts/check_release_smoke_policy.py` GitHub PR-association lookup by replacing generic URL-open calls with a fixed-host HTTPS client request to `api.github.com`, preserving explicit timeout handling while satisfying static security checks.
+
+### Changed
+
+- Updated release-facing version baselines in `pyproject.toml`, `README.md`, and `IMPROVEMENT_ROADMAP.md` for the `2.5.1` patch release flow.
+
+### Deprecated
+
+---
+
 ## [2.5.0] - 2026-09-23
 
 ### Added

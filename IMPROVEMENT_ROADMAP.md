@@ -1,7 +1,7 @@
 # BriteCore SDK Improvement Roadmap
 
 *Last updated: September 23, 2026*
-*Status: Active roadmap aligned to `v2.5.0` and `v3.0.0` deprecation planning*
+*Status: Active roadmap aligned to `v2.5.1` and `v3.0.0` deprecation planning*
 *Audience: Maintainers and contributors*
 
 ## Executive Summary
