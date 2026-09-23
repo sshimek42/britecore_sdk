@@ -281,7 +281,7 @@ def normalize_batch_results(response: Any) -> dict[str, Any]:
 
 
 def paginate(
-    client: BritecoreAPIClient,
+    _client: BritecoreAPIClient,
     endpoint_callable: Callable[..., Any],
     page_size: int = 50,
     max_pages: int | None = None,
@@ -293,7 +293,7 @@ def paginate(
     This helper automatically iterates through pages and yields individual items.
 
     Args:
-        client: The API client instance.
+        _client: The API client instance (kept for backward-compatible call shape).
         endpoint_callable: Endpoint wrapper function to call (e.g., list_policies).
         page_size: Items per page (default 50).
         max_pages: Maximum number of pages to fetch (None = no limit).
