@@ -563,6 +563,47 @@ class TestDoRequestExceptionMapping:
         result = client.do_request(path="/api/v2/test", json={"x": 1})
         assert result is response
 
+    @pytest.mark.unit
+    def test_do_request_rate_limiter_significant_delay_emits_event(
+        self, env_api_key, mock_settings
+    ):
+        """Significant limiter delays should emit structured rate-limited request events."""
+        client = self._initialized_client(mock_settings)
+        client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.return_value = 0.01
+        mock_resp = _make_response()
+
+        with (
+            patch.object(client.http, "request", return_value=mock_resp),
+            patch(
+                "britecore_sdk.api.britecore_api_client.log_with_category"
+            ) as mock_log,
+        ):
+            result = client.do_request("/api/v2/test", request_timeout=Timeout(total=5))
+
+        assert result is mock_resp
+        client.rate_limiter.acquire.assert_called_once_with(timeout=5)
+        events = [call.kwargs.get("event") for call in mock_log.call_args_list]
+        assert "http_request_rate_limited" in events
+
+    @pytest.mark.unit
+    def test_do_request_rate_limiter_timeout_raises_request_timeout_error(
+        self, env_api_key, mock_settings
+    ):
+        """Limiter timeout should map to RequestTimeoutError before outbound dispatch."""
+        client = self._initialized_client(mock_settings)
+        client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.side_effect = TimeoutError("busy")
+
+        with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+            client.do_request(
+                "/api/v2/test",
+                json={"password": "secret"},
+                request_timeout=Timeout(total=5),
+            )
+
+        assert exc_info.value.timeout_seconds == 5
+
 
 # ---------------------------------------------------------------------------
 # New exception types — standalone unit tests
