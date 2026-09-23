@@ -13,9 +13,19 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- Planned follow-up for `2.5.x`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
+
+- Clarified the forward migration narrative for `2.6.x` and `v3.0.0`: `v3.0.0` is a cleanup/standardization release that removes already-deprecated runtime patterns (implicit wrapper client fallback, global lifecycle helper pattern, and legacy batch alias keys) rather than redesigning core site/auth configuration behavior.
+
+- Added maintainer guidance that site/auth configuration concepts remain stable through `2.6.x -> v3.0.0` (`base_url`, API key credentials, and OAuth credentials), while post-`3.0.0` roadmap work emphasizes consistency, observability, and typed contracts.
+
 ### Fixed
 
+- Planned follow-up for `2.5.x`: reduce remaining high-confidence `type: ignore` suppressions by tightening type signatures and overload coverage in shared API entry points.
+
 ### Deprecated
+
+- Planned for `2.6.x`: publish strict deprecation-validation guidance so downstream CI can fail fast on `v3.0.0`-targeted deprecated paths before major-version upgrade.
 
 ---
 
@@ -49,15 +59,11 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 - Added branch-protection admin runbook guidance (`Settings -> Branches`) in `docs/RELEASE_OPERATIONS_CHECKLIST.md` and mirrored workflow-name/required-check drift reminders in `AGENTS.md` and `AGENTS.quickstart.md`.
 
-- Planned for `2.5.x`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
-
 - Started the `2.5.x` migration-signaling workstream by emitting `DeprecationWarning` on legacy global lifecycle helpers (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`), implicit wrapper fallback paths that omit explicit `client=`, and legacy batch alias key output (`quote_id`/`quote_data`, `contact_id`/`contact_data`) when `include_legacy_keys=True`.
 
 - Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
 
 ### Fixed
-
-- Planned for `2.5.x`: reduce remaining high-confidence `type: ignore` suppressions by tightening type signatures and overload coverage in shared API entry points.
 
 ### Deprecated
 

@@ -1,6 +1,6 @@
 # Deprecation Policy
 
-*Last updated: September 2, 2026*
+*Last updated: September 23, 2026*
 *Document type: Governance policy*
 
 For SDK users and maintainers: understand deprecation timelines, version support, and breaking change policies.
@@ -59,6 +59,15 @@ Implementation notes for maintainers:
 - Migration guide: `docs/MIGRATION_2_4_to_2_5.md` (explicit-client and canonical batch-key migration patterns).
 - `2.6.x`: offer strict-mode toggle that converts warnings to errors for migration testing.
 - `3.0.0`: remove deprecated paths and aliases; publish a migration guide under `docs/migrations/`.
+
+### Migration Positioning for `2.6.x` and `3.0.0`
+
+To keep external messaging consistent across `CHANGELOG.md`, `README.md`, and this policy:
+
+- `3.0.0` is a cleanup/standardization release that removes previously deprecated runtime usage patterns.
+- `2.6.x` is the intended migration-validation window (strict deprecation checks) before major-version removals.
+- Core site/auth configuration concepts remain stable across `2.6.x -> 3.0.0` (for example `base_url` plus API key or OAuth credentials).
+- Post-`3.0.0` roadmap work should emphasize consistency, observability, and typed contracts over disruptive auth/config contract changes.
 
 ---
 

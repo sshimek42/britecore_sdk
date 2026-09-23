@@ -18,13 +18,16 @@ Use this checklist for every SDK release (`vX.Y.Z`, including prereleases) to ke
 ### 2) Update release-facing docs
 
 - [ ] Update root `README.md` sections that mention the latest release/features.
+- [ ] Update `README.md` release/status banner text (for example `Stable (vX.Y.Z+)`) when the baseline changes.
 - [ ] Update `GETTING_STARTED.md` if install/setup guidance changed.
+- [ ] Update `IMPROVEMENT_ROADMAP.md` header/executive-summary version references when release baseline changes.
 - [ ] Update `CONFIG_MANAGEMENT.md` when env vars, settings files, or defaults changed.
 - [ ] Update any affected guide in `docs/` (for example `docs/MULTI_TENANCY.md`, `docs/DEPLOYMENT.md`, `docs/RATE_LIMITING.md`).
 
 ### 3) Verify version mentions and compatibility ranges
 
 - [ ] Search for stale version mentions in docs and update them when they are intended to track latest release.
+- [ ] Remove or move future-tense placeholders (for example "Planned for ...") out of finalized `CHANGELOG.md` release sections.
 - [ ] Confirm deprecation timelines in `DEPRECATION.md` still match the current roadmap and release plan.
 - [ ] Confirm migration guidance (for example `docs/MIGRATION_v1_to_v2.md`) still reflects current behavior.
 
@@ -57,6 +60,8 @@ python -m sphinx -b linkcheck .\docs .\docs\_build\linkcheck
 
 - [ ] Confirm docs changes are included in the release PR.
 - [ ] Confirm CI docs jobs pass (`docs.yml` including linkcheck artifact upload).
+- [ ] Confirm the tag-triggered `release.yml` docs gate passes (`scripts/verify_release_docs.py` + strict docs QA).
+- [ ] Confirm PRs that touch versioned docs or `pyproject.toml` pass the automated `docs-only.yml` release-docs verifier.
 - [ ] Add a short PR note: "Docs checklist completed for `vX.Y.Z`."
 
 ### 7) Role-based review ownership
