@@ -119,7 +119,7 @@ def _fetch_associated_pull_requests(
         # URL is constrained to https://api.github.com by the guard above.
         with urlopen(
             request, timeout=GITHUB_API_TIMEOUT_SECONDS
-        ) as response:  # skipcq BAN-B310
+        ) as response:  # noqa: S310
             payload = response.read().decode("utf-8")
     except HTTPError as exc:
         raise RuntimeError(
