@@ -1,5 +1,6 @@
 """Unit tests for batched quote creation helper in the workflows layer."""
 
+import warnings
 from unittest.mock import patch
 
 import pytest
@@ -66,6 +67,42 @@ class TestQuotesBatchEndpoints:
 
         assert "quote_id" not in batch_result["results"][0]
         assert "quote_data" not in batch_result["results"][0]
+
+    @pytest.mark.unit
+    def test_create_full_quotes_batch_warns_on_legacy_key_aliases(self):
+        """Batch helper emits deprecation warning when legacy quote aliases are included."""
+        from britecore_sdk.api.workflows import batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+
+        def _mock_create(payload, **kwargs):
+            return {"id": payload["number"]}, payload["number"]
+
+        with patch.object(batch_quotes, "create_full_quote", side_effect=_mock_create):
+            with warnings.catch_warnings(record=True) as recorded:
+                warnings.simplefilter("always", DeprecationWarning)
+                batch_quotes.create_full_quotes_batch(payloads)
+
+        assert any("quote_id/quote_data" in str(item.message) for item in recorded)
+
+    @pytest.mark.unit
+    def test_create_full_quotes_batch_no_warning_when_legacy_keys_disabled(self):
+        """Batch helper does not warn when legacy aliases are explicitly disabled."""
+        from britecore_sdk.api.workflows import batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+
+        def _mock_create(payload, **kwargs):
+            return {"id": payload["number"]}, payload["number"]
+
+        with patch.object(batch_quotes, "create_full_quote", side_effect=_mock_create):
+            with warnings.catch_warnings(record=True) as recorded:
+                warnings.simplefilter("always")
+                batch_quotes.create_full_quotes_batch(
+                    payloads, include_legacy_keys=False
+                )
+
+        assert not recorded
 
     @pytest.mark.unit
     def test_create_full_quotes_batch_partial_failure(self):

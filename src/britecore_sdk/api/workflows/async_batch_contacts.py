@@ -6,6 +6,7 @@ Endpoint wrappers for individual contact calls live in
 """
 
 import asyncio
+import warnings
 from typing import Any, Unpack
 
 from britecore_sdk import BritecoreError
@@ -13,6 +14,13 @@ from britecore_sdk.api.api_calls import AsyncBritecoreAPIClient, RequestParamete
 from britecore_sdk.api.api_calls.v2.async_contacts import anew_contact
 from britecore_sdk.api.workflows.batch_contacts import BatchContactCreateResult
 from britecore_sdk.models import BatchItemResult
+
+_DEPRECATION_REMOVAL_VERSION = "v3.0.0"
+_LEGACY_CONTACT_BATCH_KEYS_DEPRECATION = (
+    "Legacy batch result alias keys contact_id/contact_data are deprecated and will be "
+    f"removed in {_DEPRECATION_REMOVAL_VERSION}. Use id/data instead, or pass "
+    "include_legacy_keys=False to opt in to the canonical shape now."
+)
 
 
 def _with_legacy_contact_keys(
@@ -84,6 +92,12 @@ async def acreate_contacts_batch(
         )
     if max_concurrent < 1:
         raise ValueError("max_concurrent must be at least 1")
+    if include_legacy_keys:
+        warnings.warn(
+            _LEGACY_CONTACT_BATCH_KEYS_DEPRECATION,
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     results: list[BatchItemResult | None] = [None] * len(contacts_json)
     semaphore = asyncio.Semaphore(max_concurrent)

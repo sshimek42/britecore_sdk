@@ -1,6 +1,7 @@
 """Unit tests for async batch creation helpers (contacts, policies, risks)."""
 
 import asyncio
+import warnings
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -102,6 +103,59 @@ class TestAsyncContactsBatchEndpoints:
 
             assert "contact_id" not in result["results"][0]
             assert "contact_data" not in result["results"][0]
+
+        asyncio.run(_run())
+
+    @pytest.mark.unit
+    def test_acreate_contacts_batch_warns_on_legacy_key_aliases(self):
+        """Async batch helper emits warning when legacy contact aliases are included."""
+        from britecore_sdk.api.workflows import async_batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+
+        async def _mock_new_contact(name, address, **kwargs):
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        async def _run():
+            with patch.object(
+                async_batch_contacts,
+                "anew_contact",
+                new_callable=AsyncMock,
+                side_effect=_mock_new_contact,
+            ):
+                with warnings.catch_warnings(record=True) as recorded:
+                    warnings.simplefilter("always", DeprecationWarning)
+                    await async_batch_contacts.acreate_contacts_batch(payloads)
+            assert any(
+                "contact_id/contact_data" in str(item.message) for item in recorded
+            )
+
+        asyncio.run(_run())
+
+    @pytest.mark.unit
+    def test_acreate_contacts_batch_no_warning_when_legacy_keys_disabled(self):
+        """Async batch helper does not warn when legacy aliases are disabled."""
+        from britecore_sdk.api.workflows import async_batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+
+        async def _mock_new_contact(name, address, **kwargs):
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        async def _run():
+            with patch.object(
+                async_batch_contacts,
+                "anew_contact",
+                new_callable=AsyncMock,
+                side_effect=_mock_new_contact,
+            ):
+                with warnings.catch_warnings(record=True) as recorded:
+                    warnings.simplefilter("always")
+                    await async_batch_contacts.acreate_contacts_batch(
+                        payloads,
+                        include_legacy_keys=False,
+                    )
+            assert not recorded
 
         asyncio.run(_run())
 

@@ -87,12 +87,23 @@ class TestLoadClientSettings:
         from britecore_sdk.exceptions import BritecoreError
         from britecore_sdk.settings.config import LoadClientSettings
 
-        with patch("britecore_sdk.settings.config.settings") as mock_cfg:
+        with (
+            patch("britecore_sdk.settings.config.settings") as mock_cfg,
+            patch(
+                "britecore_sdk.settings.config.log_with_category"
+            ) as mock_structured_log,
+        ):
             mock_cfg.using_env.side_effect = RuntimeError("bad cfg")
             loader = LoadClientSettings("test_site")
 
             with pytest.raises(BritecoreError.ConfigurationError):
                 loader.load_config()
+
+            events = [
+                call.kwargs.get("event") for call in mock_structured_log.call_args_list
+            ]
+            assert "site_config_load_start" in events
+            assert "site_config_load_failed" in events
 
     @pytest.mark.unit
     def test_load_config_returns_settings_when_target_site_missing(self):
@@ -466,6 +477,20 @@ class TestDiscoverSettingsFiles:
 
         files = _discover_settings_files()
         assert missing not in files
+
+    @pytest.mark.unit
+    def test_discovery_logs_structured_config_events(self, tmp_path, monkeypatch):
+        """Discovery emits CONFIG events for missing env override and summary output."""
+        from britecore_sdk.settings.config import _discover_settings_files
+
+        missing = tmp_path / "missing.toml"
+        monkeypatch.setenv("BRITECORE_SDK_SETTINGS_FILE", str(missing))
+        with patch("britecore_sdk.settings.config.log_with_category") as mock_log:
+            _discover_settings_files()
+
+        events = [call.kwargs.get("event") for call in mock_log.call_args_list]
+        assert "settings_env_override_missing" in events
+        assert "settings_files_discovered" in events
 
     @pytest.mark.unit
     def test_env_var_not_set_excluded(self, monkeypatch):

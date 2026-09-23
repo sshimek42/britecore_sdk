@@ -500,7 +500,264 @@ def process_policy_in_workflow(policy_number: str, workflow_id: str = None):
 
 ---
 
-## Troubleshooting with Logs
+## Structured Logging with Categories (2.5.x+)
+
+*New in version 2.5.x*: The SDK emits structured logging events organized by category for better filtering and monitoring.
+
+### Log Categories
+
+The SDK organizes events into six categories:
+
+| Category | Events | Use Cases |
+|----------|--------|-----------|
+| **AUTH** | Token lifecycle (request, refresh, reuse, errors) | OAuth debugging, token issues |
+| **HTTP** | Request/response, timeouts, errors (sync & async) | Request tracing, latency analysis |
+| **RATE_LIMIT** | Rate limit delays, limiter timeouts | Rate limit monitoring, quota management |
+| **CACHE** | Cache hits, misses, writes, invalidations | Cache efficiency, TTL tuning |
+| **PERF** | Async in-flight request deduplication | Performance analysis, concurrency patterns |
+| **CONFIG** | Settings discovery, file load, hybrid mode | Configuration debugging |
+
+### Capturing Structured Events
+
+Enable debug logging and filter by category:
+
+```python
+import logging
+from britecore_sdk.base_logger import LogCategory
+
+# Configure SDK logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - [%(category)s] %(name)s - %(levelname)s - %(message)s'
+)
+
+# Create a filter for specific categories
+class CategoryFilter(logging.Filter):
+    def __init__(self, categories: list[str]):
+        self.categories = categories
+
+    def filter(self, record):
+        return hasattr(record, 'category') and record.category in self.categories
+
+# Monitor HTTP and CACHE events only
+http_logger = logging.getLogger("britecore_sdk")
+http_logger.addFilter(CategoryFilter([LogCategory.HTTP, LogCategory.CACHE]))
+```
+
+### Event Examples
+
+#### AUTH Events
+
+```python
+import logging
+from britecore_sdk.api.api_calls import init_api_client
+
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+# Initialize with OAuth
+client = init_api_client(
+    "production",
+    base_url="https://api.example.com",
+    client_id="id123",
+    client_secret="secret456"
+)
+
+# You'll see structured logs like:
+# [auth] oauth_token_request_start - request initiated
+# [auth] oauth_token_refresh_success - token acquired
+# [auth] oauth_token_reused - cached token used on next request
+```
+
+#### HTTP Events (Sync & Async)
+
+```python
+import logging
+from britecore_sdk.api.api_calls import init_async_api_client
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+async def get_policy():
+    await init_async_api_client()
+
+    # First request (httpx transport)
+    result = await aretrieve_policy(policy_number="POL001")
+
+    # Structured logs:
+    # [http] async_http_request_start - httpx transport initialized
+    # [http] async_http_request_complete - request succeeded in 45ms
+```
+
+#### CACHE Events
+
+```python
+import logging
+import asyncio
+from britecore_sdk.api.api_calls import AsyncBritecoreAPIClient
+from britecore_sdk.api.api_calls.v2.async_policies import aretrieve_policy
+
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+async def cache_demo():
+    client = AsyncBritecoreAPIClient()
+
+    # First call - cache miss
+    result1 = await client.ado_request(
+        path="/api/v2/policies",
+        method="GET",
+        cache_enabled=True,
+        cache_ttl_seconds=60,
+        cache_namespace="policies"
+    )
+    # [cache] async_cache_miss - no cached response
+
+    # Second call within TTL - cache hit
+    result2 = await client.ado_request(
+        path="/api/v2/policies",
+        method="GET",
+        cache_enabled=True,
+        cache_namespace="policies"
+    )
+    # [cache] async_cache_hit - returned cached response
+
+    await client.aclose()
+```
+
+#### PERF Events (Async In-Flight Deduplication)
+
+```python
+import logging
+import asyncio
+from britecore_sdk.api.api_calls import AsyncBritecoreAPIClient
+
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+async def inflight_demo():
+    """Concurrent requests to same endpoint show deduplication."""
+    client = AsyncBritecoreAPIClient()
+
+    # Two concurrent requests to same path
+    results = await asyncio.gather(
+        client.ado_request(
+            path="/api/v2/policies",
+            method="GET",
+            dedupe_in_flight=True
+        ),
+        client.ado_request(
+            path="/api/v2/policies",
+            method="GET",
+            dedupe_in_flight=True
+        )
+    )
+
+    # Structured logs:
+    # [perf] async_inflight_request_start - first request initiated
+    # [perf] async_inflight_request_dedupe - second request joins first
+    # Result: only one network request, two callers satisfied
+
+    await client.aclose()
+```
+
+#### CONFIG Events
+
+```python
+import logging
+from britecore_sdk.settings.config import load_site_config
+
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+# Load configuration
+config = load_site_config("production")
+
+# Structured logs:
+# [config] settings_files_discovered - config files located
+# [config] site_config_load_start - config load initiated
+# [config] site_config_hybrid_detected - hybrid auth mode (API key + OAuth)
+```
+
+#### RATE_LIMIT Events
+
+```python
+import logging
+from britecore_sdk.api.api_calls import init_api_client
+from britecore_sdk.api.api_calls.v2 import policies
+
+logging.getLogger("britecore_sdk").setLevel(logging.DEBUG)
+
+# Initialize with rate limiting enabled
+client = init_api_client(
+    "production",
+    base_url="https://api.example.com",
+    api_key="key123"
+)
+
+# Make many concurrent requests
+results = []
+for i in range(10):
+    try:
+        result = policies.retrieve_policy(policy_number=f"POL{i:03d}")
+        results.append(result)
+    except Exception as e:
+        pass
+
+# Structured logs show rate limiting:
+# [rate_limit] http_request_rate_limited - request delayed by rate limiter
+# [rate_limit] http_request_rate_limiter_timeout - limiter exhausted
+```
+
+### Filtering Logs by Category in Production
+
+For ELK Stack, Datadog, or Splunk integration:
+
+```python
+import logging
+import json
+from britecore_sdk.base_logger import LogCategory
+
+class StructuredLogFormatter(logging.Formatter):
+    """Format logs as JSON with category field for filtering."""
+
+    def format(self, record):
+        log_data = {
+            "timestamp": self.formatTime(record),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+            "category": getattr(record, 'category', 'default'),
+        }
+        # Include extra fields from structured logging
+        for key, value in record.__dict__.items():
+            if key not in ['name', 'msg', 'args', 'created', 'filename',
+                          'funcName', 'levelname', 'lineno', 'module',
+                          'msecs', 'message', 'pathname', 'process',
+                          'processName', 'relativeCreated', 'thread',
+                          'threadName', 'exc_info', 'exc_text', 'stack_info',
+                          'category']:
+                log_data[key] = value
+        return json.dumps(log_data)
+
+# Apply formatter
+logger = logging.getLogger("britecore_sdk")
+handler = logging.StreamHandler()
+handler.setFormatter(StructuredLogFormatter())
+logger.addHandler(handler)
+logger.setLevel(logging.DEBUG)
+```
+
+Then in your observability platform, filter queries:
+
+```bash
+# Datadog
+source:britecore_sdk category:http
+
+# ELK
+{"category": "auth"}
+
+# Splunk
+category=rate_limit
+```
+
+---
 
 ### "No output from SDK"
 

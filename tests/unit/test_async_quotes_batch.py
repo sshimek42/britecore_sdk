@@ -1,6 +1,7 @@
 """Unit tests for async batched quote creation in the workflows layer."""
 
 import asyncio
+import warnings
 from unittest.mock import AsyncMock, patch
 
 import pytest
@@ -176,6 +177,57 @@ class TestAsyncQuotesBatchEndpoints:
 
             assert "quote_id" not in batch_result["results"][0]
             assert "quote_data" not in batch_result["results"][0]
+
+        asyncio.run(_run_test())
+
+    @pytest.mark.unit
+    def test_acreate_full_quotes_batch_warns_on_legacy_key_aliases(self):
+        """Async batch helper emits warning when legacy quote aliases are included."""
+        from britecore_sdk.api.workflows import async_batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+
+        async def _mock_create(payload, **kwargs):
+            return {"id": payload["number"]}, payload["number"]
+
+        async def _run_test():
+            with patch.object(
+                async_batch_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
+            ):
+                with warnings.catch_warnings(record=True) as recorded:
+                    warnings.simplefilter("always", DeprecationWarning)
+                    await async_batch_quotes.acreate_full_quotes_batch(payloads)
+            assert any("quote_id/quote_data" in str(item.message) for item in recorded)
+
+        asyncio.run(_run_test())
+
+    @pytest.mark.unit
+    def test_acreate_full_quotes_batch_no_warning_when_legacy_keys_disabled(self):
+        """Async batch helper does not warn when legacy aliases are disabled."""
+        from britecore_sdk.api.workflows import async_batch_quotes
+
+        payloads = [{"number": "Q-001", "policy_type_id": "pt"}]
+
+        async def _mock_create(payload, **kwargs):
+            return {"id": payload["number"]}, payload["number"]
+
+        async def _run_test():
+            with patch.object(
+                async_batch_quotes,
+                "acreate_full_quote",
+                new_callable=AsyncMock,
+                side_effect=_mock_create,
+            ):
+                with warnings.catch_warnings(record=True) as recorded:
+                    warnings.simplefilter("always")
+                    await async_batch_quotes.acreate_full_quotes_batch(
+                        payloads,
+                        include_legacy_keys=False,
+                    )
+            assert not recorded
 
         asyncio.run(_run_test())
 

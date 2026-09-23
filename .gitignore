@@ -191,6 +191,7 @@ src/britecore_libraries/maps/*_map.py
 # Auto-generated diagrams
 *.svg
 # Temporary/generated files
+.tmp/
 .ptc_*.html
 .tmp-*.html
 markdownlint-*.txt

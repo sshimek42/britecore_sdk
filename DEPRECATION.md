@@ -55,7 +55,8 @@ Implementation notes for maintainers:
 
 - `2.4.7`: add changelog + docs notices and warning-capable code paths.
 - `2.5.x`: enable `DeprecationWarning` on deprecated runtime paths.
-  - Started for global lifecycle helpers and implicit wrapper fallback paths.
+  - Started for global lifecycle helpers, implicit wrapper fallback paths, and legacy batch alias keys when compatibility aliases are requested.
+- Migration guide: `docs/MIGRATION_2_4_to_2_5.md` (explicit-client and canonical batch-key migration patterns).
 - `2.6.x`: offer strict-mode toggle that converts warnings to errors for migration testing.
 - `3.0.0`: remove deprecated paths and aliases; publish a migration guide under `docs/migrations/`.
 
