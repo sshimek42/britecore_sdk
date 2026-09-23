@@ -269,13 +269,13 @@ Use this checklist when cutting a release to keep Git tags, GitHub releases, and
   - **Major, minor, and patch releases:** must be cut from a merged pull request (no direct tag from an unreviewed commit).
   - **Emergency patch exception (break-glass only):** if an urgent production incident requires direct tagging, use an **annotated tag** with `[break-glass]` in the tag message and open a follow-up PR immediately to capture the diff and rationale.
 
-- [ ] Confirm `project.version` in `pyproject.toml` is the exact target version (for example `2.4.6`).
+- [ ] Confirm `project.version` in `pyproject.toml` is the exact target version (for example `2.5.0`).
 - [ ] Confirm `CHANGELOG.md` has a matching section header `## [X.Y.Z] - YYYY-MM-DD`.
 - [ ] Complete `docs/DOCUMENTATION_RELEASE_CHECKLIST.md` (docs version mentions, release notes links, and cross-doc links).
 - [ ] Complete `docs/RELEASE_OPERATIONS_CHECKLIST.md` (compatibility, runtime checks, packaging, security/compliance).
 - [ ] If break-glass patch process is used, complete `docs/RELEASE_HOTFIX_TEMPLATE.md` and link it in the follow-up PR.
 - [ ] Push a SemVer tag in `vX.Y.Z` format (or prerelease like `vX.Y.Z-rc.1`).
-- [ ] Verify `.github/workflows/release.yml` passes (it validates tag format + tag/version parity before creating the GitHub release).
+- [ ] Verify `.github/workflows/release.yml` passes (it validates tag format + tag/version parity, runs release-docs verification, and builds the GitHub release).
 - [ ] Verify `.github/workflows/publish.yml` runs after the CI-created release and publishes to PyPI.
 - [ ] If manual publish is required, run `Publish to PyPI` via `workflow_dispatch` from a tag ref and set `release-tag` to the same tag value.
 
@@ -300,6 +300,11 @@ Configure GitHub branch protection so repository settings match the release poli
 When you change files under `docs/` or public-facing root Markdown files included in the docs build
 (for example `README.md`, `GETTING_STARTED.md`, `TROUBLESHOOTING.md`, `CHANGELOG.md`), run a strict
 Sphinx build locally before opening a PR. Read the Docs is configured to fail on warnings.
+
+PRs that touch release-facing docs or `pyproject.toml` also run the automated release-docs verifier in
+`docs-only.yml`, which checks that the versioned docs stay aligned with the tagged or released version.
+Locally, the pre-commit hook `release-docs` runs the same verifier when versioned docs or `pyproject.toml`
+are staged, so version bumps get caught before push.
 
 **Windows (PowerShell):**
 

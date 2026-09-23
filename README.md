@@ -1,6 +1,6 @@
 # britecore_sdk
 
-*Last updated: September 2, 2026*
+*Last updated: September 23, 2026*
 *Document type: Living guide*
 
 A production-ready **Python SDK for the BriteCore Insurance API**.
@@ -15,7 +15,7 @@ A production-ready **Python SDK for the BriteCore Insurance API**.
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![ReadTheDocs](https://app.readthedocs.org/projects/britecore-sdk/badge/?version=latest)](https://britecore-sdk.readthedocs.io/en/latest/)
 
-**Status:** Stable (v2.4.6+) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v2.5.0+) | **License:** Apache-2.0 | **Python:** 3.11+
 
 > Documentation ownership: `britecore_sdk` is the canonical source for SDK installation, auth, configuration, API usage, examples, and troubleshooting. The `britecore_docs` repo is the ecosystem map for repo boundaries, architecture, and cross-project workflows.
 
@@ -147,6 +147,18 @@ logger.info("SDK logger is configured")
 ---
 
 ## Migration Notes
+
+### `2.6.x` -> `v3.0.0` Direction
+
+`v3.0.0` is a cleanup and standardization release, not a redesign of the SDK's core site/auth configuration model.
+
+- `2.5.x` starts runtime deprecation signaling on legacy patterns.
+- `2.6.x` is the intended migration-validation window before major-version removals.
+- `v3.0.0` removes previously deprecated runtime surfaces (implicit wrapper client fallback, global lifecycle helper pattern, and legacy batch alias keys).
+
+Site/auth configuration concepts remain stable across this transition. Existing approaches centered on `base_url` plus API key or OAuth credentials remain supported.
+
+See `DEPRECATION.md` for timeline details and `docs/MIGRATION_2_4_to_2_5.md` for migration examples from prior versions.
 
 ## Lightweight Data Layer for Scripts
 

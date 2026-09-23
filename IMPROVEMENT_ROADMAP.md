@@ -1,12 +1,12 @@
 # BriteCore SDK Improvement Roadmap
 
-*Last updated: September 2, 2026*
-*Status: Active roadmap aligned to `v2.4.8` and `v3.0.0` deprecation planning*
+*Last updated: September 23, 2026*
+*Status: Active roadmap aligned to `v2.5.0` and `v3.0.0` deprecation planning*
 *Audience: Maintainers and contributors*
 
 ## Executive Summary
 
-`britecore_sdk` is stable and release-ready at `v2.4.8`. The near-term roadmap now shifts from the completed `2.4.x` hardening work into migration safety: introduce runtime deprecation signaling in `2.5.x`, provide strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
+`britecore_sdk` is stable and released at `v2.5.0`. The near-term roadmap now shifts from completed `2.5.0` deprecation signaling work into migration safety: continue strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
 
 This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For deprecation policy and removal commitments, use `DEPRECATION.md`.
 
@@ -65,6 +65,8 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 ### Phase C: `2.6.x` (8 to 10 weeks after `2.5.x`)
 
 **Goal:** Let integrators validate readiness before major-version removals.
+
+**Messaging source of truth:** Align all `2.6.x -> v3.0.0` external language to `DEPRECATION.md` under **Migration Positioning for `2.6.x` and `3.0.0`**.
 
 - Add strict-mode toggle to convert selected deprecation warnings into errors.
 - Provide compatibility test scenarios for explicit-client-only workflows.

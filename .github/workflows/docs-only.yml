@@ -31,6 +31,17 @@ jobs:
               - '*.md'
               - 'scripts/docs_qa.py'
               - 'pyproject.toml'
+            release_docs:
+              - 'README.md'
+              - 'CHANGELOG.md'
+              - 'DEPRECATION.md'
+              - 'GETTING_STARTED.md'
+              - 'IMPROVEMENT_ROADMAP.md'
+              - 'CONTRIBUTING.md'
+              - 'pyproject.toml'
+              - 'docs/DOCUMENTATION_RELEASE_CHECKLIST.md'
+              - 'docs/RELEASE_OPERATIONS_CHECKLIST.md'
+              - 'docs/MIGRATION_2_4_to_2_5.md'
 
       - name: Set up Python
         if: steps.changes.outputs.docs == 'true'
@@ -43,6 +54,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[docs]"
+
+      - name: Verify release-facing docs for versioned changes
+        if: steps.changes.outputs.release_docs == 'true'
+        run: python scripts/verify_release_docs.py
 
       - name: Run strict docs QA
         if: steps.changes.outputs.docs == 'true'
