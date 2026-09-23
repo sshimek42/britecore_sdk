@@ -11,6 +11,18 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+### Changed
+
+### Fixed
+
+### Deprecated
+
+---
+
+## [2.5.0] - 2026-09-23
+
+### Added
+
 - Added `CODEOWNERS` and a dedicated `Release Smoke` GitHub Actions workflow to enforce lightweight pre-release checks (unit marker suite, integration marker suite, package build, and release compliance script).
 
 - Added a path-filtered `Docs Only PR Checks` GitHub Actions workflow (`.github/workflows/docs-only.yml`) to run focused docs QA for docs/root-markdown PRs.
@@ -40,8 +52,6 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 - Planned for `2.5.x`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
 
 - Started the `2.5.x` migration-signaling workstream by emitting `DeprecationWarning` on legacy global lifecycle helpers (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`), implicit wrapper fallback paths that omit explicit `client=`, and legacy batch alias key output (`quote_id`/`quote_data`, `contact_id`/`contact_data`) when `include_legacy_keys=True`.
-
-- Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
 
 - Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
 
