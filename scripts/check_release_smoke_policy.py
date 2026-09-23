@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import http.client
 import json
 import os
 import re
@@ -13,9 +14,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.parse import quote
 
 EXACT_SEMVER_RE = re.compile(r"^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
 BREAK_GLASS_RE = re.compile(r"\[break-glass\]", flags=re.IGNORECASE)
@@ -102,10 +101,9 @@ def has_break_glass_marker(tag_contents: str) -> bool:
 def _fetch_associated_pull_requests(
     repo: str, commit_sha: str, token: str | None
 ) -> list[dict[str, Any]]:
-    url = f"https://api.github.com/repos/{repo}/commits/{commit_sha}/pulls"
-    parsed_url = urlsplit(url)
-    if parsed_url.scheme != "https" or parsed_url.netloc != "api.github.com":
-        raise RuntimeError("GitHub API URL must use https://api.github.com")
+    request_path = (
+        f"/repos/{quote(repo, safe='/')}/commits/{quote(commit_sha, safe='')}/pulls"
+    )
 
     headers = {
         "Accept": "application/vnd.github.groot-preview+json, application/vnd.github+json",
@@ -114,16 +112,21 @@ def _fetch_associated_pull_requests(
     if token:
         headers["Authorization"] = f"Bearer {token}"
 
-    request = Request(url, headers=headers, method="GET")
+    connection = http.client.HTTPSConnection(
+        "api.github.com", timeout=GITHUB_API_TIMEOUT_SECONDS
+    )
     try:
-        with urlopen(request, timeout=GITHUB_API_TIMEOUT_SECONDS) as response:
-            payload = response.read().decode("utf-8")
-    except HTTPError as exc:
-        raise RuntimeError(
-            f"GitHub API request failed with HTTP {exc.code}: {exc.reason}"
-        ) from exc
-    except URLError as exc:
-        raise RuntimeError(f"GitHub API request failed: {exc.reason}") from exc
+        connection.request("GET", request_path, headers=headers)
+        response = connection.getresponse()
+        payload = response.read().decode("utf-8")
+        if response.status >= 400:
+            raise RuntimeError(
+                f"GitHub API request failed with HTTP {response.status}: {response.reason}"
+            )
+    except OSError as exc:
+        raise RuntimeError(f"GitHub API request failed: {exc}") from exc
+    finally:
+        connection.close()
 
     data = json.loads(payload)
     if not isinstance(data, list):
