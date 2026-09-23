@@ -133,7 +133,7 @@ def get_message(response: Any) -> str | None:
             messages = response["messages"]
             if isinstance(messages, list) and messages:
                 return "; ".join(str(m) for m in messages)
-            elif isinstance(messages, str):
+            if isinstance(messages, str):
                 return messages
     return None
 
