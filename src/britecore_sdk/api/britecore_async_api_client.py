@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import logging
+import time
 import uuid
+from logging import Logger, getLogger
 from typing import Any, Literal, NotRequired, TypedDict
 
 import urllib3
@@ -12,7 +15,10 @@ from urllib3.util import Retry, Timeout
 
 from britecore_sdk.api.britecore_api_client import BritecoreAPIClient, _full_url
 from britecore_sdk.api.request_cache import RequestCache, build_cache_key
+from britecore_sdk.base_logger import LogCategory, log_with_category
 from britecore_sdk.exceptions import BritecoreError
+
+LOGGER: Logger = getLogger("britecore_sdk")
 
 _AsyncTransport = Literal["threaded", "httpx"]
 
@@ -326,6 +332,21 @@ class AsyncBritecoreAPIClient:
         request_id: str = uuid.uuid4().hex[:8]
         resolved_headers["X-SDK-Request-ID"] = request_id
 
+        # Structured logging: async HTTP request start
+        auth_mode = "api_key" if client.use_api_key else "oauth"
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "Async HTTP request start (httpx transport)",
+            LogCategory.HTTP,
+            event="async_http_request_start",
+            request_id=request_id,
+            method=method,
+            path=path,
+            auth_mode=auth_mode,
+            transport="httpx",
+        )
+
         request_body: dict[str, Any] = dict(json or {})
         if client.use_api_key and getattr(client, "site_settings", None) is not None:
             api_key = getattr(client.site_settings, "api_key", None)
@@ -338,11 +359,39 @@ class AsyncBritecoreAPIClient:
 
         rate_limiter = getattr(client, "rate_limiter", None)
         if rate_limiter is not None and not rate_limiter_bypass:
-            rate_limiter.acquire(timeout=timeout_seconds)
+            try:
+                rate_limit_delay = rate_limiter.acquire(timeout=timeout_seconds)
+                if rate_limit_delay > 0.001:  # Log only significant delays
+                    log_with_category(
+                        LOGGER,
+                        logging.DEBUG,
+                        "Async rate limiter delayed outbound request",
+                        LogCategory.RATE_LIMIT,
+                        event="async_http_request_rate_limited",
+                        request_id=request_id,
+                        delay_seconds=round(rate_limit_delay, 6),
+                    )
+            except TimeoutError as rate_limit_timeout:
+                log_with_category(
+                    LOGGER,
+                    logging.ERROR,
+                    "Async rate limiter timeout before request dispatch",
+                    LogCategory.RATE_LIMIT,
+                    event="async_http_request_rate_limiter_timeout",
+                    request_id=request_id,
+                )
+                raise BritecoreError.RequestTimeoutError(
+                    f"Rate limiter timeout: {rate_limit_timeout}",
+                    timeout_seconds=timeout_seconds,
+                    request_id=request_id,
+                    sanitized_body=_sanitize_body_for_errors(request_body),
+                ) from rate_limit_timeout
 
         url = _full_url(client.base_url, path)
         httpx = self._import_httpx()
         async_client = await self._get_or_create_httpx_client(timeout_seconds)
+
+        _start: float = time.monotonic()
         try:
             response = await async_client.request(
                 method=method,
@@ -351,6 +400,17 @@ class AsyncBritecoreAPIClient:
                 json=request_body if request_body else None,
             )
         except httpx.TimeoutException as timeout_error:
+            _elapsed_ms = (time.monotonic() - _start) * 1000
+            log_with_category(
+                LOGGER,
+                logging.ERROR,
+                "Async HTTP request timeout (httpx transport)",
+                LogCategory.HTTP,
+                event="async_http_request_timeout",
+                request_id=request_id,
+                elapsed_ms=round(_elapsed_ms, 3),
+                transport="httpx",
+            )
             raise BritecoreError.RequestTimeoutError(
                 str(timeout_error),
                 timeout_seconds=timeout_seconds,
@@ -358,11 +418,36 @@ class AsyncBritecoreAPIClient:
                 sanitized_body=_sanitize_body_for_errors(request_body),
             ) from timeout_error
         except httpx.HTTPError as request_error:
+            _elapsed_ms = (time.monotonic() - _start) * 1000
+            log_with_category(
+                LOGGER,
+                logging.ERROR,
+                "Async HTTP request transport error (httpx)",
+                LogCategory.HTTP,
+                event="async_http_request_error",
+                request_id=request_id,
+                elapsed_ms=round(_elapsed_ms, 3),
+                error_type=type(request_error).__name__,
+                transport="httpx",
+            )
             raise BritecoreError.NoDataReturned(
                 str(request_error),
                 request_id=request_id,
                 sanitized_body=_sanitize_body_for_errors(request_body),
             ) from request_error
+
+        _elapsed_ms = (time.monotonic() - _start) * 1000
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "Async HTTP request completed (httpx transport)",
+            LogCategory.HTTP,
+            event="async_http_request_complete",
+            request_id=request_id,
+            status_code=response.status_code,
+            elapsed_ms=round(_elapsed_ms, 3),
+            transport="httpx",
+        )
 
         response_headers = dict(response.headers)
         response_headers.setdefault("X-SDK-Request-ID", request_id)
@@ -478,10 +563,29 @@ class AsyncBritecoreAPIClient:
             if cache_enabled:
                 cached_response = self._cache.get(cache_key)
                 if cached_response is not None:
+                    log_with_category(
+                        LOGGER,
+                        logging.DEBUG,
+                        "Async request cache hit (in-flight dedup)",
+                        LogCategory.CACHE,
+                        event="async_cache_hit_inflight",
+                        method=method,
+                        path=path,
+                    )
                     return self._restore_response_from_cache(cached_response)
 
             inflight_task = self._inflight_requests.get(cache_key)
             if inflight_task is None:
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "Async request started (in-flight tracking)",
+                    LogCategory.PERF,
+                    event="async_inflight_request_start",
+                    method=method,
+                    path=path,
+                    cache_key_prefix=cache_key[:16],
+                )
                 new_task = asyncio.create_task(
                     self._perform_request(
                         path=path,
@@ -498,6 +602,17 @@ class AsyncBritecoreAPIClient:
                 self._inflight_requests[cache_key] = new_task
                 inflight_task = new_task
                 created_task = True
+            else:
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "Async request deduplicated (reusing in-flight)",
+                    LogCategory.PERF,
+                    event="async_inflight_request_dedupe",
+                    method=method,
+                    path=path,
+                    cache_key_prefix=cache_key[:16],
+                )
 
         try:
             return await inflight_task
@@ -523,11 +638,29 @@ class AsyncBritecoreAPIClient:
             return
 
         if cache_invalidate_on_success:
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Async invalidating cache namespaces on success",
+                LogCategory.CACHE,
+                event="async_cache_invalidate_on_success",
+                namespaces=list(cache_invalidate_on_success),
+                count=len(cache_invalidate_on_success),
+            )
             self._cache.invalidate_namespaces(cache_invalidate_on_success)
 
         if cache_enabled and not cache_bypass and cache_key:
             ttl_seconds = cache_ttl_seconds or self._default_cache_ttl_seconds
             cache_value = self._snapshot_response_for_cache(response)
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Async caching response on success",
+                LogCategory.CACHE,
+                event="async_cache_write",
+                namespace=cache_namespace or "",
+                ttl_seconds=ttl_seconds,
+            )
             self._cache.set(
                 cache_key,
                 cache_value,
@@ -571,10 +704,35 @@ class AsyncBritecoreAPIClient:
                 cache_key_parts=cache_key_parts,
             )
 
+        # Check cache (structured logging for cache hit)
         if cache_enabled and not cache_bypass and cache_key:
             cached_response = self._cache.get(cache_key)
             if cached_response is not None:
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "Async request cache hit",
+                    LogCategory.CACHE,
+                    event="async_cache_hit",
+                    method=normalized_method,
+                    path=path,
+                    namespace=cache_namespace or "",
+                )
                 return self._restore_response_from_cache(cached_response)
+
+        # Structured logging for cache miss (if cache was enabled but we got here)
+        if cache_enabled and not cache_bypass and cache_key:
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Async request cache miss",
+                LogCategory.CACHE,
+                event="async_cache_miss",
+                method=normalized_method,
+                path=path,
+                namespace=cache_namespace or "",
+            )
+
         response = await self._request_with_optional_dedupe(
             path=path,
             json=json,

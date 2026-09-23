@@ -2,10 +2,16 @@
 
 import logging
 import uuid
+from typing import Any
 
 import pytest
 
-from britecore_sdk.base_logger import configure_logging, get_logger
+from britecore_sdk.base_logger import (
+    LogCategory,
+    configure_logging,
+    get_logger,
+    log_with_category,
+)
 
 
 class _CountingHandler(logging.Handler):
@@ -105,5 +111,37 @@ def test_configure_logging_preserves_existing_custom_handlers():
         assert logger.handlers == [custom_handler]
         logger.info("custom")
         assert [record.getMessage() for record in custom_handler.records] == ["custom"]
+    finally:
+        logger.handlers.clear()
+
+
+@pytest.mark.unit
+def test_log_with_category_attaches_category_and_extra_fields():
+    """Structured helper should propagate category and extra metadata into records."""
+    logger_name = f"britecore_sdk.test.{uuid.uuid4().hex}"
+    logger = get_logger(logger_name)
+    counter_handler = _CountingHandler()
+
+    try:
+        logger.handlers.clear()
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(counter_handler)
+
+        log_with_category(
+            logger,
+            logging.INFO,
+            "cache event",
+            LogCategory.CACHE,
+            event="cache_hit",
+            namespace="quotes",
+        )
+
+        assert len(counter_handler.records) == 1
+        record = counter_handler.records[0]
+        record_any: Any = record
+        assert record.getMessage() == "cache event"
+        assert record_any.category == LogCategory.CACHE
+        assert record_any.event == "cache_hit"
+        assert record_any.namespace == "quotes"
     finally:
         logger.handlers.clear()

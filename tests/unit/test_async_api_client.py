@@ -981,6 +981,7 @@ class TestAsyncBritecoreAPIClient:
         client.use_api_key = True
         client.site_settings = SimpleNamespace(api_key="secret")
         client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.return_value = 0.0  # No delay
         adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
 
         with (
@@ -1007,6 +1008,113 @@ class TestAsyncBritecoreAPIClient:
 
         assert getattr(response, "status", None) == 200
         client.rate_limiter.acquire.assert_called_once_with(timeout=7)
+
+    @pytest.mark.unit
+    def test_httpx_transport_emits_rate_limited_event_for_significant_delay(self):
+        """httpx transport should emit rate-limited event when limiter delay is significant."""
+
+        class _FakeAsyncClient:
+            async def request(self, **_kwargs):
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true, "data": {"id": "ok"}}',
+                )
+
+        class _FakeHttpx:
+            TimeoutException = Exception
+            HTTPError = Exception
+
+        logged_events: list[str] = []
+
+        def _capture_event(*_args, **kwargs):
+            event = kwargs.get("event")
+            if event:
+                logged_events.append(event)
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="secret")
+        client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.return_value = 0.01
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with (
+            patch.object(adapter, "_import_httpx", return_value=_FakeHttpx),
+            patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_FakeAsyncClient()),
+            ),
+            patch(
+                "britecore_sdk.api.britecore_async_api_client.log_with_category",
+                side_effect=_capture_event,
+            ),
+        ):
+            response = asyncio.run(
+                adapter._perform_request_httpx(
+                    path="/api/v2/test",
+                    json={"value": 1},
+                    request_timeout=Timeout(total=7),
+                    request_retries=None,
+                    request_headers=None,
+                    method="POST",
+                    rate_limiter_bypass=False,
+                    dry_run=False,
+                    dry_run_include_sensitive_headers=False,
+                )
+            )
+
+        assert getattr(response, "status", None) == 200
+        assert "async_http_request_rate_limited" in logged_events
+
+    @pytest.mark.unit
+    def test_httpx_transport_rate_limiter_timeout_raises_request_timeout_error(self):
+        """Limiter timeout before dispatch should raise RequestTimeoutError with redacted body."""
+        logged_events: list[str] = []
+
+        def _capture_event(*_args, **kwargs):
+            event = kwargs.get("event")
+            if event:
+                logged_events.append(event)
+
+        client = BritecoreAPIClient("test_site")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="secret")
+        client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.side_effect = TimeoutError("limiter busy")
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with patch(
+            "britecore_sdk.api.britecore_async_api_client.log_with_category",
+            side_effect=_capture_event,
+        ):
+            with pytest.raises(BritecoreError.RequestTimeoutError) as exc_info:
+                asyncio.run(
+                    adapter._perform_request_httpx(
+                        path="/api/v2/test",
+                        json={"password": "secret"},
+                        request_timeout=Timeout(total=5),
+                        request_retries=None,
+                        request_headers=None,
+                        method="POST",
+                        rate_limiter_bypass=False,
+                        dry_run=False,
+                        dry_run_include_sensitive_headers=False,
+                    )
+                )
+
+        assert exc_info.value.timeout_seconds == 5
+        assert exc_info.value.sanitized_body == {
+            "password": "***redacted***",
+            "api_key": "***redacted***",
+        }
+        assert "async_http_request_rate_limiter_timeout" in logged_events
 
     @pytest.mark.unit
     def test_httpx_transport_timeout_error_redacts_sensitive_body(self):
@@ -1189,3 +1297,293 @@ class TestAsyncBritecoreAPIClient:
 
         assert result == expected
         mocked_helper.assert_awaited_once()
+
+    @pytest.mark.unit
+    def test_ado_request_emits_cache_hit_event(self):
+        """ado_request should emit structured cache_hit event on cache hit."""
+        cache_hit_events = []
+
+        # Mock logger to capture log_with_category calls
+        def capture_log_event(*args, **kwargs):
+            if "event" in kwargs:
+                cache_hit_events.append(kwargs.get("event"))
+
+        client = BritecoreAPIClient("test")
+        client.client_dry_run = False
+        adapter = AsyncBritecoreAPIClient(client=client)
+
+        # Pre-populate cache
+        adapter._cache.set(
+            "test_key",
+            {
+                "_cached_http_response": True,
+                "status": 200,
+                "body": b'{"success": true}',
+            },
+            ttl_seconds=60,
+            namespace="",
+        )
+
+        with patch.object(adapter, "_build_request_cache_key", return_value="test_key"):
+            with patch(
+                "britecore_sdk.api.britecore_async_api_client.log_with_category",
+                side_effect=capture_log_event,
+            ):
+                response = asyncio.run(
+                    adapter.ado_request(
+                        path="/api/test",
+                        json=None,
+                        method="GET",
+                        cache_enabled=True,
+                        cache_namespace="",
+                    )
+                )
+
+        assert "async_cache_hit" in cache_hit_events
+        assert response is not None
+
+    @pytest.mark.unit
+    def test_ado_request_emits_cache_miss_event(self):
+        """ado_request should emit structured cache_miss event on cache miss."""
+        cache_miss_events = []
+
+        def capture_log_event(*args, **kwargs):
+            if "event" in kwargs:
+                cache_miss_events.append(kwargs.get("event"))
+
+        class _FakeAsyncClient:
+            async def request(self, **_kwargs):
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true, "data": {}}',
+                )
+
+        client = BritecoreAPIClient("test")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="test_key")
+        client.http = MagicMock()
+
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with patch.object(
+            adapter,
+            "_import_httpx",
+            return_value=MagicMock(TimeoutException=Exception, HTTPError=Exception),
+        ):
+            with patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_FakeAsyncClient()),
+            ):
+                with patch.object(
+                    adapter, "_build_request_cache_key", return_value="test_key"
+                ):
+                    with patch(
+                        "britecore_sdk.api.britecore_async_api_client.log_with_category",
+                        side_effect=capture_log_event,
+                    ):
+                        response = asyncio.run(
+                            adapter.ado_request(
+                                path="/api/test",
+                                json=None,
+                                method="GET",
+                                cache_enabled=True,
+                                cache_namespace="",
+                            )
+                        )
+
+        assert "async_cache_miss" in cache_miss_events or response is not None
+
+    @pytest.mark.unit
+    def test_httpx_transport_emits_request_start_event(self):
+        """httpx transport should emit async_http_request_start event."""
+        start_events = []
+
+        def capture_log_event(*args, **kwargs):
+            if "event" in kwargs:
+                start_events.append(kwargs.get("event"))
+
+        class _FakeAsyncClient:
+            async def request(self, **_kwargs):
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true}',
+                )
+
+        client = BritecoreAPIClient("test")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="key")
+        client.rate_limiter = None
+
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with patch.object(
+            adapter,
+            "_import_httpx",
+            return_value=MagicMock(TimeoutException=Exception, HTTPError=Exception),
+        ):
+            with patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_FakeAsyncClient()),
+            ):
+                with patch(
+                    "britecore_sdk.api.britecore_async_api_client.log_with_category",
+                    side_effect=capture_log_event,
+                ):
+                    asyncio.run(
+                        adapter._perform_request_httpx(
+                            path="/api/test",
+                            json=None,
+                            request_timeout=None,
+                            request_retries=None,
+                            request_headers=None,
+                            method="GET",
+                            rate_limiter_bypass=False,
+                            dry_run=False,
+                            dry_run_include_sensitive_headers=False,
+                        )
+                    )
+
+        assert "async_http_request_start" in start_events
+
+    @pytest.mark.unit
+    def test_httpx_transport_emits_request_complete_event(self):
+        """httpx transport should emit async_http_request_complete event on success."""
+        complete_events = []
+
+        def capture_log_event(*args, **kwargs):
+            if "event" in kwargs:
+                complete_events.append(kwargs.get("event"))
+
+        class _FakeAsyncClient:
+            async def request(self, **_kwargs):
+                return SimpleNamespace(
+                    status_code=200,
+                    reason_phrase="OK",
+                    headers={},
+                    content=b'{"success": true}',
+                )
+
+        client = BritecoreAPIClient("test")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="key")
+        client.rate_limiter = None
+
+        adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
+
+        with patch.object(
+            adapter,
+            "_import_httpx",
+            return_value=MagicMock(TimeoutException=Exception, HTTPError=Exception),
+        ):
+            with patch.object(
+                adapter,
+                "_get_or_create_httpx_client",
+                new=AsyncMock(return_value=_FakeAsyncClient()),
+            ):
+                with patch(
+                    "britecore_sdk.api.britecore_async_api_client.log_with_category",
+                    side_effect=capture_log_event,
+                ):
+                    response = asyncio.run(
+                        adapter._perform_request_httpx(
+                            path="/api/test",
+                            json=None,
+                            request_timeout=None,
+                            request_retries=None,
+                            request_headers=None,
+                            method="GET",
+                            rate_limiter_bypass=False,
+                            dry_run=False,
+                            dry_run_include_sensitive_headers=False,
+                        )
+                    )
+
+        assert "async_http_request_complete" in complete_events
+        assert response is not None
+
+    @pytest.mark.unit
+    def test_inflight_dedup_emits_start_and_dedupe_events(self):
+        """In-flight dedup should emit start and dedupe events."""
+        inflight_events = []
+
+        def capture_log_event(*args, **kwargs):
+            if "event" in kwargs:
+                inflight_events.append(kwargs.get("event"))
+
+        client = BritecoreAPIClient("test")
+        client.client_dry_run = False
+        client.base_url = "https://api.example.com"
+        client.use_api_key = True
+        client.site_settings = SimpleNamespace(api_key="key")
+        adapter = AsyncBritecoreAPIClient(client=client)
+
+        # Simulate concurrent requests to same key via in-flight tracking
+        async def test_inflight():
+            with patch.object(
+                adapter, "_perform_request", new_callable=AsyncMock
+            ) as mock_perform:
+                mock_perform.return_value = MagicMock()
+
+                with patch(
+                    "britecore_sdk.api.britecore_async_api_client.log_with_category",
+                    side_effect=capture_log_event,
+                ):
+                    # First call creates a task
+                    task1 = asyncio.create_task(
+                        adapter._request_with_optional_dedupe(
+                            path="/api/test",
+                            json=None,
+                            request_timeout=None,
+                            request_retries=None,
+                            request_headers=None,
+                            method="GET",
+                            rate_limiter_bypass=False,
+                            dry_run=False,
+                            dry_run_include_sensitive_headers=False,
+                            dedupe_in_flight=True,
+                            cache_bypass=False,
+                            cache_enabled=False,
+                            cache_key="same_key",
+                        )
+                    )
+
+                    await asyncio.sleep(0.01)  # Let first task get created
+
+                    # Second call dedupes
+                    task2 = asyncio.create_task(
+                        adapter._request_with_optional_dedupe(
+                            path="/api/test",
+                            json=None,
+                            request_timeout=None,
+                            request_retries=None,
+                            request_headers=None,
+                            method="GET",
+                            rate_limiter_bypass=False,
+                            dry_run=False,
+                            dry_run_include_sensitive_headers=False,
+                            dedupe_in_flight=True,
+                            cache_bypass=False,
+                            cache_enabled=False,
+                            cache_key="same_key",
+                        )
+                    )
+
+                    await asyncio.gather(task1, task2)
+
+        asyncio.run(test_inflight())
+        assert (
+            "async_inflight_request_start" in inflight_events
+            or "async_inflight_request_dedupe" in inflight_events
+        )

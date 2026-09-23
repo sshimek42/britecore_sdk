@@ -17,15 +17,21 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 - Added `docs/RELEASE_HOTFIX_TEMPLATE.md` for emergency break-glass patch release records (incident context, tagged commit traceability, validation evidence, rollback plan, and follow-up PR tracking).
 
-- Planned for `2.5.x`: add a lightweight `britecore-quick-check` CLI mode set (`--syntax`, `--connectivity`, `--full`) for one-command environment readiness checks.
+- Added `2.5.x` quick-check mode guidance and coverage for `britecore-quick-check` (`--syntax`, `--connectivity`, `--full`), including unit tests and mutually exclusive mode parsing.
 
-- Planned for `2.5.x`: add response helper utilities for common API payload patterns (data extraction, pagination envelopes, and batch result normalization).
+- Added `2.5.x` response helper utilities for common API payload patterns (`extract_items`, `normalize_pagination_envelope`, `normalize_batch_results`) and exposed them from `britecore_sdk.api`.
 
-- Planned for `2.5.x`: expand structured logging categories to make auth, HTTP, rate-limit, cache, and configuration events easier to filter in production logs.
+- Expanded `2.5.x` structured logging coverage with category-tagged auth token lifecycle events (`OAuthToken`), HTTP request lifecycle events (`do_request` start/timeout/complete), and configuration discovery/load events (`settings.config`), in addition to cache and rate-limit state logs.
+
+- Added `2.5.x` async transport structured logging with new `async_http_request_*` and `async_cache_*` events in `AsyncBritecoreAPIClient` for native httpx transport requests, cache hit/miss tracking, in-flight request deduplication, and cache invalidation operations.
+
+- Expanded `docs/OBSERVABILITY.md` with comprehensive section on structured logging categories (`AUTH`, `HTTP`, `RATE_LIMIT`, `CACHE`, `PERF`, `CONFIG`), event examples for each category, filtering patterns for production monitoring, and integration guidance for ELK/Datadog/Splunk platforms.
 
 ### Changed
 
 - Updated `docs/RELEASE_OPERATIONS_CHECKLIST.md` and pull request template release gates so release PRs explicitly confirm docs checklist completion and release operations sign-off.
+
+- Published `docs/MIGRATION_2_4_to_2_5.md` and expanded `TROUBLESHOOTING.md` deprecation diagnostics so `2.5.x` warning signals map directly to migration actions (explicit clients and canonical batch keys).
 
 - Tightened release governance policy across `CONTRIBUTING.md`, `docs/RELEASE_OPERATIONS_CHECKLIST.md`, and `.github/workflows/release-smoke.yml` so patch/minor/major releases must come from merged PRs by default, with emergency patch no-PR flow only when an annotated tag message includes `[break-glass]` and a follow-up PR is recorded.
 
@@ -33,7 +39,9 @@ Version numbers follow [Semantic Versioning](https://semver.org/).
 
 - Planned for `2.5.x`: add request-timing observability hooks to surface slow endpoints and improve performance triage.
 
-- Started the `2.5.x` migration-signaling workstream by emitting `DeprecationWarning` on legacy global lifecycle helpers (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`) and on implicit wrapper fallback paths that omit explicit `client=`.
+- Started the `2.5.x` migration-signaling workstream by emitting `DeprecationWarning` on legacy global lifecycle helpers (`init_api_client(...)`, `init_async_api_client(...)`, `reset_api_client()`), implicit wrapper fallback paths that omit explicit `client=`, and legacy batch alias key output (`quote_id`/`quote_data`, `contact_id`/`contact_data`) when `include_legacy_keys=True`.
+
+- Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
 
 - Hardened `scripts/check_pr_human_reviewers.py` for solo-maintainer flows by switching to a single API snapshot for count/state decisions, enforcing positive PR-number validation, and adding graceful malformed-JSON error handling; updated `docs/SOLO_MAINTAINER_MERGE_PROCEDURE.md` to reflect the latest-state reviewer semantics.
 

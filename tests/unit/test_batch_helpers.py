@@ -1,5 +1,6 @@
 """Unit tests for batch creation helpers in contacts, policies, and risks workflows."""
 
+import warnings
 from unittest.mock import patch
 
 import pytest
@@ -58,6 +59,42 @@ class TestContactsBatchEndpoints:
 
         assert "contact_id" not in result["results"][0]
         assert "contact_data" not in result["results"][0]
+
+    @pytest.mark.unit
+    def test_create_contacts_batch_warns_on_legacy_key_aliases(self):
+        """Batch helper emits deprecation warning when legacy contact aliases are included."""
+        from britecore_sdk.api.workflows import batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+
+        def _mock_new_contact(name, address, **kwargs):
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
+            with warnings.catch_warnings(record=True) as recorded:
+                warnings.simplefilter("always", DeprecationWarning)
+                batch_contacts.create_contacts_batch(payloads)
+
+        assert any("contact_id/contact_data" in str(item.message) for item in recorded)
+
+    @pytest.mark.unit
+    def test_create_contacts_batch_no_warning_when_legacy_keys_disabled(self):
+        """Batch helper does not warn when legacy aliases are explicitly disabled."""
+        from britecore_sdk.api.workflows import batch_contacts
+
+        payloads = [{"name": "Alice", "address": [{"address1": "1 A St"}]}]
+
+        def _mock_new_contact(name, address, **kwargs):
+            return {"contact_id": f"CID-{name}"}, f"CID-{name}"
+
+        with patch.object(batch_contacts, "new_contact", side_effect=_mock_new_contact):
+            with warnings.catch_warnings(record=True) as recorded:
+                warnings.simplefilter("always")
+                batch_contacts.create_contacts_batch(
+                    payloads, include_legacy_keys=False
+                )
+
+        assert not recorded
 
     @pytest.mark.unit
     def test_create_contacts_batch_partial_failure(self):
