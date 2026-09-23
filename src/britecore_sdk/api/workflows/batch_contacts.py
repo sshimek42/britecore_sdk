@@ -5,6 +5,7 @@ Endpoint wrappers for individual contact calls live in
 ``britecore_sdk.api.api_calls.v2.contacts``.
 """
 
+import warnings
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from typing import Any, NotRequired, Unpack
 
@@ -12,6 +13,13 @@ from britecore_sdk import BritecoreError
 from britecore_sdk.api.api_calls import BritecoreAPIClient, RequestParameters
 from britecore_sdk.api.api_calls.v2.contacts import new_contact
 from britecore_sdk.models import BatchItemResult
+
+_DEPRECATION_REMOVAL_VERSION = "v3.0.0"
+_LEGACY_CONTACT_BATCH_KEYS_DEPRECATION = (
+    "Legacy batch result alias keys contact_id/contact_data are deprecated and will be "
+    f"removed in {_DEPRECATION_REMOVAL_VERSION}. Use id/data instead, or pass "
+    "include_legacy_keys=False to opt in to the canonical shape now."
+)
 
 
 class BatchContactCreateResult(BatchItemResult, total=False):
@@ -87,6 +95,12 @@ def create_contacts_batch(
         )
     if max_workers < 1:
         raise ValueError("max_workers must be at least 1")
+    if include_legacy_keys:
+        warnings.warn(
+            _LEGACY_CONTACT_BATCH_KEYS_DEPRECATION,
+            DeprecationWarning,
+            stacklevel=2,
+        )
 
     worker_count = min(max_workers, len(contacts_json))
     results: list[BatchItemResult | None] = [None] * len(contacts_json)

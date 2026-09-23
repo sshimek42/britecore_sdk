@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
@@ -9,7 +10,10 @@ from json import dumps
 from threading import RLock
 from typing import Any
 
+from britecore_sdk.base_logger import LogCategory, log_with_category
+
 _EXCLUDED_HEADER_KEYS = {"authorization"}
+LOGGER = logging.getLogger("britecore_sdk")
 
 
 def _utc_now() -> datetime:
@@ -83,10 +87,33 @@ class RequestCache:
         with self._lock:
             entry = self._entries.get(key)
             if entry is None:
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "Cache miss",
+                    LogCategory.CACHE,
+                    event="cache_miss",
+                )
                 return None
             if entry.is_expired():
                 self._entries.pop(key, None)
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "Cache expired",
+                    LogCategory.CACHE,
+                    event="cache_expired",
+                    namespace=entry.namespace,
+                )
                 return None
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Cache hit",
+                LogCategory.CACHE,
+                event="cache_hit",
+                namespace=entry.namespace,
+            )
             return entry.value
 
     def set(
@@ -98,6 +125,14 @@ class RequestCache:
     ) -> None:
         """Store a value in the cache when the TTL is positive."""
         if ttl_seconds <= 0:
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Cache store skipped due to non-positive TTL",
+                LogCategory.CACHE,
+                event="cache_store_skipped",
+                ttl_seconds=ttl_seconds,
+            )
             return
         with self._lock:
             self._entries[key] = CacheEntry(
@@ -105,10 +140,26 @@ class RequestCache:
                 expires_at=_utc_now() + timedelta(seconds=ttl_seconds),
                 namespace=namespace,
             )
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "Cache entry stored",
+            LogCategory.CACHE,
+            event="cache_store",
+            namespace=namespace,
+            ttl_seconds=ttl_seconds,
+        )
 
     def invalidate_namespace(self, namespace: str) -> int:
         """Remove all entries belonging to the given namespace."""
         if not namespace:
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Cache namespace invalidation skipped",
+                LogCategory.CACHE,
+                event="cache_invalidate_skipped",
+            )
             return 0
         with self._lock:
             keys_to_remove = [
@@ -118,7 +169,17 @@ class RequestCache:
             ]
             for key in keys_to_remove:
                 self._entries.pop(key, None)
-            return len(keys_to_remove)
+            removed = len(keys_to_remove)
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "Cache namespace invalidated",
+            LogCategory.CACHE,
+            event="cache_invalidate_namespace",
+            namespace=namespace,
+            removed=removed,
+        )
+        return removed
 
     def invalidate_namespaces(self, namespaces: Iterable[str]) -> int:
         """Remove all entries for the provided namespaces."""
@@ -130,7 +191,16 @@ class RequestCache:
     def clear(self) -> None:
         """Remove all cache entries."""
         with self._lock:
+            removed = len(self._entries)
             self._entries.clear()
+        log_with_category(
+            LOGGER,
+            logging.DEBUG,
+            "Cache cleared",
+            LogCategory.CACHE,
+            event="cache_clear",
+            removed=removed,
+        )
 
     def prune_expired(self) -> int:
         """Remove expired entries and return the number removed."""
@@ -141,7 +211,17 @@ class RequestCache:
             ]
             for key in keys_to_remove:
                 self._entries.pop(key, None)
-            return len(keys_to_remove)
+            removed = len(keys_to_remove)
+        if removed:
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Expired cache entries pruned",
+                LogCategory.CACHE,
+                event="cache_prune_expired",
+                removed=removed,
+            )
+        return removed
 
     def __len__(self) -> int:
         """Return the number of currently stored entries."""

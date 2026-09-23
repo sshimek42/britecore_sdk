@@ -210,3 +210,61 @@ class TestOAuthTokenConcurrency:
 
         assert results == ["Bearer test_token"] * 8
         mock_http.request.assert_not_called()
+
+
+class TestOAuthTokenStructuredLogging:
+    """Structured AUTH logging coverage for token manager flows."""
+
+    @pytest.mark.unit
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.log_with_category")
+    def test_request_new_token_emits_success_event(
+        self, mock_log_with_category, mock_http, mock_oauth_response
+    ):
+        """Successful token refresh emits oauth_token_refresh_success."""
+        mock_http.request.return_value = mock_oauth_response
+
+        token = OAuthToken("client_id", "client_secret", "https://api.example.com")
+        token._request_new_token()
+
+        events = [
+            call.kwargs.get("event") for call in mock_log_with_category.call_args_list
+        ]
+        assert "oauth_token_request_start" in events
+        assert "oauth_token_refresh_success" in events
+
+    @pytest.mark.unit
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.log_with_category")
+    def test_request_new_token_failure_emits_failure_event(
+        self, mock_log_with_category, mock_http, mock_oauth_response_error
+    ):
+        """Token fetch failure without fallback token emits failure event."""
+        mock_http.request.return_value = mock_oauth_response_error
+
+        token = OAuthToken("client_id", "client_secret", "https://api.example.com")
+        with pytest.raises(BritecoreError.NoTokenReturned):
+            token._request_new_token()
+
+        events = [
+            call.kwargs.get("event") for call in mock_log_with_category.call_args_list
+        ]
+        assert "oauth_token_request_failed" in events
+
+    @pytest.mark.unit
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.log_with_category")
+    def test_get_authorization_headers_emits_reuse_event_for_valid_token(
+        self, mock_log_with_category
+    ):
+        """Valid token path emits oauth_token_reused without refresh attempt."""
+        token = OAuthToken("client_id", "client_secret", "https://api.example.com")
+        token.token = "test_token"
+        token.token_time = datetime.now() + timedelta(hours=1)
+
+        headers = token.get_authorization_headers()
+        assert headers["Authorization"] == "Bearer test_token"
+
+        events = [
+            call.kwargs.get("event") for call in mock_log_with_category.call_args_list
+        ]
+        assert "oauth_token_reused" in events

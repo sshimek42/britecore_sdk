@@ -26,6 +26,7 @@ from typing import Any
 
 from dynaconf import Dynaconf, Validator
 
+from britecore_sdk.base_logger import LogCategory, log_with_category
 from britecore_sdk.exceptions import BritecoreError
 
 LOGGER = logging.getLogger(__name__)
@@ -88,11 +89,28 @@ def _discover_settings_files() -> list[Path]:
         if env_path.exists():
             candidates.append(env_path)
         else:
+            log_with_category(
+                LOGGER,
+                logging.WARNING,
+                "Configured settings file does not exist",
+                LogCategory.CONFIG,
+                event="settings_env_override_missing",
+                settings_file=str(env_path),
+            )
             LOGGER.warning(
                 "BRITECORE_SDK_SETTINGS_FILE points to a non-existent file: %s",
                 env_path,
             )
 
+    log_with_category(
+        LOGGER,
+        logging.DEBUG,
+        "Discovered settings files",
+        LogCategory.CONFIG,
+        event="settings_files_discovered",
+        count=len(candidates),
+        files=[str(p) for p in candidates],
+    )
     LOGGER.debug(
         "Discovered %d settings file(s): %s",
         len(candidates),
@@ -199,6 +217,14 @@ class LoadClientSettings:
         if target_site:
             try:
                 with _SETTINGS_ENV_LOCK:
+                    log_with_category(
+                        LOGGER,
+                        logging.DEBUG,
+                        "Loading site configuration",
+                        LogCategory.CONFIG,
+                        event="site_config_load_start",
+                        target_site=target_site,
+                    )
                     with settings.using_env(target_site):
                         # --- Begin hybrid config warning logic ---
                         # Only warn once per process
@@ -220,6 +246,15 @@ class LoadClientSettings:
                                 if not env_val and config_val:
                                     missing_env_keys.append(key)
                             if missing_env_keys:
+                                log_with_category(
+                                    LOGGER,
+                                    logging.WARNING,
+                                    "Hybrid config detected; falling back to config file values",
+                                    LogCategory.CONFIG,
+                                    event="site_config_hybrid_detected",
+                                    target_site=target_site,
+                                    missing_env_keys=missing_env_keys,
+                                )
                                 LOGGER.warning(
                                     (
                                         "Hybrid config: The following required keys were missing "
@@ -252,6 +287,15 @@ class LoadClientSettings:
                             ),
                         )
             except Exception as exc:
+                log_with_category(
+                    LOGGER,
+                    logging.ERROR,
+                    "Failed to load site configuration",
+                    LogCategory.CONFIG,
+                    event="site_config_load_failed",
+                    target_site=target_site,
+                    error_type=type(exc).__name__,
+                )
                 raise BritecoreError.ConfigurationError(
                     f"Failed to load configuration for target_site '{target_site}': {exc}"
                 ) from exc

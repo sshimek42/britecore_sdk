@@ -472,12 +472,44 @@ class TestInitApiClientRateLimiter:
 
         patcher = self._mock_settings_ctx()
         try:
-            # No enable_rate_limiter kwarg — relies on SDK default (False)
+            # No enable_rate_limiter kwarg - relies on SDK default (False)
             client = init_api_client("test_site")
             assert client.rate_limiter is None
         finally:
             reset_api_client()
             patcher.stop()
+
+
+class TestRateLimiterLogging:
+    """Test structured logging event emission for key limiter state changes."""
+
+    @pytest.mark.unit
+    def test_record_rate_limit_response_logs_backoff_events(self):
+        """429 recording logs either backoff-start or disabled-backoff events."""
+        limiter_enabled = RateLimiter(adaptive_backoff_enabled=True)
+        limiter_disabled = RateLimiter(adaptive_backoff_enabled=False)
+
+        with patch("britecore_sdk.api.rate_limiter.log_with_category") as mock_log:
+            limiter_enabled.record_rate_limit_response(retry_after=2)
+            limiter_disabled.record_rate_limit_response(retry_after=2)
+
+        events = [call.kwargs.get("event") for call in mock_log.call_args_list]
+        assert "rate_limit_backoff_started" in events
+        assert "rate_limit_backoff_disabled" in events
+
+    @pytest.mark.unit
+    def test_reset_logs_structured_rate_limit_event(self):
+        """Reset emits an explicit structured event for observability."""
+        limiter = RateLimiter(requests_per_second=5.0, burst_size=7)
+
+        with patch("britecore_sdk.api.rate_limiter.log_with_category") as mock_log:
+            limiter.reset()
+
+        assert mock_log.called
+        assert any(
+            call.kwargs.get("event") == "rate_limit_reset"
+            for call in mock_log.call_args_list
+        )
 
 
 if __name__ == "__main__":

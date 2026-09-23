@@ -981,6 +981,7 @@ class TestAsyncBritecoreAPIClient:
         client.use_api_key = True
         client.site_settings = SimpleNamespace(api_key="secret")
         client.rate_limiter = MagicMock()
+        client.rate_limiter.acquire.return_value = 0.0  # No delay
         adapter = AsyncBritecoreAPIClient(client=client, async_transport="httpx")
 
         with (

@@ -10,6 +10,7 @@ import urllib3
 from urllib3 import BaseHTTPResponse, Retry, Timeout
 from urllib3.util import Url, parse_url
 
+from britecore_sdk.base_logger import LogCategory, log_with_category
 from britecore_sdk.exceptions import BritecoreError
 
 LOGGER = logging.getLogger("britecore_sdk")
@@ -67,6 +68,14 @@ class OAuthToken:
             http_header: dict[str, str] = urllib3.make_headers(
                 basic_auth=f"{self.client_id}:{self.client_secret}"
             )
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "Requesting OAuth token",
+                LogCategory.AUTH,
+                event="oauth_token_request_start",
+                token_url=self.url,
+            )
             LOGGER.debug("Requesting token")
             http_result: BaseHTTPResponse = http.request(
                 "POST",
@@ -76,10 +85,26 @@ class OAuthToken:
                 encode_multipart=False,
             )
             if http_result.status != 200 and not self.token:
+                log_with_category(
+                    LOGGER,
+                    logging.ERROR,
+                    "OAuth token request failed without existing token",
+                    LogCategory.AUTH,
+                    event="oauth_token_request_failed",
+                    status_code=http_result.status,
+                )
                 raise BritecoreError.NoTokenReturned(
                     "Failed to retrieve OAuth token from endpoint"
                 )
             if http_result.status != 200:
+                log_with_category(
+                    LOGGER,
+                    logging.WARNING,
+                    "OAuth token refresh failed; reusing existing token",
+                    LogCategory.AUTH,
+                    event="oauth_token_refresh_reused_existing",
+                    status_code=http_result.status,
+                )
                 LOGGER.warning(
                     "OAuth token refresh failed; continuing to use existing token"
                 )
@@ -89,9 +114,23 @@ class OAuthToken:
             access_token = http_result_dict.get("access_token", "")
             if not access_token:
                 if not self.token:
+                    log_with_category(
+                        LOGGER,
+                        logging.ERROR,
+                        "OAuth token response missing access_token without fallback token",
+                        LogCategory.AUTH,
+                        event="oauth_token_missing_access_token",
+                    )
                     raise BritecoreError.NoTokenReturned(
                         "OAuth endpoint did not return an access token"
                     )
+                log_with_category(
+                    LOGGER,
+                    logging.WARNING,
+                    "OAuth token response missing access_token; reusing existing token",
+                    LogCategory.AUTH,
+                    event="oauth_token_refresh_missing_access_token_reused",
+                )
                 LOGGER.warning(
                     "OAuth token refresh response did not include an access token; "
                     "continuing to use existing token"
@@ -103,6 +142,14 @@ class OAuthToken:
                 datetime.now()
                 + timedelta(seconds=expires_in)
                 - timedelta(seconds=TOKEN_SKEW_SECONDS)
+            )
+            log_with_category(
+                LOGGER,
+                logging.DEBUG,
+                "OAuth token refresh succeeded",
+                LogCategory.AUTH,
+                event="oauth_token_refresh_success",
+                expires_in_seconds=expires_in,
             )
 
     def _build_auth_headers(self) -> Mapping[str, str]:
@@ -116,6 +163,22 @@ class OAuthToken:
     def get_authorization_headers(self) -> Mapping[str, str]:
         """Return immutable headers containing a valid Bearer token."""
         with self._token_lock:
-            if self._is_token_expired():
+            token_expired = self._is_token_expired()
+            if token_expired:
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "OAuth token expired or missing; refreshing",
+                    LogCategory.AUTH,
+                    event="oauth_token_refresh_needed",
+                )
                 self._request_new_token()
+            else:
+                log_with_category(
+                    LOGGER,
+                    logging.DEBUG,
+                    "OAuth token still valid; using existing token",
+                    LogCategory.AUTH,
+                    event="oauth_token_reused",
+                )
             return self._build_auth_headers()
