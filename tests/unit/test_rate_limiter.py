@@ -511,6 +511,28 @@ class TestRateLimiterLogging:
             for call in mock_log.call_args_list
         )
 
+    @pytest.mark.unit
+    def test_acquire_timeout_during_backoff_logs_timeout_backoff_event(self):
+        """When timeout is too short during backoff, limiter should emit timeout_backoff event."""
+        limiter = RateLimiter(
+            requests_per_second=10.0,
+            burst_size=5,
+            adaptive_backoff_enabled=True,
+            backoff_timeout_seconds=1.0,
+        )
+        limiter._backoff_until = time.monotonic() + 0.2
+
+        with patch("britecore_sdk.api.rate_limiter.log_with_category") as mock_log:
+            with pytest.raises(
+                TimeoutError, match="Rate limit acquire exceeded timeout"
+            ):
+                limiter.acquire(timeout=0.01)
+
+        assert any(
+            call.kwargs.get("event") == "rate_limit_timeout_backoff"
+            for call in mock_log.call_args_list
+        )
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

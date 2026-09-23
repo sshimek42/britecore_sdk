@@ -121,6 +121,25 @@ class TestProcessResultStatusCodes:
         assert exc_info.value.retry_after == 30
 
     @pytest.mark.unit
+    def test_429_with_invalid_retry_after_records_none_on_rate_limiter(self):
+        client = self._make_minimal_client()
+        client.rate_limiter = MagicMock()
+
+        resp = _make_response(
+            b"",
+            status=429,
+            reason="Too Many Requests",
+            headers={"Retry-After": "soon"},
+        )
+        with pytest.raises(BritecoreError.RateLimitError) as exc_info:
+            client.process_result(resp)
+
+        assert exc_info.value.retry_after is None
+        client.rate_limiter.record_rate_limit_response.assert_called_once_with(
+            retry_after=None
+        )
+
+    @pytest.mark.unit
     def test_500_raises_server_error(self):
         client = self._make_minimal_client()
 

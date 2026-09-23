@@ -116,6 +116,53 @@ class TestOAuthTokenRequest:
         # Token remains unchanged
         assert token.token == "existing_token"
 
+    @pytest.mark.unit
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.log_with_category")
+    def test_request_new_token_missing_access_token_without_fallback_raises(
+        self, mock_log_with_category, mock_http
+    ):
+        """A token response without access_token should fail if no fallback token exists."""
+        mock_http.request.return_value = type(
+            "Resp",
+            (),
+            {"status": 200, "data": b'{"expires_in": 3600}'},
+        )()
+
+        token = OAuthToken("client_id", "client_secret", "https://api.example.com")
+
+        with pytest.raises(BritecoreError.NoTokenReturned):
+            token._request_new_token()
+
+        events = [
+            call.kwargs.get("event") for call in mock_log_with_category.call_args_list
+        ]
+        assert "oauth_token_missing_access_token" in events
+
+    @pytest.mark.unit
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.http")
+    @patch("britecore_sdk.api.britecore_oauth_token_manager.log_with_category")
+    def test_request_new_token_missing_access_token_with_fallback_reuses(
+        self, mock_log_with_category, mock_http
+    ):
+        """A refresh response without access_token should reuse an existing token."""
+        mock_http.request.return_value = type(
+            "Resp",
+            (),
+            {"status": 200, "data": b'{"expires_in": 3600}'},
+        )()
+
+        token = OAuthToken("client_id", "client_secret", "https://api.example.com")
+        token.token = "existing_token"
+
+        token._request_new_token()
+
+        assert token.token == "existing_token"
+        events = [
+            call.kwargs.get("event") for call in mock_log_with_category.call_args_list
+        ]
+        assert "oauth_token_refresh_missing_access_token_reused" in events
+
 
 class TestOAuthTokenHeaders:
     """Tests for authorization header building."""
