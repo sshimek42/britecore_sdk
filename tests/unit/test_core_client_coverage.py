@@ -908,6 +908,13 @@ class TestBritecoreAPIClientAdditional:
     """Additional targeted tests for BritecoreAPIClient uncovered logic."""
 
     @pytest.mark.unit
+    def test_timeout_seconds_returns_none_when_timeout_has_no_numeric_values(self):
+        from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
+
+        timeout = Timeout(total=None, connect=None, read=None)
+        assert BritecoreAPIClient._timeout_seconds(timeout) is None
+
+    @pytest.mark.unit
     def test_init_missing_api_key_and_oauth(self):
         from britecore_sdk.api.britecore_api_client import BritecoreAPIClient
         from britecore_sdk.exceptions import BritecoreError
