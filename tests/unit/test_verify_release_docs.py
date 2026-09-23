@@ -4,7 +4,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts" / "verify_release_docs.py"
+
+pytestmark = pytest.mark.unit
 
 
 def _write_release_docs(root: Path, *, version: str = "2.5.0") -> None:

@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import pytest
+
 from scripts.check_release_smoke_policy import (
     determine_release_type,
     evaluate_release_policy,
     has_break_glass_marker,
 )
+
+pytestmark = pytest.mark.unit
 
 
 def test_determine_release_type_minor_release() -> None:
@@ -30,6 +34,7 @@ def test_determine_release_type_prerelease() -> None:
 def test_break_glass_marker_detects_annotation() -> None:
     assert has_break_glass_marker("release: hotfix [break-glass]")
     assert not has_break_glass_marker("release: hotfix")
+    assert not has_break_glass_marker("release: [b] note")
 
 
 def test_evaluate_release_policy_rejects_minor_without_merged_pr() -> None:

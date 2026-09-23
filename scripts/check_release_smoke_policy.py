@@ -7,15 +7,19 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 EXACT_SEMVER_RE = re.compile(r"^v(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$")
+BREAK_GLASS_RE = re.compile(r"\[break-glass\]", flags=re.IGNORECASE)
+GITHUB_API_TIMEOUT_SECONDS = 15
 
 
 @dataclass(frozen=True)
@@ -30,23 +34,35 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+def _resolve_git_executable() -> str:
+    git_executable = shutil.which("git")
+    if not git_executable:
+        raise RuntimeError("git executable not found in PATH")
+    return git_executable
+
+
+def _run_git(repo_root: Path, *args: str) -> str:
+    return subprocess.check_output(
+        [_resolve_git_executable(), *args],
+        cwd=str(repo_root),
+        text=True,
+    )
+
+
 def _read_tag_contents(tag_name: str, repo_root: Path) -> str:
     try:
-        return subprocess.check_output(
-            ["git", "for-each-ref", f"refs/tags/{tag_name}", "--format=%(contents)"],
-            cwd=str(repo_root),
-            text=True,
+        return _run_git(
+            repo_root,
+            "for-each-ref",
+            f"refs/tags/{tag_name}",
+            "--format=%(contents)",
         ).strip()
     except subprocess.CalledProcessError:
         return ""
 
 
 def _list_version_tags(repo_root: Path) -> list[str]:
-    tags = subprocess.check_output(
-        ["git", "tag", "--list", "v*.*.*"],
-        cwd=str(repo_root),
-        text=True,
-    ).splitlines()
+    tags = _run_git(repo_root, "tag", "--list", "v*.*.*").splitlines()
     return [tag.strip() for tag in tags if tag.strip()]
 
 
@@ -79,13 +95,18 @@ def determine_release_type(tag_name: str, version_tags: list[str]) -> tuple[str,
 
 
 def has_break_glass_marker(tag_contents: str) -> bool:
-    return bool(re.search(r"\[break-glass]", tag_contents, flags=re.IGNORECASE))
+    """Return True when the tag annotation includes the literal [break-glass] marker."""
+    return bool(BREAK_GLASS_RE.search(tag_contents))
 
 
 def _fetch_associated_pull_requests(
     repo: str, commit_sha: str, token: str | None
 ) -> list[dict[str, Any]]:
     url = f"https://api.github.com/repos/{repo}/commits/{commit_sha}/pulls"
+    parsed_url = urlsplit(url)
+    if parsed_url.scheme != "https" or parsed_url.netloc != "api.github.com":
+        raise RuntimeError("GitHub API URL must use https://api.github.com")
+
     headers = {
         "Accept": "application/vnd.github.groot-preview+json, application/vnd.github+json",
         "User-Agent": "britecore-sdk-release-smoke-policy",
@@ -95,7 +116,7 @@ def _fetch_associated_pull_requests(
 
     request = Request(url, headers=headers, method="GET")
     try:
-        with urlopen(request) as response:
+        with urlopen(request, timeout=GITHUB_API_TIMEOUT_SECONDS) as response:
             payload = response.read().decode("utf-8")
     except HTTPError as exc:
         raise RuntimeError(
