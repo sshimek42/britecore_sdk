@@ -30,7 +30,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            const protectedPrefixes = ["master", "main", "release/"];
+            const protectedBranches = new Set(["master", "main"]);
             const stale = [];
 
             const branches = await github.paginate(
@@ -40,7 +40,7 @@ jobs:
 
             for (const branch of branches) {
               const name = branch.name;
-              if (protectedPrefixes.some((prefix) => name === prefix || name.startsWith(prefix))) {
+              if (protectedBranches.has(name) || name.startsWith("release/")) {
                 continue;
               }
 
@@ -64,7 +64,7 @@ jobs:
 
             stale.sort((a, b) => b.ageDays - a.ageDays);
 
-            const summaryHeader = `## Stale Branch Reminder (>= ${staleDays} days)`;
+            const summaryHeader = `Stale Branch Reminder (>= ${staleDays} days)`;
             core.summary.addHeading(summaryHeader, 2);
 
             if (stale.length === 0) {

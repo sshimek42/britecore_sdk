@@ -21,8 +21,8 @@ From the repository root:
 
 ```powershell
 git fetch --prune
-git branch --no-merged master
-git branch --merged master
+git branch --no-merged origin/master
+git branch --merged origin/master
 ```
 
 Then apply this policy:
@@ -30,7 +30,7 @@ Then apply this policy:
 1. Delete local branches fully merged into `master`:
    - `git branch -d <branch>`
 2. If branch commits are patch-equivalent but not graph-merged, confirm first, then force-delete:
-   - `git cherry -v master <branch>`
+   - `git cherry -v origin/master <branch>`
    - `git branch -D <branch>`
 3. Keep only one release archive branch per active release train.
 
@@ -39,9 +39,9 @@ Then apply this policy:
 Run all three checks:
 
 ```powershell
-git log --oneline master..<branch>
-git cherry -v master <branch>
-git diff --stat master...<branch>
+git log --oneline origin/master..<branch>
+git cherry -v origin/master <branch>
+git diff --stat origin/master...<branch>
 ```
 
 Force-delete only when the branch is either:
