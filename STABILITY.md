@@ -1,6 +1,6 @@
 # Stability and Support Policy
 
-*Last updated: July 19, 2026*
+*Last updated: September 24, 2026*
 *Document type: Governance policy*
 
 For SDK users and operators: understand stability commitments, support expectations, and version support timelines.
@@ -38,6 +38,16 @@ older                   ← No support
 - **Patch releases** — As needed (usually weekly for bug fixes)
 - **Minor releases** — Monthly or as features accumulate
 - **Major releases** — 6–12 months apart
+
+## Maintenance Operating Model
+
+`britecore_sdk` is maintained by a solo internal maintainer and defaults to **Mode B (Internal-First Active)**.
+
+- **Mode A (Maintenance-Only)** — Bug fixes, security updates, compatibility patches
+- **Mode B (Internal-First Active)** — Stabilize core workflows and accept targeted improvements that reduce operational overhead
+- **Mode C (Sunset/Archive Prep)** — Critical fixes only with explicit support-window communication
+
+Mode changes are quarterly and based on internal value, maintenance burden, and release overhead. For decision criteria, backlog filters, and 90-day execution guidance, see `SOLO_MAINTAINER_STRATEGY.md`.
 
 ## Backward Compatibility Guarantee
 

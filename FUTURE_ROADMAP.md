@@ -1,6 +1,6 @@
 # BriteCore SDK Future Roadmap (Beyond Configuration)
 
-*Last updated: September 23, 2026*
+*Last updated: September 24, 2026*
 *Audience: Maintainers and contributors planning `3.1+` work*
 *Scope: Product and SDK improvements beyond configuration, with a companion section for proposed config evolution notes*
 
@@ -42,6 +42,12 @@ These notes are additive guidance for future releases. They are intentionally sc
 - Prefer explicit, typed, and observable behavior over implicit magic.
 - Document behavior changes in release notes with runnable examples.
 - Avoid introducing new global state patterns.
+
+### Maintenance Alignment
+
+- Execute this roadmap under the internal-first active model (Mode B) by default.
+- Prioritize Must items over Should/Could unless a lower-tier item directly reduces near-term operational pain.
+- Use `SOLO_MAINTAINER_STRATEGY.md` quarterly criteria and backlog filters before accepting net-new scope.
 
 ---
 

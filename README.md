@@ -584,6 +584,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 ## Support & Links
 
 - **Issues & feedback:** [GitHub Issues](https://github.com/sshimek42/britecore_sdk/issues)
+- **Maintenance model:** Solo-maintained with an internal-first active posture (Mode B); see [SOLO_MAINTAINER_STRATEGY.md](./SOLO_MAINTAINER_STRATEGY.md) for cadence, scope filters, and quarterly decision criteria.
 - **Security concerns:** See [SECURITY.md](SECURITY.md)
 - **Roadmap & stability:** See [STABILITY.md](./STABILITY.md)
 - **BriteCore platform:** [www.britecore.com](https://www.britecore.com/)
