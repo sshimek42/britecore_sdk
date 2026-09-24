@@ -1,6 +1,6 @@
 # BriteCore SDK Improvement Roadmap
 
-*Last updated: September 23, 2026*
+*Last updated: September 24, 2026*
 *Status: Active roadmap aligned to `v2.5.1` and `v3.0.0` deprecation planning*
 *Audience: Maintainers and contributors*
 
@@ -106,6 +106,8 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 
 ## Contribution Guidance
 
+- Operating mode default is internal-first active (Mode B): prioritize core workflow stability and targeted changes that reduce operational overhead.
+- Defer broad ecosystem features unless there is clear adoption urgency; use `SOLO_MAINTAINER_STRATEGY.md` quarterly criteria and backlog filters when triaging new work.
 - For immediate contributions, prioritize `2.5.x` migration-warning and guidance items.
 - For migration-focused work, coordinate changes under `2.5.x` and `2.6.x` phases.
 - Before implementing deprecation-affecting changes, ensure `CHANGELOG.md` and `DEPRECATION.md` remain synchronized.
