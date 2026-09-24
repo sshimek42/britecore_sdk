@@ -147,11 +147,12 @@ jobs:
         run: |
           python - <<'PY'
           import os
+          from packaging.version import Version
 
           release_tag = os.environ["RELEASE_TAG"]
           package_version = os.environ["PACKAGE_VERSION"]
           expected_version = release_tag[1:] if release_tag.startswith("v") else release_tag
-          if package_version != expected_version:
+          if Version(package_version) != Version(expected_version):
               raise SystemExit(
                   f"Built distribution version '{package_version}' does not match release tag '{release_tag}'."
               )
@@ -186,9 +187,14 @@ jobs:
           skip-existing: true
 
   smoke-test-install:
-    needs: [build, publish]
+    needs: [validate-source-ref, build, publish]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.validate-source-ref.outputs.checkout_ref }}
+
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
