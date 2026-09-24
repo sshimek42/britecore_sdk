@@ -156,11 +156,15 @@ def main(argv: list[str] | None = None) -> int:
                     descriptor = "wheel" if artifact_type == "bdist_wheel" else "sdist"
                     if artifact_type == "bdist_wheel":
                         print(
-                            f"Resolved published {descriptor} artifact from {args.index_label}: {artifact_url}"
+                            "Resolved published "
+                            f"{descriptor} artifact from {args.index_label}: "
+                            f"{artifact_url}"
                         )
                     else:
                         print(
-                            f"Wheel artifact not listed yet; falling back to published {descriptor} artifact from {args.index_label}: {artifact_url}"
+                            "Wheel artifact not listed yet; "
+                            f"falling back to published {descriptor} "
+                            f"artifact from {args.index_label}: {artifact_url}"
                         )
                     append_github_output(
                         args.github_output,
@@ -188,7 +192,9 @@ def main(argv: list[str] | None = None) -> int:
                 )
         except Exception as exc:
             print(
-                f"Unexpected error while checking {args.index_label} metadata for {args.package_name}=={args.package_version}: "
+                "Unexpected error while checking "
+                f"{args.index_label} metadata for "
+                f"{args.package_name}=={args.package_version}: "
                 f"{exc} (attempt {attempt}/{args.max_attempts})."
             )
 
@@ -196,9 +202,13 @@ def main(argv: list[str] | None = None) -> int:
             raise SystemExit(
                 " ".join(
                     [
-                        f"Package {args.package_name}=={args.package_version} did not become available from {args.index_label} in time.",
+                        "Package "
+                        f"{args.package_name}=={args.package_version} "
+                        f"did not become available from {args.index_label} in time.",
                         "The publish step may still have succeeded while registry metadata propagation lagged.",
-                        "Re-run the smoke-test job or re-run the publish workflow manually from the same tag if this package version later appears in the registry.",
+                        "Re-run the smoke-test job or re-run the "
+                        "publish workflow manually from the same tag "
+                        "if this package version later appears in the registry.",
                     ]
                 )
             )
