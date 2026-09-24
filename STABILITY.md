@@ -175,6 +175,6 @@ When a major dependency upgrades:
 
 ## See Also
 
-- GitHub Releases — Versioned release notes and change details
+- [GitHub Releases](https://github.com/sshimek42/britecore_sdk/releases) — Versioned release notes and change details
 - [SECURITY.md](SECURITY.md) — Security reporting and patch timeline
 - [PYTHON_COMPATIBILITY.md](PYTHON_COMPATIBILITY.md) — Detailed version matrix
