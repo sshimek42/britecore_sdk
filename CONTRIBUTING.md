@@ -279,21 +279,24 @@ Use this checklist when cutting a release to keep Git tags, GitHub releases, and
 - [ ] Verify `.github/workflows/release.yml` calls `.github/workflows/publish.yml` after creating the GitHub Release and that the publish/smoke-test jobs pass.
 - [ ] If manual publish is required, run `Publish to PyPI` via `workflow_dispatch` from a tag ref and set `release-tag` to the same tag value.
 
-### Recommended branch protection settings (`main`)
+### Current branch protection baseline (`main` / `master`)
 
-Configure GitHub branch protection so repository settings match the release policy above:
+For the current solo-maintainer operating model, keep GitHub branch protection aligned with `docs/BRANCH_PROTECTION_BASELINE.md`:
 
 - [ ] Require a pull request before merging.
-- [ ] Require at least 1 approving review.
+- [ ] Require `0` approving reviews (solo-maintainer baseline; revisit if the maintainer model changes).
 - [ ] Require status checks to pass before merging.
-- [ ] Include these required checks: `build-docs`, `Docs-only QA`, `Release smoke checks`, `test (3.11, false)`, `quality (3.11)`, and `lint`.
+- [ ] Include these required checks: `Analyze (actions)`, `Analyze (python)`, `CodeQL`, and `DeepSource: Secrets`.
 - [ ] Dismiss stale PR approvals when new commits are pushed.
 - [ ] Require branches to be up to date before merging.
+- [ ] Require conversation resolution before merging.
 - [ ] Restrict who can push to matching branches (or disable direct pushes).
+- [ ] Require linear history.
 - [ ] Do not allow force pushes.
 - [ ] Do not allow deletions.
 
 > **Tip:** For emergency patch releases, use the documented break-glass tag process, then merge the follow-up PR to `main` as soon as possible.
+> **Tip:** Treat `docs/BRANCH_PROTECTION_BASELINE.md` as the canonical operational source of truth and update it in the same PR as any branch-protection change.
 
 ### Documentation validation
 

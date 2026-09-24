@@ -307,6 +307,7 @@ This repo is the authoritative SDK documentation set. Use it for installation, a
 | **Python compatibility** | [PYTHON_COMPATIBILITY.md](./PYTHON_COMPATIBILITY.md) |
 | **Contributing** | [CONTRIBUTING.md](./CONTRIBUTING.md) |
 | **Branch hygiene** | [docs/BRANCH_HYGIENE.md](./docs/BRANCH_HYGIENE.md) |
+| **Branch protection baseline** | [docs/BRANCH_PROTECTION_BASELINE.md](./docs/BRANCH_PROTECTION_BASELINE.md) |
 | **Code of Conduct** | [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) |
 | **Troubleshooting** | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) |
 | **Security policy** | [SECURITY.md](./SECURITY.md) |
