@@ -51,10 +51,6 @@ This will additionally:
 .\scripts\update_environment.ps1 -Advanced -DryRun
 ```
 
-### Advanced mode without security audit
-```powershell
-.\scripts\update_environment.ps1 -Advanced
-```
 
 ## All Parameters
 
