@@ -1,0 +1,83 @@
+name: PR Guardrails
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-guardrails-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-smoke:
+    name: Package build/install smoke
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Build distribution artifacts
+        run: |
+          python -m pip install --upgrade pip build
+          rm -rf dist
+          python -m build
+
+      - name: Smoke install built wheel in clean venv
+        run: |
+          python -m venv .tmp-ci-smoke
+          . .tmp-ci-smoke/bin/activate
+          python -m pip install --upgrade pip
+          wheel_path=$(ls -t dist/*.whl | head -n 1)
+          if [ -z "$wheel_path" ]; then
+            echo "No wheel artifact found in dist/"
+            exit 1
+          fi
+          python -m pip install --no-deps "$wheel_path"
+
+      - name: Verify import and version parity
+        run: |
+          . .tmp-ci-smoke/bin/activate
+          python - <<'PY'
+          import tomllib
+          from pathlib import Path
+
+          import britecore_sdk
+
+          pyproject = tomllib.loads(Path("pyproject.toml").read_text(encoding="utf-8"))
+          expected = pyproject["project"]["version"]
+          runtime = britecore_sdk.__version__
+          if runtime != expected:
+              raise SystemExit(
+                  f"Smoke import version mismatch: runtime={runtime}, expected={expected}"
+              )
+          print(f"Smoke import validated: britecore_sdk=={runtime}")
+          PY
+
+  release-doc-consistency:
+    name: Release doc consistency
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Verify release-facing docs
+        run: python scripts/verify_release_docs.py
+
