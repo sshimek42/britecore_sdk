@@ -127,7 +127,7 @@ enabled = true
 ### Setup (One-time)
 
 1. **Connect GitHub repo to DeepSource:**
-   - Go to [app.deepsource.com](https://app.deepsource.com)
+   - Go to [DeepSource](https://deepsource.com/) and sign in
    - Link your GitHub account
    - Add `sshimek42/britecore_sdk`
 
