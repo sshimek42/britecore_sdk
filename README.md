@@ -11,7 +11,7 @@ A production-ready **Python SDK for the BriteCore Insurance API**.
 [![PyPI version](https://img.shields.io/pypi/v/britecore_sdk.svg)](https://pypi.org/project/britecore_sdk/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Tests](https://github.com/sshimek42/britecore_sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/sshimek42/britecore_sdk/actions)
-[![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
+[![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://app.codecov.io/gh/sshimek42/britecore_sdk)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![ReadTheDocs](https://app.readthedocs.org/projects/britecore-sdk/badge/?version=latest)](https://britecore-sdk.readthedocs.io/en/latest/)
 
