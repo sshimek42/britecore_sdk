@@ -38,6 +38,10 @@ RELEASE_DOC_CHECKS: tuple[ReleaseDocCheck, ...] = (
     ),
 )
 
+EXACT_SEMVER_RE = re.compile(
+    r"^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$"
+)
+
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
@@ -47,6 +51,50 @@ def _read_project_version(repo_root: Path) -> str:
     with (repo_root / "pyproject.toml").open("rb") as fh:
         pyproject = tomllib.load(fh)
     return pyproject["project"]["version"]
+
+
+def _release_type(version: str) -> str:
+    """Return the release type for a semantic version string."""
+    match = EXACT_SEMVER_RE.fullmatch(version)
+    if not match:
+        return "unknown"
+
+    major = int(match.group("major"))
+    minor = int(match.group("minor"))
+    patch = int(match.group("patch"))
+
+    if patch > 0:
+        return "patch"
+    if minor > 0:
+        return "minor"
+    if major > 0:
+        return "major"
+    return "unknown"
+
+
+def _verify_security_support_table(version: str, repo_root: Path) -> list[str]:
+    """Return SECURITY.md validation errors for non-patch releases."""
+    match = EXACT_SEMVER_RE.fullmatch(version)
+    if not match or _release_type(version) not in {"major", "minor"}:
+        return []
+
+    major = int(match.group("major"))
+    next_major = major + 1
+    security_path = repo_root / "SECURITY.md"
+    if not security_path.exists():
+        return ["SECURITY.md: missing file"]
+
+    text = security_path.read_text(encoding="utf-8")
+    support_pattern = (
+        rf"^\|\s*{major}\.x\s*\|\s*Active\s*\|\s*"
+        rf"Until next major release \(`v{next_major}\.0\.0`\)\s*\|$"
+    )
+    if not re.search(support_pattern, text, flags=re.MULTILINE):
+        return [
+            f"SECURITY.md: expected supported-version table row for {major}.x active support through v{next_major}.0.0"
+        ]
+
+    return []
 
 
 def verify_release_docs(version: str, repo_root: Path) -> list[str]:
@@ -63,6 +111,8 @@ def verify_release_docs(version: str, repo_root: Path) -> list[str]:
         pattern = check.pattern_template.format(version=re.escape(version))
         if not re.search(pattern, text, flags=re.MULTILINE):
             errors.append(f"{check.path}: expected {check.description} for v{version}")
+
+    errors.extend(_verify_security_support_table(version, repo_root))
 
     return errors
 
