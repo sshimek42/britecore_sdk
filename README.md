@@ -537,9 +537,9 @@ mypy src/britecore_sdk/api/britecore_api_client.py
 ### Release Publishing (GitHub Actions)
 
 - TestPyPI dry-run workflow: `.github/workflows/publish-testpypi.yml` (**manual trigger only** via `workflow_dispatch`)
-- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** for CI-created GitHub releases, and also **manually runnable** via `workflow_dispatch`)
+- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** when `.github/workflows/release.yml` calls it after creating the GitHub Release, and also **manually runnable** via `workflow_dispatch`)
 
-Both workflows use OIDC trusted publishing and include build + publish + install smoke tests. Depending on your GitHub environment protection rules, the publish job may still pause for environment approval even when the workflow itself was triggered automatically.
+Both workflows use OIDC trusted publishing and include build + publish + install smoke tests. The smoke tests poll the package JSON API and install the exact published wheel/sdist URL so they are less sensitive to package-index propagation lag. Depending on your GitHub environment protection rules, the publish job may still pause for environment approval even when the workflow itself was triggered automatically.
 
 1. Create GitHub environments: `testpypi` and `pypi`.
 2. In TestPyPI, add a Trusted Publisher entry for:
@@ -553,7 +553,7 @@ Both workflows use OIDC trusted publishing and include build + publish + install
 4. Run `Publish to TestPyPI` from the Actions tab before cutting a production release.
 5. Push a SemVer tag (for example `v2.0.5` or `v2.0.5-rc.1`) to trigger `.github/workflows/release.yml`.
 6. `release.yml` validates that the tag format is valid and that the tag version matches `project.version` in `pyproject.toml` before running tests/build/release steps.
-7. After `.github/workflows/release.yml` completes and publishes the GitHub Release, `.github/workflows/publish.yml` runs automatically and publishes to PyPI. (Manual UI-created releases do not auto-publish; use `workflow_dispatch` for intentional manual publishing, select a release **tag** as the workflow ref, and provide the same value in the `release-tag` input.)
+7. After `.github/workflows/release.yml` creates the GitHub Release, it directly calls `.github/workflows/publish.yml` to publish to PyPI. This avoids relying on the `release.published` event from an automated release. Manual UI-created releases still do not auto-publish; use `workflow_dispatch` for intentional manual publishing, select a release **tag** as the workflow ref, and provide the same value in the `release-tag` input.
 
 ### Contributing
 

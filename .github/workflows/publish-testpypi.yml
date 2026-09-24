@@ -14,6 +14,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      package_name: ${{ steps.package.outputs.name }}
+      package_version: ${{ steps.package.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -28,6 +31,43 @@ jobs:
           python -m pip install --upgrade pip build twine
           pyproject-build
           python -m twine check dist/*
+
+      - name: Read package metadata from distributions
+        id: package
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          dist_dir = Path("dist")
+          if not dist_dir.exists():
+              raise SystemExit("dist/ directory was not found.")
+
+          wheel_candidates = sorted(dist_dir.glob("*.whl"))
+          sdist_candidates = sorted(dist_dir.glob("*.tar.gz"))
+          artifact = wheel_candidates[0] if wheel_candidates else sdist_candidates[0] if sdist_candidates else None
+          if artifact is None:
+              raise SystemExit("No distribution artifacts were found in dist/.")
+
+          name = ""
+          version = ""
+          if artifact.name.endswith(".whl"):
+              parts = artifact.name[:-4].split("-")
+              if len(parts) < 2:
+                  raise SystemExit(f"Could not parse wheel filename: {artifact.name}")
+              name, version = parts[0], parts[1]
+          else:
+              stem = artifact.name[:-7]
+              if "-" not in stem:
+                  raise SystemExit(f"Could not parse sdist filename: {artifact.name}")
+              name, version = stem.rsplit("-", 1)
+
+          github_output = Path(os.environ["GITHUB_OUTPUT"])
+          with github_output.open("a", encoding="utf-8") as out:
+              out.write(f"name={name}\n")
+              out.write(f"version={version}\n")
+          PY
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v7
@@ -58,56 +98,85 @@ jobs:
           skip-existing: true
 
   smoke-test-install:
-    needs: publish
+    needs: [build, publish]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 
-      - name: Read package metadata
-        id: package
+      - name: Resolve published distribution URL
+        id: resolve-artifact
         shell: bash
+        env:
+          PACKAGE_NAME: ${{ needs.build.outputs.package_name }}
+          PACKAGE_VERSION: ${{ needs.build.outputs.package_version }}
+          PACKAGE_INDEX_JSON_BASE: https://test.pypi.org/pypi
+          PACKAGE_INDEX_LABEL: TestPyPI
         run: |
-          python - <<'PY'
-          import os
-          import tomllib
-
-          with open("pyproject.toml", "rb") as f:
-              data = tomllib.load(f)
-
-          project = data["project"]
-          github_output = os.environ["GITHUB_OUTPUT"]
-          with open(github_output, "a", encoding="utf-8") as out:
-              out.write(f"name={project['name']}\n")
-              out.write(f"version={project['version']}\n")
-          PY
+          python scripts/resolve_published_artifact.py \
+            --package-name "$PACKAGE_NAME" \
+            --package-version "$PACKAGE_VERSION" \
+            --json-base "$PACKAGE_INDEX_JSON_BASE" \
+            --index-label "$PACKAGE_INDEX_LABEL"
 
       - name: Smoke test install from TestPyPI
         shell: bash
+        env:
+          ARTIFACT_URL: ${{ steps.resolve-artifact.outputs.artifact_url }}
         run: |
           python -m pip install --upgrade pip
-          PACKAGE_NAME="${{ steps.package.outputs.name }}"
-          PACKAGE_VERSION="${{ steps.package.outputs.version }}"
 
-          if [ -z "$PACKAGE_NAME" ] || [ -z "$PACKAGE_VERSION" ]; then
-            echo "Package metadata outputs were empty. name='$PACKAGE_NAME' version='$PACKAGE_VERSION'"
+          if [ -z "$ARTIFACT_URL" ]; then
+            echo "Published artifact URL was empty."
             exit 1
           fi
 
-          REQUIREMENT="${PACKAGE_NAME}==${PACKAGE_VERSION}"
-          echo "Attempting to install $REQUIREMENT from TestPyPI"
+          echo "Installing published artifact from $ARTIFACT_URL"
+          python -m pip install --no-cache-dir "$ARTIFACT_URL"
 
-          for attempt in 1 2 3 4 5; do
-            python -m pip install --index-url https://test.pypi.org/simple --extra-index-url https://pypi.org/simple "$REQUIREMENT" && break
-            if [ "$attempt" -eq 5 ]; then
-              echo "Package did not become available on TestPyPI in time."
-              exit 1
-            fi
-            echo "Attempt $attempt failed. Waiting 30 seconds for TestPyPI index propagation..."
-            sleep 30
-          done
+      - name: Smoke test import
+        shell: bash
+        env:
+          PACKAGE_NAME: ${{ needs.build.outputs.package_name }}
+          EXPECTED_VERSION: ${{ needs.build.outputs.package_version }}
+        run: |
+          python - <<'PY'
+          import os
+          from importlib import metadata
+
+          import britecore_sdk
+
+          package_name = os.environ["PACKAGE_NAME"]
+          expected_version = os.environ["EXPECTED_VERSION"]
+          runtime_version = britecore_sdk.__version__
+          installed_version = metadata.version(package_name)
+
+          if runtime_version != expected_version:
+              raise SystemExit(
+                  f"Imported britecore_sdk version '{runtime_version}' did not match expected version '{expected_version}'."
+              )
+          if installed_version != expected_version:
+              raise SystemExit(
+                  f"Installed distribution version '{installed_version}' did not match expected version '{expected_version}'."
+              )
+
+          print(f"Imported britecore_sdk {runtime_version}")
+          print(f"Verified installed distribution {package_name}=={installed_version}")
+          PY
+
+      - name: Append smoke test summary
+        shell: bash
+        env:
+          PACKAGE_NAME: ${{ needs.build.outputs.package_name }}
+          PACKAGE_VERSION: ${{ needs.build.outputs.package_version }}
+          ARTIFACT_TYPE: ${{ steps.resolve-artifact.outputs.artifact_type }}
+          ARTIFACT_URL: ${{ steps.resolve-artifact.outputs.artifact_url }}
+        run: |
+          {
+            echo "### Smoke test completed"
+            echo "- Package: \\`$PACKAGE_NAME==$PACKAGE_VERSION\\`"
+            echo "- Artifact type: \\`$ARTIFACT_TYPE\\`"
+            echo "- Artifact URL: \\`$ARTIFACT_URL\\`"
+          } >> "$GITHUB_STEP_SUMMARY"
