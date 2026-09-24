@@ -22,6 +22,7 @@ All three branches currently share the same policy:
   - `Analyze (python)`
   - `CodeQL`
   - `DeepSource: Secrets`
+- **Additional CI jobs may run on pull requests, but only the checks above are currently configured as branch-protection requirements.**
 - **Required approving reviews:** `0` (solo-pragmatic)
 - **Dismiss stale reviews:** `true`
 - **Require conversation resolution:** `true`
@@ -37,27 +38,6 @@ All three branches currently share the same policy:
 Use these commands to reapply the baseline after accidental drift.
 
 ```powershell
-$checksBody = @'
-{
-  "strict": true,
-  "contexts": [
-    "Analyze (actions)",
-    "Analyze (python)",
-    "CodeQL",
-    "DeepSource: Secrets"
-  ]
-}
-'@
-
-$reviewsBody = @'
-{
-  "dismiss_stale_reviews": true,
-  "require_code_owner_reviews": false,
-  "require_last_push_approval": false,
-  "required_approving_review_count": 0
-}
-'@
-
 $fullProtectionBody = @'
 {
   "required_status_checks": {
@@ -87,15 +67,10 @@ $fullProtectionBody = @'
 }
 '@
 
-# release branches
-$checksBody | gh api --method PATCH repos/sshimek42/britecore_sdk/branches/release/2.5.x/protection/required_status_checks --input -
-$reviewsBody | gh api --method PATCH repos/sshimek42/britecore_sdk/branches/release/2.5.x/protection/required_pull_request_reviews --input -
-
-$checksBody | gh api --method PATCH repos/sshimek42/britecore_sdk/branches/release/2.4.x/protection/required_status_checks --input -
-$reviewsBody | gh api --method PATCH repos/sshimek42/britecore_sdk/branches/release/2.4.x/protection/required_pull_request_reviews --input -
-
-# master (full payload keeps linear-history explicit)
+# apply the full payload to each protected branch
 $fullProtectionBody | gh api --method PUT repos/sshimek42/britecore_sdk/branches/master/protection --input -
+$fullProtectionBody | gh api --method PUT repos/sshimek42/britecore_sdk/branches/release/2.5.x/protection --input -
+$fullProtectionBody | gh api --method PUT repos/sshimek42/britecore_sdk/branches/release/2.4.x/protection --input -
 ```
 
 ## Verification Commands
@@ -110,3 +85,4 @@ gh api repos/sshimek42/britecore_sdk/branches/release/2.4.x/protection
 
 - This baseline intentionally keeps CI gates high while avoiding approval bottlenecks for solo ownership.
 - If required check names change (workflow renames), update this document in the same PR as the workflow change.
+- This document records the exact live GitHub settings; broader governance docs should link back here instead of duplicating different approval or check lists.

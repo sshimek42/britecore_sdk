@@ -43,29 +43,27 @@ Use this when configuring or auditing protection for the default branch (`master
 
 | Branch pattern | Required approvals | Stale approval dismissal | Conversation resolution | Notes |
 | --- | --- | --- | --- | --- |
-| `master` (or `main`) | 1+ | Enabled | Enabled | Default branch baseline. |
-| `release/2.4.x` | 1+ | Enabled | Enabled | Maintenance/hotfix lane while supported; remove after documented EOL. |
-| `release/2.5.x` | 2+ (recommended) | Enabled | Enabled | Active development lane; prefer stronger review depth. |
+| `master` (or `main`) | 0 | Enabled | Enabled | Current solo-maintainer baseline; raise only if the maintainer model changes. |
+| `release/2.4.x` | 0 | Enabled | Enabled | Maintenance/hotfix lane while supported; remove after documented EOL. |
+| `release/2.5.x` | 0 | Enabled | Enabled | Active release-first development lane; land 2.5 work here, then sync to `master`. |
 
-When rolling to a new active minor line, update this matrix and required-check settings in the same PR that changes release branch policy.
+When rolling to a new active minor line, update this matrix and `docs/BRANCH_PROTECTION_BASELINE.md` in the same PR that changes release branch policy.
 
 ### Required Status Checks (Recommended)
 
-Set required checks using current workflow status names:
+The canonical list lives in `docs/BRANCH_PROTECTION_BASELINE.md`. As of September 24, 2026, the required checks are:
 
-- `build-docs`
-- `Docs-only QA`
-- `Release smoke checks`
-- `test (3.11, false)`
-- `quality (3.11)`
-- `lint`
+- `Analyze (actions)`
+- `Analyze (python)`
+- `CodeQL`
+- `DeepSource: Secrets`
 
-> **Note:** Keep check names in sync with workflow names in `.github/workflows/` when workflows are renamed.
+> **Note:** Other CI jobs may still run on pull requests; branch protection should only require the checks listed in `docs/BRANCH_PROTECTION_BASELINE.md`.
 
 ### Branch-Specific Guidance
 
 - **`release/2.4.x`:** restrict merge permissions to release maintainers; treat as patch-only line and avoid batching unrelated changes.
-- **`release/2.5.x`:** require full CI gate parity with default branch and use CODEOWNERS review where applicable.
+- **`release/2.5.x`:** require full CI gate parity with default branch and use additional human review opportunistically when available.
 - **Emergency exception path:** if an incident requires a break-glass tag without PR merge, complete `docs/RELEASE_HOTFIX_TEMPLATE.md` and `docs/HOTFIX_CONTINGENCY_2_4_x.md` immediately after the release.
 
 ### Copy/Paste PR Description: Release Branch Protection Rollout

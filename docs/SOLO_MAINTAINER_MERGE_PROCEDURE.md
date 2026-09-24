@@ -61,11 +61,11 @@ Use this as a preflight check: if the PR has only one human reviewer available a
 The safest solo-maintainer path is:
 
 1. Keep the default branch protection in place for normal work.
-2. Temporarily reduce the required approval count to `0`.
+2. Temporarily reduce the required approval count to `0` only if the current branch policy still requires approvals.
 3. Keep required status checks enabled.
 4. Resolve every review thread before merging.
 5. Merge with admin privileges if needed.
-6. Restore the original protection settings immediately after merging.
+6. Restore the documented baseline immediately after merging.
 
 ---
 
@@ -80,7 +80,9 @@ Before changing repository settings, confirm:
 - Every review thread is resolved.
 - No follow-up fix commits are still pending.
 
-### 2) Temporarily relax the approval requirement
+### 2) Temporarily relax the approval requirement (only if needed)
+
+If the branch already uses the current solo-maintainer baseline from `docs/BRANCH_PROTECTION_BASELINE.md`, skip this step.
 
 Set branch protection so that:
 
@@ -112,12 +114,14 @@ Adjust the PR number as needed.
 
 ### 5) Restore branch protection
 
-Immediately after the merge, restore the original settings:
+Immediately after the merge, restore the documented baseline from `docs/BRANCH_PROTECTION_BASELINE.md`. As of September 24, 2026, that means:
 
-- `required_approving_review_count = 1`
-- `require_code_owner_reviews = true`
+- `required_approving_review_count = 0`
+- `require_code_owner_reviews = false`
 - keep the same required status checks
 - keep `enforce_admins` enabled
+- keep `required_conversation_resolution` enabled
+- keep `required_linear_history` enabled
 - keep force pushes and deletions disabled
 
 ---
