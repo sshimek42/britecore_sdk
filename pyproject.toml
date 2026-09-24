@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "britecore_sdk"
-version = "2.5.0"
+version = "2.5.1"
 description = "Professional Python SDK for the BriteCore API — complete endpoint coverage, async support, OAuth/API key auth, and type hints."
 readme = "README.md"
 license = "Apache-2.0"
@@ -87,7 +87,7 @@ dev = [
     "britecore_sdk[build]",
 ]
 docs = [
-    "sphinx>=9.0.4,<9.1",
+    "sphinx>=9.0.4,<9.2",
     "myst-parser>=5.1.0",
     "sphinx-rtd-theme>=3.1.0",
 ]
@@ -141,7 +141,9 @@ target-version = ["py311"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "D202", "D209", "D300"]
-ignore = ["E501"]
+
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
 
 [tool.mypy]
 python_version = "3.11"

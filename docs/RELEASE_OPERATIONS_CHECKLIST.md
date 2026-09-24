@@ -44,8 +44,10 @@ Use this when configuring or auditing protection for the default branch (`master
 | Branch pattern | Required approvals | Stale approval dismissal | Conversation resolution | Notes |
 | --- | --- | --- | --- | --- |
 | `master` (or `main`) | 1+ | Enabled | Enabled | Default branch baseline. |
-| `release/2.4.x` | 1+ | Enabled | Enabled | Maintenance/hotfix lane; optimize for controlled and fast patch response. |
+| `release/2.4.x` | 1+ | Enabled | Enabled | Maintenance/hotfix lane while supported; remove after documented EOL. |
 | `release/2.5.x` | 2+ (recommended) | Enabled | Enabled | Active development lane; prefer stronger review depth. |
+
+When rolling to a new active minor line, update this matrix and required-check settings in the same PR that changes release branch policy.
 
 ### Required Status Checks (Recommended)
 
