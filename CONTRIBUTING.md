@@ -276,7 +276,7 @@ Use this checklist when cutting a release to keep Git tags, GitHub releases, and
 - [ ] If break-glass patch process is used, complete `docs/RELEASE_HOTFIX_TEMPLATE.md` and link it in the follow-up PR.
 - [ ] Push a SemVer tag in `vX.Y.Z` format (or prerelease like `vX.Y.Z-rc.1`).
 - [ ] Verify `.github/workflows/release.yml` passes (it validates tag format + tag/version parity, runs release-docs verification, and builds the GitHub release).
-- [ ] Verify `.github/workflows/publish.yml` runs after the CI-created release and publishes to PyPI.
+- [ ] Verify `.github/workflows/release.yml` calls `.github/workflows/publish.yml` after creating the GitHub Release and that the publish/smoke-test jobs pass.
 - [ ] If manual publish is required, run `Publish to PyPI` via `workflow_dispatch` from a tag ref and set `release-tag` to the same tag value.
 
 ### Recommended branch protection settings (`main`)
@@ -383,6 +383,7 @@ Content...
 ```
 
 **Document type categories:**
+
 - **Living guide** — Frequently updated, task-oriented (e.g., GETTING_STARTED.md, CONTRIBUTING.md)
 - **Reference** — Static reference material (e.g., API.md, ARCHITECTURE.md)
 - **Planning** — Roadmaps and roadmap-related docs (e.g., V2_ROADMAP.md)
@@ -498,6 +499,7 @@ def endpoint_wrapper(param1: str, param2: int = 10) -> dict:
 ```
 
 **Docstring checklist for all endpoint wrappers:**
+
 - ✓ One-line summary (imperative, e.g., "Create a quote..." not "Creates a quote...")
 - ✓ Extended description (context, behavior, side effects)
 - ✓ Args section with descriptions

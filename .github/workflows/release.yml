@@ -189,3 +189,14 @@ jobs:
           draft: false
           prerelease: ${{ contains(github.ref_name, '-') }}  # e.g. v1.2.0-beta
           files: dist/*
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: github-release
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/publish.yml
+    with:
+      release_tag: ${{ github.ref_name }}

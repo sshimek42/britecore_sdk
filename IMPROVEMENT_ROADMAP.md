@@ -6,7 +6,7 @@
 
 ## Executive Summary
 
-`britecore_sdk` is stable and released at `v2.5.0`. The near-term roadmap now shifts from completed `2.5.0` deprecation signaling work into migration safety: continue strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
+`britecore_sdk` is stable and released at `v2.5.1`. The near-term roadmap now shifts from the completed `2.5.0` deprecation signaling work into migration safety: continue strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
 
 This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For deprecation policy and removal commitments, use `DEPRECATION.md`.
 
