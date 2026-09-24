@@ -93,4 +93,3 @@
 ## Full Documentation
 
 See `scripts/UPDATE_ENVIRONMENT.md` for complete reference.
-

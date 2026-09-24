@@ -126,4 +126,3 @@ Register-ScheduledTask -TaskName "SDK-Weekly-Update" -Action $action -Trigger $t
 - [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) - Common issues
 - [PYTHON_COMPATIBILITY.md](../PYTHON_COMPATIBILITY.md) - Supported versions
 - [pyproject.toml](../pyproject.toml) - Dependency definitions
-

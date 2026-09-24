@@ -69,12 +69,12 @@ This will additionally:
 ## What It Checks
 
 ### Prerequisites
-✓ `uv` is installed and accessible  
-✓ `python` is installed and accessible  
+✓ `uv` is installed and accessible
+✓ `python` is installed and accessible
 
 ### Python Version
-✓ Python 3.11 or higher (required by the project)  
-✓ Warns if using unsupported versions (not in 3.11-3.14)  
+✓ Python 3.11 or higher (required by the project)
+✓ Warns if using unsupported versions (not in 3.11-3.14)
 
 ### Dependencies
 - Syncs `pyproject.toml` dependencies into virtual environment
@@ -169,4 +169,3 @@ uv sync --extra dev
 - [GETTING_STARTED.md](../GETTING_STARTED.md) — Initial setup
 - [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) — Common issues
 - [PYTHON_COMPATIBILITY.md](../PYTHON_COMPATIBILITY.md) — Supported versions
-

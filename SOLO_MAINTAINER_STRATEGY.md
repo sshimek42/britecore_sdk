@@ -1,7 +1,7 @@
 # Solo Maintainer Strategy
 
-**Project:** `britecore_sdk`  
-**Owner model:** Single internal maintainer  
+**Project:** `britecore_sdk`
+**Owner model:** Single internal maintainer
 **Effective date:** 2026-09-24
 
 ## Purpose
@@ -89,4 +89,3 @@ If fewer than 2 answers are "yes", defer the work.
 - Keep `README.md`, `CHANGELOG.md`, and roadmap docs aligned each release.
 - Record deferrals explicitly to avoid hidden backlog growth.
 - Prefer clear "no action required" notes for non-impacting internal changes.
-

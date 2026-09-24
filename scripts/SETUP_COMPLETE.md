@@ -60,20 +60,20 @@ You now have a complete **environment update and maintenance solution** for your
 ## What It Does
 
 ### Simple Mode (Default)
-✓ Verifies uv and Python are installed  
-✓ Checks Python compatibility (≥3.11)  
-✓ Syncs dependencies from `pyproject.toml`  
-✓ Runs full test suite  
-✓ Reports summary  
+✓ Verifies uv and Python are installed
+✓ Checks Python compatibility (≥3.11)
+✓ Syncs dependencies from `pyproject.toml`
+✓ Runs full test suite
+✓ Reports summary
 
 **Time:** ~30-60 seconds
 
 ### Advanced Mode (`-Advanced` flag)
-Everything above, plus:  
-✓ Updates uv to latest version  
-✓ Upgrades all dependencies to latest compatible  
-✓ Runs security audit (pip-audit) for CVEs  
-✓ Detailed compatibility report  
+Everything above, plus:
+✓ Updates uv to latest version
+✓ Upgrades all dependencies to latest compatible
+✓ Runs security audit (pip-audit) for CVEs
+✓ Detailed compatibility report
 
 **Time:** ~2-5 minutes
 
@@ -219,4 +219,3 @@ scripts/
 ---
 
 **Questions or improvements?** See `UPDATE_ENVIRONMENT.md` for troubleshooting and related documentation.
-
