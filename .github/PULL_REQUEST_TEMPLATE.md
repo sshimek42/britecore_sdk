@@ -2,6 +2,14 @@
 
 <!-- Describe what this PR does and why. Link related issues if applicable (e.g., Closes #123). -->
 
+## PR size budget (solo-maintainer guidance)
+
+<!-- Informational guidance (non-blocking): keep PR scope narrow for easier review and rollback. -->
+
+- [ ] This PR targets 1-3 primary goals (or I explained why a larger scope is necessary)
+- [ ] I kept this PR focused on one domain or one migration step
+- [ ] If this PR is larger than planned, I included a rollback or follow-up split plan
+
 ## Change type
 
 <!-- Check all that apply. -->

@@ -97,6 +97,7 @@ SOLO_MAINTAINER_MERGE_PROCEDURE
 
 Implementation checklist <IMPLEMENTATION_CHECKLIST>
 Developer workflow <AGENTS>
+BRANCH_HYGIENE
 ```
 
 ```{toctree}

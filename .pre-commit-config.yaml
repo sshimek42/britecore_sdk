@@ -76,6 +76,13 @@ repos:
         additional_dependencies: ['sphinx>=7.0', 'myst-parser>=1.0', 'sphinx-rtd-theme>=1.3', 'dynaconf>=3.3.2,<3.4.0', 'urllib3>=2.7.0,<3.0.0', 'toml>=0.10.2,<0.11.0']
         files: ^(docs/|README|AGENTS|API|ARCHITECTURE|CONTRIBUTING|DEPRECATION|GETTING_STARTED|PYTHON_COMPATIBILITY|SECURITY|STABILITY|TROUBLESHOOTING|UNIMPLEMENTED_API_STUBS|BATCH_QUOTE|CONFIG|EVENTS|MIGRATION|MULTI|OBSERVABILITY|RATE|STAGED|LINE)
         pass_filenames: false
+      - id: release-docs
+        name: Release-facing docs verifier
+        # Catch version/doc drift locally whenever versioned docs or pyproject.toml change.
+        entry: python scripts/verify_release_docs.py
+        language: system
+        files: ^(README|CHANGELOG|DEPRECATION|GETTING_STARTED|IMPROVEMENT_ROADMAP|CONTRIBUTING|pyproject\.toml|docs/(DOCUMENTATION_RELEASE_CHECKLIST|RELEASE_OPERATIONS_CHECKLIST|MIGRATION_2_4_to_2_5)\.md)$
+        pass_filenames: false
       - id: release-compliance
         name: Release compliance check
         # Verify LICENSE, package metadata, and legal docs before pushing.

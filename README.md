@@ -1,6 +1,6 @@
 # britecore_sdk
 
-*Last updated: September 2, 2026*
+*Last updated: September 24, 2026*
 *Document type: Living guide*
 
 A production-ready **Python SDK for the BriteCore Insurance API**.
@@ -9,15 +9,17 @@ A production-ready **Python SDK for the BriteCore Insurance API**.
 
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://img.shields.io/pypi/v/britecore_sdk.svg)](https://pypi.org/project/britecore_sdk/)
-[![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![Tests](https://github.com/sshimek42/britecore_sdk/actions/workflows/tests.yml/badge.svg)](https://github.com/sshimek42/britecore_sdk/actions)
-[![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://codecov.io/gh/sshimek42/britecore_sdk)
+[![codecov](https://codecov.io/gh/sshimek42/britecore_sdk/graph/badge.svg)](https://app.codecov.io/gh/sshimek42/britecore_sdk)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![ReadTheDocs](https://app.readthedocs.org/projects/britecore-sdk/badge/?version=latest)](https://britecore-sdk.readthedocs.io/en/latest/)
 
-**Status:** Stable (v2.4.6+) | **License:** Apache-2.0 | **Python:** 3.11+
+**Status:** Stable (v2.5.1+) | **License:** Apache-2.0 | **Python:** 3.11+
 
 > Documentation ownership: `britecore_sdk` is the canonical source for SDK installation, auth, configuration, API usage, examples, and troubleshooting. The `britecore_docs` repo is the ecosystem map for repo boundaries, architecture, and cross-project workflows.
+
+**Project status:** `britecore_sdk` is a community-maintained SDK for the BriteCore API and is not an official BriteCore product.
 
 ---
 
@@ -147,6 +149,18 @@ logger.info("SDK logger is configured")
 ---
 
 ## Migration Notes
+
+### `2.6.x` -> `v3.0.0` Direction
+
+`v3.0.0` is a cleanup and standardization release, not a redesign of the SDK's core site/auth configuration model.
+
+- `2.5.x` starts runtime deprecation signaling on legacy patterns.
+- `2.6.x` is the intended migration-validation window before major-version removals.
+- `v3.0.0` removes previously deprecated runtime surfaces (implicit wrapper client fallback, global lifecycle helper pattern, and legacy batch alias keys).
+
+Site/auth configuration concepts remain stable across this transition. Existing approaches centered on `base_url` plus API key or OAuth credentials remain supported.
+
+See `DEPRECATION.md` for timeline details and `docs/MIGRATION_2_4_to_2_5.md` for migration examples from prior versions.
 
 ## Lightweight Data Layer for Scripts
 
@@ -292,6 +306,7 @@ This repo is the authoritative SDK documentation set. Use it for installation, a
 | **Reference projects** | [docs/REFERENCE_PROJECTS.md](./docs/REFERENCE_PROJECTS.md) |
 | **Python compatibility** | [PYTHON_COMPATIBILITY.md](./PYTHON_COMPATIBILITY.md) |
 | **Contributing** | [CONTRIBUTING.md](./CONTRIBUTING.md) |
+| **Branch hygiene** | [docs/BRANCH_HYGIENE.md](./docs/BRANCH_HYGIENE.md) |
 | **Code of Conduct** | [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) |
 | **Troubleshooting** | [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) |
 | **Security policy** | [SECURITY.md](./SECURITY.md) |
@@ -525,9 +540,9 @@ mypy src/britecore_sdk/api/britecore_api_client.py
 ### Release Publishing (GitHub Actions)
 
 - TestPyPI dry-run workflow: `.github/workflows/publish-testpypi.yml` (**manual trigger only** via `workflow_dispatch`)
-- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** for CI-created GitHub releases, and also **manually runnable** via `workflow_dispatch`)
+- Production PyPI workflow: `.github/workflows/publish.yml` (**automatic** when `.github/workflows/release.yml` calls it after creating the GitHub Release, and also **manually runnable** via `workflow_dispatch`)
 
-Both workflows use OIDC trusted publishing and include build + publish + install smoke tests. Depending on your GitHub environment protection rules, the publish job may still pause for environment approval even when the workflow itself was triggered automatically.
+Both workflows use OIDC trusted publishing and include build + publish + install smoke tests. The smoke tests poll the package JSON API and install the exact published wheel/sdist URL so they are less sensitive to package-index propagation lag. Depending on your GitHub environment protection rules, the publish job may still pause for environment approval even when the workflow itself was triggered automatically.
 
 1. Create GitHub environments: `testpypi` and `pypi`.
 2. In TestPyPI, add a Trusted Publisher entry for:
@@ -541,7 +556,7 @@ Both workflows use OIDC trusted publishing and include build + publish + install
 4. Run `Publish to TestPyPI` from the Actions tab before cutting a production release.
 5. Push a SemVer tag (for example `v2.0.5` or `v2.0.5-rc.1`) to trigger `.github/workflows/release.yml`.
 6. `release.yml` validates that the tag format is valid and that the tag version matches `project.version` in `pyproject.toml` before running tests/build/release steps.
-7. After `.github/workflows/release.yml` completes and publishes the GitHub Release, `.github/workflows/publish.yml` runs automatically and publishes to PyPI. (Manual UI-created releases do not auto-publish; use `workflow_dispatch` for intentional manual publishing, select a release **tag** as the workflow ref, and provide the same value in the `release-tag` input.)
+7. After `.github/workflows/release.yml` creates the GitHub Release, it directly calls `.github/workflows/publish.yml` to publish to PyPI. This avoids relying on the `release.published` event from an automated release. Manual UI-created releases still do not auto-publish; use `workflow_dispatch` for intentional manual publishing, select a release **tag** as the workflow ref, and provide the same value in the `release-tag` input.
 
 ### Contributing
 
@@ -570,6 +585,8 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed design.
 ## Support & Links
 
 - **Issues & feedback:** [GitHub Issues](https://github.com/sshimek42/britecore_sdk/issues)
+- **Maintenance model:** Solo-maintained with an internal-first active posture (Mode B); see [SOLO_MAINTAINER_STRATEGY.md](./SOLO_MAINTAINER_STRATEGY.md) for cadence, scope filters, and quarterly decision criteria.
 - **Security concerns:** See [SECURITY.md](SECURITY.md)
 - **Roadmap & stability:** See [STABILITY.md](./STABILITY.md)
+- **BriteCore platform:** [www.britecore.com](https://www.britecore.com/)
 - **External API docs:** [api.britecore.com](https://api.britecore.com/) (supplemental reference)

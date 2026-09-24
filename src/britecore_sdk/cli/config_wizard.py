@@ -54,7 +54,10 @@ def _write_config_file(
         if is_secrets:
             content += "# WARNING: This file contains secrets. Do not commit to version control.\n"
             content += "# Add .britecore_secrets.toml to .gitignore\n"
-            content += "# Sensitive credentials are not written by this wizard; set them via BRITECORE_SDK_* environment variables.\n\n"
+            content += (
+                "# Sensitive credentials are not written by this wizard; "
+                "set them via BRITECORE_SDK_* environment variables.\n\n"
+            )
         else:
             content += "# BriteCore SDK Configuration\n"
             content += "# Multiple environments can be configured by creating sections like [production], [sandbox]\n\n"

@@ -1,12 +1,12 @@
 # BriteCore SDK Improvement Roadmap
 
-*Last updated: September 2, 2026*
-*Status: Active roadmap aligned to `v2.4.8` and `v3.0.0` deprecation planning*
+*Last updated: September 24, 2026*
+*Status: Active roadmap aligned to `v2.5.1` and `v3.0.0` deprecation planning*
 *Audience: Maintainers and contributors*
 
 ## Executive Summary
 
-`britecore_sdk` is stable and release-ready at `v2.4.8`. The near-term roadmap now shifts from the completed `2.4.x` hardening work into migration safety: introduce runtime deprecation signaling in `2.5.x`, provide strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
+`britecore_sdk` is stable and released at `v2.5.1`. The near-term roadmap now shifts from the completed `2.5.0` deprecation signaling work into migration safety: continue strict-mode migration validation in `2.6.x`, and remove deprecated surfaces in `v3.0.0`.
 
 This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For deprecation policy and removal commitments, use `DEPRECATION.md`.
 
@@ -66,6 +66,8 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 
 **Goal:** Let integrators validate readiness before major-version removals.
 
+**Messaging source of truth:** Align all `2.6.x -> v3.0.0` external language to `DEPRECATION.md` under **Migration Positioning for `2.6.x` and `3.0.0`**.
+
 - Add strict-mode toggle to convert selected deprecation warnings into errors.
 - Provide compatibility test scenarios for explicit-client-only workflows.
 - Expand integration tests for common policy/contact/quote workflow paths.
@@ -104,6 +106,8 @@ This document is planning-oriented. For shipped history, use `CHANGELOG.md`. For
 
 ## Contribution Guidance
 
+- Operating mode default is internal-first active (Mode B): prioritize core workflow stability and targeted changes that reduce operational overhead.
+- Defer broad ecosystem features unless there is clear adoption urgency; use `SOLO_MAINTAINER_STRATEGY.md` quarterly criteria and backlog filters when triaging new work.
 - For immediate contributions, prioritize `2.5.x` migration-warning and guidance items.
 - For migration-focused work, coordinate changes under `2.5.x` and `2.6.x` phases.
 - Before implementing deprecation-affecting changes, ensure `CHANGELOG.md` and `DEPRECATION.md` remain synchronized.

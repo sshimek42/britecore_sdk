@@ -211,6 +211,10 @@
 
 → Review **Success Metrics** section in **IMPROVEMENT_ROADMAP.md** (5 min)
 
+### "I need `2.6.x` -> `3.0.0` release messaging"
+
+→ Use **DEPRECATION.md** section **Migration Positioning for `2.6.x` and `3.0.0`** + verify roadmap alignment in **IMPROVEMENT_ROADMAP.md** Phase C (10 min)
+
 ---
 
 ## Improvement Statistics at a Glance
@@ -263,6 +267,7 @@ Use this to track implementation progress:
 
 - [ ] Read archived_sessions/DELIVERY_REPORT_2026-07-20.md
 - [ ] Review IMPROVEMENT_ROADMAP.md
+- [ ] Confirm messaging alignment using DEPRECATION.md section "Migration Positioning for `2.6.x` and `3.0.0`"
 - [ ] Prioritize improvements with team
 - [ ] Allocate resources
 
