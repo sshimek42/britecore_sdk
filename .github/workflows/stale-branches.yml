@@ -1,0 +1,85 @@
+name: Stale Branch Reminder
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stale-branch-report:
+    name: Weekly stale branch report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Report stale branches (non-blocking)
+        uses: actions/github-script@v8
+        env:
+          STALE_DAYS: "30"
+        with:
+          script: |
+            const staleDays = Number(process.env.STALE_DAYS || "30");
+            const cutoffMs = staleDays * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const protectedBranches = new Set(["master", "main"]);
+            const stale = [];
+
+            const branches = await github.paginate(
+              github.rest.repos.listBranches,
+              { owner, repo, per_page: 100 }
+            );
+
+            for (const branch of branches) {
+              const name = branch.name;
+              if (protectedBranches.has(name) || name.startsWith("release/")) {
+                continue;
+              }
+
+              const commit = await github.rest.repos.getCommit({
+                owner,
+                repo,
+                ref: branch.commit.sha,
+              });
+
+              const commitDate =
+                commit.data.commit?.committer?.date || commit.data.commit?.author?.date;
+              if (!commitDate) {
+                continue;
+              }
+
+              const ageDays = Math.floor((now - new Date(commitDate).getTime()) / (24 * 60 * 60 * 1000));
+              if (ageDays >= staleDays) {
+                stale.push({ name, ageDays, commitDate });
+              }
+            }
+
+            stale.sort((a, b) => b.ageDays - a.ageDays);
+
+            const summaryHeader = `Stale Branch Reminder (>= ${staleDays} days)`;
+            core.summary.addHeading(summaryHeader, 2);
+
+            if (stale.length === 0) {
+              core.summary.addRaw("No stale non-release branches found.");
+              await core.summary.write();
+              return;
+            }
+
+            core.summary.addTable([
+              [
+                { data: "Branch", header: true },
+                { data: "Age (days)", header: true },
+                { data: "Last commit", header: true },
+              ],
+              ...stale.map((row) => [row.name, String(row.ageDays), row.commitDate]),
+            ]);
+            core.summary.addRaw("\nNon-blocking report: review and prune stale branches when convenient.");
+            await core.summary.write();
