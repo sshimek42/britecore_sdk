@@ -62,7 +62,7 @@ print_error() {
 
 run_command() {
     local display_name="$1"
-    local continue_on_error="${3:-false}"
+    local continue_on_error="$2"
     shift 2
 
     print_subheader "$display_name"
@@ -202,7 +202,7 @@ if [ "$ADVANCED" = true ]; then
     SYNC_ARGS+=("--upgrade")
 fi
 
-run_command "Syncing dependencies (uv sync)" uv "${SYNC_ARGS[@]}"
+run_command "Syncing dependencies (uv sync)" false uv "${SYNC_ARGS[@]}"
 
 # ============================================================================
 # Step 4: Security Audit (Optional in advanced mode)
@@ -210,7 +210,7 @@ run_command "Syncing dependencies (uv sync)" uv "${SYNC_ARGS[@]}"
 
 if [ "$ADVANCED" = true ] || [ "$SECURITY_AUDIT" = true ]; then
     run_command "Running security audit (pip-audit)" \
-        uv run pip-audit true
+        true uv run pip-audit
 fi
 
 # ============================================================================
@@ -218,7 +218,7 @@ fi
 # ============================================================================
 
 if [ "$SKIP_TESTS" = false ]; then
-    run_command "Running test suite (pytest)" uv run pytest --tb=short
+    run_command "Running test suite (pytest)" false uv run pytest --tb=short
 else
     print_subheader "Skipping test suite (--skip-tests flag set)"
 fi

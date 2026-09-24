@@ -27,7 +27,7 @@ This will additionally:
 - Upgrade all dependencies to latest compatible versions (`uv sync --upgrade`)
 - Run security audit (`pip-audit`) to check for CVEs
 - Run full test suite
-- Generate detailed compatibility report
+- Show an expanded environment summary and next-step guidance
 
 ## Usage Examples
 

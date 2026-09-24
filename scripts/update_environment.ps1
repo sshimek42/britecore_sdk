@@ -19,6 +19,11 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
+# Align SupportsShouldProcess with this script's DryRun path so -WhatIf is non-mutating.
+if ($WhatIfPreference -and -not $DryRun) {
+    $DryRun = $true
+}
+
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $startTime = Get-Date
 
@@ -216,7 +221,7 @@ try {
     # Step 4: Security Audit (Optional in advanced mode)
     # ============================================================================
 
-    if ($Advanced -and ($SecurityAudit -or $Advanced)) {
+    if ($Advanced -or $SecurityAudit) {
         Invoke-Command-Safe -DisplayName "Running security audit (pip-audit)" -ScriptBlock {
             & uv run pip-audit
             if ($LASTEXITCODE -eq 0) {

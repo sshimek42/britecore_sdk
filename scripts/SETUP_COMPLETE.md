@@ -73,7 +73,7 @@ Everything above, plus:
 ✓ Updates uv to latest version
 ✓ Upgrades all dependencies to latest compatible
 ✓ Runs security audit (pip-audit) for CVEs
-✓ Detailed compatibility report
+✓ Expanded environment summary and next-step guidance
 
 **Time:** ~2-5 minutes
 

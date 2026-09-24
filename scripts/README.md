@@ -61,7 +61,7 @@ The `scripts/` directory includes maintenance and automation scripts. Here are t
 - ✓ Updates uv to latest version
 - ✓ Upgrades all dependencies
 - ✓ Runs security audit (pip-audit)
-- ✓ Detailed compatibility report
+- ✓ Expanded environment summary and next-step guidance
 
 ### Documentation
 
