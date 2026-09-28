@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Report stale branches (non-blocking)
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           STALE_DAYS: "30"
         with:
